@@ -1,2 +1,325 @@
 @import "tailwindcss";
 @import "uniwind";
+
+@import 'heroui-native/styles';
+
+@source '../node_modules/heroui-native/lib';
+
+:root {
+  @variant light {
+    --background: #ffffff;
+    --foreground: #09090b;
+
+    --surface: #ffffff;
+    --surface-foreground: #09090b;
+    --surface-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+    --overlay: #ffffff;
+    --overlay-foreground: #09090b;
+    --overlay-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --muted: #71717a;
+
+    --accent: #3b82f6;
+    --accent-foreground: #ffffff;
+
+    --segment: #f4f4f5;
+    --segment-foreground: #18181b;
+
+    --border: #e4e4e7;
+    --divider: #e4e4e7;
+    --focus: #3b82f6;
+    --link: #2563eb;
+
+    --default: #f4f4f5;
+    --default-foreground: #18181b;
+
+    --success: #22c55e;
+    --success-foreground: #ffffff;
+
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+
+    --danger: #ef4444;
+    --danger-foreground: #ffffff;
+
+    --radius: 0.5rem;
+    --border-width: 1px;
+  }
+
+  @variant dark {
+    --background: #09090b;
+    --foreground: #fafafa;
+
+    --surface: #09090b;
+    --surface-foreground: #fafafa;
+    --surface-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+    --overlay: #09090b;
+    --overlay-foreground: #fafafa;
+    --overlay-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --muted: #a1a1aa;
+
+    --accent: #3b82f6;
+    --accent-foreground: #ffffff;
+
+    --segment: #27272a;
+    --segment-foreground: #fafafa;
+
+    --border: #27272a;
+    --divider: #27272a;
+    --focus: #3b82f6;
+    --link: #3b82f6;
+
+    --default: #27272a;
+    --default-foreground: #fafafa;
+    
+    --success: #22c55e;
+    --success-foreground: #ffffff;
+
+    --warning: #f59e0b;
+    --warning-foreground: #ffffff;
+
+    --danger: #ef4444;
+    --danger-foreground: #ffffff;
+
+    --radius: 0.5rem;
+    --border-width: 1px;
+  }
+}
+
+@theme inline static {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+
+  --color-muted: var(--muted);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-segment: var(--segment);
+  --color-segment-foreground: var(--segment-foreground);
+
+  --color-border: var(--border);
+  --color-divider: var(--divider);
+  --color-focus: var(--focus);
+  --color-link: var(--link);
+
+  --color-default: var(--default);
+  --color-default-foreground: var(--default-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+
+  /* Form Field Tokens */
+  --color-field: var(--field-background, var(--color-default));
+  --color-field-hover: color-mix(
+    in oklab,
+    var(--field-background, var(--color-default)) 90%,
+    var(--field-foreground, var(--color-default-foreground)) 10%
+  );
+  --color-field-foreground: var(--field-foreground, var(--color-foreground));
+  --color-field-placeholder: var(--field-placeholder, var(--color-muted));
+  --color-field-border: var(--field-border, var(--color-border));
+  --radius-field: var(--field-radius, var(--radius-xl));
+  --border-width-field: var(--field-border-width, var(--border-width));
+
+  --shadow-surface: var(--surface-shadow);
+  --shadow-overlay: var(--overlay-shadow);
+  --shadow-field: var(--field-shadow);
+
+  /* Calculated Variables */
+
+  /* Colors */
+
+  /* --- background shades --- */
+  --color-background-secondary: color-mix(
+    in oklab,
+    var(--color-background) 96%,
+    var(--color-foreground) 4%
+  );
+  --color-background-tertiary: color-mix(
+    in oklab,
+    var(--color-background) 92%,
+    var(--color-foreground) 8%
+  );
+  --color-background-inverse: var(--color-foreground);
+
+  /* ------------------------- */
+  --color-default-hover: color-mix(
+    in oklab,
+    var(--color-default) 90%,
+    var(--color-default-foreground) 2%
+  );
+  --color-accent-hover: color-mix(
+    in oklab,
+    var(--color-accent) 90%,
+    var(--color-accent-foreground) 10%
+  );
+  --color-success-hover: color-mix(
+    in oklab,
+    var(--color-success) 90%,
+    var(--color-success-foreground) 10%
+  );
+  --color-warning-hover: color-mix(
+    in oklab,
+    var(--color-warning) 90%,
+    var(--color-warning-foreground) 10%
+  );
+  --color-danger-hover: color-mix(
+    in oklab,
+    var(--color-danger) 90%,
+    var(--color-danger-foreground) 10%
+  );
+
+  /* Form Field Colors */
+  --color-field-hover: color-mix(
+    in oklab,
+    var(--color-field) 90%,
+    var(--color-field-foreground) 2%
+  );
+  --color-field-focus: var(--color-field);
+  --color-field-border-hover: color-mix(
+    in oklab,
+    var(--color-field-border) 88%,
+    var(--color-field-foreground) 10%
+  );
+  --color-field-border-focus: color-mix(
+    in oklab,
+    var(--color-field-border) 74%,
+    var(--color-field-foreground) 22%
+  );
+
+  /* Soft Colors */
+  --color-accent-soft: color-mix(
+    in oklab,
+    var(--color-accent) 15%,
+    transparent
+  );
+  --color-accent-soft-foreground: var(--color-accent);
+  --color-accent-soft-hover: color-mix(
+    in oklab,
+    var(--color-accent) 20%,
+    transparent
+  );
+
+  --color-danger-soft: color-mix(
+    in oklab,
+    var(--color-danger) 15%,
+    transparent
+  );
+  --color-danger-soft-foreground: var(--color-danger);
+  --color-danger-soft-hover: color-mix(
+    in oklab,
+    var(--color-danger) 20%,
+    transparent
+  );
+
+  --color-warning-soft: color-mix(
+    in oklab,
+    var(--color-warning) 15%,
+    transparent
+  );
+  --color-warning-soft-foreground: var(--color-warning);
+  --color-warning-soft-hover: color-mix(
+    in oklab,
+    var(--color-warning) 20%,
+    transparent
+  );
+
+  --color-success-soft: color-mix(
+    in oklab,
+    var(--color-success) 15%,
+    transparent
+  );
+  --color-success-soft-foreground: var(--color-success);
+  --color-success-soft-hover: color-mix(
+    in oklab,
+    var(--color-success) 20%,
+    transparent
+  );
+
+  /* Surface Levels - progressively darker/lighter shades for layering */
+  --color-surface-secondary: color-mix(
+    in oklab,
+    var(--surface) 94%,
+    var(--surface-foreground) 6%
+  );
+  --color-surface-tertiary: color-mix(
+    in oklab,
+    var(--surface) 92%,
+    var(--surface-foreground) 8%
+  );
+
+  /* On Surface Colors */
+  --color-on-surface: color-mix(
+    in oklab,
+    var(--color-surface) 93%,
+    var(--color-surface-foreground) 7%
+  );
+  --color-on-surface-foreground: var(--color-surface-foreground);
+  --color-on-surface-hover: color-mix(
+    in oklab,
+    var(--color-surface) 91%,
+    var(--color-surface-foreground) 9%
+  );
+  --color-on-surface-focus: var(--color-on-surface);
+
+  /* Radius and default sizes - defaults can change by just changing the --radius */
+  --radius-xs: calc(var(--radius) * 0.25); /* 0.125rem (2px) */
+  --radius-sm: calc(var(--radius) * 0.5); /* 0.25rem (4px) */
+  --radius-md: calc(var(--radius) * 0.75); /* 0.375rem (6px) */
+  --radius-lg: calc(var(--radius) * 1); /* 0.5rem (8px) */
+  --radius-xl: calc(var(--radius) * 1.5); /* 0.75rem (12px) */
+  --radius-2xl: calc(var(--radius) * 2); /* 1rem (16px) */
+  --radius-3xl: calc(var(--radius) * 3); /* 1.5rem (24px) */
+  --radius-4xl: calc(var(--radius) * 4); /* 2rem (32px) */
+
+  /* Rainbow Colors */
+  --rainbow-lime: #5BDD6A;
+  --rainbow-light-green: #35DB80;
+  --rainbow-teal: #20D6BE;
+  --rainbow-cyan: #26D1D1;
+  --rainbow-light-blue: #11CDF2;
+  --rainbow-sky-blue: #40B6FF;
+  --rainbow-blue: #638DFF;
+  --rainbow-indigo: #7979F7;
+  --rainbow-deep-purple: #A17DF5;
+  --rainbow-purple: #CE7AF0;
+  --rainbow-magenta: #FF70B0;
+  --rainbow-red: #FF697A;
+  --rainbow-orange: #FF875C;
+  --rainbow-amber: #FFD86B;
+  --rainbow-yellow: #FDFF78;
+  --rainbow-navy: #98A0B3;
+
+  --color-rainbow-lime: var(--rainbow-lime);
+  --color-rainbow-light-green: var(--rainbow-light-green);
+  --color-rainbow-teal: var(--rainbow-teal);
+  --color-rainbow-cyan: var(--rainbow-cyan);
+  --color-rainbow-light-blue: var(--rainbow-light-blue);
+  --color-rainbow-sky-blue: var(--rainbow-sky-blue);
+  --color-rainbow-blue: var(--rainbow-blue);
+  --color-rainbow-indigo: var(--rainbow-indigo);
+  --color-rainbow-deep-purple: var(--rainbow-deep-purple);
+  --color-rainbow-purple: var(--rainbow-purple);
+  --color-rainbow-magenta: var(--rainbow-magenta);
+  --color-rainbow-red: var(--rainbow-red);
+  --color-rainbow-orange: var(--rainbow-orange);
+  --color-rainbow-amber: var(--rainbow-amber);
+  --color-rainbow-yellow: var(--rainbow-yellow);
+  --color-rainbow-navy: var(--rainbow-navy);
+}
