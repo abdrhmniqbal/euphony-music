@@ -10,7 +10,7 @@ import { Pressable, View, ScrollView, RefreshControl } from "react-native";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-store";
 import { Ionicons } from "@expo/vector-icons";
 import { startIndexing, $indexerState } from "@/utils/media-indexer";
-import { getHistory } from "@/utils/database";
+import { getHistory, getTopSongs } from "@/utils/database";
 
 const RECENTLY_PLAYED_LIMIT = 8;
 const TOP_SONGS_LIMIT = 25;
@@ -74,7 +74,26 @@ export default function HomeScreen() {
         fetchHistory();
     }, [fetchHistory]);
 
-    const topSongsChunks = chunkArray(tracks.slice(0, TOP_SONGS_LIMIT), CHUNK_SIZE);
+    const [topSongs, setTopSongs] = useState<Track[]>([]);
+
+    const fetchTopSongs = useCallback(() => {
+        const songs = getTopSongs('all', TOP_SONGS_LIMIT);
+        setTopSongs(songs);
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchTopSongs();
+        }, [fetchTopSongs])
+    );
+
+    // Combine refresh logic
+    const handleRefresh = useCallback(() => {
+        onRefresh();
+        fetchTopSongs();
+    }, [onRefresh, fetchTopSongs]);
+
+    const topSongsChunks = chunkArray(topSongs, CHUNK_SIZE);
 
     const renderRecentlyPlayedItem = useCallback((item: Track, index: number) => (
         <Item
@@ -119,7 +138,7 @@ export default function HomeScreen() {
             onScrollEndDrag={handleScrollStop}
             scrollEventThrottle={16}
             refreshControl={
-                <RefreshControl refreshing={indexerState.isIndexing} onRefresh={onRefresh} tintColor={theme.accent} />
+                <RefreshControl refreshing={indexerState.isIndexing} onRefresh={handleRefresh} tintColor={theme.accent} />
             }
         >
             <View className="pt-6">

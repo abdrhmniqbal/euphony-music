@@ -1,7 +1,7 @@
 import { atom } from 'nanostores';
 import { createAudioPlayer, AudioPlayer, AudioStatus } from 'expo-audio';
 import { MediaControl, PlaybackState, Command } from 'expo-media-control';
-import { initDatabase, addToHistory } from '@/utils/database';
+import { initDatabase, addToHistory, incrementPlayCount } from '@/utils/database';
 
 export interface LyricLine {
     time: number;
@@ -20,6 +20,8 @@ export interface Track {
     fileHash?: string;
     scanTime?: number;
     isDeleted?: boolean;
+    playCount?: number;
+    lastPlayedAt?: number;
 }
 
 export const $tracks = atom<Track[]>([]);
@@ -104,7 +106,10 @@ export const playTrack = async (track: Track) => {
 
     $currentTrack.set(track);
     currentTrackIndex = $tracks.get().findIndex(t => t.id === track.id);
+    $currentTrack.set(track);
+    currentTrackIndex = $tracks.get().findIndex(t => t.id === track.id);
     addToHistory(track.id);
+    incrementPlayCount(track.id);
 
     player.play();
     $isPlaying.set(true);

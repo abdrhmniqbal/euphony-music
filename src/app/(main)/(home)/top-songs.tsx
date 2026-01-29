@@ -10,6 +10,8 @@ import { useUniwind } from "uniwind";
 import { useStore } from "@nanostores/react";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { startIndexing, $indexerState } from "@/utils/media-indexer";
+import { getTopSongs } from "@/utils/database";
+import { useFocusEffect } from "expo-router";
 
 const TABS = ["Realtime", "Daily", "Weekly"] as const;
 type TabType = typeof TABS[number];
@@ -27,15 +29,24 @@ export default function TopSongsScreen() {
         startIndexing(true);
     }, []);
 
-    const currentSongs = (() => {
-        const shuffled = [...tracks];
-        const seed = activeTab === "Daily" ? 1 : activeTab === "Weekly" ? 2 : 0;
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = (i * (seed + 1)) % (i + 1);
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled.slice(0, TOP_SONGS_LIMIT);
-    })();
+    const [currentSongs, setCurrentSongs] = useState<Track[]>([]);
+
+    const fetchSongs = useCallback(() => {
+        const period = activeTab === "Daily" ? 'day' : activeTab === "Weekly" ? 'week' : 'all';
+        const songs = getTopSongs(period, TOP_SONGS_LIMIT);
+        setCurrentSongs(songs);
+    }, [activeTab]);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchSongs();
+        }, [fetchSongs])
+    );
+
+    const handleRefresh = useCallback(() => {
+        onRefresh();
+        fetchSongs();
+    }, [onRefresh, fetchSongs]);
 
     const handlePlayAll = useCallback(() => {
         if (currentSongs.length > 0) {
@@ -115,7 +126,7 @@ export default function TopSongsScreen() {
                     onScrollEndDrag={handleScrollStop}
                     scrollEventThrottle={16}
                     refreshControl={
-                        <RefreshControl refreshing={indexerState.isIndexing} onRefresh={onRefresh} tintColor={theme.accent} />
+                        <RefreshControl refreshing={indexerState.isIndexing} onRefresh={handleRefresh} tintColor={theme.accent} />
                     }
                 />
             </Animated.View>

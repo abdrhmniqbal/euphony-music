@@ -16,7 +16,9 @@ export const initDatabase = () => {
             lyrics TEXT,
             file_hash TEXT,
             scan_time INTEGER DEFAULT 0,
-            is_deleted INTEGER DEFAULT 0
+            is_deleted INTEGER DEFAULT 0,
+            play_count INTEGER DEFAULT 0,
+            last_played_at INTEGER DEFAULT 0
         );
         
         CREATE INDEX IF NOT EXISTS idx_tracks_file_hash ON tracks(file_hash);
@@ -68,6 +70,12 @@ const runMigrations = () => {
     if (!columns.has('is_deleted')) {
         db.execSync('ALTER TABLE tracks ADD COLUMN is_deleted INTEGER DEFAULT 0');
     }
+    if (!columns.has('play_count')) {
+        db.execSync('ALTER TABLE tracks ADD COLUMN play_count INTEGER DEFAULT 0');
+    }
+    if (!columns.has('last_played_at')) {
+        db.execSync('ALTER TABLE tracks ADD COLUMN last_played_at INTEGER DEFAULT 0');
+    }
 };
 
 export const addToHistory = (trackId: string) => {
@@ -108,6 +116,8 @@ const mapRowToTrack = (row: any): Track => ({
     fileHash: row.file_hash || undefined,
     scanTime: row.scan_time || 0,
     isDeleted: row.is_deleted === 1,
+    playCount: row.play_count || 0,
+    lastPlayedAt: row.last_played_at || 0,
 });
 
 export const getTracksFromDB = (): Track[] => {
@@ -129,8 +139,8 @@ export const getAllTrackIds = (): string[] => {
 export const upsertTrack = (track: Track) => {
     db.runSync(
         `INSERT OR REPLACE INTO tracks 
-            (id, title, artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (id, title, artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             track.id,
             track.title,
@@ -143,6 +153,8 @@ export const upsertTrack = (track: Track) => {
             track.fileHash || null,
             track.scanTime || Date.now(),
             track.isDeleted ? 1 : 0,
+            track.playCount || 0,
+            track.lastPlayedAt || 0,
         ]
     );
 };
@@ -232,8 +244,8 @@ export const batchUpsertTracks = (tracks: Track[]): void => {
         for (const track of tracks) {
             db.runSync(
                 `INSERT OR REPLACE INTO tracks 
-                    (id, title, artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    (id, title, artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     track.id,
                     track.title,
@@ -246,8 +258,53 @@ export const batchUpsertTracks = (tracks: Track[]): void => {
                     track.fileHash || null,
                     track.scanTime || Date.now(),
                     track.isDeleted ? 1 : 0,
+                    track.playCount || 0,
+                    track.lastPlayedAt || 0,
                 ]
             );
         }
     });
+};
+
+export const incrementPlayCount = (trackId: string) => {
+    const timestamp = Date.now();
+    db.runSync(
+        `UPDATE tracks 
+         SET play_count = play_count + 1, last_played_at = ? 
+         WHERE id = ?`,
+        [timestamp, trackId]
+    );
+    addToHistory(trackId);
+};
+
+export const getTopSongs = (period: 'all' | 'day' | 'week', limit: number = 25): Track[] => {
+    let query = '';
+    const now = Date.now();
+
+    if (period === 'all') {
+        query = `
+            SELECT * FROM tracks 
+            WHERE is_deleted = 0 AND play_count > 0
+            ORDER BY play_count DESC, last_played_at DESC 
+            LIMIT ?
+        `;
+        const rows = db.getAllSync(query, [limit]) as any[];
+        return rows.map(mapRowToTrack);
+    } else {
+        const timeThreshold = period === 'day'
+            ? now - 24 * 60 * 60 * 1000
+            : now - 7 * 24 * 60 * 60 * 1000;
+
+        query = `
+            SELECT t.*, COUNT(h.id) as period_play_count
+            FROM history h
+            JOIN tracks t ON h.track_id = t.id
+            WHERE h.timestamp >= ? AND t.is_deleted = 0
+            GROUP BY t.id
+            ORDER BY period_play_count DESC, t.last_played_at DESC
+            LIMIT ?
+        `;
+        const rows = db.getAllSync(query, [timeThreshold, limit]) as any[];
+        return rows.map(mapRowToTrack);
+    }
 };
