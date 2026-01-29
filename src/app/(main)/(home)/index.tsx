@@ -5,11 +5,12 @@ import { SectionTitle } from "@/components/section-title";
 import { useUniwind } from "uniwind";
 import { Colors } from "@/constants/colors";
 import React, { useState, useLayoutEffect, useCallback } from "react";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter, useFocusEffect } from "expo-router";
 import { Pressable, View, ScrollView, RefreshControl } from "react-native";
 import { handleScrollStart, handleScrollStop } from "@/store/ui-store";
 import { Ionicons } from "@expo/vector-icons";
 import { startIndexing, $indexerState } from "@/utils/media-indexer";
+import { getHistory } from "@/utils/database";
 
 const RECENTLY_PLAYED_LIMIT = 8;
 const TOP_SONGS_LIMIT = 25;
@@ -49,17 +50,35 @@ export default function HomeScreen() {
         });
     }, [navigation, theme, router]);
 
-    const onRefresh = useCallback(() => {
-        startIndexing(true);
+    const [recentlyPlayedTracks, setRecentlyPlayedTracks] = useState<Track[]>([]);
+
+    const fetchHistory = useCallback(() => {
+        const history = getHistory();
+        const seen = new Set<string>();
+        const unique = history.filter(track => {
+            if (seen.has(track.id)) return false;
+            seen.add(track.id);
+            return true;
+        });
+        setRecentlyPlayedTracks(unique.slice(0, RECENTLY_PLAYED_LIMIT));
     }, []);
 
-    const recentlyPlayedTracks = tracks.slice(0, RECENTLY_PLAYED_LIMIT);
+    useFocusEffect(
+        useCallback(() => {
+            fetchHistory();
+        }, [fetchHistory])
+    );
+
+    const onRefresh = useCallback(() => {
+        startIndexing(true);
+        fetchHistory();
+    }, [fetchHistory]);
 
     const topSongsChunks = chunkArray(tracks.slice(0, TOP_SONGS_LIMIT), CHUNK_SIZE);
 
-    const renderRecentlyPlayedItem = useCallback((item: Track) => (
+    const renderRecentlyPlayedItem = useCallback((item: Track, index: number) => (
         <Item
-            key={item.id}
+            key={`${item.id}-${index}`}
             variant="grid"
             onPress={() => playTrack(item)}
         >
@@ -75,7 +94,7 @@ export default function HomeScreen() {
         <View key={`chunk-${chunkIndex}`} className="w-[300px]">
             {chunk.map((music, index) => (
                 <Item
-                    key={music.id}
+                    key={`${music.id}-${chunkIndex}-${index}`}
                     onPress={() => playTrack(music)}
                 >
                     <ItemImage icon="musical-note" image={music.image} />
@@ -114,7 +133,7 @@ export default function HomeScreen() {
                     contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
                     className="mb-8"
                 >
-                    {recentlyPlayedTracks.map(renderRecentlyPlayedItem)}
+                    {recentlyPlayedTracks.map((item, index) => renderRecentlyPlayedItem(item, index))}
                 </ScrollView>
 
                 <SectionTitle

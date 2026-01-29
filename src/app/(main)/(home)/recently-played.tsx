@@ -20,7 +20,13 @@ export default function RecentlyPlayedScreen() {
 
     const fetchHistory = useCallback(() => {
         const data = getHistory();
-        setHistory(data);
+        const seen = new Set<string>();
+        const unique = data.filter(track => {
+            if (seen.has(track.id)) return false;
+            seen.add(track.id);
+            return true;
+        });
+        setHistory(unique);
     }, []);
 
     const onRefresh = useCallback(() => {
@@ -60,7 +66,7 @@ export default function RecentlyPlayedScreen() {
         </Item>
     ), [theme.muted]);
 
-    const keyExtractor = useCallback((item: Track) => item.id, []);
+    const keyExtractor = useCallback((item: Track, index: number) => `${item.id}-${index}`, []);
 
     return (
         <View className="flex-1 bg-background">
