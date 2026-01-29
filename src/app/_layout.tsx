@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import { FullPlayer } from "@/components/full-player";
 import { IndexingProgress } from "@/components/indexing-progress";
 import { setupPlayer } from "@/store/player-store";
-import { startIndexing, loadTracksFromCache } from "@/utils/media-indexer";
+import { startIndexing, loadTracksFromCache, initLifecycleListeners, cleanupLifecycleListeners } from "@/utils/media-indexer";
 import { hasExistingLibrary } from "@/utils/database";
 
 export default function Layout() {
@@ -25,10 +25,15 @@ export default function Layout() {
       loadTracksFromCache();
 
       const hasLibrary = hasExistingLibrary();
-      startIndexing(!hasLibrary);
+      startIndexing(!hasLibrary, !hasLibrary);
     };
 
     init();
+    initLifecycleListeners();
+
+    return () => {
+      cleanupLifecycleListeners();
+    };
   }, []);
 
   const navigationTheme = {

@@ -30,6 +30,20 @@ export const initDatabase = () => {
         );
         
         CREATE INDEX IF NOT EXISTS idx_history_timestamp ON history(timestamp);
+        
+        CREATE TABLE IF NOT EXISTS artwork (
+            hash TEXT PRIMARY KEY,
+            path TEXT NOT NULL,
+            mime_type TEXT DEFAULT 'image/jpeg',
+            source TEXT DEFAULT 'embedded',
+            created_at INTEGER DEFAULT 0
+        );
+        
+        CREATE TABLE IF NOT EXISTS indexer_state (
+            key TEXT PRIMARY KEY,
+            value TEXT,
+            updated_at INTEGER DEFAULT 0
+        );
     `);
 
     runMigrations();
@@ -164,4 +178,76 @@ export const getTrackCount = (): number => {
 
 export const hasExistingLibrary = (): boolean => {
     return getTrackCount() > 0;
+};
+
+export const getIndexerState = (key: string): string | null => {
+    const row = db.getFirstSync(
+        'SELECT value FROM indexer_state WHERE key = ?',
+        [key]
+    ) as { value: string } | null;
+    return row?.value || null;
+};
+
+export const setIndexerState = (key: string, value: string): void => {
+    db.runSync(
+        'INSERT OR REPLACE INTO indexer_state (key, value, updated_at) VALUES (?, ?, ?)',
+        [key, value, Date.now()]
+    );
+};
+
+export interface ArtworkEntry {
+    hash: string;
+    path: string;
+    mimeType: string;
+    source: 'embedded' | 'folder' | 'downloaded';
+    createdAt: number;
+}
+
+export const getArtworkByHash = (hash: string): ArtworkEntry | null => {
+    const row = db.getFirstSync(
+        'SELECT * FROM artwork WHERE hash = ?',
+        [hash]
+    ) as any;
+    if (!row) return null;
+    return {
+        hash: row.hash,
+        path: row.path,
+        mimeType: row.mime_type,
+        source: row.source,
+        createdAt: row.created_at,
+    };
+};
+
+export const upsertArtwork = (entry: ArtworkEntry): void => {
+    db.runSync(
+        `INSERT OR REPLACE INTO artwork (hash, path, mime_type, source, created_at)
+         VALUES (?, ?, ?, ?, ?)`,
+        [entry.hash, entry.path, entry.mimeType, entry.source, entry.createdAt || Date.now()]
+    );
+};
+
+export const batchUpsertTracks = (tracks: Track[]): void => {
+    if (tracks.length === 0) return;
+    db.withTransactionSync(() => {
+        for (const track of tracks) {
+            db.runSync(
+                `INSERT OR REPLACE INTO tracks 
+                    (id, title, artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    track.id,
+                    track.title,
+                    track.artist || null,
+                    track.album || null,
+                    track.duration,
+                    track.uri,
+                    track.image || null,
+                    track.lyrics ? JSON.stringify(track.lyrics) : null,
+                    track.fileHash || null,
+                    track.scanTime || Date.now(),
+                    track.isDeleted ? 1 : 0,
+                ]
+            );
+        }
+    });
 };

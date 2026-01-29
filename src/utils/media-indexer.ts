@@ -2,12 +2,18 @@ import { File, Directory, Paths } from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { atom } from 'nanostores';
+import { AppState, AppStateStatus } from 'react-native';
 import {
     getTracksFromDB,
-    upsertTrack,
     markTrackDeleted,
     getAllTrackIds,
-    cleanupDeletedTracks
+    cleanupDeletedTracks,
+    getIndexerState,
+    setIndexerState,
+    getArtworkByHash,
+    upsertArtwork,
+    batchUpsertTracks,
+    ArtworkEntry,
 } from './database';
 import { $tracks, Track } from '@/store/player-store';
 
@@ -15,13 +21,16 @@ const ARTWORK_DIR_NAME = 'artwork';
 const BATCH_SIZE = 10;
 const METADATA_TAGS = ['artist', 'artwork', 'name', 'album'] as const;
 
+const yieldToUI = (): Promise<void> => new Promise(resolve => setTimeout(resolve, 0));
+
 export interface IndexerState {
     isIndexing: boolean;
     progress: number;
     currentFile: string;
     totalFiles: number;
     processedFiles: number;
-    phase: 'idle' | 'scanning' | 'processing' | 'cleanup' | 'complete';
+    phase: 'idle' | 'scanning' | 'processing' | 'cleanup' | 'complete' | 'paused';
+    showProgress: boolean;
 }
 
 export const $indexerState = atom<IndexerState>({
@@ -31,11 +40,14 @@ export const $indexerState = atom<IndexerState>({
     totalFiles: 0,
     processedFiles: 0,
     phase: 'idle',
+    showProgress: false,
 });
 
 let indexerAbortController: AbortController | null = null;
 let completeTimeout: NodeJS.Timeout | null = null;
 let artworkCacheDir: Directory | null = null;
+let pausedState: { assets: MediaLibrary.Asset[]; currentIndex: number } | null = null;
+let appStateSubscription: ReturnType<typeof AppState.addEventListener> | null = null;
 
 const updateIndexerState = (updates: Partial<IndexerState>) => {
     $indexerState.set({ ...$indexerState.get(), ...updates });
@@ -59,21 +71,23 @@ const calculateFileHash = (uri: string, modificationTime: number, size: number):
     return `${uri}-${modificationTime}-${size}`.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 64);
 };
 
+const calculateArtworkHash = (data: string): string => {
+    const sample = data.slice(0, 1024);
+    const length = data.length;
+    let hash = 0;
+    for (let i = 0; i < sample.length; i++) {
+        hash = ((hash << 5) - hash) + sample.charCodeAt(i);
+        hash |= 0;
+    }
+    return `${Math.abs(hash).toString(16)}_${length}`;
+};
+
 const saveArtworkToCache = (
-    artworkData: string | undefined,
-    trackId: string
+    artworkData: string | undefined
 ): string | undefined => {
     if (!artworkData) return undefined;
 
     try {
-        ensureArtworkCacheDir();
-        const safeId = trackId.replace(/[^a-zA-Z0-9]/g, '_');
-        const artworkFile = new File(getArtworkCacheDir(), `${safeId}.jpg`);
-
-        if (artworkFile.exists) {
-            return artworkFile.uri;
-        }
-
         if (artworkData.startsWith('file://') || artworkData.startsWith('/')) {
             return artworkData;
         }
@@ -84,9 +98,35 @@ const saveArtworkToCache = (
             base64Data = parts[1] || '';
         }
 
-        if (base64Data) {
-            artworkFile.write(base64Data, { encoding: 'base64' });
+        if (!base64Data) return undefined;
+
+        const artworkHash = calculateArtworkHash(base64Data);
+
+        const existingArtwork = getArtworkByHash(artworkHash);
+        if (existingArtwork) {
+            const existingFile = new File(existingArtwork.path);
+            if (existingFile.exists) {
+                return existingArtwork.path;
+            }
         }
+
+        ensureArtworkCacheDir();
+        const artworkFile = new File(getArtworkCacheDir(), `${artworkHash}.jpg`);
+
+        if (artworkFile.exists) {
+            return artworkFile.uri;
+        }
+
+        artworkFile.write(base64Data, { encoding: 'base64' });
+
+        const entry: ArtworkEntry = {
+            hash: artworkHash,
+            path: artworkFile.uri,
+            mimeType: 'image/jpeg',
+            source: 'embedded',
+            createdAt: Date.now(),
+        };
+        upsertArtwork(entry);
 
         return artworkFile.uri;
     } catch (e) {
@@ -119,7 +159,7 @@ const processTrack = async (
             console.warn('Failed to get metadata for', asset.filename);
         }
 
-        const artworkPath = saveArtworkToCache(metadata.artwork, asset.id);
+        const artworkPath = saveArtworkToCache(metadata.artwork);
 
         const track: Track = {
             id: asset.id,
@@ -149,9 +189,10 @@ const processBatch = async (
 ): Promise<Track[]> => {
     const results: Track[] = [];
 
-    for (const asset of assets) {
+    for (let i = 0; i < assets.length; i++) {
         if (signal.aborted) break;
 
+        const asset = assets[i];
         updateIndexerState({ currentFile: asset.filename || 'Unknown' });
 
         const existingTrack = existingTracksMap.get(asset.id) || null;
@@ -159,17 +200,6 @@ const processBatch = async (
 
         if (track) {
             results.push(track);
-            upsertTrack(track);
-
-            const currentTracks = $tracks.get();
-            const existingIndex = currentTracks.findIndex(t => t.id === track.id);
-            if (existingIndex >= 0) {
-                const updated = [...currentTracks];
-                updated[existingIndex] = track;
-                $tracks.set(updated);
-            } else {
-                $tracks.set([...currentTracks, track]);
-            }
         }
 
         const state = $indexerState.get();
@@ -178,14 +208,70 @@ const processBatch = async (
             processedFiles: processed,
             progress: (processed / state.totalFiles) * 100,
         });
+
+        if (i % 3 === 0) {
+            await yieldToUI();
+        }
+    }
+
+    if (results.length > 0) {
+        await yieldToUI();
+        batchUpsertTracks(results);
+        await yieldToUI();
+
+        const currentTracks = $tracks.get();
+        const trackMap = new Map(currentTracks.map(t => [t.id, t]));
+        for (const track of results) {
+            trackMap.set(track.id, track);
+        }
+        $tracks.set(Array.from(trackMap.values()));
     }
 
     return results;
 };
 
-export const startIndexing = async (forceFullScan = false): Promise<void> => {
+const handleAppStateChange = (nextState: AppStateStatus): void => {
+    if (nextState === 'background' || nextState === 'inactive') {
+        pauseIndexing();
+    } else if (nextState === 'active') {
+        resumeIndexing();
+    }
+};
+
+export const initLifecycleListeners = (): void => {
+    if (appStateSubscription) return;
+    appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+};
+
+export const cleanupLifecycleListeners = (): void => {
+    if (appStateSubscription) {
+        appStateSubscription.remove();
+        appStateSubscription = null;
+    }
+};
+
+export const pauseIndexing = (): void => {
+    const state = $indexerState.get();
+    if (state.isIndexing && indexerAbortController) {
+        indexerAbortController.abort();
+        updateIndexerState({ phase: 'paused' });
+        setIndexerState('paused_progress', JSON.stringify({
+            processedFiles: state.processedFiles,
+            totalFiles: state.totalFiles,
+        }));
+    }
+};
+
+export const resumeIndexing = (): void => {
+    const state = $indexerState.get();
+    if (state.phase === 'paused') {
+        startIndexing(false);
+    }
+};
+
+export const startIndexing = async (forceFullScan = false, showProgress = true): Promise<void> => {
     const currentState = $indexerState.get();
-    if (currentState.isIndexing) {
+    if (currentState.isIndexing && currentState.phase !== 'paused') {
         console.log('Indexing already in progress');
         return;
     }
@@ -205,6 +291,7 @@ export const startIndexing = async (forceFullScan = false): Promise<void> => {
         phase: 'scanning',
         currentFile: '',
         totalFiles: 0,
+        showProgress,
     });
 
     try {
@@ -238,19 +325,40 @@ export const startIndexing = async (forceFullScan = false): Promise<void> => {
 
         if (signal.aborted) return;
 
-        updateIndexerState({
-            totalFiles: allAssets.length,
-            phase: 'processing',
-        });
-
         const existingTracks = getTracksFromDB();
         const existingTracksMap = new Map(existingTracks.map(t => [t.id, t]));
         const currentAssetIds = new Set(allAssets.map(a => a.id));
 
-        for (let i = 0; i < allAssets.length && !signal.aborted; i += BATCH_SIZE) {
-            const batch = allAssets.slice(i, i + BATCH_SIZE);
+        const assetsToProcess = forceFullScan
+            ? allAssets
+            : allAssets.filter(asset => {
+                const existing = existingTracksMap.get(asset.id);
+                if (!existing) return true;
+                const hash = calculateFileHash(asset.uri, asset.modificationTime, asset.duration);
+                return existing.fileHash !== hash;
+            });
+
+        if (assetsToProcess.length === 0) {
+            updateIndexerState({
+                isIndexing: false,
+                phase: 'complete',
+                progress: 100,
+            });
+            completeTimeout = setTimeout(() => {
+                updateIndexerState({ phase: 'idle' });
+            }, 3000);
+            return;
+        }
+
+        updateIndexerState({
+            totalFiles: assetsToProcess.length,
+            phase: 'processing',
+        });
+
+        for (let i = 0; i < assetsToProcess.length && !signal.aborted; i += BATCH_SIZE) {
+            const batch = assetsToProcess.slice(i, i + BATCH_SIZE);
             await processBatch(batch, existingTracksMap, forceFullScan, signal);
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await yieldToUI();
         }
 
         if (signal.aborted) return;
@@ -267,6 +375,8 @@ export const startIndexing = async (forceFullScan = false): Promise<void> => {
         }
 
         cleanupDeletedTracks();
+
+        setIndexerState('last_scan_timestamp', String(Date.now()));
 
         updateIndexerState({
             isIndexing: false,
@@ -314,4 +424,9 @@ export const clearArtworkCache = (): void => {
     } catch (e) {
         console.warn('Failed to clear artwork cache:', e);
     }
+};
+
+export const getLastScanTime = (): number | null => {
+    const timestamp = getIndexerState('last_scan_timestamp');
+    return timestamp ? parseInt(timestamp, 10) : null;
 };

@@ -41,7 +41,7 @@ export const IndexingProgress: React.FC = () => {
         }),
     }));
 
-    if (!state.isIndexing && state.phase !== 'complete') {
+    if (!state.showProgress || (!state.isIndexing && state.phase !== 'complete')) {
         return null;
     }
 
@@ -50,7 +50,7 @@ export const IndexingProgress: React.FC = () => {
             <Animated.View
                 entering={FadeIn.duration(200)}
                 exiting={FadeOut.duration(200)}
-                className="absolute left-4 right-4 bg-default rounded-2xl p-4 shadow-lg"
+                className="absolute left-4 right-4 bg-surface-secondary rounded-2xl p-4 shadow-lg"
                 style={{ bottom: bottomOffset }}
             >
                 <View className="flex-row items-center gap-3">
@@ -70,7 +70,7 @@ export const IndexingProgress: React.FC = () => {
         <Animated.View
             entering={FadeIn.duration(200)}
             exiting={FadeOut.duration(200)}
-            className="absolute left-4 right-4 bg-default rounded-2xl p-4 shadow-lg"
+            className="absolute left-4 right-4 bg-surface-secondary rounded-2xl p-4 shadow-lg"
             style={{ bottom: bottomOffset }}
         >
             <View className="flex-row items-center justify-between mb-3">
