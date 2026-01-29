@@ -1,6 +1,7 @@
 import { View, Text, FlatList, Pressable, RefreshControl } from "react-native";
 import { useState, useCallback } from "react";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemRank, ItemAction } from "@/components/item";
+import { EmptyState } from "@/components/empty-state";
 import { playTrack, $tracks, Track } from "@/store/player-store";
 import { Colors } from "@/constants/colors";
 import { Button } from "heroui-native";
@@ -91,22 +92,24 @@ export default function TopSongsScreen() {
                 ))}
             </View>
 
-            <View className="flex-row px-4 py-4 gap-4">
-                <Button
-                    className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                    onPress={handlePlayAll}
-                >
-                    <Ionicons name="play" size={20} color={theme.foreground} />
-                    <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                </Button>
-                <Button
-                    className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                    onPress={handleShuffle}
-                >
-                    <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                    <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                </Button>
-            </View>
+            {currentSongs.length > 0 && (
+                <View className="flex-row px-4 py-4 gap-4">
+                    <Button
+                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
+                        onPress={handlePlayAll}
+                    >
+                        <Ionicons name="play" size={20} color={theme.foreground} />
+                        <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
+                    </Button>
+                    <Button
+                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
+                        onPress={handleShuffle}
+                    >
+                        <Ionicons name="shuffle" size={20} color={theme.foreground} />
+                        <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
+                    </Button>
+                </View>
+            )}
 
             <Animated.View
                 key={activeTab}
@@ -127,6 +130,14 @@ export default function TopSongsScreen() {
                     scrollEventThrottle={16}
                     refreshControl={
                         <RefreshControl refreshing={indexerState.isIndexing} onRefresh={handleRefresh} tintColor={theme.accent} />
+                    }
+                    ListEmptyComponent={
+                        <EmptyState
+                            icon="musical-notes-outline"
+                            title="No top songs yet"
+                            message="Play some music to see your most played tracks here!"
+                            className="mt-12"
+                        />
                     }
                 />
             </Animated.View>

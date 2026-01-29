@@ -1,5 +1,6 @@
 import { View, Text, FlatList, RefreshControl } from "react-native";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
+import { EmptyState } from "@/components/empty-state";
 import { playTrack, Track } from "@/store/player-store";
 import { Colors } from "@/constants/colors";
 import { Button } from "heroui-native";
@@ -70,22 +71,24 @@ export default function RecentlyPlayedScreen() {
 
     return (
         <View className="flex-1 bg-background">
-            <View className="flex-row px-4 py-4 gap-4">
-                <Button
-                    className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                    onPress={handlePlayFirst}
-                >
-                    <Ionicons name="play" size={20} color={theme.foreground} />
-                    <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                </Button>
-                <Button
-                    className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                    onPress={handleShuffle}
-                >
-                    <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                    <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                </Button>
-            </View>
+            {history.length > 0 && (
+                <View className="flex-row px-4 py-4 gap-4">
+                    <Button
+                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
+                        onPress={handlePlayFirst}
+                    >
+                        <Ionicons name="play" size={20} color={theme.foreground} />
+                        <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
+                    </Button>
+                    <Button
+                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
+                        onPress={handleShuffle}
+                    >
+                        <Ionicons name="shuffle" size={20} color={theme.foreground} />
+                        <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
+                    </Button>
+                </View>
+            )}
 
             <FlatList
                 data={history}
@@ -100,6 +103,14 @@ export default function RecentlyPlayedScreen() {
                 scrollEventThrottle={16}
                 refreshControl={
                     <RefreshControl refreshing={indexerState.isIndexing} onRefresh={onRefresh} tintColor={theme.accent} />
+                }
+                ListEmptyComponent={
+                    <EmptyState
+                        icon="time-outline"
+                        title="No recently played"
+                        message="Your listening history will appear here once you start playing music."
+                        className="mt-12"
+                    />
                 }
             />
         </View>

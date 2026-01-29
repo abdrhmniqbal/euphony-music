@@ -1,4 +1,5 @@
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemRank } from "@/components/item";
+import { EmptyState } from "@/components/empty-state";
 import { playTrack, $tracks, Track } from "@/store/player-store";
 import { useStore } from "@nanostores/react";
 import { SectionTitle } from "@/components/section-title";
@@ -148,14 +149,23 @@ export default function HomeScreen() {
                     onViewMore={() => router.push("/(main)/(home)/recently-played")}
                 />
 
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
-                    className="mb-8"
-                >
-                    {recentlyPlayedTracks.map((item, index) => renderRecentlyPlayedItem(item, index))}
-                </ScrollView>
+                {recentlyPlayedTracks.length > 0 ? (
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}
+                        className="mb-8"
+                    >
+                        {recentlyPlayedTracks.map((item, index) => renderRecentlyPlayedItem(item, index))}
+                    </ScrollView>
+                ) : (
+                    <EmptyState
+                        icon="time-outline"
+                        title="No recently played"
+                        message="Start playing music!"
+                        className="mb-8 py-8"
+                    />
+                )}
 
                 <SectionTitle
                     title="Top Songs"
@@ -163,14 +173,23 @@ export default function HomeScreen() {
                     onViewMore={() => router.push("/(main)/(home)/top-songs")}
                 />
 
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingHorizontal: 16, gap: 24 }}
-                    className="mb-8"
-                >
-                    {topSongsChunks.map(renderTopSongsChunk)}
-                </ScrollView>
+                {topSongs.length > 0 ? (
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingHorizontal: 16, gap: 24 }}
+                        className="mb-8"
+                    >
+                        {topSongsChunks.map(renderTopSongsChunk)}
+                    </ScrollView>
+                ) : (
+                    <EmptyState
+                        icon="musical-notes-outline"
+                        title="No top songs"
+                        message="Play more music together!"
+                        className="mb-8 py-8"
+                    />
+                )}
             </View>
         </ScrollView>
     );
