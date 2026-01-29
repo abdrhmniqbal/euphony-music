@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { View, Text, Pressable, Dimensions, Image, TextInput } from "react-native";
+import { View, Text, Pressable, Dimensions, Image, TextInput, Platform } from "react-native";
+import { getColors } from "react-native-image-colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useStore } from "@nanostores/react";
 import { $currentTrack, $isPlaying, playNext, playPrevious, togglePlayback, $currentTime, $duration, seekTo, toggleFavorite } from "@/store/player-store";
@@ -39,6 +40,31 @@ export const FullPlayer = () => {
 
     const translateY = useSharedValue(SCREEN_HEIGHT);
 
+    const [colors, setColors] = React.useState({ bg: '#1a1a1a', primary: '#cccccc', secondary: '#000000' });
+
+    useEffect(() => {
+        if (currentTrack?.image) {
+            const fetchColors = async () => {
+                try {
+                    const result = await getColors(currentTrack.image!, {
+                        fallback: '#1a1a1a',
+                        cache: true,
+                        key: currentTrack.image,
+                    });
+
+                    if (result.platform === 'android') {
+                        setColors({ bg: result.average || '#1a1a1a', primary: result.dominant || '#cccccc', secondary: result.darkVibrant || '#000000' });
+                    } else if (result.platform === 'ios') {
+                        setColors({ bg: result.background || '#1a1a1a', primary: result.primary || '#cccccc', secondary: result.detail || '#000000' });
+                    }
+                } catch (e) {
+                    console.warn("Failed to extract colors (native module might be missing, try rebuilding):", e);
+                }
+            };
+            fetchColors();
+        }
+    }, [currentTrack?.image]);
+
     useEffect(() => {
         if (isExpanded) {
             translateY.value = withTiming(0, { duration: 300 });
@@ -71,19 +97,16 @@ export const FullPlayer = () => {
         };
     });
 
-    // --- Progress Bar Logic ---
     const progress = useSharedValue(0);
     const isSeeking = useSharedValue(false);
     const barWidth = useSharedValue(0);
     const pressed = useSharedValue(false);
     const durationSv = useSharedValue(0);
 
-    // Sync duration shared value
     useEffect(() => {
         durationSv.value = durationVal;
     }, [durationVal]);
 
-    // Sync progress with player state when not seeking
     useEffect(() => {
         if (!isSeeking.value && durationVal > 0) {
             progress.value = currentTimeVal / durationVal;
@@ -97,7 +120,7 @@ export const FullPlayer = () => {
         const text = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         return {
             text: text,
-        } as any; // Cast to any to avoid type check issues with 'text' prop on TextInput
+        } as any;
     });
 
     const seekGesture = Gesture.Pan()
@@ -139,16 +162,9 @@ export const FullPlayer = () => {
         width: `${progress.value * 100}%`,
     }));
 
-    // Bar height animation: gets thicker when interacting
     const barContainerStyle = useAnimatedStyle(() => ({
         height: withTiming(pressed.value ? 12 : 4, { duration: 200 }),
     }));
-
-    // Update current time display text while seeking requires a derived value and reaction or a workaround
-    // Simplest is to let the store update `currentTime` naturally after seek, or if we want real-time update during drag:
-    // We can use a Reanimated Text component, but standard Text works fine if we just display the store value. 
-    // However, store value updates only when player updates. During drag, user wants to see drag time.
-    // Let's stick to standard display for now to keep it robust, or do a small JS update.
 
     const DisplayTime = () => {
         return (
@@ -157,7 +173,7 @@ export const FullPlayer = () => {
                     animatedProps={animatedTextProps}
                     className="text-xs text-white/50 p-0 font-variant-numeric-tabular-nums"
                     editable={false}
-                    value={currentTime} // Initial value fallback
+                    value={currentTime}
                     style={{ color: 'rgba(255, 255, 255, 0.5)' }}
                 />
                 <Text className="text-xs text-white/50">{totalTime}</Text>
@@ -178,20 +194,19 @@ export const FullPlayer = () => {
                         right: 0,
                         top: 0,
                         bottom: 0,
-                        backgroundColor: 'black', // fallback
-                        zIndex: 1000, // Ensure it covers everything
+                        backgroundColor: 'black',
+                        zIndex: 1000,
                     }
                 ]}
             >
                 <View className="flex-1 relative">
                     <LinearGradient
-                        colors={['#4c1d95', '#171717', '#000000']}
-                        locations={[0, 0.5, 1]}
+                        colors={[colors.bg, colors.secondary, '#000000']}
+                        locations={[0, 0.6, 1]}
                         style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
                     />
 
                     <View className="flex-1 px-6 pt-12 pb-12 justify-between">
-                        {/* Header */}
                         <View className="flex-row items-center justify-between mt-2 h-10 relative">
                             <Pressable className="p-2 active:opacity-50 z-10 w-12">
                                 <Ionicons name="options-outline" size={24} color="white" />
@@ -214,7 +229,6 @@ export const FullPlayer = () => {
                             </View>
                         </View>
 
-                        {/* Album Art Section */}
                         <View className="items-center justify-center flex-1 my-8">
                             <View className="absolute w-full aspect-square bg-purple-500/30 blur-2xl rounded-full scale-0.9" />
                             <View className="w-full aspect-square bg-white rounded-3xl overflow-hidden shadow-2xl elevation-10">
@@ -232,7 +246,6 @@ export const FullPlayer = () => {
                             </View>
                         </View>
 
-                        {/* Track Info */}
                         <View className="flex-row justify-between items-center mb-6">
                             <View className="flex-1 mr-4">
                                 <Text className="text-2xl font-bold text-white mb-1" numberOfLines={1}>
@@ -254,25 +267,23 @@ export const FullPlayer = () => {
                             </Pressable>
                         </View>
 
-                        {/* Progress Bar */}
                         <View className="mb-6">
                             <GestureDetector gesture={Gesture.Simultaneous(seekGesture, tapGesture)}>
                                 <View
-                                    className="py-4" // Hit slop
+                                    className="py-4"
                                     onLayout={(e) => { barWidth.value = e.nativeEvent.layout.width; }}
                                 >
                                     <Animated.View
                                         style={barContainerStyle}
                                         className="w-full bg-white/20 rounded-full overflow-hidden"
                                     >
-                                        <Animated.View style={[progressStyle]} className="h-full bg-accent rounded-full" />
+                                        <Animated.View style={[progressStyle, { backgroundColor: "#FFFFFF" }]} className="h-full rounded-full" />
                                     </Animated.View>
                                 </View>
                             </GestureDetector>
                             <DisplayTime />
                         </View>
 
-                        {/* Controls */}
                         <View className="flex-row justify-between items-center mb-8">
                             <Pressable className="active:opacity-50">
                                 <Ionicons name="repeat" size={24} color="white" style={{ opacity: 0.7 }} />
@@ -304,7 +315,6 @@ export const FullPlayer = () => {
                             </Pressable>
                         </View>
 
-                        {/* Bottom Actions */}
                         <View className="flex-row justify-between items-center px-4">
                             <Pressable className="active:opacity-50">
                                 <Ionicons name="chatbubble-outline" size={24} color="white" style={{ opacity: 0.7 }} />
