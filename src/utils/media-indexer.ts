@@ -207,6 +207,13 @@ const processTrack = async (
             }
         }
 
+        // Extract genre - check multiple possible field names
+        let genre: string | undefined = undefined;
+        const genreRaw = metadata.genre || metadata.GENRE || metadata.Genre;
+        if (genreRaw && typeof genreRaw === 'string') {
+            genre = genreRaw.trim();
+        }
+
         const track: Track = {
             id: asset.id,
             title: metadata.name || asset.filename?.replace(/\.[^/.]+$/, '') || 'Untitled',
@@ -223,6 +230,7 @@ const processTrack = async (
             dateAdded: asset.creationTime || asset.modificationTime || Date.now(),
             trackNumber,
             discNumber,
+            genre,
         };
 
         return track;

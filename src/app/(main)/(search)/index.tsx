@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useCallback } from "react";
+import React, { useLayoutEffect, useCallback, useMemo, useState } from "react";
 import { Text, View, ScrollView, Pressable, RefreshControl } from "react-native";
 import { useNavigation, useRouter } from "expo-router";
 import { Card } from "heroui-native";
@@ -8,8 +8,10 @@ import { Colors } from "@/constants/colors";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-store";
 import { useStore } from "@nanostores/react";
 import { startIndexing, $indexerState } from "@/utils/media-indexer";
+import { getAllGenres } from "@/utils/database";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { GestureDetector } from "react-native-gesture-handler";
+import { EmptyState } from "@/components/empty-state";
 
 type PatternType = 'circles' | 'waves' | 'grid' | 'diamonds' | 'triangles' | 'rings' | 'pills';
 
@@ -35,6 +37,11 @@ const RAINBOW_COLORS = [
 
 const getStableColor = (index: number): string => {
     return RAINBOW_COLORS[index % RAINBOW_COLORS.length];
+};
+
+const getStablePattern = (index: number): PatternType => {
+    const patterns: PatternType[] = ['circles', 'waves', 'diamonds', 'triangles', 'rings', 'grid', 'pills'];
+    return patterns[index % patterns.length];
 };
 
 interface CategoryCardProps {
@@ -104,26 +111,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ title, color, pattern, onPr
     );
 };
 
-const GENRES: Omit<Category, 'color'>[] = [
-    { id: "jpop", title: "J-Pop", pattern: "circles" },
-    { id: "western", title: "Western", pattern: "waves" },
-    { id: "jrock", title: "J-Rock", pattern: "diamonds" },
-    { id: "jhiphop", title: "J-Hip Hop", pattern: "triangles" },
-    { id: "anime", title: "Anime", pattern: "rings" },
-    { id: "electronic", title: "Electronic", pattern: "grid" },
-    { id: "classical", title: "Classical", pattern: "pills" },
-    { id: "jazz", title: "Jazz", pattern: "circles" },
-];
-
-const MOODS: Omit<Category, 'color'>[] = [
-    { id: "chill", title: "Chill & Relax", pattern: "waves" },
-    { id: "focus", title: "Focus", pattern: "grid" },
-    { id: "sad", title: "Sad / Melancholy", pattern: "circles" },
-    { id: "morning", title: "Morning Energy", pattern: "triangles" },
-    { id: "party", title: "Party Time", pattern: "diamonds" },
-    { id: "night", title: "Late Night", pattern: "rings" },
-];
-
 export default function SearchScreen() {
     const { theme: currentTheme } = useUniwind();
     const theme = Colors[currentTheme === 'dark' ? 'dark' : 'light'];
@@ -131,10 +118,21 @@ export default function SearchScreen() {
     const router = useRouter();
     const indexerState = useStore($indexerState);
     const { swipeGesture } = useSwipeNavigation('(search)');
+    const [genreList, setGenreList] = useState<string[]>([]);
+
+    const loadGenres = useCallback(() => {
+        const genres = getAllGenres();
+        setGenreList(genres);
+    }, []);
+
+    React.useEffect(() => {
+        loadGenres();
+    }, [loadGenres]);
 
     const onRefresh = useCallback(() => {
         startIndexing(true);
-    }, []);
+        loadGenres();
+    }, [loadGenres]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -149,15 +147,18 @@ export default function SearchScreen() {
         });
     }, [navigation, theme, router]);
 
-    const genres: Category[] = GENRES.map((g, i) => ({ ...g, color: getStableColor(i) }));
+    // Convert real genres to Category format
+    const genres: Category[] = useMemo(() => {
+        return genreList.map((genre, i) => ({
+            id: genre,
+            title: genre,
+            color: getStableColor(i),
+            pattern: getStablePattern(i),
+        }));
+    }, [genreList]);
 
-    const moods: Category[] = MOODS.map((m, i) => ({ ...m, color: getStableColor(i + GENRES.length) }));
-
-    const handleCategoryPress = useCallback((category: Category) => {
-        router.push({
-            pathname: "/search-interaction",
-            params: { query: category.title }
-        });
+    const handleGenrePress = useCallback((genre: Category) => {
+        router.push(`/genre/${encodeURIComponent(genre.title)}`);
     }, [router]);
 
     const handleSearchPress = useCallback(() => {
@@ -191,32 +192,21 @@ export default function SearchScreen() {
 
                 <View className="mb-10">
                     <Text className="text-lg font-bold text-foreground mb-4">Genres</Text>
-                    <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
-                        {genres.map((genre) => (
-                            <CategoryCard
-                                key={genre.id}
-                                title={genre.title}
-                                color={genre.color}
-                                pattern={genre.pattern}
-                                onPress={() => handleCategoryPress(genre)}
-                            />
-                        ))}
-                    </View>
-                </View>
-
-                <View>
-                    <Text className="text-lg font-bold text-foreground mb-4">Moods</Text>
-                    <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
-                        {moods.map((mood) => (
-                            <CategoryCard
-                                key={mood.id}
-                                title={mood.title}
-                                color={mood.color}
-                                pattern={mood.pattern}
-                                onPress={() => handleCategoryPress(mood)}
-                            />
-                        ))}
-                    </View>
+                    {genres.length > 0 ? (
+                        <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
+                            {genres.map((genre) => (
+                                <CategoryCard
+                                    key={genre.id}
+                                    title={genre.title}
+                                    color={genre.color}
+                                    pattern={genre.pattern}
+                                    onPress={() => handleGenrePress(genre)}
+                                />
+                            ))}
+                        </View>
+                    ) : (
+                        <EmptyState icon="musical-notes-outline" title="No genres found" message="Add music with genre metadata to see them here." />
+                    )}
                 </View>
             </ScrollView>
         </GestureDetector>

@@ -8,7 +8,7 @@ export type PlaylistSortField = 'name' | 'dateAdded' | 'trackCount';
 
 export type SortField = SongSortField | AlbumSortField | ArtistSortField | PlaylistSortField;
 export type SortOrder = 'asc' | 'desc';
-export type TabName = 'Songs' | 'Albums' | 'Artists' | 'Playlists' | 'Folders' | 'Favorites' | 'ArtistSongs' | 'ArtistAlbums' | 'AlbumSongs';
+export type TabName = 'Songs' | 'Albums' | 'Artists' | 'Genres' | 'Playlists' | 'Folders' | 'Favorites' | 'ArtistSongs' | 'ArtistAlbums' | 'AlbumSongs';
 
 export interface SortConfig {
     field: SortField;
@@ -19,6 +19,7 @@ export const $sortConfig = atom<Record<TabName, SortConfig>>({
     Songs: { field: 'dateAdded', order: 'desc' },
     Albums: { field: 'title', order: 'asc' },
     Artists: { field: 'name', order: 'asc' },
+    Genres: { field: 'name', order: 'asc' },
     Playlists: { field: 'name', order: 'asc' },
     Folders: { field: 'name', order: 'asc' },
     Favorites: { field: 'dateAdded', order: 'desc' },
@@ -69,6 +70,11 @@ export const ARTIST_SORT_OPTIONS: { label: string; field: ArtistSortField }[] = 
 export const PLAYLIST_SORT_OPTIONS: { label: string; field: PlaylistSortField }[] = [
     { label: 'Name', field: 'name' },
     { label: 'Date Added', field: 'dateAdded' },
+    { label: 'Number of Tracks', field: 'trackCount' },
+];
+
+export const GENRE_SORT_OPTIONS: { label: string; field: ArtistSortField }[] = [
+    { label: 'Name', field: 'name' },
     { label: 'Number of Tracks', field: 'trackCount' },
 ];
 
@@ -153,4 +159,8 @@ export const sortArtists = (artists: any[], config: SortConfig): any[] => {
 
 export const sortGeneric = (items: any[], config: SortConfig): any[] => {
     return sortAlbums(items, config);
+};
+
+export const sortGenres = (genres: any[], config: SortConfig): any[] => {
+    return sortArtists(genres, config);
 };

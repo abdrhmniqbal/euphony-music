@@ -30,6 +30,7 @@ export interface Track {
     isFavorite?: boolean;
     discNumber?: number;
     trackNumber?: number;
+    genre?: string;
 }
 
 export const $tracks = atom<Track[]>([]);

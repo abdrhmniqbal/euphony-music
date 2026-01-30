@@ -96,6 +96,12 @@ export default function MainLayout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name="genre/[name]"
+                options={{
+                    href: null,
+                }}
+            />
         </Tabs>
     );
 }

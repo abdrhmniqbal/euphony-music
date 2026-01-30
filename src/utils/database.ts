@@ -25,7 +25,8 @@ export const initDatabase = () => {
             date_added INTEGER DEFAULT 0,
             is_favorite INTEGER DEFAULT 0,
             disc_number INTEGER,
-            track_number INTEGER
+            track_number INTEGER,
+            genre TEXT
         );
         
         CREATE INDEX IF NOT EXISTS idx_tracks_file_hash ON tracks(file_hash);
@@ -105,6 +106,9 @@ const runMigrations = () => {
     }
     if (!columns.has('track_number')) {
         db.execSync('ALTER TABLE tracks ADD COLUMN track_number INTEGER');
+    }
+    if (!columns.has('genre')) {
+        db.execSync('ALTER TABLE tracks ADD COLUMN genre TEXT');
     }
 
 };
@@ -188,6 +192,7 @@ const mapRowToTrack = (row: any): Track => ({
     isFavorite: row.is_favorite === 1,
     discNumber: row.disc_number || undefined,
     trackNumber: row.track_number || undefined,
+    genre: row.genre || undefined,
 });
 
 export const getTracksFromDB = (): Track[] => {
@@ -209,8 +214,8 @@ export const getAllTrackIds = (): string[] => {
 export const upsertTrack = (track: Track) => {
     db.runSync(
         `INSERT OR REPLACE INTO tracks 
-            (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite, disc_number, track_number) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite, disc_number, track_number, genre) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             track.id,
             track.title,
@@ -232,6 +237,7 @@ export const upsertTrack = (track: Track) => {
             track.isFavorite ? 1 : 0,
             track.discNumber || null,
             track.trackNumber || null,
+            track.genre || null,
         ]
     );
 };
@@ -321,8 +327,8 @@ export const batchUpsertTracks = (tracks: Track[]): void => {
         for (const track of tracks) {
             db.runSync(
                 `INSERT OR REPLACE INTO tracks 
-                    (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite, disc_number, track_number) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite, disc_number, track_number, genre) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     track.id,
                     track.title,
@@ -344,6 +350,7 @@ export const batchUpsertTracks = (tracks: Track[]): void => {
                     track.isFavorite ? 1 : 0,
                     track.discNumber || null,
                     track.trackNumber || null,
+                    track.genre || null,
                 ]
             );
         }
@@ -461,4 +468,57 @@ export const getTopSongs = (period: 'all' | 'day' | 'week', limit: number = 25):
         const rows = db.getAllSync(query, [timeThreshold, limit]) as any[];
         return rows.map(mapRowToTrack);
     }
+};
+
+// Genre-related functions
+export const getAllGenres = (): string[] => {
+    const rows = db.getAllSync(`
+        SELECT DISTINCT genre 
+        FROM tracks 
+        WHERE is_deleted = 0 AND genre IS NOT NULL AND genre != ''
+        ORDER BY genre ASC
+    `) as { genre: string }[];
+    return rows.map(r => r.genre);
+};
+
+export const getTracksByGenre = (genre: string): Track[] => {
+    const rows = db.getAllSync(`
+        SELECT * FROM tracks 
+        WHERE is_deleted = 0 AND genre = ?
+        ORDER BY title ASC
+    `, [genre]) as any[];
+    return rows.map(mapRowToTrack);
+};
+
+export const getTopSongsByGenre = (genre: string, limit: number = 25): Track[] => {
+    const rows = db.getAllSync(`
+        SELECT * FROM tracks 
+        WHERE is_deleted = 0 AND genre = ? AND play_count > 0
+        ORDER BY play_count DESC, last_played_at DESC 
+        LIMIT ?
+    `, [genre, limit]) as any[];
+    return rows.map(mapRowToTrack);
+};
+
+export interface AlbumInfo {
+    name: string;
+    artist?: string;
+    image?: string;
+    trackCount: number;
+}
+
+export const getAlbumsByGenre = (genre: string): AlbumInfo[] => {
+    const rows = db.getAllSync(`
+        SELECT album, artist, image, COUNT(*) as track_count
+        FROM tracks 
+        WHERE is_deleted = 0 AND genre = ? AND album IS NOT NULL AND album != ''
+        GROUP BY album, artist
+        ORDER BY track_count DESC, album ASC
+    `, [genre]) as any[];
+    return rows.map(row => ({
+        name: row.album,
+        artist: row.artist || undefined,
+        image: row.image || undefined,
+        trackCount: row.track_count,
+    }));
 };
