@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { View } from "react-native";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription } from "@/components/item";
+import { EmptyState } from "@/components/empty-state";
 
 export interface Artist {
     id: string;
@@ -21,6 +22,10 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({ data, onArtistPress }) =
 
     const formatTrackCount = (count: number) =>
         `${count} ${count === 1 ? 'track' : 'tracks'}`;
+
+    if (data.length === 0) {
+        return <EmptyState icon="people" title="No Artists" message="Artists from your music library will appear here." />;
+    }
 
     return (
         <View className="flex-row flex-wrap gap-4">

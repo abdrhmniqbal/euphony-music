@@ -9,6 +9,7 @@ import { FavoriteEntry, FavoriteType } from "@/utils/database";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "expo-router";
 import { toggleFavoriteItem } from "@/store/favorites-store";
+import { EmptyState } from "@/components/empty-state";
 
 interface FavoritesListProps {
     data: FavoriteEntry[];
@@ -119,6 +120,10 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data }) => {
     const theme = Colors[currentTheme === 'dark' ? 'dark' : 'light'];
     const tracks = useStore($tracks);
     const router = useRouter();
+
+    if (data.length === 0) {
+        return <EmptyState icon="heart" title="No Favorites" message="Your favorite songs, artists, and albums will appear here." />;
+    }
 
     const handlePress = useCallback((favorite: FavoriteEntry) => {
         switch (favorite.type) {

@@ -5,6 +5,7 @@ import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } 
 import { useUniwind } from "uniwind";
 import { Colors } from "@/constants/colors";
 import { playTrack, Track } from "@/store/player-store";
+import { EmptyState } from "@/components/empty-state";
 
 interface SongListProps {
     data: Track[];
@@ -22,6 +23,10 @@ export const SongList: React.FC<SongListProps> = ({ data, onSongPress }) => {
             playTrack(track);
         }
     }, [onSongPress]);
+
+    if (data.length === 0) {
+        return <EmptyState icon="musical-note" title="No Songs" message="Songs you add to your library will appear here." />;
+    }
 
     return (
         <View className="gap-2">

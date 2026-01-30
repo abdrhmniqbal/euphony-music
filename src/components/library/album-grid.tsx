@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { View, ScrollView } from "react-native";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription } from "@/components/item";
+import { EmptyState } from "@/components/empty-state";
 
 export interface Album {
     id: string;
@@ -22,6 +23,10 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({ data, onAlbumPress, horizo
     const handlePress = useCallback((album: Album) => {
         onAlbumPress?.(album);
     }, [onAlbumPress]);
+
+    if (data.length === 0) {
+        return <EmptyState icon="disc" title="No Albums" message="Albums you add to your library will appear here." />;
+    }
 
     const content = data.map((album) => (
         <Item

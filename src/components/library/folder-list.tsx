@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
 import { useUniwind } from "uniwind";
 import { Colors } from "@/constants/colors";
+import { EmptyState } from "@/components/empty-state";
 
 export interface Folder {
     id: string;
@@ -27,6 +28,10 @@ export const FolderList: React.FC<FolderListProps> = ({ data, onFolderPress }) =
 
     const formatFileCount = (count: number) =>
         `${count} ${count === 1 ? 'file' : 'files'}`;
+
+    if (data.length === 0) {
+        return <EmptyState icon="folder" title="No Folders" message="Music folders you add will appear here." />;
+    }
 
     return (
         <View className="gap-2">
