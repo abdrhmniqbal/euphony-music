@@ -1,5 +1,5 @@
 import { atom } from 'nanostores';
-import { createAudioPlayer, AudioPlayer, AudioStatus } from 'expo-audio';
+import { createAudioPlayer, AudioPlayer, AudioStatus, setAudioModeAsync } from 'expo-audio';
 import { MediaControl, PlaybackState, Command } from 'expo-media-control';
 import { initDatabase, addToHistory, incrementPlayCount, toggleFavoriteDB } from '@/utils/database';
 import { loadFavorites } from '@/store/favorites-store';
@@ -46,6 +46,14 @@ loadFavorites();
 
 export const setupPlayer = async () => {
     try {
+        // Configure audio mode for background playback
+        await setAudioModeAsync({
+            playsInSilentMode: true,
+            shouldPlayInBackground: true,
+            shouldRouteThroughEarpiece: false,
+            interruptionMode: 'doNotMix',
+        });
+
         await MediaControl.enableMediaControls({
             capabilities: [
                 Command.PLAY,

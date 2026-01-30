@@ -332,9 +332,6 @@ export const FullPlayer = () => {
                             <Pressable className="active:opacity-50">
                                 <Ionicons name="chatbubble-outline" size={24} color="white" style={{ opacity: 0.7 }} />
                             </Pressable>
-                            <View>
-                                <Text className="text-white/50 text-[10px] font-medium tracking-widest">MP3 320KBPS</Text>
-                            </View>
                             <Pressable className="active:opacity-50">
                                 <Ionicons name="list" size={24} color="white" style={{ opacity: 0.7 }} />
                             </Pressable>
