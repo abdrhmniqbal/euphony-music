@@ -8,7 +8,7 @@ export type PlaylistSortField = 'name' | 'dateAdded' | 'trackCount';
 
 export type SortField = SongSortField | AlbumSortField | ArtistSortField | PlaylistSortField;
 export type SortOrder = 'asc' | 'desc';
-export type TabName = 'Songs' | 'Albums' | 'Artists' | 'Playlists' | 'Folders' | 'Favorites' | 'ArtistSongs' | 'ArtistAlbums';
+export type TabName = 'Songs' | 'Albums' | 'Artists' | 'Playlists' | 'Folders' | 'Favorites' | 'ArtistSongs' | 'ArtistAlbums' | 'AlbumSongs';
 
 export interface SortConfig {
     field: SortField;
@@ -24,6 +24,7 @@ export const $sortConfig = atom<Record<TabName, SortConfig>>({
     Favorites: { field: 'dateAdded', order: 'desc' },
     ArtistSongs: { field: 'playCount', order: 'desc' },
     ArtistAlbums: { field: 'year', order: 'desc' },
+    AlbumSongs: { field: 'title', order: 'asc' },
 });
 
 export const setSortConfig = (tab: TabName, field: SortField, order?: SortOrder) => {

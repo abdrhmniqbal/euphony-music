@@ -28,6 +28,8 @@ export interface Track {
     filename?: string;
     dateAdded?: number;
     isFavorite?: boolean;
+    discNumber?: number;
+    trackNumber?: number;
 }
 
 export const $tracks = atom<Track[]>([]);

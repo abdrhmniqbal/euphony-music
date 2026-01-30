@@ -23,7 +23,9 @@ export const initDatabase = () => {
             year INTEGER,
             filename TEXT,
             date_added INTEGER DEFAULT 0,
-            is_favorite INTEGER DEFAULT 0
+            is_favorite INTEGER DEFAULT 0,
+            disc_number INTEGER,
+            track_number INTEGER
         );
         
         CREATE INDEX IF NOT EXISTS idx_tracks_file_hash ON tracks(file_hash);
@@ -97,6 +99,12 @@ const runMigrations = () => {
     }
     if (!columns.has('album_artist')) {
         db.execSync('ALTER TABLE tracks ADD COLUMN album_artist TEXT');
+    }
+    if (!columns.has('disc_number')) {
+        db.execSync('ALTER TABLE tracks ADD COLUMN disc_number INTEGER');
+    }
+    if (!columns.has('track_number')) {
+        db.execSync('ALTER TABLE tracks ADD COLUMN track_number INTEGER');
     }
 
 };
@@ -178,6 +186,8 @@ const mapRowToTrack = (row: any): Track => ({
     filename: row.filename || undefined,
     dateAdded: row.date_added || 0,
     isFavorite: row.is_favorite === 1,
+    discNumber: row.disc_number || undefined,
+    trackNumber: row.track_number || undefined,
 });
 
 export const getTracksFromDB = (): Track[] => {
@@ -199,8 +209,8 @@ export const getAllTrackIds = (): string[] => {
 export const upsertTrack = (track: Track) => {
     db.runSync(
         `INSERT OR REPLACE INTO tracks 
-            (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite, disc_number, track_number) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             track.id,
             track.title,
@@ -220,6 +230,8 @@ export const upsertTrack = (track: Track) => {
             track.filename || null,
             track.dateAdded || 0,
             track.isFavorite ? 1 : 0,
+            track.discNumber || null,
+            track.trackNumber || null,
         ]
     );
 };
@@ -309,8 +321,8 @@ export const batchUpsertTracks = (tracks: Track[]): void => {
         for (const track of tracks) {
             db.runSync(
                 `INSERT OR REPLACE INTO tracks 
-                    (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    (id, title, artist, album_artist, album, duration, uri, image, lyrics, file_hash, scan_time, is_deleted, play_count, last_played_at, year, filename, date_added, is_favorite, disc_number, track_number) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     track.id,
                     track.title,
@@ -330,6 +342,8 @@ export const batchUpsertTracks = (tracks: Track[]): void => {
                     track.filename || null,
                     track.dateAdded || 0,
                     track.isFavorite ? 1 : 0,
+                    track.discNumber || null,
+                    track.trackNumber || null,
                 ]
             );
         }

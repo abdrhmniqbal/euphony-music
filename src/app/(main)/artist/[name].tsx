@@ -106,6 +106,10 @@ export default function ArtistDetailsScreen() {
         setSortConfig(currentTab, field, order);
     };
 
+    const handleAlbumPress = (album: Album) => {
+        router.push(`/album/${encodeURIComponent(album.title)}`);
+    };
+
     const getSortLabel = () => {
         const options = activeView === "songs" ? SONG_SORT_OPTIONS : ALBUM_SORT_OPTIONS;
         return options.find(o => o.field === sortConfig.field)?.label || "Sort";
@@ -297,7 +301,7 @@ export default function ArtistDetailsScreen() {
                                     <AlbumGrid
                                         horizontal
                                         data={albums.map(a => ({ ...a, id: a.title } as Album))}
-                                        onAlbumPress={() => navigateTo("albums")}
+                                        onAlbumPress={handleAlbumPress}
                                     />
                                 </View>
                             )}
@@ -365,7 +369,7 @@ export default function ArtistDetailsScreen() {
                                 </Pressable>
                             </View>
 
-                            <AlbumGrid data={sortedAlbums} />
+                            <AlbumGrid data={sortedAlbums} onAlbumPress={handleAlbumPress} />
                         </>
                     )}
                 </Animated.View>

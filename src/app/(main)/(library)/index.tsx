@@ -83,6 +83,10 @@ export default function LibraryScreen() {
         router.push(`/artist/${encodeURIComponent(artist.name)}`);
     }, [router]);
 
+    const handleAlbumPress = useCallback((album: Album) => {
+        router.push(`/album/${encodeURIComponent(album.title)}`);
+    }, [router]);
+
     const albums: Album[] = (() => {
         const albumMap = new Map<string, Album & { year: number; dateAdded: number; trackCount: number }>();
         tracks.forEach(track => {
@@ -299,7 +303,7 @@ export default function LibraryScreen() {
 
                         {(() => {
                             switch (activeTab) {
-                                case "Albums": return <AlbumGrid data={sortedData} />;
+                                case "Albums": return <AlbumGrid data={sortedData} onAlbumPress={handleAlbumPress} />;
                                 case "Artists": return <ArtistGrid data={sortedData} onArtistPress={handleArtistPress} />;
                                 case "Playlists": return <PlaylistList data={sortedData} />;
                                 case "Folders": return <FolderList data={sortedData} />;

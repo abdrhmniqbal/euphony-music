@@ -161,6 +161,52 @@ const processTrack = async (
 
         const artworkPath = saveArtworkToCache(metadata.artwork);
 
+        // Try to extract track/disc numbers from metadata or filename
+        let trackNumber: number | undefined = undefined;
+        let discNumber: number | undefined = undefined;
+        
+        // Check if metadata has track/disc number fields (various common field names)
+        const trackNumRaw = metadata.trackNumber || metadata.track || metadata.TRACKNUMBER || metadata.TRACK;
+        const discNumRaw = metadata.discNumber || metadata.disc || metadata.DISCNUMBER || metadata.DISC;
+        
+        if (trackNumRaw) {
+            const parsed = parseInt(String(trackNumRaw), 10);
+            if (!isNaN(parsed) && parsed > 0) trackNumber = parsed;
+        }
+        
+        if (discNumRaw) {
+            const parsed = parseInt(String(discNumRaw), 10);
+            if (!isNaN(parsed) && parsed > 0) discNumber = parsed;
+        }
+        
+        // Fallback: try to parse from filename (e.g., "01 - Track Name.mp3", "Disc 1 - 01 - Track.mp3", "1-01 Track.mp3")
+        if (!trackNumber && asset.filename) {
+            // Match patterns like "01 - Track", "1-01 Track", "Disc 1 - 01 Track", "01. Track"
+            const patterns = [
+                /^(\d+)[\s.-]/,                              // "01 - Track" or "01. Track"
+                /disc\s*(\d+)[\s.-]+(\d+)/i,                 // "Disc 1 - 01 Track"
+                /^(\d+)-(\d+)/,                              // "1-01 Track" (disc-track)
+            ];
+            
+            for (const pattern of patterns) {
+                const match = asset.filename.match(pattern);
+                if (match) {
+                    if (pattern.source.includes('disc')) {
+                        discNumber = parseInt(match[1], 10);
+                        trackNumber = parseInt(match[2], 10);
+                    } else if (match[2] !== undefined) {
+                        // Two numbers found - could be disc-track format
+                        discNumber = parseInt(match[1], 10);
+                        trackNumber = parseInt(match[2], 10);
+                    } else {
+                        // Single number found - treat as track number
+                        trackNumber = parseInt(match[1], 10);
+                    }
+                    break;
+                }
+            }
+        }
+
         const track: Track = {
             id: asset.id,
             title: metadata.name || asset.filename?.replace(/\.[^/.]+$/, '') || 'Untitled',
@@ -175,6 +221,8 @@ const processTrack = async (
             year: metadata.year ? parseInt(metadata.year, 10) : undefined,
             filename: asset.filename || 'Unknown',
             dateAdded: asset.creationTime || asset.modificationTime || Date.now(),
+            trackNumber,
+            discNumber,
         };
 
         return track;

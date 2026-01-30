@@ -11,9 +11,12 @@ interface SongListProps {
     data: Track[];
     onSongPress?: (track: Track) => void;
     showNumbers?: boolean;
+    hideCover?: boolean;
+    hideArtist?: boolean;
+    getNumber?: (track: Track, index: number) => number | string;
 }
 
-export const SongList: React.FC<SongListProps> = ({ data, onSongPress, showNumbers = false }) => {
+export const SongList: React.FC<SongListProps> = ({ data, onSongPress, showNumbers = false, hideCover = false, hideArtist = false, getNumber }) => {
     const { theme: currentTheme } = useUniwind();
     const theme = Colors[currentTheme === 'dark' ? 'dark' : 'light'];
 
@@ -38,17 +41,19 @@ export const SongList: React.FC<SongListProps> = ({ data, onSongPress, showNumbe
                 >
                     {showNumbers ? (
                         <View className="flex-row items-center gap-3">
-                            <ItemImage icon="musical-note" image={music.image} />
+                            {!hideCover && <ItemImage icon="musical-note" image={music.image} />}
                             <View className="w-8 items-center justify-center">
-                                <Text className="text-lg font-bold text-foreground">{index + 1}</Text>
+                                <Text className="text-lg font-bold text-foreground">
+                                    {getNumber ? getNumber(music, index) : index + 1}
+                                </Text>
                             </View>
                         </View>
                     ) : (
-                        <ItemImage icon="musical-note" image={music.image} />
+                        !hideCover && <ItemImage icon="musical-note" image={music.image} />
                     )}
                     <ItemContent>
                         <ItemTitle>{music.title}</ItemTitle>
-                        <ItemDescription>{music.artist || "Unknown Artist"}</ItemDescription>
+                        {!hideArtist && <ItemDescription>{music.artist || "Unknown Artist"}</ItemDescription>}
                     </ItemContent>
                     <ItemAction>
                         <Ionicons name="ellipsis-horizontal" size={24} color={theme.muted} />
