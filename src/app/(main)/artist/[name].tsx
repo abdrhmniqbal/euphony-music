@@ -76,7 +76,7 @@ export default function ArtistDetailsScreen() {
     const isArtistFavorite = useIsFavorite(name || "");
     const allSortConfigs = useStore($sortConfig);
 
-    const currentTab = activeView === "songs" ? "Songs" : activeView === "albums" ? "Albums" : "Songs";
+    const currentTab = activeView === "songs" ? "ArtistSongs" : activeView === "albums" ? "ArtistAlbums" : "ArtistSongs";
     const sortConfig = allSortConfigs[currentTab];
 
     const navigateTo = (view: "overview" | "songs" | "albums") => {
@@ -99,13 +99,13 @@ export default function ArtistDetailsScreen() {
     };
 
     const sortedArtistTracks = React.useMemo(() => {
-        return sortTracks(artistTracks, allSortConfigs["Songs"]);
-    }, [artistTracks, allSortConfigs["Songs"]]);
+        return sortTracks(artistTracks, allSortConfigs["ArtistSongs"]);
+    }, [artistTracks, allSortConfigs]);
 
     const sortedAlbums = React.useMemo(() => {
         const albumData = albums.map(a => ({ ...a, id: a.title } as Album));
-        return sortAlbums(albumData, allSortConfigs["Albums"]);
-    }, [albums, allSortConfigs["Albums"]]);
+        return sortAlbums(albumData, allSortConfigs["ArtistAlbums"]);
+    }, [albums, allSortConfigs]);
 
     const handleSortSelect = (field: SortField, order?: 'asc' | 'desc') => {
         setSortConfig(currentTab, field, order);
@@ -379,7 +379,7 @@ export default function ArtistDetailsScreen() {
             <SortSheet
                 visible={sortModalVisible}
                 onClose={() => setSortModalVisible(false)}
-                options={activeView === "songs" ? SONG_SORT_OPTIONS : ALBUM_SORT_OPTIONS}
+                options={activeView === "songs" ? SONG_SORT_OPTIONS : activeView === "albums" ? ALBUM_SORT_OPTIONS : []}
                 currentField={sortConfig.field}
                 currentOrder={sortConfig.order}
                 onSelect={handleSortSelect}

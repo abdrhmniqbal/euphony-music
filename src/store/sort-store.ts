@@ -1,14 +1,14 @@
 import { atom } from 'nanostores';
 import { Track } from './player-store';
 
-export type SongSortField = 'title' | 'artist' | 'album' | 'year' | 'dateAdded' | 'filename';
+export type SongSortField = 'title' | 'artist' | 'album' | 'year' | 'dateAdded' | 'filename' | 'playCount';
 export type AlbumSortField = 'title' | 'artist' | 'year' | 'dateAdded' | 'trackCount';
 export type ArtistSortField = 'name' | 'dateAdded' | 'trackCount';
 export type PlaylistSortField = 'name' | 'dateAdded' | 'trackCount';
 
 export type SortField = SongSortField | AlbumSortField | ArtistSortField | PlaylistSortField;
 export type SortOrder = 'asc' | 'desc';
-export type TabName = 'Songs' | 'Albums' | 'Artists' | 'Playlists' | 'Folders' | 'Favorites';
+export type TabName = 'Songs' | 'Albums' | 'Artists' | 'Playlists' | 'Folders' | 'Favorites' | 'ArtistSongs' | 'ArtistAlbums';
 
 export interface SortConfig {
     field: SortField;
@@ -22,6 +22,8 @@ export const $sortConfig = atom<Record<TabName, SortConfig>>({
     Playlists: { field: 'name', order: 'asc' },
     Folders: { field: 'name', order: 'asc' },
     Favorites: { field: 'dateAdded', order: 'desc' },
+    ArtistSongs: { field: 'playCount', order: 'desc' },
+    ArtistAlbums: { field: 'year', order: 'desc' },
 });
 
 export const setSortConfig = (tab: TabName, field: SortField, order?: SortOrder) => {
@@ -44,6 +46,7 @@ export const SONG_SORT_OPTIONS: { label: string; field: SongSortField }[] = [
     { label: 'Artist', field: 'artist' },
     { label: 'Album', field: 'album' },
     { label: 'Year', field: 'year' },
+    { label: 'Play Count', field: 'playCount' },
     { label: 'Date Added', field: 'dateAdded' },
     { label: 'Filename', field: 'filename' },
 ];
