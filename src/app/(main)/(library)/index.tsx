@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect, useCallback } from "react";
-import { Text, ScrollView, View, Pressable, RefreshControl } from "react-native";
+import { Text, ScrollView, View, Pressable, RefreshControl, Dimensions } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "heroui-native";
@@ -18,7 +18,10 @@ import { useStore } from "@nanostores/react";
 import Animated, {
     FadeInRight,
     FadeOutLeft,
+    runOnJS,
 } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { startIndexing, $indexerState } from "@/utils/media-indexer";
 import {
     $sortConfig,
@@ -56,6 +59,54 @@ export default function LibraryScreen() {
     }, []);
 
     const sortedTracks = tracks;
+
+    const navigateTab = useCallback((direction: 'left' | 'right') => {
+        const currentIndex = TABS.indexOf(activeTab);
+        if (direction === 'left' && currentIndex < TABS.length - 1) {
+            setActiveTab(TABS[currentIndex + 1]);
+        } else if (direction === 'right' && currentIndex > 0) {
+            setActiveTab(TABS[currentIndex - 1]);
+        }
+    }, [activeTab]);
+
+    const { swipeGesture: mainTabSwipeGesture } = useSwipeNavigation('(library)');
+
+    // Inner gesture for library tabs - configured to fail when at edges
+    // so the outer gesture (main tab navigation) can take over
+    const swipeGesture = Gesture.Pan()
+        .activeOffsetX([-20, 20])
+        .onBegin((event) => {
+            // Check at gesture start if we should handle this
+            const currentIndex = TABS.indexOf(activeTab);
+            const isRightSwipe = event.translationX > 0;
+            const isLeftSwipe = event.translationX < 0;
+            
+            // At edges, we should NOT activate so outer gesture can handle it
+            if (isRightSwipe && currentIndex === 0) {
+                // At Songs tab (first), right swipe should go to Search
+                // Don't activate this gesture
+                return;
+            }
+            if (isLeftSwipe && currentIndex === TABS.length - 1) {
+                // At Favorites tab (last), left swipe would go nowhere
+                // Don't activate this gesture
+                return;
+            }
+        })
+        .onEnd((event) => {
+            if (Math.abs(event.translationX) > Math.abs(event.translationY)) {
+                const currentIndex = TABS.indexOf(activeTab);
+                
+                if (event.translationX > 50 && currentIndex > 0) {
+                    runOnJS(navigateTab)('right');
+                } else if (event.translationX < -50 && currentIndex < TABS.length - 1) {
+                    runOnJS(navigateTab)('left');
+                }
+            }
+        });
+
+    // Race: inner gesture tries first, if it fails (at edges), outer gesture runs
+    const tabSwipeGesture = Gesture.Race(swipeGesture, mainTabSwipeGesture);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -224,6 +275,7 @@ export default function LibraryScreen() {
 
     return (
         <>
+            <GestureDetector gesture={tabSwipeGesture}>
             <View className="flex-1 bg-background">
                 <ScrollView
                     className="flex-1"
@@ -316,6 +368,7 @@ export default function LibraryScreen() {
                     <View style={{ height: 160 }} />
                 </ScrollView>
             </View>
+            </GestureDetector>
 
             <SortSheet
                 visible={sortModalVisible}

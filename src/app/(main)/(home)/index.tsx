@@ -12,6 +12,8 @@ import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-st
 import { Ionicons } from "@expo/vector-icons";
 import { startIndexing, $indexerState } from "@/utils/media-indexer";
 import { getHistory, getTopSongs } from "@/utils/database";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
+import { GestureDetector } from "react-native-gesture-handler";
 
 const RECENTLY_PLAYED_LIMIT = 8;
 const TOP_SONGS_LIMIT = 25;
@@ -32,6 +34,7 @@ export default function HomeScreen() {
     const theme = Colors[currentTheme === 'dark' ? 'dark' : 'light'];
     const indexerState = useStore($indexerState);
     const tracks = useStore($tracks);
+    const { swipeGesture } = useSwipeNavigation('(home)');
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -111,7 +114,7 @@ export default function HomeScreen() {
     ), []);
 
     const renderTopSongsChunk = useCallback((chunk: Track[], chunkIndex: number) => (
-        <View key={`chunk-${chunkIndex}`} className="w-[300px]">
+        <View key={`chunk-${chunkIndex}`} className="w-75">
             {chunk.map((music, index) => (
                 <Item
                     key={`${music.id}-${chunkIndex}-${index}`}
@@ -129,6 +132,7 @@ export default function HomeScreen() {
     ), []);
 
     return (
+        <GestureDetector gesture={swipeGesture}>
         <ScrollView
             className="flex-1 bg-background"
             contentContainerStyle={{ paddingBottom: 200 }}
@@ -192,5 +196,6 @@ export default function HomeScreen() {
                 )}
             </View>
         </ScrollView>
+        </GestureDetector>
     );
 }

@@ -8,6 +8,8 @@ import { Colors } from "@/constants/colors";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-store";
 import { useStore } from "@nanostores/react";
 import { startIndexing, $indexerState } from "@/utils/media-indexer";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
+import { GestureDetector } from "react-native-gesture-handler";
 
 type PatternType = 'circles' | 'waves' | 'grid' | 'diamonds' | 'triangles' | 'rings' | 'pills';
 
@@ -128,6 +130,7 @@ export default function SearchScreen() {
     const navigation = useNavigation();
     const router = useRouter();
     const indexerState = useStore($indexerState);
+    const { swipeGesture } = useSwipeNavigation('(search)');
 
     const onRefresh = useCallback(() => {
         startIndexing(true);
@@ -162,58 +165,60 @@ export default function SearchScreen() {
     }, [router]);
 
     return (
-        <ScrollView
-            className="flex-1 bg-background"
-            contentContainerStyle={{ padding: 20, paddingBottom: 200 }}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            contentInsetAdjustmentBehavior="automatic"
-            onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-            onScrollBeginDrag={handleScrollStart}
-            onMomentumScrollEnd={handleScrollStop}
-            onScrollEndDrag={handleScrollStop}
-            scrollEventThrottle={16}
-            refreshControl={
-                <RefreshControl refreshing={indexerState.isIndexing} onRefresh={onRefresh} tintColor={theme.accent} />
-            }
-        >
-            <Pressable
-                onPress={handleSearchPress}
-                className="mb-8 p-1 bg-default/50 rounded-2xl flex-row items-center px-4 h-14 border border-default active:opacity-70"
+        <GestureDetector gesture={swipeGesture}>
+            <ScrollView
+                className="flex-1 bg-background"
+                contentContainerStyle={{ padding: 20, paddingBottom: 200 }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentInsetAdjustmentBehavior="automatic"
+                onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
+                onScrollBeginDrag={handleScrollStart}
+                onMomentumScrollEnd={handleScrollStop}
+                onScrollEndDrag={handleScrollStop}
+                scrollEventThrottle={16}
+                refreshControl={
+                    <RefreshControl refreshing={indexerState.isIndexing} onRefresh={onRefresh} tintColor={theme.accent} />
+                }
             >
-                <Ionicons name="search-outline" size={20} color={theme.muted} />
-                <Text className="ml-3 text-[17px] text-muted font-medium">Artists, songs, lyrics...</Text>
-            </Pressable>
+                <Pressable
+                    onPress={handleSearchPress}
+                    className="mb-8 p-1 bg-default/50 rounded-2xl flex-row items-center px-4 h-14 border border-default active:opacity-70"
+                >
+                    <Ionicons name="search-outline" size={20} color={theme.muted} />
+                    <Text className="ml-3 text-[17px] text-muted font-medium">Artists, songs, lyrics...</Text>
+                </Pressable>
 
-            <View className="mb-10">
-                <Text className="text-lg font-bold text-foreground mb-4">Genres</Text>
-                <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
-                    {genres.map((genre) => (
-                        <CategoryCard
-                            key={genre.id}
-                            title={genre.title}
-                            color={genre.color}
-                            pattern={genre.pattern}
-                            onPress={() => handleCategoryPress(genre)}
-                        />
-                    ))}
+                <View className="mb-10">
+                    <Text className="text-lg font-bold text-foreground mb-4">Genres</Text>
+                    <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
+                        {genres.map((genre) => (
+                            <CategoryCard
+                                key={genre.id}
+                                title={genre.title}
+                                color={genre.color}
+                                pattern={genre.pattern}
+                                onPress={() => handleCategoryPress(genre)}
+                            />
+                        ))}
+                    </View>
                 </View>
-            </View>
 
-            <View>
-                <Text className="text-lg font-bold text-foreground mb-4">Moods</Text>
-                <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
-                    {moods.map((mood) => (
-                        <CategoryCard
-                            key={mood.id}
-                            title={mood.title}
-                            color={mood.color}
-                            pattern={mood.pattern}
-                            onPress={() => handleCategoryPress(mood)}
-                        />
-                    ))}
+                <View>
+                    <Text className="text-lg font-bold text-foreground mb-4">Moods</Text>
+                    <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
+                        {moods.map((mood) => (
+                            <CategoryCard
+                                key={mood.id}
+                                title={mood.title}
+                                color={mood.color}
+                                pattern={mood.pattern}
+                                onPress={() => handleCategoryPress(mood)}
+                            />
+                        ))}
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </GestureDetector>
     );
 }
