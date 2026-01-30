@@ -65,16 +65,15 @@ export default function ArtistDetailsScreen() {
 
     const latestAlbum = albums.sort((a, b) => (b.year || 0) - (a.year || 0))[0];
 
-    const popularTracks = [...artistTracks]
-        .sort((a, b) => (b.playCount || 0) - (a.playCount || 0))
-        .slice(0, 5);
+    const allSortConfigs = useStore($sortConfig);
+    const sortedArtistTracks = sortTracks(artistTracks, allSortConfigs["ArtistSongs"]);
+    const popularTracks = sortedArtistTracks.slice(0, 5);
 
     const [activeView, setActiveView] = React.useState<"overview" | "songs" | "albums">("overview");
     const [navDirection, setNavDirection] = React.useState<"forward" | "back">("forward");
     const [sortModalVisible, setSortModalVisible] = React.useState(false);
     const [scrollY, setScrollY] = React.useState(0);
     const isArtistFavorite = useIsFavorite(name || "");
-    const allSortConfigs = useStore($sortConfig);
 
     const currentTab = activeView === "songs" ? "ArtistSongs" : activeView === "albums" ? "ArtistAlbums" : "ArtistSongs";
     const sortConfig = allSortConfigs[currentTab];
@@ -98,14 +97,10 @@ export default function ArtistDetailsScreen() {
         playTrack(track);
     };
 
-    const sortedArtistTracks = React.useMemo(() => {
-        return sortTracks(artistTracks, allSortConfigs["ArtistSongs"]);
-    }, [artistTracks, allSortConfigs]);
-
-    const sortedAlbums = React.useMemo(() => {
+    const sortedAlbums = (() => {
         const albumData = albums.map(a => ({ ...a, id: a.title } as Album));
         return sortAlbums(albumData, allSortConfigs["ArtistAlbums"]);
-    }, [albums, allSortConfigs]);
+    })();
 
     const handleSortSelect = (field: SortField, order?: 'asc' | 'desc') => {
         setSortConfig(currentTab, field, order);

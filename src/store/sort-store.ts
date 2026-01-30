@@ -105,7 +105,12 @@ export const sortTracks = (tracks: Track[], config: SortConfig): Track[] => {
             bVal = (b.album || 'Unknown Album').toLowerCase();
         }
 
-        return compareValues(aVal, bVal, order);
+        const primaryResult = compareValues(aVal, bVal, order);
+        if (field === 'playCount' && primaryResult === 0) {
+            return compareValues(a.lastPlayedAt || 0, b.lastPlayedAt || 0, 'desc');
+        }
+        
+        return primaryResult;
     });
 };
 
