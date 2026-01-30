@@ -84,6 +84,12 @@ export default function MainLayout() {
                     ),
                 }}
             />
+            <Tabs.Screen
+                name="artist/[name]"
+                options={{
+                    href: null,
+                }}
+            />
         </Tabs>
     );
 }

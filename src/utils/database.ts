@@ -52,7 +52,9 @@ export const initDatabase = () => {
         );
     `);
 
+    initFavoritesTable();
     runMigrations();
+    migrateTrackFavoritesToNewTable();
 };
 
 const runMigrations = () => {
@@ -93,6 +95,38 @@ const runMigrations = () => {
         db.execSync('ALTER TABLE tracks ADD COLUMN is_favorite INTEGER DEFAULT 0');
     }
 
+};
+
+const migrateTrackFavoritesToNewTable = () => {
+    // Check if migration has already run
+    const hasMigrated = getIndexerState('favorites_migration_v1');
+    if (hasMigrated === 'done') return;
+    
+    // Migrate existing track favorites from tracks table to favorites table
+    const favoriteTracks = db.getAllSync(
+        'SELECT id, title, artist, album, image, date_added FROM tracks WHERE is_favorite = 1'
+    ) as any[];
+    
+    for (const track of favoriteTracks) {
+        const existing = db.getFirstSync('SELECT 1 FROM favorites WHERE id = ?', [track.id]) as any;
+        if (!existing) {
+            db.runSync(
+                `INSERT INTO favorites (id, type, name, subtitle, image, date_added) 
+                 VALUES (?, ?, ?, ?, ?, ?)`,
+                [
+                    track.id,
+                    'track',
+                    track.title,
+                    track.artist || track.album || null,
+                    track.image || null,
+                    track.date_added || Date.now()
+                ]
+            );
+        }
+    }
+    
+    // Mark migration as complete
+    setIndexerState('favorites_migration_v1', 'done');
 };
 
 export const addToHistory = (trackId: string) => {
@@ -304,6 +338,72 @@ export const incrementPlayCount = (trackId: string) => {
         [timestamp, trackId]
     );
     addToHistory(trackId);
+};
+
+export type FavoriteType = 'track' | 'artist' | 'album' | 'playlist';
+
+export interface FavoriteEntry {
+    id: string;
+    type: FavoriteType;
+    name: string;
+    subtitle?: string;
+    image?: string;
+    dateAdded: number;
+}
+
+export const initFavoritesTable = () => {
+    db.execSync(`
+        CREATE TABLE IF NOT EXISTS favorites (
+            id TEXT PRIMARY KEY,
+            type TEXT NOT NULL,
+            name TEXT NOT NULL,
+            subtitle TEXT,
+            image TEXT,
+            date_added INTEGER DEFAULT 0
+        );
+        
+        CREATE INDEX IF NOT EXISTS idx_favorites_type ON favorites(type);
+        CREATE INDEX IF NOT EXISTS idx_favorites_date_added ON favorites(date_added);
+    `);
+};
+
+export const addFavorite = (entry: FavoriteEntry) => {
+    db.runSync(
+        `INSERT OR REPLACE INTO favorites (id, type, name, subtitle, image, date_added) 
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [entry.id, entry.type, entry.name, entry.subtitle || null, entry.image || null, entry.dateAdded || Date.now()]
+    );
+};
+
+export const removeFavorite = (id: string) => {
+    db.runSync('DELETE FROM favorites WHERE id = ?', [id]);
+};
+
+export const isFavorite = (id: string): boolean => {
+    const result = db.getFirstSync('SELECT 1 FROM favorites WHERE id = ?', [id]) as any;
+    return !!result;
+};
+
+export const getFavorites = (type?: FavoriteType): FavoriteEntry[] => {
+    let query = 'SELECT * FROM favorites';
+    const params: any[] = [];
+    
+    if (type) {
+        query += ' WHERE type = ?';
+        params.push(type);
+    }
+    
+    query += ' ORDER BY date_added DESC';
+    
+    const rows = db.getAllSync(query, params) as any[];
+    return rows.map(row => ({
+        id: row.id,
+        type: row.type as FavoriteType,
+        name: row.name,
+        subtitle: row.subtitle || undefined,
+        image: row.image || undefined,
+        dateAdded: row.date_added || 0,
+    }));
 };
 
 export const toggleFavoriteDB = (trackId: string, isFavorite: boolean) => {

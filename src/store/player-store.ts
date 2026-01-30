@@ -2,6 +2,7 @@ import { atom } from 'nanostores';
 import { createAudioPlayer, AudioPlayer, AudioStatus } from 'expo-audio';
 import { MediaControl, PlaybackState, Command } from 'expo-media-control';
 import { initDatabase, addToHistory, incrementPlayCount, toggleFavoriteDB } from '@/utils/database';
+import { loadFavorites } from '@/store/favorites-store';
 
 export interface LyricLine {
     time: number;
@@ -38,6 +39,7 @@ let player: AudioPlayer | null = null;
 let currentTrackIndex = -1;
 
 initDatabase();
+loadFavorites();
 
 export const setupPlayer = async () => {
     try {

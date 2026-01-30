@@ -3,7 +3,8 @@ import { View, Text, Pressable, Dimensions, Image, TextInput, Platform } from "r
 import { getColors } from "react-native-image-colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useStore } from "@nanostores/react";
-import { $currentTrack, $isPlaying, playNext, playPrevious, togglePlayback, $currentTime, $duration, seekTo, toggleFavorite } from "@/store/player-store";
+import { $currentTrack, $isPlaying, playNext, playPrevious, togglePlayback, $currentTime, $duration, seekTo } from "@/store/player-store";
+import { useIsFavorite, toggleFavoriteItem } from "@/store/favorites-store";
 import { $isPlayerExpanded } from "@/store/ui-store";
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
@@ -27,6 +28,8 @@ export const FullPlayer = () => {
     const isPlaying = useStore($isPlaying);
     const currentTimeVal = useStore($currentTime);
     const durationVal = useStore($duration);
+
+    const isCurrentTrackFavorite = useIsFavorite(currentTrack?.id || "");
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -257,12 +260,22 @@ export const FullPlayer = () => {
                             </View>
                             <Pressable
                                 className="active:opacity-50"
-                                onPress={() => toggleFavorite(currentTrack.id)}
+                                onPress={() => {
+                                    if (currentTrack) {
+                                        toggleFavoriteItem(
+                                            currentTrack.id,
+                                            'track',
+                                            currentTrack.title,
+                                            currentTrack.artist,
+                                            currentTrack.image
+                                        );
+                                    }
+                                }}
                             >
                                 <Ionicons
-                                    name={currentTrack.isFavorite ? "heart" : "heart-outline"}
+                                    name={isCurrentTrackFavorite ? "heart" : "heart-outline"}
                                     size={28}
-                                    color={currentTrack.isFavorite ? "#ef4444" : "white"}
+                                    color={isCurrentTrackFavorite ? "#ef4444" : "white"}
                                 />
                             </Pressable>
                         </View>

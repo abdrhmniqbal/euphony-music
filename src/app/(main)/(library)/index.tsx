@@ -8,6 +8,8 @@ import { ArtistGrid, Artist } from "@/components/library/artist-grid";
 import { PlaylistList, Playlist } from "@/components/library/playlist-list";
 import { FolderList, Folder } from "@/components/library/folder-list";
 import { SongList } from "@/components/library/song-list";
+import { FavoritesList } from "@/components/library/favorites-list";
+import { useFavorites } from "@/store/favorites-store";
 import { useUniwind } from "uniwind";
 import { Colors } from "@/constants/colors";
 import { playTrack, $tracks, Track } from "@/store/player-store";
@@ -47,6 +49,7 @@ export default function LibraryScreen() {
     const allSortConfigs = useStore($sortConfig);
     const sortConfig = allSortConfigs[activeTab];
     const [sortModalVisible, setSortModalVisible] = useState(false);
+    const favorites = useFavorites();
 
     const closeSortModal = useCallback(() => {
         setSortModalVisible(false);
@@ -75,6 +78,10 @@ export default function LibraryScreen() {
     const onRefresh = useCallback(() => {
         startIndexing(true);
     }, []);
+
+    const handleArtistPress = useCallback((artist: Artist) => {
+        router.push(`/artist/${encodeURIComponent(artist.name)}`);
+    }, [router]);
 
     const albums: Album[] = (() => {
         const albumMap = new Map<string, Album & { year: number; dateAdded: number; trackCount: number }>();
@@ -135,8 +142,6 @@ export default function LibraryScreen() {
     const playlists: Playlist[] = [];
     const folders: Folder[] = [];
 
-    const favorites = tracks.filter(t => t.isFavorite);
-
     const { sortedData, currentSortOptions } = (() => {
         let data: any[] = [];
         let options: { label: string; field: SortField }[] = SONG_SORT_OPTIONS;
@@ -159,8 +164,8 @@ export default function LibraryScreen() {
                 options = [];
                 break;
             case "Favorites":
-                data = sortTracks(favorites, sortConfig);
-                options = SONG_SORT_OPTIONS;
+                data = favorites;
+                options = [];
                 break;
             default:
                 data = sortTracks(sortedTracks, sortConfig);
@@ -172,19 +177,31 @@ export default function LibraryScreen() {
     })();
 
     const handlePlayAll = useCallback(() => {
-        const songsToPlay = activeTab === "Favorites" ? favorites : sortedData;
-        if (songsToPlay.length > 0) {
-            playTrack(songsToPlay[0]);
+        if (activeTab === "Favorites") {
+            // Play first track from favorites if available
+            const firstTrack = favorites.find(f => f.type === 'track');
+            if (firstTrack) {
+                const track = tracks.find(t => t.id === firstTrack.id);
+                if (track) playTrack(track);
+            }
+        } else if (sortedData.length > 0) {
+            playTrack(sortedData[0]);
         }
-    }, [activeTab, favorites, sortedData]);
+    }, [activeTab, favorites, sortedData, tracks]);
 
     const handleShuffle = useCallback(() => {
-        const songsToPlay = activeTab === "Favorites" ? favorites : sortedData;
-        if (songsToPlay.length > 0) {
-            const randomIndex = Math.floor(Math.random() * songsToPlay.length);
-            playTrack(songsToPlay[randomIndex]);
+        if (activeTab === "Favorites") {
+            const trackFavorites = favorites.filter(f => f.type === 'track');
+            if (trackFavorites.length > 0) {
+                const randomIndex = Math.floor(Math.random() * trackFavorites.length);
+                const track = tracks.find(t => t.id === trackFavorites[randomIndex].id);
+                if (track) playTrack(track);
+            }
+        } else if (sortedData.length > 0) {
+            const randomIndex = Math.floor(Math.random() * sortedData.length);
+            playTrack(sortedData[randomIndex]);
         }
-    }, [activeTab, favorites, sortedData]);
+    }, [activeTab, favorites, sortedData, tracks]);
 
     const handleSortSelect = (field: SortField, order?: 'asc' | 'desc') => {
         setSortConfig(activeTab, field, order);
@@ -282,10 +299,10 @@ export default function LibraryScreen() {
                         {(() => {
                             switch (activeTab) {
                                 case "Albums": return <AlbumGrid data={sortedData} />;
-                                case "Artists": return <ArtistGrid data={sortedData} />;
+                                case "Artists": return <ArtistGrid data={sortedData} onArtistPress={handleArtistPress} />;
                                 case "Playlists": return <PlaylistList data={sortedData} />;
                                 case "Folders": return <FolderList data={sortedData} />;
-                                case "Favorites": return <SongList data={sortedData} />;
+                                case "Favorites": return <FavoritesList data={favorites} />;
                                 default: return <SongList data={sortedData} />;
                             }
                         })()}
