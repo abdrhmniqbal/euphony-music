@@ -84,7 +84,7 @@ export default function TopSongsScreen() {
                 {TABS.map((tab) => (
                     <Pressable key={tab} onPress={() => setActiveTab(tab)}>
                         <Text
-                            className={`text-2xl font-bold ${activeTab === tab ? 'text-foreground' : 'text-muted'}`}
+                            className={`text-xl font-bold ${activeTab === tab ? 'text-foreground' : 'text-muted'}`}
                         >
                             {tab}
                         </Text>

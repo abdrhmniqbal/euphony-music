@@ -246,7 +246,7 @@ export default function LibraryScreen() {
                                 onPress={() => setActiveTab(tab)}
                                 className="active:opacity-50 py-2"
                             >
-                                <Text className={`text-2xl font-bold ${activeTab === tab ? 'text-foreground' : 'text-muted'}`}>
+                                <Text className={`text-xl font-bold ${activeTab === tab ? 'text-foreground' : 'text-muted'}`}>
                                     {tab}
                                 </Text>
                                 {activeTab === tab && (
@@ -281,13 +281,13 @@ export default function LibraryScreen() {
                             </View>
                         )}
                         <View className="flex-row items-center justify-between mb-4">
-                            <Text className="text-[20px] font-bold text-foreground">{sortedData.length} {activeTab}</Text>
+                            <Text className="text-lg font-bold text-foreground">{sortedData.length} {activeTab}</Text>
                             <Pressable
                                 className="flex-row items-center gap-1 active:opacity-50"
                                 onPress={() => setSortModalVisible(true)}
                                 disabled={currentSortOptions.length === 0}
                             >
-                                <Text className="text-[15px] font-medium text-muted">{getSortLabel()}</Text>
+                                <Text className="text-sm font-medium text-muted">{getSortLabel()}</Text>
                                 <Ionicons
                                     name={sortConfig.order === 'asc' ? 'arrow-up' : 'arrow-down'}
                                     size={16}

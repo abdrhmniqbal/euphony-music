@@ -18,7 +18,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({ title, subtitle, cla
     return (
         <View className={`${className} mb-4`}>
             <View className="flex-row justify-between items-center">
-                <Text className="text-xl font-bold text-foreground">
+                <Text className="text-lg font-bold text-foreground">
                     {title}
                 </Text>
                 {onViewMore && (

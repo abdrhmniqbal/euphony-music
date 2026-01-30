@@ -315,7 +315,7 @@ export default function ArtistDetailsScreen() {
                                     >
                                         <Ionicons name="chevron-back" size={20} color={theme.muted} />
                                     </Pressable>
-                                    <Text className="text-xl font-bold text-foreground">All Songs</Text>
+                                    <Text className="text-lg font-bold text-foreground">All Songs</Text>
                                 </View>
 
                                 <Pressable
@@ -356,7 +356,7 @@ export default function ArtistDetailsScreen() {
                                     >
                                         <Ionicons name="chevron-back" size={20} color={theme.muted} />
                                     </Pressable>
-                                    <Text className="text-xl font-bold text-foreground">All Albums</Text>
+                                    <Text className="text-lg font-bold text-foreground">All Albums</Text>
                                 </View>
 
                                 <Pressable

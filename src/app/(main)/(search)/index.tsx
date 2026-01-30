@@ -186,7 +186,7 @@ export default function SearchScreen() {
             </Pressable>
 
             <View className="mb-10">
-                <Text className="text-[20px] font-bold text-foreground mb-4">Genres</Text>
+                <Text className="text-lg font-bold text-foreground mb-4">Genres</Text>
                 <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
                     {genres.map((genre) => (
                         <CategoryCard
@@ -201,7 +201,7 @@ export default function SearchScreen() {
             </View>
 
             <View>
-                <Text className="text-[20px] font-bold text-foreground mb-4">Moods</Text>
+                <Text className="text-lg font-bold text-foreground mb-4">Moods</Text>
                 <View className="flex-row flex-wrap gap-x-[5%] gap-y-4">
                     {moods.map((mood) => (
                         <CategoryCard
