@@ -139,8 +139,8 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data }) => {
                 router.push(`/artist/${encodeURIComponent(favorite.name)}`);
                 break;
             case 'album':
-                // Navigate to album page (if implemented)
-                // router.push(`/album/${encodeURIComponent(favorite.name)}`);
+                // Navigate to album page
+                router.push(`/album/${encodeURIComponent(favorite.name)}`);
                 break;
             case 'playlist':
                 // Navigate to playlist page (if implemented)
