@@ -10,7 +10,7 @@ import Animated, {
     FadeIn,
     FadeOut
 } from 'react-native-reanimated';
-import { $indexerState, stopIndexing } from '@/utils/media-indexer';
+import { $indexerState, stopIndexing } from '@/features/indexer';
 import { $currentTrack } from '@/store/player-store';
 
 const PHASE_LABELS: Record<string, string> = {

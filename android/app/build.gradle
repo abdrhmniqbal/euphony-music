@@ -156,6 +156,11 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    // Official AndroidX media3 libraries (used by both expo-audio and MissingCore)
+    def media3Version = "1.8.0"
+    implementation "androidx.media3:media3-common:$media3Version"
+    implementation "androidx.media3:media3-extractor:$media3Version"
+
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";

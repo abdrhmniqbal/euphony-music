@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -10,7 +10,7 @@ import { Button } from "heroui-native";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-store";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemRank } from "@/components/item";
 import { SectionTitle } from "@/components/section-title";
-import { getTopSongsByGenre, getAlbumsByGenre, AlbumInfo } from "@/utils/database";
+import { getTopSongsByGenre, getAlbumsByGenre, AlbumInfo } from "@/db/operations";
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -37,21 +37,25 @@ export default function GenreDetailsScreen() {
 
     const genreName = decodeURIComponent(name || "");
 
-    // Get top songs for this genre
-    const topSongs = useMemo(() => {
-        return getTopSongsByGenre(genreName, 25);
+    // State for async data
+    const [topSongs, setTopSongs] = useState<Track[]>([]);
+    const [albums, setAlbums] = useState<AlbumInfo[]>([]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            const songs = await getTopSongsByGenre(genreName, 25);
+            const albumList = await getAlbumsByGenre(genreName);
+            setTopSongs(songs);
+            setAlbums(albumList);
+        };
+        loadData();
     }, [genreName]);
 
-    // Get albums for this genre
-    const albums = useMemo(() => {
-        return getAlbumsByGenre(genreName);
-    }, [genreName]);
-
-    const topSongsChunks = useMemo(() => chunkArray(topSongs, CHUNK_SIZE), [topSongs]);
+    const topSongsChunks = chunkArray(topSongs, CHUNK_SIZE);
 
     const [scrollY, setScrollY] = useState(0);
 
-    React.useLayoutEffect(() => {
+    useEffect(() => {
         navigation.setOptions({
             headerShown: false,
         });
@@ -153,47 +157,25 @@ export default function GenreDetailsScreen() {
         return "white";
     };
 
-    const getButtonBackground = () => {
-        if (scrollY > 150) {
-            return "";
-        }
-        return "bg-black/30";
-    };
-
     return (
         <View className="flex-1 bg-background">
-            {/* Header */}
+            {/* Animated Header */}
             <Animated.View
-                className="absolute top-0 left-0 right-0 z-20 pt-12 pb-3 px-4"
+                className="absolute top-0 left-0 right-0 z-10 pt-12 px-4 pb-4"
                 style={headerAnimatedStyle}
             >
-                <View className="flex-row items-center">
-                    <View className="w-[88px] flex-row">
-                        <Pressable
-                            onPress={() => router.back()}
-                            className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}
-                        >
-                            <Ionicons name="chevron-back" size={24} color={getIconColor()} />
-                        </Pressable>
-                    </View>
-
-                    <View className="flex-1 px-2">
-                        <Animated.View style={headerTextAnimatedStyle}>
-                            <Text
-                                className="text-lg font-bold text-center"
-                                style={{ color: theme.foreground }}
-                                numberOfLines={1}
-                            >
-                                {genreName}
-                            </Text>
-                        </Animated.View>
-                    </View>
-
-                    <View className="w-[88px] flex-row justify-end gap-3">
-                        <Pressable className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}>
-                            <Ionicons name="ellipsis-horizontal" size={22} color={getIconColor()} />
-                        </Pressable>
-                    </View>
+                <View className="flex-row items-center justify-between">
+                    <Pressable onPress={() => router.back()} className="p-2 active:opacity-70">
+                        <Ionicons name="chevron-back" size={28} color={getIconColor()} />
+                    </Pressable>
+                    <Animated.View style={headerTextAnimatedStyle}>
+                        <Text className="text-foreground font-bold text-lg" numberOfLines={1}>
+                            {genreName}
+                        </Text>
+                    </Animated.View>
+                    <Pressable onPress={() => router.push("/settings")} className="p-2 active:opacity-70">
+                        <Ionicons name="settings-outline" size={24} color={getIconColor()} />
+                    </Pressable>
                 </View>
             </Animated.View>
 
@@ -201,95 +183,74 @@ export default function GenreDetailsScreen() {
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 200 }}
-                onScroll={(e) => {
-                    setScrollY(e.nativeEvent.contentOffset.y);
-                    handleScroll(e.nativeEvent.contentOffset.y);
-                }}
+                onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
                 onScrollBeginDrag={handleScrollStart}
-                onMomentumScrollEnd={handleScrollStop}
                 onScrollEndDrag={handleScrollStop}
                 scrollEventThrottle={16}
             >
-                {/* Genre Header Section */}
-                <View className="px-6 pt-24 pb-6">
-                    <View className="flex-row gap-4 pt-6">
-                        {/* Genre Icon/Placeholder */}
-                        <View className="w-36 h-36 rounded-lg overflow-hidden bg-accent/20 items-center justify-center">
-                            <Ionicons name="musical-notes" size={64} color={theme.accent} />
-                        </View>
+                {/* Genre Header */}
+                <View className="pt-20 px-4 pb-6">
+                    <Text className="text-accent text-sm font-semibold uppercase tracking-wide mb-2">Genre</Text>
+                    <Text className="text-foreground text-4xl font-bold mb-6">{genreName}</Text>
 
-                        {/* Genre Info */}
-                        <View className="flex-1 justify-center">
-                            <Text className="text-2xl font-bold text-foreground" numberOfLines={2}>
-                                {genreName}
-                            </Text>
-                            <Text className="text-base text-muted mt-1">
-                                {topSongs.length} songs · {albums.length} albums
-                            </Text>
+                    {/* Action Buttons */}
+                    {topSongs.length > 0 && (
+                        <View className="flex-row gap-4">
+                            <Button
+                                className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
+                                onPress={handlePlayAll}
+                            >
+                                <Ionicons name="play" size={20} color={theme.foreground} />
+                                <Text className="text-lg font-bold text-foreground uppercase">Play All</Text>
+                            </Button>
+                            <Button
+                                className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
+                                onPress={handleShuffle}
+                            >
+                                <Ionicons name="shuffle" size={20} color={theme.foreground} />
+                                <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
+                            </Button>
                         </View>
-                    </View>
+                    )}
                 </View>
 
-                {/* Action Buttons */}
-                <Animated.View
-                    entering={FadeIn.duration(300)}
-                    className="px-6 flex-row gap-4 mb-6"
-                >
-                    <Button
-                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                        onPress={handlePlayAll}
-                    >
-                        <Ionicons name="play" size={20} color={theme.foreground} />
-                        <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                    </Button>
-                    <Button
-                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                        onPress={handleShuffle}
-                    >
-                        <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                        <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                    </Button>
-                </Animated.View>
-
                 {/* Top Songs Section */}
-                <SectionTitle
-                    title="Top Songs"
-                    className="px-4 mb-2"
-                />
-
-                {topSongs.length > 0 ? (
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: 16, gap: 24 }}
-                        className="mb-8"
-                    >
-                        {topSongsChunks.map(renderTopSongsChunk)}
-                    </ScrollView>
-                ) : (
-                    <View className="px-6 mb-8">
-                        <Text className="text-muted">No songs with this genre</Text>
+                {topSongs.length > 0 && (
+                    <View className="mb-8">
+                        <SectionTitle title="Top Songs" className="px-4 mb-4" />
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingHorizontal: 16, gap: 24 }}
+                        >
+                            {topSongsChunks.map(renderTopSongsChunk)}
+                        </ScrollView>
                     </View>
                 )}
 
                 {/* Albums Section */}
-                <SectionTitle
-                    title="Albums"
-                    className="px-4 mb-2"
-                />
+                {albums.length > 0 && (
+                    <View className="mb-8">
+                        <SectionTitle title="Albums" className="px-4 mb-4" />
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingHorizontal: 16 }}
+                        >
+                            {albums.map(renderAlbumItem)}
+                        </ScrollView>
+                    </View>
+                )}
 
-                {albums.length > 0 ? (
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
-                        className="mb-8"
-                    >
-                        {albums.map(renderAlbumItem)}
-                    </ScrollView>
-                ) : (
-                    <View className="px-6 mb-8">
-                        <Text className="text-muted">No albums with this genre</Text>
+                {/* Empty State */}
+                {topSongs.length === 0 && albums.length === 0 && (
+                    <View className="px-4 pt-20">
+                        <Text className="text-muted text-center text-lg">
+                            No songs found in this genre yet.
+                        </Text>
+                        <Text className="text-muted-secondary text-center mt-2">
+                            Start playing some {genreName} music!
+                        </Text>
                     </View>
                 )}
             </ScrollView>

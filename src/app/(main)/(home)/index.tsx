@@ -10,8 +10,8 @@ import { useNavigation, useRouter, useFocusEffect } from "expo-router";
 import { Pressable, View, ScrollView, RefreshControl } from "react-native";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-store";
 import { Ionicons } from "@expo/vector-icons";
-import { startIndexing, $indexerState } from "@/utils/media-indexer";
-import { getHistory, getTopSongs } from "@/utils/database";
+import { startIndexing, $indexerState } from "@/features/indexer";
+import { getHistory, getTopSongs } from "@/db/operations";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { GestureDetector } from "react-native-gesture-handler";
 
@@ -56,10 +56,10 @@ export default function HomeScreen() {
 
     const [recentlyPlayedTracks, setRecentlyPlayedTracks] = useState<Track[]>([]);
 
-    const fetchHistory = useCallback(() => {
-        const history = getHistory();
+    const fetchHistory = useCallback(async () => {
+        const history = await getHistory();
         const seen = new Set<string>();
-        const unique = history.filter(track => {
+        const unique = history.filter((track: any) => {
             if (seen.has(track.id)) return false;
             seen.add(track.id);
             return true;
@@ -73,15 +73,15 @@ export default function HomeScreen() {
         }, [fetchHistory])
     );
 
-    const onRefresh = useCallback(() => {
+    const onRefresh = useCallback(async () => {
         startIndexing(true);
-        fetchHistory();
+        await fetchHistory();
     }, [fetchHistory]);
 
     const [topSongs, setTopSongs] = useState<Track[]>([]);
 
-    const fetchTopSongs = useCallback(() => {
-        const songs = getTopSongs('all', TOP_SONGS_LIMIT);
+    const fetchTopSongs = useCallback(async () => {
+        const songs = await getTopSongs('all', TOP_SONGS_LIMIT);
         setTopSongs(songs);
     }, []);
 
@@ -92,9 +92,9 @@ export default function HomeScreen() {
     );
 
     // Combine refresh logic
-    const handleRefresh = useCallback(() => {
-        onRefresh();
-        fetchTopSongs();
+    const handleRefresh = useCallback(async () => {
+        await onRefresh();
+        await fetchTopSongs();
     }, [onRefresh, fetchTopSongs]);
 
     const topSongsChunks = chunkArray(topSongs, CHUNK_SIZE);

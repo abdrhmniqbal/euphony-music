@@ -6,11 +6,11 @@ import { Button } from "heroui-native";
 import { Ionicons } from "@expo/vector-icons";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-store";
 import { useState, useCallback } from "react";
-import { getHistory } from "@/utils/database";
+import { getHistory } from "@/db/operations";
 import { useFocusEffect } from "expo-router";
 import { useUniwind } from "uniwind";
 import { useStore } from "@nanostores/react";
-import { startIndexing, $indexerState } from "@/utils/media-indexer";
+import { startIndexing, $indexerState } from "@/features/indexer";
 import { SongList } from "@/components/library/song-list";
 
 export default function RecentlyPlayedScreen() {
@@ -19,10 +19,10 @@ export default function RecentlyPlayedScreen() {
     const [history, setHistory] = useState<Track[]>([]);
     const indexerState = useStore($indexerState);
 
-    const fetchHistory = useCallback(() => {
-        const data = getHistory();
+    const fetchHistory = useCallback(async () => {
+        const data = await getHistory();
         const seen = new Set<string>();
-        const unique = data.filter(track => {
+        const unique = data.filter((track: any) => {
             if (seen.has(track.id)) return false;
             seen.add(track.id);
             return true;
@@ -30,9 +30,9 @@ export default function RecentlyPlayedScreen() {
         setHistory(unique);
     }, []);
 
-    const onRefresh = useCallback(() => {
+    const onRefresh = useCallback(async () => {
         startIndexing(true);
-        fetchHistory();
+        await fetchHistory();
     }, [fetchHistory]);
 
     useFocusEffect(

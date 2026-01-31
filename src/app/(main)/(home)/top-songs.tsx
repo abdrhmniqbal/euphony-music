@@ -9,8 +9,8 @@ import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-st
 import { useUniwind } from "uniwind";
 import { useStore } from "@nanostores/react";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
-import { startIndexing, $indexerState } from "@/utils/media-indexer";
-import { getTopSongs } from "@/utils/database";
+import { startIndexing, $indexerState } from "@/features/indexer";
+import { getTopSongs } from "@/db/operations";
 import { useFocusEffect } from "expo-router";
 import { SongList } from "@/components/library/song-list";
 
@@ -32,9 +32,9 @@ export default function TopSongsScreen() {
 
     const [currentSongs, setCurrentSongs] = useState<Track[]>([]);
 
-    const fetchSongs = useCallback(() => {
+    const fetchSongs = useCallback(async () => {
         const period = activeTab === "Daily" ? 'day' : activeTab === "Weekly" ? 'week' : 'all';
-        const songs = getTopSongs(period, TOP_SONGS_LIMIT);
+        const songs = await getTopSongs(period, TOP_SONGS_LIMIT);
         setCurrentSongs(songs);
     }, [activeTab]);
 
@@ -44,9 +44,9 @@ export default function TopSongsScreen() {
         }, [fetchSongs])
     );
 
-    const handleRefresh = useCallback(() => {
+    const handleRefresh = useCallback(async () => {
         onRefresh();
-        fetchSongs();
+        await fetchSongs();
     }, [onRefresh, fetchSongs]);
 
     const handlePlayAll = useCallback(() => {

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -84,14 +84,12 @@ export default function AlbumDetailsScreen() {
     const albumName = decodeURIComponent(name || "");
 
     // Get all tracks for this album
-    const albumTracks = useMemo(() => {
-        return tracks.filter(
-            (t) => t.album?.toLowerCase() === albumName.toLowerCase()
-        );
-    }, [tracks, albumName]);
+    const albumTracks = tracks.filter(
+        (t) => t.album?.toLowerCase() === albumName.toLowerCase()
+    );
 
     // Get album info from first track
-    const albumInfo = useMemo(() => {
+    const albumInfo = (() => {
         if (albumTracks.length === 0) return null;
         const firstTrack = albumTracks[0];
         return {
@@ -100,18 +98,16 @@ export default function AlbumDetailsScreen() {
             image: firstTrack.image,
             year: firstTrack.year,
         };
-    }, [albumTracks]);
+    })();
 
     // Calculate total duration
-    const totalDuration = useMemo(() => {
-        return albumTracks.reduce((sum, track) => sum + (track.duration || 0), 0);
-    }, [albumTracks]);
+    const totalDuration = albumTracks.reduce((sum, track) => sum + (track.duration || 0), 0);
 
     // Sort configuration for album songs
     const sortConfig = allSortConfigs["AlbumSongs"] || { field: 'title' as SortField, order: 'asc' as const };
     
     // Sort tracks - use disc/track order by default, otherwise use user sort preference
-    const sortedTracks = useMemo(() => {
+    const sortedTracks = (() => {
         // If user has selected a non-default sort, use that
         if (sortConfig.field !== 'title' || sortConfig.order !== 'asc') {
             // Import sortTracks dynamically or create local version
@@ -120,12 +116,10 @@ export default function AlbumDetailsScreen() {
         }
         // Default: sort by disc then track number
         return sortByDiscAndTrack(albumTracks);
-    }, [albumTracks, sortConfig]);
+    })();
 
     // Group tracks by disc for display
-    const tracksByDisc = useMemo(() => {
-        return groupTracksByDisc(sortedTracks);
-    }, [sortedTracks]);
+    const tracksByDisc = groupTracksByDisc(sortedTracks);
 
     const isAlbumFavorite = useIsFavorite(albumName);
     const [scrollY, setScrollY] = useState(0);

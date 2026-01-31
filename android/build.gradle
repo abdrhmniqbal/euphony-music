@@ -18,6 +18,19 @@ allprojects {
     mavenCentral()
     maven { url 'https://www.jitpack.io' }
   }
+  
+  // Fix media3 dependency conflict between MissingCore and expo-audio
+  configurations.all {
+    resolutionStrategy {
+      // Exclude MissingCore's forked media3 to prevent duplicate class errors
+      exclude group: 'com.github.MissingCore.media', module: 'media3-common'
+      exclude group: 'com.github.MissingCore.media', module: 'media3-inspector'
+      
+      // Force all media3 modules to use the same version
+      force 'androidx.media3:media3-common:1.8.0'
+      force 'androidx.media3:media3-extractor:1.8.0'
+    }
+  }
 }
 
 apply plugin: "expo-root-project"

@@ -23,7 +23,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
-import { startIndexing, $indexerState } from "@/utils/media-indexer";
+import { startIndexing, $indexerState } from "@/features/indexer";
 import {
     $sortConfig,
     setSortConfig,

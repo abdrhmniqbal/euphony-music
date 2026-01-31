@@ -1,8 +1,12 @@
 import { atom } from 'nanostores';
 import { createAudioPlayer, AudioPlayer, AudioStatus, setAudioModeAsync } from 'expo-audio';
 import { MediaControl, PlaybackState, Command } from 'expo-media-control';
-import { initDatabase, addToHistory, incrementPlayCount, toggleFavoriteDB } from '@/utils/database';
 import { loadFavorites } from '@/store/favorites-store';
+import { 
+  addToHistory, 
+  incrementPlayCount,
+  toggleFavoriteDB 
+} from '@/db/operations';
 
 export interface LyricLine {
     time: number;
@@ -42,7 +46,7 @@ export const $duration = atom(0);
 let player: AudioPlayer | null = null;
 let currentTrackIndex = -1;
 
-initDatabase();
+// Initialize favorites on load
 loadFavorites();
 
 export const setupPlayer = async () => {
@@ -126,6 +130,8 @@ export const playTrack = async (track: Track) => {
     currentTrackIndex = $tracks.get().findIndex(t => t.id === track.id);
     $currentTrack.set(track);
     currentTrackIndex = $tracks.get().findIndex(t => t.id === track.id);
+    
+    // Add to history and increment play count
     addToHistory(track.id);
     incrementPlayCount(track.id);
 

@@ -6,34 +6,36 @@ import { Stack } from "expo-router";
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { Colors } from "@/constants/colors";
 import { useUniwind } from "uniwind";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import * as MediaLibrary from "expo-media-library";
 
 import { FullPlayer } from "@/components/full-player";
 import { IndexingProgress } from "@/components/indexing-progress";
 import { setupPlayer } from "@/store/player-store";
-import { startIndexing, loadTracksFromCache, initLifecycleListeners, cleanupLifecycleListeners } from "@/utils/media-indexer";
-import { hasExistingLibrary } from "@/utils/database";
+import { scanMediaLibrary } from "@/features/indexer/utils/media-scanner";
+import { Providers } from "@/components/providers";
 
 export default function Layout() {
   const { theme: currentTheme } = useUniwind();
   const theme = Colors[currentTheme === 'dark' ? 'dark' : 'light'];
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const init = async () => {
+      // Setup audio player
       await setupPlayer();
-
-      loadTracksFromCache();
-
-      const hasLibrary = hasExistingLibrary();
-      startIndexing(!hasLibrary, !hasLibrary);
+      
+      // Request permissions
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status === 'granted') {
+        // Scan media library on startup
+        scanMediaLibrary(undefined, false);
+      }
+      
+      setIsInitialized(true);
     };
 
     init();
-    initLifecycleListeners();
-
-    return () => {
-      cleanupLifecycleListeners();
-    };
   }, []);
 
   const navigationTheme = {
@@ -56,31 +58,33 @@ export default function Layout() {
             <ToastProvider defaultProps={{
               placement: "bottom"
             }}>
-              <View className="flex-1">
-                <Stack screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: theme.background },
-                }}>
-                  <Stack.Screen name="(main)" />
-                  <Stack.Screen
-                    name="search-interaction"
-                    options={{
-                      animation: 'fade',
-                      title: 'Search',
-                    }}
-                  />
-                  <Stack.Screen
-                    name="settings"
-                    options={{
-                      headerShown: false,
-                      presentation: 'modal',
-                      animation: 'slide_from_bottom',
-                    }}
-                  />
-                </Stack>
-                <IndexingProgress />
-                <FullPlayer />
-              </View>
+              <Providers>
+                <View className="flex-1">
+                  <Stack screenOptions={{
+                    headerShown: false,
+                    contentStyle: { backgroundColor: theme.background },
+                  }}>
+                    <Stack.Screen name="(main)" />
+                    <Stack.Screen
+                      name="search-interaction"
+                      options={{
+                        animation: 'fade',
+                        title: 'Search',
+                      }}
+                    />
+                    <Stack.Screen
+                      name="settings"
+                      options={{
+                        headerShown: false,
+                        presentation: 'modal',
+                        animation: 'slide_from_bottom',
+                      }}
+                    />
+                  </Stack>
+                  <IndexingProgress />
+                  <FullPlayer />
+                </View>
+              </Providers>
             </ToastProvider>
           </HeroUINativeProvider>
         </View>

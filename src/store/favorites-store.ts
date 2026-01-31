@@ -7,19 +7,22 @@ import {
     removeFavorite, 
     isFavorite as isFavoriteDB,
     getFavorites 
-} from '@/utils/database';
+} from '@/db/operations';
+
+// Re-export types for backwards compatibility
+export type { FavoriteEntry, FavoriteType } from '@/db/operations';
 
 // Store for all favorites
 export const $favorites = atom<FavoriteEntry[]>([]);
 
 // Load favorites from database
-export const loadFavorites = () => {
-    const favorites = getFavorites();
+export const loadFavorites = async () => {
+    const favorites = await getFavorites();
     $favorites.set(favorites);
 };
 
 // Toggle favorite status for any item type
-export const toggleFavoriteItem = (
+export const toggleFavoriteItem = async (
     id: string,
     type: FavoriteType,
     name: string,
@@ -31,7 +34,8 @@ export const toggleFavoriteItem = (
     
     if (existingIndex >= 0) {
         // Remove from favorites
-        removeFavorite(id);
+        const compositeId = `${type}-${id}`;
+        await removeFavorite(compositeId);
         const newFavorites = currentFavorites.filter(f => f.id !== id);
         $favorites.set(newFavorites);
         return false;
@@ -45,15 +49,16 @@ export const toggleFavoriteItem = (
             image,
             dateAdded: Date.now()
         };
-        addFavorite(entry);
+        await addFavorite(entry);
         $favorites.set([entry, ...currentFavorites]);
         return true;
     }
 };
 
 // Check if an item is favorited
-export const checkIsFavorite = (id: string): boolean => {
-    return isFavoriteDB(id);
+export const checkIsFavorite = async (id: string, type: FavoriteType = 'track'): Promise<boolean> => {
+    const compositeId = `${type}-${id}`;
+    return isFavoriteDB(compositeId);
 };
 
 // Get favorites by type
@@ -67,7 +72,7 @@ export const useFavorites = () => {
 };
 
 // Hook to check if specific item is favorite
-export const useIsFavorite = (id: string) => {
+export const useIsFavorite = (id: string, type: FavoriteType = 'track') => {
     const favorites = useStore($favorites);
-    return favorites.some(f => f.id === id);
+    return favorites.some(f => f.id === id && f.type === type);
 };

@@ -5,7 +5,7 @@ import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } 
 import { useUniwind } from "uniwind";
 import { Colors } from "@/constants/colors";
 import { playTrack, Track, $tracks } from "@/store/player-store";
-import { FavoriteEntry, FavoriteType } from "@/utils/database";
+import { FavoriteEntry, FavoriteType } from "@/db/operations";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "expo-router";
 import { toggleFavoriteItem } from "@/store/favorites-store";
