@@ -8,12 +8,16 @@ import { Colors } from "@/constants/colors";
 import { useUniwind } from "uniwind";
 import { useEffect, useState } from "react";
 import * as MediaLibrary from "expo-media-library";
+import TrackPlayer from '@weights-ai/react-native-track-player';
 
 import { FullPlayer } from "@/components/full-player";
 import { IndexingProgress } from "@/components/indexing-progress";
-import { setupPlayer } from "@/store/player-store";
+import { setupPlayer, PlaybackService } from "@/store/player-store";
 import { scanMediaLibrary } from "@/features/indexer/utils/media-scanner";
 import { Providers } from "@/components/providers";
+
+// Register playback service for background audio controls
+TrackPlayer.registerPlaybackService(() => PlaybackService);
 
 export default function Layout() {
   const { theme: currentTheme } = useUniwind();

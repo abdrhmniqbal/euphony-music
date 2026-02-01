@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
 import { scanMediaLibrary } from '@/features/indexer/utils/media-scanner';
+import { loadTracks } from '@/store/player-store';
 
 export interface IndexerState {
     isIndexing: boolean;
@@ -60,6 +61,9 @@ export const startIndexing = async (forceFullScan = false, showProgress = true) 
         );
 
         if (!abortController?.signal.aborted) {
+            // Reload tracks from database after indexing completes
+            await loadTracks();
+            
             updateState({
                 phase: 'complete',
                 progress: 100,

@@ -40,6 +40,8 @@ export default function ArtistDetailsScreen() {
         (t) => t.artist?.toLowerCase() === name?.toLowerCase()
     );
 
+    // Get artist ID from first track
+    const artistId = artistTracks[0]?.artistId;
     const artistImage = artistTracks.find((t) => t.image)?.image;
 
     const albums = (() => {
@@ -73,7 +75,7 @@ export default function ArtistDetailsScreen() {
     const [navDirection, setNavDirection] = React.useState<"forward" | "back">("forward");
     const [sortModalVisible, setSortModalVisible] = React.useState(false);
     const [scrollY, setScrollY] = React.useState(0);
-    const isArtistFavorite = useIsFavorite(name || "");
+    const isArtistFavorite = useIsFavorite(artistId || "", 'artist');
 
     const currentTab = activeView === "songs" ? "ArtistSongs" : activeView === "albums" ? "ArtistAlbums" : "ArtistSongs";
     const sortConfig = allSortConfigs[currentTab];
@@ -193,26 +195,26 @@ export default function ArtistDetailsScreen() {
                     </View>
 
                     <View className="w-[88px] flex-row justify-end gap-3">
-                        <Pressable 
-                            className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}
-                            onPress={() => {
-                                if (name) {
+                        {artistId && (
+                            <Pressable 
+                                className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}
+                                onPress={() => {
                                     toggleFavoriteItem(
-                                        name,
+                                        artistId,
                                         'artist',
-                                        name,
+                                        name || '',
                                         `${artistTracks.length} songs`,
                                         artistImage
                                     );
-                                }
-                            }}
-                        >
-                            <Ionicons 
-                                name={isArtistFavorite ? "heart" : "heart-outline"} 
-                                size={22} 
-                                color={isArtistFavorite ? "#ef4444" : getIconColor()} 
-                            />
-                        </Pressable>
+                                }}
+                            >
+                                <Ionicons 
+                                    name={isArtistFavorite ? "heart" : "heart-outline"} 
+                                    size={22} 
+                                    color={isArtistFavorite ? "#ef4444" : getIconColor()} 
+                                />
+                            </Pressable>
+                        )}
                         <Pressable className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}>
                             <Ionicons name="ellipsis-horizontal" size={22} color={getIconColor()} />
                         </Pressable>

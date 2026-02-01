@@ -8,6 +8,13 @@
       "when": 1769760255429,
       "tag": "0000_burly_anthem",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1769908526600,
+      "tag": "0001_burly_nehzno",
+      "breakpoints": true
     }
   ]
 }

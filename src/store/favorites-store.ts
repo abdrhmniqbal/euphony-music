@@ -30,13 +30,12 @@ export const toggleFavoriteItem = async (
     image?: string
 ) => {
     const currentFavorites = $favorites.get();
-    const existingIndex = currentFavorites.findIndex(f => f.id === id);
+    const existingIndex = currentFavorites.findIndex(f => f.id === id && f.type === type);
     
     if (existingIndex >= 0) {
         // Remove from favorites
-        const compositeId = `${type}-${id}`;
-        await removeFavorite(compositeId);
-        const newFavorites = currentFavorites.filter(f => f.id !== id);
+        await removeFavorite(id, type);
+        const newFavorites = currentFavorites.filter(f => !(f.id === id && f.type === type));
         $favorites.set(newFavorites);
         return false;
     } else {
@@ -50,15 +49,17 @@ export const toggleFavoriteItem = async (
             dateAdded: Date.now()
         };
         await addFavorite(entry);
-        $favorites.set([entry, ...currentFavorites]);
+        const newFavorites = [entry, ...currentFavorites];
+        // Re-sort by dateAdded
+        newFavorites.sort((a, b) => b.dateAdded - a.dateAdded);
+        $favorites.set(newFavorites);
         return true;
     }
 };
 
 // Check if an item is favorited
 export const checkIsFavorite = async (id: string, type: FavoriteType = 'track'): Promise<boolean> => {
-    const compositeId = `${type}-${id}`;
-    return isFavoriteDB(compositeId);
+    return isFavoriteDB(id, type);
 };
 
 // Get favorites by type

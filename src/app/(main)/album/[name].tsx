@@ -121,7 +121,9 @@ export default function AlbumDetailsScreen() {
     // Group tracks by disc for display
     const tracksByDisc = groupTracksByDisc(sortedTracks);
 
-    const isAlbumFavorite = useIsFavorite(albumName);
+    // Get album ID from first track
+    const albumId = albumTracks[0]?.albumId;
+    const isAlbumFavorite = useIsFavorite(albumId || "", 'album');
     const [scrollY, setScrollY] = useState(0);
     const [sortModalVisible, setSortModalVisible] = useState(false);
 
@@ -232,24 +234,26 @@ export default function AlbumDetailsScreen() {
                     </View>
 
                     <View className="w-[88px] flex-row justify-end gap-3">
-                        <Pressable
-                            className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}
-                            onPress={() => {
-                                toggleFavoriteItem(
-                                    albumName,
-                                    'album',
-                                    albumInfo.title,
-                                    albumInfo.artist,
-                                    albumInfo.image
-                                );
-                            }}
-                        >
-                            <Ionicons
-                                name={isAlbumFavorite ? "heart" : "heart-outline"}
-                                size={22}
-                                color={isAlbumFavorite ? "#ef4444" : getIconColor()}
-                            />
-                        </Pressable>
+                        {albumId && (
+                            <Pressable
+                                className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}
+                                onPress={() => {
+                                    toggleFavoriteItem(
+                                        albumId,
+                                        'album',
+                                        albumInfo.title,
+                                        albumInfo.artist,
+                                        albumInfo.image
+                                    );
+                                }}
+                            >
+                                <Ionicons
+                                    name={isAlbumFavorite ? "heart" : "heart-outline"}
+                                    size={22}
+                                    color={isAlbumFavorite ? "#ef4444" : getIconColor()}
+                                />
+                            </Pressable>
+                        )}
                         <Pressable className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}>
                             <Ionicons name="ellipsis-horizontal" size={22} color={getIconColor()} />
                         </Pressable>

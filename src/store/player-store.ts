@@ -1,6 +1,5 @@
 import { atom } from 'nanostores';
-import { createAudioPlayer, AudioPlayer, AudioStatus, setAudioModeAsync } from 'expo-audio';
-import { MediaControl, PlaybackState, Command } from 'expo-media-control';
+import TrackPlayer, { Event, State, Capability } from '@weights-ai/react-native-track-player';
 import { loadFavorites } from '@/store/favorites-store';
 import { 
   addToHistory, 
@@ -17,8 +16,10 @@ export interface Track {
     id: string;
     title: string;
     artist?: string;
+    artistId?: string;
     albumArtist?: string;
     album?: string;
+    albumId?: string;
     duration: number;
     uri: string;
     image?: string;
@@ -43,168 +44,239 @@ export const $isPlaying = atom(false);
 export const $currentTime = atom(0);
 export const $duration = atom(0);
 
-let player: AudioPlayer | null = null;
+let isPlayerReady = false;
 let currentTrackIndex = -1;
 
-// Initialize favorites on load
-loadFavorites();
+// Note: loadFavorites() is now called after database initialization in DatabaseProvider
 
 export const setupPlayer = async () => {
     try {
-        // Configure audio mode for background playback
-        await setAudioModeAsync({
-            playsInSilentMode: true,
-            shouldPlayInBackground: true,
-            shouldRouteThroughEarpiece: false,
-            interruptionMode: 'doNotMix',
+        await TrackPlayer.setupPlayer({
+            autoHandleInterruptions: true,
         });
 
-        await MediaControl.enableMediaControls({
+        await TrackPlayer.updateOptions({
             capabilities: [
-                Command.PLAY,
-                Command.PAUSE,
-                Command.NEXT_TRACK,
-                Command.PREVIOUS_TRACK,
-                Command.SEEK,
+                Capability.Play,
+                Capability.Pause,
+                Capability.SkipToNext,
+                Capability.SkipToPrevious,
+                Capability.SeekTo,
             ],
-            notification: {
-                icon: 'notification_icon',
-                showWhenClosed: true,
-            }
+            compactCapabilities: [
+                Capability.Play,
+                Capability.Pause,
+                Capability.SkipToNext,
+                Capability.SkipToPrevious,
+            ],
+            progressUpdateEventInterval: 1,
         });
 
-        MediaControl.addListener((event) => {
-            switch (event.command) {
-                case Command.PLAY:
-                    resumeTrack();
-                    break;
-                case Command.PAUSE:
-                    pauseTrack();
-                    break;
-                case Command.NEXT_TRACK:
-                    playNext();
-                    break;
-                case Command.PREVIOUS_TRACK:
-                    playPrevious();
-                    break;
-                case Command.SEEK:
-                    if (event.data?.position !== undefined) {
-                        seekTo(event.data.position);
-                    }
-                    break;
-            }
-        });
+        isPlayerReady = true;
     } catch (e) {
-        console.error("Failed to setup MediaControl", e);
+        console.error("Failed to setup TrackPlayer", e);
     }
 };
 
-const setupPlayerListeners = () => {
-    if (!player) return;
+// Playback service for background controls
+export const PlaybackService = async () => {
+    TrackPlayer.addEventListener(Event.RemotePlay, () => {
+        TrackPlayer.play();
+    });
 
-    player.addListener('playbackStatusUpdate', (status: AudioStatus) => {
-        $currentTime.set(status.currentTime);
-        $duration.set(status.duration);
-        $isPlaying.set(status.playing);
+    TrackPlayer.addEventListener(Event.RemotePause, () => {
+        TrackPlayer.pause();
+    });
 
-        MediaControl.updatePlaybackState(
-            status.playing ? PlaybackState.PLAYING : PlaybackState.PAUSED,
-            status.currentTime
-        );
+    TrackPlayer.addEventListener(Event.RemoteNext, () => {
+        playNext();
+    });
 
-        if (status.didJustFinish) {
-            playNext();
+    TrackPlayer.addEventListener(Event.RemotePrevious, () => {
+        playPrevious();
+    });
+
+    TrackPlayer.addEventListener(Event.RemoteSeek, (event) => {
+        if (event.position !== undefined) {
+            TrackPlayer.seekTo(event.position);
         }
+    });
+
+    TrackPlayer.addEventListener(Event.PlaybackState, (event) => {
+        $isPlaying.set(event.state === State.Playing);
+    });
+
+    // v4 API: Use PlaybackTrackChanged with nextTrack property
+    TrackPlayer.addEventListener(Event.PlaybackTrackChanged, async (event) => {
+        // In v4, event.nextTrack is the track ID (string)
+        if (event.nextTrack !== undefined && event.nextTrack !== null) {
+            const track = await TrackPlayer.getTrack(event.nextTrack);
+            if (track) {
+                // Map from TrackPlayer's Track format back to our Track interface
+                const currentTrack: Track = {
+                    id: track.id as string,
+                    title: track.title as string,
+                    artist: track.artist,
+                    album: track.album,
+                    duration: track.duration || 0,
+                    uri: track.url as string,
+                    image: track.artwork as string | undefined,
+                };
+                $currentTrack.set(currentTrack);
+                
+                // Add to history and increment play count
+                addToHistory(currentTrack.id);
+                incrementPlayCount(currentTrack.id);
+            }
+        }
+    });
+
+    TrackPlayer.addEventListener(Event.PlaybackQueueEnded, () => {
+        // Optionally handle queue ended - could loop or stop
+    });
+
+    TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, (event) => {
+        $currentTime.set(event.position);
+        $duration.set(event.duration);
     });
 };
 
 export const playTrack = async (track: Track) => {
-    if (!player) {
-        player = createAudioPlayer(track.uri);
-        setupPlayerListeners();
-    } else {
-        player.replace(track.uri);
+    if (!isPlayerReady) {
+        console.warn("Player not ready");
+        return;
     }
-
-    $currentTrack.set(track);
-    currentTrackIndex = $tracks.get().findIndex(t => t.id === track.id);
-    $currentTrack.set(track);
-    currentTrackIndex = $tracks.get().findIndex(t => t.id === track.id);
-    
-    // Add to history and increment play count
-    addToHistory(track.id);
-    incrementPlayCount(track.id);
-
-    player.play();
-    $isPlaying.set(true);
 
     try {
-        await MediaControl.updateMetadata({
-            title: track.title,
-            artist: track.artist,
-            album: track.album || "Unknown Album",
-            duration: track.duration,
-            artwork: track.image ? { uri: track.image } : undefined,
-        });
-
-        MediaControl.updatePlaybackState(PlaybackState.PLAYING, 0);
-    } catch (e) {
-        console.warn("Failed to update media control metadata", e);
-    }
-};
-
-export const pauseTrack = () => {
-    if (player) {
-        player.pause();
-        $isPlaying.set(false);
-        MediaControl.updatePlaybackState(PlaybackState.PAUSED, player.currentTime);
-    }
-};
-
-export const resumeTrack = () => {
-    if (player) {
-        player.play();
-        $isPlaying.set(true);
-        MediaControl.updatePlaybackState(PlaybackState.PLAYING, player.currentTime);
-    }
-};
-
-export const togglePlayback = () => {
-    if (!player) return;
-    if (player.playing) {
-        pauseTrack();
-    } else {
-        resumeTrack();
-    }
-};
-
-export const playNext = () => {
-    const tracks = $tracks.get();
-    if (tracks.length === 0) return;
-
-    let nextIndex = currentTrackIndex + 1;
-    if (nextIndex >= tracks.length) nextIndex = 0;
-
-    playTrack(tracks[nextIndex]);
-};
-
-export const playPrevious = () => {
-    const tracks = $tracks.get();
-    if (tracks.length === 0) return;
-
-    let prevIndex = currentTrackIndex - 1;
-    if (prevIndex < 0) prevIndex = tracks.length - 1;
-
-    playTrack(tracks[prevIndex]);
-};
-
-export const seekTo = (seconds: number) => {
-    if (player) {
-        player.seekTo(seconds);
-        MediaControl.updatePlaybackState(
-            player.playing ? PlaybackState.PLAYING : PlaybackState.PAUSED,
-            seconds
+        // Reset and add the track
+        await TrackPlayer.reset();
+        
+        // Find current track index in the queue
+        const tracks = $tracks.get();
+        currentTrackIndex = tracks.findIndex(t => t.id === track.id);
+        
+        // Add all tracks to the queue starting from the current one
+        const queue = tracks.slice(currentTrackIndex).concat(tracks.slice(0, currentTrackIndex));
+        
+        // Map our Track interface to TrackPlayer's expected format
+        await TrackPlayer.add(
+            queue.map(t => ({
+                id: t.id,
+                url: t.uri,
+                title: t.title,
+                artist: t.artist,
+                album: t.album,
+                artwork: t.image,
+                duration: t.duration,
+            }))
         );
+
+        $currentTrack.set(track);
+        
+        // Add to history and increment play count
+        addToHistory(track.id);
+        incrementPlayCount(track.id);
+
+        await TrackPlayer.play();
+        $isPlaying.set(true);
+    } catch (e) {
+        console.error("Failed to play track", e);
+    }
+};
+
+export const pauseTrack = async () => {
+    try {
+        await TrackPlayer.pause();
+        $isPlaying.set(false);
+    } catch (e) {
+        console.error("Failed to pause track", e);
+    }
+};
+
+export const resumeTrack = async () => {
+    try {
+        await TrackPlayer.play();
+        $isPlaying.set(true);
+    } catch (e) {
+        console.error("Failed to resume track", e);
+    }
+};
+
+export const togglePlayback = async () => {
+    // v4 API: getState() returns the state directly
+    const state = await TrackPlayer.getState();
+    if (state === State.Playing) {
+        await pauseTrack();
+    } else {
+        await resumeTrack();
+    }
+};
+
+export const playNext = async () => {
+    try {
+        await TrackPlayer.skipToNext();
+        // v4 API: getCurrentTrack() returns the track ID (string)
+        const currentTrackId = await TrackPlayer.getCurrentTrack();
+        if (currentTrackId !== undefined && currentTrackId !== null) {
+            const track = await TrackPlayer.getTrack(currentTrackId);
+            if (track) {
+                // Map from TrackPlayer's Track format back to our Track interface
+                $currentTrack.set({
+                    id: track.id as string,
+                    title: track.title as string,
+                    artist: track.artist,
+                    album: track.album,
+                    duration: track.duration || 0,
+                    uri: track.url as string,
+                    image: track.artwork as string | undefined,
+                } as Track);
+            }
+        }
+    } catch (e) {
+        // If at end of queue, wrap to beginning
+        const tracks = $tracks.get();
+        if (tracks.length > 0) {
+            await playTrack(tracks[0]);
+        }
+    }
+};
+
+export const playPrevious = async () => {
+    try {
+        // v4 API: getPosition() returns position directly
+        const position = await TrackPlayer.getPosition();
+        if (position > 3) {
+            await TrackPlayer.seekTo(0);
+        } else {
+            await TrackPlayer.skipToPrevious();
+            // v4 API: getCurrentTrack() returns the track ID (string)
+            const currentTrackId = await TrackPlayer.getCurrentTrack();
+            if (currentTrackId !== undefined && currentTrackId !== null) {
+                const track = await TrackPlayer.getTrack(currentTrackId);
+                if (track) {
+                    // Map from TrackPlayer's Track format back to our Track interface
+                    $currentTrack.set({
+                        id: track.id as string,
+                        title: track.title as string,
+                        artist: track.artist,
+                        album: track.album,
+                        duration: track.duration || 0,
+                        uri: track.url as string,
+                        image: track.artwork as string | undefined,
+                    } as Track);
+                }
+            }
+        }
+    } catch (e) {
+        // If at beginning of queue, stay at first track
+    }
+};
+
+export const seekTo = async (seconds: number) => {
+    try {
+        await TrackPlayer.seekTo(seconds);
+    } catch (e) {
+        console.error("Failed to seek", e);
     }
 };
 
@@ -227,4 +299,56 @@ export const toggleFavorite = (trackId: string) => {
     }
 
     toggleFavoriteDB(trackId, newStatus);
+};
+
+export const setQueue = async (tracks: Track[]) => {
+    $tracks.set(tracks);
+};
+
+// Load tracks from database
+export const loadTracks = async () => {
+    try {
+        const db = (await import('@/db/client')).db;
+        const { tracks } = await import('@/db/schema');
+        const { eq } = await import('drizzle-orm');
+        
+        const dbTracks = await db.query.tracks.findMany({
+            where: eq(tracks.isDeleted, 0),
+            with: {
+                artist: true,
+                album: true,
+            },
+        });
+        
+        // Transform database tracks to Track interface
+        const trackList: Track[] = dbTracks.map(t => ({
+            id: t.id,
+            title: t.title,
+            artist: t.artist?.name,
+            artistId: t.artistId || undefined,
+            albumArtist: t.artist?.name,
+            album: t.album?.title,
+            albumId: t.albumId || undefined,
+            duration: t.duration,
+            uri: t.uri,
+            image: t.artwork || undefined,
+            lyrics: t.lyrics ? JSON.parse(t.lyrics) : undefined,
+            fileHash: t.fileHash || undefined,
+            scanTime: t.scanTime || undefined,
+            isDeleted: Boolean(t.isDeleted),
+            playCount: t.playCount || 0,
+            lastPlayedAt: t.lastPlayedAt || undefined,
+            year: t.year || undefined,
+            filename: t.filename || undefined,
+            dateAdded: t.dateAdded || undefined,
+            isFavorite: Boolean(t.isFavorite),
+            discNumber: t.discNumber || undefined,
+            trackNumber: t.trackNumber || undefined,
+            genre: undefined, // Would need to fetch from trackGenres
+        }));
+        
+        $tracks.set(trackList);
+    } catch (error) {
+        console.error('Failed to load tracks:', error);
+    }
 };

@@ -11,11 +11,14 @@ export const artists = sqliteTable("artists", {
   bio: text("bio"),
   trackCount: integer("track_count").default(0),
   albumCount: integer("album_count").default(0),
+  isFavorite: integer("is_favorite").default(0),
+  favoritedAt: integer("favorited_at"),
   createdAt: integer("created_at").notNull().$defaultFn(() => Date.now()),
   updatedAt: integer("updated_at").notNull().$defaultFn(() => Date.now()),
 }, (table) => ({
   nameIdx: index("artists_name_idx").on(table.name),
   sortNameIdx: index("artists_sort_name_idx").on(table.sortName),
+  isFavoriteIdx: index("artists_is_favorite_idx").on(table.isFavorite),
 }));
 
 export const albums = sqliteTable("albums", {
@@ -28,12 +31,15 @@ export const albums = sqliteTable("albums", {
   discCount: integer("disc_count"),
   trackCount: integer("track_count").default(0),
   duration: real("duration"),
+  isFavorite: integer("is_favorite").default(0),
+  favoritedAt: integer("favorited_at"),
   createdAt: integer("created_at").notNull().$defaultFn(() => Date.now()),
   updatedAt: integer("updated_at").notNull().$defaultFn(() => Date.now()),
 }, (table) => ({
   titleIdx: index("albums_title_idx").on(table.title),
   artistIdx: index("albums_artist_idx").on(table.artistId),
   yearIdx: index("albums_year_idx").on(table.year),
+  isFavoriteIdx: index("albums_is_favorite_idx").on(table.isFavorite),
 }));
 
 export const genres = sqliteTable("genres", {
@@ -68,6 +74,7 @@ export const tracks = sqliteTable("tracks", {
   playCount: integer("play_count").default(0),
   lastPlayedAt: integer("last_played_at"),
   isFavorite: integer("is_favorite").default(0),
+  favoritedAt: integer("favorited_at"),
   rating: integer("rating"),
   
   // File management
@@ -124,6 +131,7 @@ export const playlists = sqliteTable("playlists", {
   trackCount: integer("track_count").default(0),
   duration: real("duration"),
   isFavorite: integer("is_favorite").default(0),
+  favoritedAt: integer("favorited_at"),
   createdAt: integer("created_at").notNull().$defaultFn(() => Date.now()),
   updatedAt: integer("updated_at").notNull().$defaultFn(() => Date.now()),
 });
@@ -149,20 +157,6 @@ export const playHistory = sqliteTable("play_history", {
 }, (table) => ({
   trackIdx: index("play_history_track_idx").on(table.trackId),
   playedAtIdx: index("play_history_played_at_idx").on(table.playedAt),
-}));
-
-export const favorites = sqliteTable("favorites", {
-  id: text("id").primaryKey(),
-  type: text("type").notNull(),
-  itemId: text("item_id").notNull(),
-  name: text("name").notNull(),
-  subtitle: text("subtitle"),
-  artwork: text("artwork"),
-  createdAt: integer("created_at").notNull().$defaultFn(() => Date.now()),
-}, (table) => ({
-  typeIdx: index("favorites_type_idx").on(table.type),
-  itemIdx: index("favorites_item_idx").on(table.type, table.itemId),
-  createdAtIdx: index("favorites_created_at_idx").on(table.createdAt),
 }));
 
 // ==================== SYSTEM TABLES ====================

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from "react-native";
 import { db } from "@/db/client";
+import { loadFavorites } from "@/store/favorites-store";
+import { loadTracks } from "@/store/player-store";
 
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -11,11 +13,15 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
       try {
         // Check if tables exist by trying to query
         await db.query.appSettings.findFirst();
+        // Tables exist, load data
+        await loadData();
         setReady(true);
       } catch (e) {
         // Tables don't exist, need to create them
         try {
           await createTables();
+          // After creating tables, load data
+          await loadData();
           setReady(true);
         } catch (createError) {
           setError(createError as Error);
@@ -25,6 +31,15 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
 
     initDatabase();
   }, []);
+  
+  async function loadData() {
+    try {
+      await loadFavorites();
+      await loadTracks();
+    } catch (e) {
+      console.error('Error loading data:', e);
+    }
+  }
 
   if (error) {
     return (
@@ -50,7 +65,7 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
 }
 
 async function createTables() {
-  // Create tables in correct order (dependencies first)
+  // 1. artists (with is_favorite, favorited_at)
   await db.run(`
     CREATE TABLE IF NOT EXISTS artists (
       id TEXT PRIMARY KEY,
@@ -60,6 +75,8 @@ async function createTables() {
       bio TEXT,
       track_count INTEGER DEFAULT 0,
       album_count INTEGER DEFAULT 0,
+      is_favorite INTEGER DEFAULT 0,
+      favorited_at INTEGER,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
@@ -74,6 +91,11 @@ async function createTables() {
   `);
 
   await db.run(`
+    CREATE INDEX IF NOT EXISTS artists_favorite_idx ON artists (is_favorite);
+  `);
+
+  // 2. albums (with is_favorite, favorited_at)
+  await db.run(`
     CREATE TABLE IF NOT EXISTS albums (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -84,6 +106,8 @@ async function createTables() {
       disc_count INTEGER,
       track_count INTEGER DEFAULT 0,
       duration REAL,
+      is_favorite INTEGER DEFAULT 0,
+      favorited_at INTEGER,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL,
       FOREIGN KEY (artist_id) REFERENCES artists (id) ON DELETE SET NULL
@@ -103,6 +127,11 @@ async function createTables() {
   `);
 
   await db.run(`
+    CREATE INDEX IF NOT EXISTS albums_favorite_idx ON albums (is_favorite);
+  `);
+
+  // 3. genres
+  await db.run(`
     CREATE TABLE IF NOT EXISTS genres (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL UNIQUE,
@@ -115,6 +144,7 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS genres_name_idx ON genres (name);
   `);
 
+  // 4. tracks (with is_favorite, favorited_at)
   await db.run(`
     CREATE TABLE IF NOT EXISTS tracks (
       id TEXT PRIMARY KEY,
@@ -131,6 +161,7 @@ async function createTables() {
       play_count INTEGER DEFAULT 0,
       last_played_at INTEGER,
       is_favorite INTEGER DEFAULT 0,
+      favorited_at INTEGER,
       rating INTEGER,
       date_added INTEGER,
       is_deleted INTEGER DEFAULT 0,
@@ -174,6 +205,7 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS tracks_last_played_idx ON tracks (last_played_at);
   `);
 
+  // 5. track_genres
   await db.run(`
     CREATE TABLE IF NOT EXISTS track_genres (
       track_id TEXT NOT NULL,
@@ -192,6 +224,7 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS track_genres_genre_idx ON track_genres (genre_id);
   `);
 
+  // 6. track_artists
   await db.run(`
     CREATE TABLE IF NOT EXISTS track_artists (
       track_id TEXT NOT NULL,
@@ -211,6 +244,7 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS track_artists_artist_idx ON track_artists (artist_id);
   `);
 
+  // 7. playlists (with is_favorite, favorited_at)
   await db.run(`
     CREATE TABLE IF NOT EXISTS playlists (
       id TEXT PRIMARY KEY,
@@ -220,11 +254,13 @@ async function createTables() {
       track_count INTEGER DEFAULT 0,
       duration REAL,
       is_favorite INTEGER DEFAULT 0,
+      favorited_at INTEGER,
       created_at INTEGER NOT NULL,
       updated_at INTEGER NOT NULL
     );
   `);
 
+  // 8. playlist_tracks
   await db.run(`
     CREATE TABLE IF NOT EXISTS playlist_tracks (
       id TEXT PRIMARY KEY,
@@ -249,6 +285,7 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS playlist_tracks_position_idx ON playlist_tracks (playlist_id, position);
   `);
 
+  // 9. play_history
   await db.run(`
     CREATE TABLE IF NOT EXISTS play_history (
       id TEXT PRIMARY KEY,
@@ -268,30 +305,7 @@ async function createTables() {
     CREATE INDEX IF NOT EXISTS play_history_played_at_idx ON play_history (played_at);
   `);
 
-  await db.run(`
-    CREATE TABLE IF NOT EXISTS favorites (
-      id TEXT PRIMARY KEY,
-      type TEXT NOT NULL,
-      item_id TEXT NOT NULL,
-      name TEXT NOT NULL,
-      subtitle TEXT,
-      artwork TEXT,
-      created_at INTEGER NOT NULL
-    );
-  `);
-
-  await db.run(`
-    CREATE INDEX IF NOT EXISTS favorites_type_idx ON favorites (type);
-  `);
-
-  await db.run(`
-    CREATE INDEX IF NOT EXISTS favorites_item_idx ON favorites (type, item_id);
-  `);
-
-  await db.run(`
-    CREATE INDEX IF NOT EXISTS favorites_created_at_idx ON favorites (created_at);
-  `);
-
+  // 10. artwork_cache
   await db.run(`
     CREATE TABLE IF NOT EXISTS artwork_cache (
       hash TEXT PRIMARY KEY,
@@ -305,6 +319,7 @@ async function createTables() {
     );
   `);
 
+  // 11. indexer_state
   await db.run(`
     CREATE TABLE IF NOT EXISTS indexer_state (
       key TEXT PRIMARY KEY,
@@ -313,6 +328,7 @@ async function createTables() {
     );
   `);
 
+  // 12. app_settings
   await db.run(`
     CREATE TABLE IF NOT EXISTS app_settings (
       key TEXT PRIMARY KEY,

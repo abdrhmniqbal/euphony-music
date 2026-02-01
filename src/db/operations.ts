@@ -1,6 +1,7 @@
 import { db } from "@/db/client";
-import { tracks, playHistory, favorites } from "@/db/schema";
-import { eq, desc, sql } from "drizzle-orm";
+import { tracks, playHistory, artists, albums, playlists } from "@/db/schema";
+import { eq, desc, sql, and } from "drizzle-orm";
+import type { Track } from "@/store/player-store";
 
 // Play History Operations
 export async function addToHistory(trackId: string): Promise<void> {
@@ -57,60 +58,83 @@ export interface FavoriteEntry {
   dateAdded: number;
 }
 
+// Helper to get the correct table for each entity type
+function getTableForType(type: FavoriteType) {
+  switch (type) {
+    case 'track':
+      return tracks;
+    case 'artist':
+      return artists;
+    case 'album':
+      return albums;
+    case 'playlist':
+      return playlists;
+    default:
+      throw new Error(`Unknown favorite type: ${type}`);
+  }
+}
+
 export async function addFavorite(entry: FavoriteEntry): Promise<void> {
   try {
-    const compositeId = `${entry.type}-${entry.id}`;
-    await db.insert(favorites).values({
-      id: compositeId,
-      type: entry.type,
-      itemId: entry.id,
-      name: entry.name,
-      subtitle: entry.subtitle || null,
-      artwork: entry.image || null,
-      createdAt: entry.dateAdded,
-    });
+    const table = getTableForType(entry.type);
+    const now = Date.now();
 
-    // Also update track table if it's a track
-    if (entry.type === 'track') {
-      await db
-        .update(tracks)
-        .set({ isFavorite: 1 })
-        .where(eq(tracks.id, entry.id));
-    }
+    await db
+      .update(table)
+      .set({
+        isFavorite: 1,
+        favoritedAt: now,
+      } as any)
+      .where(eq(table.id, entry.id));
   } catch (e) {
     console.warn('Failed to add favorite:', e);
   }
 }
 
-export async function removeFavorite(id: string): Promise<void> {
+export async function removeFavorite(id: string, type: FavoriteType): Promise<void> {
   try {
-    // Check if it's a composite id (type-itemId) or just itemId
-    const favorite = await db.query.favorites.findFirst({
-      where: eq(favorites.id, id),
-    });
+    const table = getTableForType(type);
 
-    if (favorite) {
-      await db.delete(favorites).where(eq(favorites.id, id));
-
-      // Also update track table if it's a track
-      if (favorite.type === 'track') {
-        await db
-          .update(tracks)
-          .set({ isFavorite: 0 })
-          .where(eq(tracks.id, favorite.itemId));
-      }
-    }
+    await db
+      .update(table)
+      .set({
+        isFavorite: 0,
+        favoritedAt: null,
+      } as any)
+      .where(eq(table.id, id));
   } catch (e) {
     console.warn('Failed to remove favorite:', e);
   }
 }
 
-export async function isFavorite(id: string): Promise<boolean> {
+export async function isFavorite(id: string, type: FavoriteType): Promise<boolean> {
   try {
-    const favorite = await db.query.favorites.findFirst({
-      where: eq(favorites.id, id),
-    });
-    return !!favorite;
+    let result: any = null;
+    
+    switch (type) {
+      case 'track':
+        result = await db.query.tracks.findFirst({
+          where: and(eq(tracks.id, id), eq(tracks.isFavorite, 1)),
+        });
+        break;
+      case 'artist':
+        result = await db.query.artists.findFirst({
+          where: and(eq(artists.id, id), eq(artists.isFavorite, 1)),
+        });
+        break;
+      case 'album':
+        result = await db.query.albums.findFirst({
+          where: and(eq(albums.id, id), eq(albums.isFavorite, 1)),
+        });
+        break;
+      case 'playlist':
+        result = await db.query.playlists.findFirst({
+          where: and(eq(playlists.id, id), eq(playlists.isFavorite, 1)),
+        });
+        break;
+    }
+    
+    return !!result;
   } catch (e) {
     console.warn('Failed to check favorite:', e);
     return false;
@@ -119,51 +143,102 @@ export async function isFavorite(id: string): Promise<boolean> {
 
 export async function getFavorites(type?: FavoriteType): Promise<FavoriteEntry[]> {
   try {
-    let query = db.query.favorites.findMany({
-      orderBy: [desc(favorites.createdAt)],
-    });
+    const favorites: FavoriteEntry[] = [];
 
-    const results = await query;
+    // Query tracks
+    if (!type || type === 'track') {
+      const favTracks = await db.query.tracks.findMany({
+        where: eq(tracks.isFavorite, 1),
+        orderBy: [desc(tracks.favoritedAt)],
+      });
+      favorites.push(...favTracks.map((t) => ({
+        id: t.id,
+        type: 'track' as FavoriteType,
+        name: t.title,
+        subtitle: undefined,
+        image: t.artwork || undefined,
+        dateAdded: t.favoritedAt || Date.now(),
+      })));
+    }
 
-    const filtered = type ? results.filter((f) => f.type === type) : results;
+    // Query artists
+    if (!type || type === 'artist') {
+      const favArtists = await db.query.artists.findMany({
+        where: eq(artists.isFavorite, 1),
+        orderBy: [desc(artists.favoritedAt)],
+      });
+      favorites.push(...favArtists.map((a) => ({
+        id: a.id,
+        type: 'artist' as FavoriteType,
+        name: a.name,
+        subtitle: `${a.trackCount} tracks`,
+        image: a.artwork || undefined,
+        dateAdded: a.favoritedAt || Date.now(),
+      })));
+    }
 
-    return filtered.map((f) => ({
-      id: f.itemId,
-      type: f.type as FavoriteType,
-      name: f.name,
-      subtitle: f.subtitle || undefined,
-      image: f.artwork || undefined,
-      dateAdded: f.createdAt,
-    }));
+    // Query albums
+    if (!type || type === 'album') {
+      const favAlbums = await db.query.albums.findMany({
+        where: eq(albums.isFavorite, 1),
+        orderBy: [desc(albums.favoritedAt)],
+      });
+      favorites.push(...favAlbums.map((a) => ({
+        id: a.id,
+        type: 'album' as FavoriteType,
+        name: a.title,
+        subtitle: a.year?.toString() || undefined,
+        image: a.artwork || undefined,
+        dateAdded: a.favoritedAt || Date.now(),
+      })));
+    }
+
+    // Query playlists
+    if (!type || type === 'playlist') {
+      const favPlaylists = await db.query.playlists.findMany({
+        where: eq(playlists.isFavorite, 1),
+        orderBy: [desc(playlists.favoritedAt)],
+      });
+      favorites.push(...favPlaylists.map((p) => ({
+        id: p.id,
+        type: 'playlist' as FavoriteType,
+        name: p.name,
+        subtitle: `${p.trackCount} tracks`,
+        image: p.artwork || undefined,
+        dateAdded: p.favoritedAt || Date.now(),
+      })));
+    }
+
+    // Sort all favorites by date added (most recent first)
+    favorites.sort((a, b) => b.dateAdded - a.dateAdded);
+
+    return favorites;
   } catch (e) {
     console.warn('Failed to get favorites:', e);
     return [];
   }
 }
 
-export async function toggleFavoriteDB(trackId: string, isFavorite: boolean): Promise<void> {
+export async function toggleFavoriteDB(trackId: string, isFavoriteValue: boolean): Promise<void> {
   try {
-    const compositeId = `track-${trackId}`;
-    
-    if (isFavorite) {
+    if (isFavoriteValue) {
       // Add to favorites
-      const track = await db.query.tracks.findFirst({
-        where: eq(tracks.id, trackId),
-      });
-
-      if (track) {
-        await addFavorite({
-          id: trackId,
-          type: 'track',
-          name: track.title,
-          subtitle: track.artist || undefined,
-          image: track.artwork || undefined,
-          dateAdded: Date.now(),
-        });
-      }
+      await db
+        .update(tracks)
+        .set({
+          isFavorite: 1,
+          favoritedAt: Date.now(),
+        })
+        .where(eq(tracks.id, trackId));
     } else {
       // Remove from favorites
-      await removeFavorite(compositeId);
+      await db
+        .update(tracks)
+        .set({
+          isFavorite: 0,
+          favoritedAt: null,
+        })
+        .where(eq(tracks.id, trackId));
     }
   } catch (e) {
     console.warn('Failed to toggle favorite:', e);
@@ -200,7 +275,7 @@ export async function getTopSongsByGenre(genre: string, limit: number = 25): Pro
       limit,
     });
 
-    return songs.filter((t: any) => t.playCount > 0);
+    return songs.filter((t: any) => t.playCount && t.playCount > 0);
   } catch (e) {
     console.warn('Failed to get top songs by genre:', e);
     return [];
@@ -249,12 +324,17 @@ export async function getAlbumsByGenre(genre: string): Promise<AlbumInfo[]> {
 }
 
 // History and Top Songs Operations
-export async function getHistory(): Promise<any[]> {
+export async function getHistory(): Promise<Track[]> {
   try {
     const history = await db.query.playHistory.findMany({
       orderBy: [desc(playHistory.playedAt)],
       with: {
-        track: true,
+        track: {
+          with: {
+            artist: true,
+            album: true,
+          },
+        },
       },
       limit: 50,
     });
@@ -262,7 +342,24 @@ export async function getHistory(): Promise<any[]> {
     // Map to Track format and filter out deleted tracks
     return history
       .filter((h) => h.track && !h.track.isDeleted)
-      .map((h) => h.track);
+      .map((h) => ({
+        id: h.track.id,
+        title: h.track.title,
+        artist: h.track.artist?.name,
+        artistId: h.track.artistId || undefined,
+        albumArtist: h.track.artist?.name,
+        album: h.track.album?.title,
+        albumId: h.track.albumId || undefined,
+        duration: h.track.duration,
+        uri: h.track.uri,
+        image: h.track.artwork || undefined,
+        playCount: h.track.playCount || 0,
+        lastPlayedAt: h.track.lastPlayedAt || undefined,
+        year: h.track.year || undefined,
+        isFavorite: Boolean(h.track.isFavorite),
+        trackNumber: h.track.trackNumber || undefined,
+        discNumber: h.track.discNumber || undefined,
+      }));
   } catch (e) {
     console.warn('Failed to get history:', e);
     return [];
@@ -272,17 +369,40 @@ export async function getHistory(): Promise<any[]> {
 export async function getTopSongs(
   period: 'all' | 'day' | 'week' = 'all',
   limit: number = 25
-): Promise<any[]> {
+): Promise<Track[]> {
   try {
     if (period === 'all') {
-      // Get tracks sorted by play count
+      // Get tracks sorted by play count with artist/album relations
       const topTracks = await db.query.tracks.findMany({
         where: eq(tracks.isDeleted, 0),
         orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
+        with: {
+          artist: true,
+          album: true,
+        },
         limit,
       });
 
-      return topTracks.filter((t) => t.playCount > 0);
+      return topTracks
+        .filter((t) => t.playCount && t.playCount > 0)
+        .map((t) => ({
+          id: t.id,
+          title: t.title,
+          artist: t.artist?.name,
+          artistId: t.artistId || undefined,
+          albumArtist: t.artist?.name,
+          album: t.album?.title,
+          albumId: t.albumId || undefined,
+          duration: t.duration,
+          uri: t.uri,
+          image: t.artwork || undefined,
+          playCount: t.playCount || 0,
+          lastPlayedAt: t.lastPlayedAt || undefined,
+          year: t.year || undefined,
+          isFavorite: Boolean(t.isFavorite),
+          trackNumber: t.trackNumber || undefined,
+          discNumber: t.discNumber || undefined,
+        }));
     } else {
       // Get tracks from history within time period
       const timeThreshold =
@@ -293,7 +413,12 @@ export async function getTopSongs(
       const history = await db.query.playHistory.findMany({
         where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
         with: {
-          track: true,
+          track: {
+            with: {
+              artist: true,
+              album: true,
+            },
+          },
         },
       });
 
@@ -315,7 +440,24 @@ export async function getTopSongs(
       return Array.from(trackCounts.values())
         .sort((a, b) => b.count - a.count)
         .slice(0, limit)
-        .map((item) => item.track);
+        .map((item) => ({
+          id: item.track.id,
+          title: item.track.title,
+          artist: item.track.artist?.name,
+          artistId: item.track.artistId || undefined,
+          albumArtist: item.track.artist?.name,
+          album: item.track.album?.title,
+          albumId: item.track.albumId || undefined,
+          duration: item.track.duration,
+          uri: item.track.uri,
+          image: item.track.artwork || undefined,
+          playCount: item.track.playCount || 0,
+          lastPlayedAt: item.track.lastPlayedAt || undefined,
+          year: item.track.year || undefined,
+          isFavorite: Boolean(item.track.isFavorite),
+          trackNumber: item.track.trackNumber || undefined,
+          discNumber: item.track.discNumber || undefined,
+        }));
     }
   } catch (e) {
     console.warn('Failed to get top songs:', e);

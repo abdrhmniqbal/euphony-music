@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { db } from "@/db/client";
 import { artworkCache } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -158,7 +158,7 @@ function generateArtworkHash(data: string): string {
   const sample = data.slice(0, 1024);
   let hash = 0;
   for (let i = 0; i < sample.length; i++) {
-    hash = ((hash << 5) - hash) + sample.charCodeAt(i);
+    hash = ((hash << 5) - hash) + data.charCodeAt(i);
     hash |= 0;
   }
   return `${Math.abs(hash).toString(16)}_${data.length}`;
