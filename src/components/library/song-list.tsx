@@ -14,9 +14,18 @@ interface SongListProps {
     hideCover?: boolean;
     hideArtist?: boolean;
     getNumber?: (track: Track, index: number) => number | string;
+    scrollEnabled?: boolean;
 }
 
-export const SongList: React.FC<SongListProps> = ({ data, onSongPress, showNumbers = false, hideCover = false, hideArtist = false, getNumber }) => {
+export const SongList: React.FC<SongListProps> = ({
+    data,
+    onSongPress,
+    showNumbers = false,
+    hideCover = false,
+    hideArtist = false,
+    getNumber,
+    scrollEnabled = true
+}) => {
     const theme = useThemeColors();
 
     const handlePress = useCallback((track: Track) => {
@@ -27,8 +36,9 @@ export const SongList: React.FC<SongListProps> = ({ data, onSongPress, showNumbe
         }
     }, [onSongPress]);
 
-    const renderItem = useCallback(({ item, index }: LegendListRenderItemProps<Track>) => (
+    const renderSongItem = useCallback((item: Track, index: number) => (
         <Item
+            key={item.id}
             onPress={() => handlePress(item)}
         >
             {showNumbers ? (
@@ -57,19 +67,24 @@ export const SongList: React.FC<SongListProps> = ({ data, onSongPress, showNumbe
         return <EmptyState icon="musical-note" title="No Songs" message="Songs you add to your library will appear here." />;
     }
 
+    if (!scrollEnabled) {
+        return (
+            <View style={{ gap: 8 }}>
+                {data.map((item, index) => renderSongItem(item, index))}
+            </View>
+        );
+    }
+
     return (
         <LegendList
             data={data}
-            renderItem={renderItem}
+            renderItem={({ item, index }: LegendListRenderItemProps<Track>) => renderSongItem(item, index)}
             keyExtractor={(item) => item.id}
             style={{ flex: 1 }}
             contentContainerStyle={{ gap: 8 }}
             recycleItems={true}
-            waitForInitialLayout={false}
-            maintainVisibleContentPosition
             estimatedItemSize={72}
-            drawDistance={500}
-            initialContainerPoolRatio={1}
+            drawDistance={250}
         />
     );
 };

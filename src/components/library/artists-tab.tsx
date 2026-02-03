@@ -14,7 +14,7 @@ export const ArtistsTab = React.memo(({ onArtistPress, sortConfig }: ArtistsTabP
     // Use database-level sorting - much faster than client-side
     const orderByField = sortConfig?.field || 'name';
     const order = sortConfig?.order || 'asc';
-    
+
     const { data: artistsData, isLoading, isPending } = useArtists(orderByField as any, order);
 
     // Transform data to match Artist interface (no sorting needed - already sorted by DB)
@@ -36,15 +36,15 @@ export const ArtistsTab = React.memo(({ onArtistPress, sortConfig }: ArtistsTabP
     }
 
     if (artists.length === 0) {
-        return <EmptyState 
-            icon="people" 
-            title="No Artists" 
-            message="Artists from your music library will appear here." 
+        return <EmptyState
+            icon="people"
+            title="No Artists"
+            message="Artists from your music library will appear here."
         />;
     }
 
     // Render grid with data from React Query (already sorted by database)
-    return <ArtistGrid data={artists} onArtistPress={handleArtistPress} />;
+    return <ArtistGrid data={artists} onArtistPress={handleArtistPress} scrollEnabled={false} />;
 });
 
 ArtistsTab.displayName = 'ArtistsTab';

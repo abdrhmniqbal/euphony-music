@@ -17,6 +17,7 @@ interface PlaylistListProps {
     data: Playlist[];
     onPlaylistPress?: (playlist: Playlist) => void;
     onCreatePlaylist?: () => void;
+    scrollEnabled?: boolean;
 }
 
 const GRID_ITEMS = [1, 2, 3, 4] as const;
@@ -24,7 +25,8 @@ const GRID_ITEMS = [1, 2, 3, 4] as const;
 export const PlaylistList: React.FC<PlaylistListProps> = ({
     data,
     onPlaylistPress,
-    onCreatePlaylist
+    onCreatePlaylist,
+    scrollEnabled = true
 }) => {
     const theme = useThemeColors();
 
@@ -39,8 +41,20 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     const formatSongCount = (count: number) =>
         `${count} ${count === 1 ? 'song' : 'songs'}`;
 
-    const renderItem = useCallback(({ item }: LegendListRenderItemProps<Playlist>) => (
+    const renderCreateButton = () => (
+        <Item key="create" onPress={handleCreate}>
+            <ItemImage className="bg-default items-center justify-center">
+                <Ionicons name="add" size={32} color={theme.foreground} />
+            </ItemImage>
+            <ItemContent>
+                <ItemTitle>New Playlist</ItemTitle>
+            </ItemContent>
+        </Item>
+    );
+
+    const renderPlaylistItem = useCallback((item: Playlist) => (
         <Item
+            key={item.id}
             onPress={() => handlePress(item)}
         >
             <ItemImage className="bg-default items-center justify-center overflow-hidden p-1">
@@ -70,33 +84,20 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         </Item>
     ), [handlePress, theme.muted]);
 
-    // Combine create button and playlists into a single list
-    const listData = [
-        { id: 'create', isCreateButton: true },
-        ...data
-    ];
-
-    const renderListItem = useCallback(({ item }: LegendListRenderItemProps<any>) => {
-        if (item.isCreateButton) {
-            return (
-                <Item onPress={handleCreate}>
-                    <ItemImage className="bg-default items-center justify-center">
-                        <Ionicons name="add" size={32} color={theme.foreground} />
-                    </ItemImage>
-                    <ItemContent>
-                        <ItemTitle>New Playlist</ItemTitle>
-                    </ItemContent>
-                </Item>
-            );
-        }
-        return renderItem({ item } as LegendListRenderItemProps<Playlist>);
-    }, [handleCreate, renderItem, theme.foreground]);
+    if (!scrollEnabled) {
+        return (
+            <View style={{ gap: 8 }}>
+                {renderCreateButton()}
+                {data.map(renderPlaylistItem)}
+            </View>
+        );
+    }
 
     if (data.length === 0) {
         return (
             <LegendList
                 data={[{ id: 'create', isCreateButton: true }]}
-                renderItem={renderListItem}
+                renderItem={() => renderCreateButton()}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ gap: 8 }}
                 recycleItems={true}
@@ -104,25 +105,31 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
                     <EmptyState icon="list" title="No Playlists" message="Create your first playlist to organize your music." />
                 }
                 estimatedItemSize={72}
-                drawDistance={500}
-                initialContainerPoolRatio={1}
+                drawDistance={250}
                 style={{ flex: 1 }}
             />
         );
     }
 
+    const listData = [
+        { id: 'create', isCreateButton: true },
+        ...data
+    ];
+
     return (
         <LegendList
             data={listData}
-            renderItem={renderListItem}
+            renderItem={({ item }: LegendListRenderItemProps<any>) => {
+                if (item.isCreateButton) {
+                    return renderCreateButton();
+                }
+                return renderPlaylistItem(item);
+            }}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ gap: 8 }}
             recycleItems={true}
-            waitForInitialLayout={false}
-            maintainVisibleContentPosition
             estimatedItemSize={72}
-            drawDistance={500}
-            initialContainerPoolRatio={1}
+            drawDistance={250}
             style={{ flex: 1 }}
         />
     );

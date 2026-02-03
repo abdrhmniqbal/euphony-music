@@ -194,11 +194,11 @@ export default function LibraryScreen() {
             case "Artists":
                 return <ArtistsTab sortConfig={sortConfig} onArtistPress={handleArtistPress} />;
             case "Playlists":
-                return <PlaylistList data={playlists} />;
+                return <PlaylistList data={playlists} scrollEnabled={false} />;
             case "Folders":
                 return <FolderList data={folders} />;
             case "Favorites":
-                return <FavoritesList data={favorites} />;
+                return <FavoritesList data={favorites} scrollEnabled={false} />;
             default:
                 return null;
         }

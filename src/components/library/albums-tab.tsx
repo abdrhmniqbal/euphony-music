@@ -14,7 +14,7 @@ export const AlbumsTab = React.memo(({ onAlbumPress, sortConfig }: AlbumsTabProp
     // Use database-level sorting - much faster than client-side
     const orderByField = sortConfig?.field === 'artist' ? 'title' : (sortConfig?.field || 'title');
     const order = sortConfig?.order || 'asc';
-    
+
     const { data: albumsData, isLoading, isPending } = useAlbums(orderByField as any, order);
 
     // Transform data to match Album interface (no sorting needed - already sorted by DB)
@@ -39,15 +39,15 @@ export const AlbumsTab = React.memo(({ onAlbumPress, sortConfig }: AlbumsTabProp
     }
 
     if (albums.length === 0) {
-        return <EmptyState 
-            icon="disc" 
-            title="No Albums" 
-            message="Albums you add to your library will appear here." 
+        return <EmptyState
+            icon="disc"
+            title="No Albums"
+            message="Albums you add to your library will appear here."
         />;
     }
 
     // Render grid with data from React Query (already sorted by database)
-    return <AlbumGrid data={albums} onAlbumPress={handleAlbumPress} />;
+    return <AlbumGrid data={albums} onAlbumPress={handleAlbumPress} scrollEnabled={false} />;
 });
 
 AlbumsTab.displayName = 'AlbumsTab';

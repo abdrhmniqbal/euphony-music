@@ -13,6 +13,7 @@ import { EmptyState } from "@/components/empty-state";
 
 interface FavoritesListProps {
     data: FavoriteEntry[];
+    scrollEnabled?: boolean;
 }
 
 const GRID_ITEMS = [1, 2, 3, 4] as const;
@@ -113,7 +114,7 @@ const TypeBadge: React.FC<{ type: FavoriteType }> = ({ type }) => {
     );
 };
 
-export const FavoritesList: React.FC<FavoritesListProps> = ({ data }) => {
+export const FavoritesList: React.FC<FavoritesListProps> = ({ data, scrollEnabled = true }) => {
     const theme = useThemeColors();
     const tracks = useStore($tracks);
     const router = useRouter();
@@ -125,23 +126,18 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data }) => {
     const handlePress = useCallback((favorite: FavoriteEntry) => {
         switch (favorite.type) {
             case 'track':
-                // Find the track and play it
                 const track = tracks.find(t => t.id === favorite.id);
                 if (track) {
                     playTrack(track);
                 }
                 break;
             case 'artist':
-                // Navigate to artist page
                 router.push(`/artist/${encodeURIComponent(favorite.name)}`);
                 break;
             case 'album':
-                // Navigate to album page
                 router.push(`/album/${encodeURIComponent(favorite.name)}`);
                 break;
             case 'playlist':
-                // Navigate to playlist page (if implemented)
-                // router.push(`/playlist/${encodeURIComponent(favorite.id)}`);
                 break;
         }
     }, [tracks, router]);
@@ -150,8 +146,9 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data }) => {
         toggleFavoriteItem(favorite.id, favorite.type, favorite.name);
     }, []);
 
-    const renderItem = useCallback(({ item }: LegendListRenderItemProps<FavoriteEntry>) => (
+    const renderFavoriteItem = useCallback((item: FavoriteEntry) => (
         <Item
+            key={item.id}
             onPress={() => handlePress(item)}
         >
             <FavoriteItemImage favorite={item} />
@@ -176,18 +173,23 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data }) => {
         </Item>
     ), [handlePress, handleRemoveFavorite]);
 
+    if (!scrollEnabled) {
+        return (
+            <View style={{ gap: 8 }}>
+                {data.map(renderFavoriteItem)}
+            </View>
+        );
+    }
+
     return (
         <LegendList
             data={data}
-            renderItem={renderItem}
+            renderItem={({ item }: LegendListRenderItemProps<FavoriteEntry>) => renderFavoriteItem(item)}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ gap: 8 }}
             recycleItems={true}
-            waitForInitialLayout={false}
-            maintainVisibleContentPosition
             estimatedItemSize={72}
-            drawDistance={500}
-            initialContainerPoolRatio={1}
+            drawDistance={250}
             style={{ flex: 1 }}
         />
     );

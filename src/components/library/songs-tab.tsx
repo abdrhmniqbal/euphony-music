@@ -42,7 +42,7 @@ export const SongsTab = React.memo(({ onSongPress, sortConfig }: SongsTabProps) 
         />;
     }
 
-    return <SongList data={tracks} onSongPress={handleSongPress} />;
+    return <SongList data={tracks} onSongPress={handleSongPress} scrollEnabled={false} />;
 });
 
 SongsTab.displayName = 'SongsTab';

@@ -20,22 +20,29 @@ interface AlbumGridProps {
     onAlbumPress?: (album: Album) => void;
     horizontal?: boolean;
     containerClassName?: string;
+    scrollEnabled?: boolean;
 }
 
-const GAP = 16;
+const GAP = 12;
 const NUM_COLUMNS = 2;
 const SCREEN_WIDTH = Dimensions.get('window').width;
-// Calculate item width: (screen width - horizontal padding - gaps between items) / number of columns
-const HORIZONTAL_PADDING = 32; // 16px on each side
+const HORIZONTAL_PADDING = 32;
 const ITEM_WIDTH = (SCREEN_WIDTH - HORIZONTAL_PADDING - (GAP * (NUM_COLUMNS - 1))) / NUM_COLUMNS;
 
-export const AlbumGrid: React.FC<AlbumGridProps> = ({ data, onAlbumPress, horizontal, containerClassName = "" }) => {
+export const AlbumGrid: React.FC<AlbumGridProps> = ({
+    data,
+    onAlbumPress,
+    horizontal,
+    containerClassName = "",
+    scrollEnabled = true
+}) => {
     const handlePress = useCallback((album: Album) => {
         onAlbumPress?.(album);
     }, [onAlbumPress]);
 
-    const renderItem = useCallback(({ item }: LegendListRenderItemProps<Album>) => (
+    const renderAlbumItem = useCallback((item: Album) => (
         <Item
+            key={item.id}
             variant="grid"
             style={{ width: ITEM_WIDTH }}
             onPress={() => handlePress(item)}
@@ -82,10 +89,26 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({ data, onAlbumPress, horizo
         );
     }
 
+    if (!scrollEnabled) {
+        const rows = [];
+        for (let i = 0; i < data.length; i += NUM_COLUMNS) {
+            rows.push(data.slice(i, i + NUM_COLUMNS));
+        }
+        return (
+            <View style={{ gap: GAP }}>
+                {rows.map((row, rowIndex) => (
+                    <View key={rowIndex} style={{ flexDirection: 'row', gap: GAP }}>
+                        {row.map((item) => renderAlbumItem(item))}
+                    </View>
+                ))}
+            </View>
+        );
+    }
+
     return (
         <LegendList
             data={data}
-            renderItem={renderItem}
+            renderItem={({ item }: LegendListRenderItemProps<Album>) => renderAlbumItem(item)}
             keyExtractor={(item) => item.id}
             numColumns={NUM_COLUMNS}
             columnWrapperStyle={{ gap: GAP }}
@@ -93,11 +116,8 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({ data, onAlbumPress, horizo
             style={{ flex: 1 }}
             className={containerClassName}
             recycleItems={true}
-            waitForInitialLayout={false}
-            maintainVisibleContentPosition
             estimatedItemSize={200}
-            drawDistance={400}
-            initialContainerPoolRatio={1}
+            drawDistance={200}
         />
     );
 };
