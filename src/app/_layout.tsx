@@ -93,6 +93,7 @@ export default function Layout() {
                         animation: 'slide_from_bottom',
                       }}
                     />
+
                   </Stack>
                   <IndexingProgress />
                   <FullPlayer />

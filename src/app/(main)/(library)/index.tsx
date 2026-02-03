@@ -29,7 +29,7 @@ import { SongsTab } from "@/components/library/songs-tab";
 import { AlbumsTab } from "@/components/library/albums-tab";
 import { ArtistsTab } from "@/components/library/artists-tab";
 import { LibraryLoadingState } from "@/components/library/library-loading-state";
-import { useAlbums, useArtists } from "@/features/library/api/use-library";
+import { useAlbums, useArtists, usePlaylists } from "@/features/library/api/use-library";
 
 const TABS = ["Songs", "Albums", "Artists", "Playlists", "Folders", "Favorites"] as const;
 type TabType = typeof TABS[number];
@@ -125,11 +125,16 @@ export default function LibraryScreen() {
         router.push(`/album/${encodeURIComponent(album.title)}`);
     }, [router]);
 
+    const handlePlaylistPress = useCallback((playlist: { id: string }) => {
+        router.push(`/playlist/${playlist.id}`);
+    }, [router]);
+
     const handleSongPress = useCallback((track: Track) => {
         playTrack(track);
     }, []);
 
-    const playlists: Playlist[] = [];
+    const { data: playlistsData } = usePlaylists();
+    const playlists = playlistsData || [];
     const folders: Folder[] = [];
 
     const handlePlayAll = useCallback(() => {
@@ -194,7 +199,7 @@ export default function LibraryScreen() {
             case "Artists":
                 return <ArtistsTab sortConfig={sortConfig} onArtistPress={handleArtistPress} />;
             case "Playlists":
-                return <PlaylistList data={playlists} scrollEnabled={false} />;
+                return <PlaylistList data={playlists} scrollEnabled={false} onCreatePlaylist={() => router.push('/playlist/create')} onPlaylistPress={handlePlaylistPress} />;
             case "Folders":
                 return <FolderList data={folders} />;
             case "Favorites":

@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { View } from "react-native";
+import { View, Text, Image } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
@@ -11,6 +11,7 @@ export interface Playlist {
     title: string;
     songCount: number;
     image?: string;
+    images?: string[];
 }
 
 interface PlaylistListProps {
@@ -57,20 +58,33 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
             key={item.id}
             onPress={() => handlePress(item)}
         >
-            <ItemImage className="bg-default items-center justify-center overflow-hidden p-1">
+            <ItemImage className="bg-default items-center justify-center overflow-hidden">
                 {item.image ? (
-                    <View className="w-full h-full rounded-lg overflow-hidden">
-                        <View className="w-full h-full bg-default" />
-                    </View>
-                ) : (
-                    <View className="flex-row flex-wrap w-full h-full">
-                        {GRID_ITEMS.map((i) => (
-                            <View key={i} className="w-1/2 h-1/2 p-px">
-                                <View className="w-full h-full bg-muted/20 rounded-sm items-center justify-center">
-                                    <Ionicons name="musical-note" size={10} color={theme.muted} style={{ opacity: 0.5 }} />
-                                </View>
-                            </View>
+                    <Image
+                        source={{ uri: item.image }}
+                        className="w-full h-full"
+                        resizeMode="cover"
+                    />
+                ) : item.images && item.images.length >= 4 ? (
+                    <View className="flex-row flex-wrap w-full h-full overflow-hidden">
+                        {item.images.slice(0, 4).map((img, i) => (
+                            <Image
+                                key={i}
+                                source={{ uri: img }}
+                                className="w-1/2 h-1/2"
+                                resizeMode="cover"
+                            />
                         ))}
+                    </View>
+                ) : item.images && item.images.length > 0 ? (
+                    <Image
+                        source={{ uri: item.images[0] }}
+                        className="w-full h-full"
+                        resizeMode="cover"
+                    />
+                ) : (
+                    <View className="w-full h-full items-center justify-center bg-muted/20">
+                        <Ionicons name="musical-notes" size={24} color={theme.muted} />
                     </View>
                 )}
             </ItemImage>

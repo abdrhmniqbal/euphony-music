@@ -112,6 +112,20 @@ export default function MainLayout() {
                     href: null,
                 }}
             />
+            <Tabs.Screen
+                name="playlist/create"
+                options={{
+                    href: null,
+                    tabBarStyle: { display: 'none' },
+                }}
+            />
+            <Tabs.Screen
+                name="playlist/[id]"
+                options={{
+                    href: null,
+                    tabBarStyle: { display: 'none' },
+                }}
+            />
         </Tabs>
     );
 }

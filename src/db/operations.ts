@@ -1,5 +1,5 @@
 import { db } from "@/db/client";
-import { tracks, playHistory, artists, albums, playlists, genres, trackGenres } from "@/db/schema";
+import { tracks, playHistory, artists, albums, playlists, genres, trackGenres, playlistTracks } from "@/db/schema";
 import { eq, desc, sql, and, inArray } from "drizzle-orm";
 import type { Track } from "@/store/player-store";
 
@@ -106,7 +106,7 @@ export async function removeFavorite(id: string, type: FavoriteType): Promise<vo
 export async function isFavorite(id: string, type: FavoriteType): Promise<boolean> {
   try {
     let result: any = null;
-    
+
     switch (type) {
       case 'track':
         result = await db.query.tracks.findFirst({
@@ -129,7 +129,7 @@ export async function isFavorite(id: string, type: FavoriteType): Promise<boolea
         });
         break;
     }
-    
+
     return !!result;
   } catch (e) {
     return false;
@@ -399,6 +399,47 @@ export async function getAlbumsByGenre(genre: string): Promise<AlbumInfo[]> {
     return [];
   }
 }
+
+// Playlist Operations
+function generateId(): string {
+  if (globalThis.crypto && globalThis.crypto.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  // Simple fallback for unique IDs
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+export async function createPlaylist(name: string, description: string = "", trackIds: string[] = []): Promise<void> {
+  try {
+    const id = generateId();
+    const now = Date.now();
+
+    await db.insert(playlists).values({
+      id,
+      name,
+      description,
+      trackCount: trackIds.length,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    if (trackIds.length > 0) {
+      await db.insert(playlistTracks).values(
+        trackIds.map((trackId, index) => ({
+          id: generateId(),
+          playlistId: id,
+          trackId,
+          position: index,
+          addedAt: now,
+        }))
+      );
+    }
+  } catch (e) {
+    console.error("Failed to create playlist", e);
+  }
+}
+
 
 // History and Top Songs Operations
 export async function getHistory(): Promise<Track[]> {

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { db } from "@/db/client";
-import { tracks, artists, albums, genres, playHistory } from "@/db/schema";
+import { tracks, artists, albums, genres, playHistory, playlists, playlistTracks } from "@/db/schema";
 import { eq, desc, asc, like, and, sql } from "drizzle-orm";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
 
@@ -8,6 +8,7 @@ const TRACKS_KEY = "tracks";
 const ARTISTS_KEY = "artists";
 const ALBUMS_KEY = "albums";
 const GENRES_KEY = "genres";
+const PLAYLISTS_KEY = "playlists";
 
 export type TrackFilter = {
   artistId?: string;
@@ -417,6 +418,87 @@ export function useSearch(query: string) {
       };
     },
     enabled: debouncedQuery.length >= 2,
+  });
+}
+
+export function usePlaylists() {
+  return useQuery({
+    queryKey: [PLAYLISTS_KEY],
+    queryFn: async () => {
+      const results = await db.query.playlists.findMany({
+        orderBy: [desc(playlists.createdAt)],
+        with: {
+          tracks: {
+            limit: 10,
+            orderBy: [asc(playlistTracks.position)],
+            with: {
+              track: true
+            }
+          }
+        }
+      });
+
+      return results.map((playlist) => {
+        const images = new Set<string>();
+        // Check for track images to build collage
+        for (const pt of playlist.tracks) {
+          const t = pt.track;
+          const img = t.artwork || (typeof t.album === 'object' && t.album ? (t.album as any).artwork : undefined);
+          // Note: track.image might not be directly on track object in schema if implied?
+          // Schema 'tracks' has 'artwork'.
+          if (img) images.add(img);
+          if (images.size >= 4) break;
+        }
+
+        return {
+          id: playlist.id,
+          title: playlist.name,
+          songCount: playlist.trackCount || 0,
+          image: playlist.artwork || undefined,
+          images: Array.from(images),
+        };
+      });
+    },
+  });
+}
+
+export function usePlaylist(id: string) {
+  return useQuery({
+    queryKey: [PLAYLISTS_KEY, id],
+    queryFn: async () => {
+      const result = await db.query.playlists.findFirst({
+        where: eq(playlists.id, id),
+        with: {
+          tracks: {
+            orderBy: [asc(playlistTracks.position)],
+            with: {
+              track: {
+                with: {
+                  artist: true,
+                  album: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return result;
+    },
+  });
+}
+
+export function useCreatePlaylist() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ name, description, trackIds }: { name: string, description?: string, trackIds: string[] }) => {
+      // Import dynamically to avoid circular dependencies if any, though imports up top are fine
+      const { createPlaylist } = await import("@/db/operations");
+      await createPlaylist(name, description, trackIds);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [PLAYLISTS_KEY] });
+    },
   });
 }
 
