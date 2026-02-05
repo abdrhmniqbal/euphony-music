@@ -34,6 +34,8 @@ export const FullPlayer = () => {
     const colors = useStore($currentColors);
 
     const translateY = useSharedValue(SCREEN_HEIGHT);
+    const scale = useSharedValue(0.9);
+    const opacity = useSharedValue(0);
 
     useEffect(() => {
         updateColorsForImage(currentTrack?.image);
@@ -42,8 +44,12 @@ export const FullPlayer = () => {
     useEffect(() => {
         if (isExpanded) {
             translateY.value = withTiming(0, { duration: 300 });
+            scale.value = withTiming(1, { duration: 350 });
+            opacity.value = withTiming(1, { duration: 200 });
         } else {
             translateY.value = withTiming(SCREEN_HEIGHT, { duration: 250 });
+            scale.value = withTiming(0.9, { duration: 200 });
+            opacity.value = withTiming(0, { duration: 150 });
         }
     }, [isExpanded]);
 
@@ -69,7 +75,11 @@ export const FullPlayer = () => {
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
-            transform: [{ translateY: translateY.value }],
+            transform: [
+                { translateY: translateY.value },
+                { scale: scale.value }
+            ],
+            opacity: opacity.value,
         };
     });
 

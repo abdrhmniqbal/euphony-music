@@ -31,7 +31,6 @@ export const MiniPlayer = () => {
             }}
         >
             <Pressable className="flex-1" onPress={() => $isPlayerExpanded.set(true)}>
-                {/* Progress Bar */}
                 <View className="absolute top-0 left-0 right-0 h-[2px] bg-default/20">
                     <View
                         style={{
@@ -43,7 +42,6 @@ export const MiniPlayer = () => {
                 </View>
 
                 <View className="flex-1 flex-row items-center px-4 gap-3">
-                    {/* Album Art Placeholder */}
                     <View
                         className="w-11 h-11 rounded-md bg-default items-center justify-center overflow-hidden"
                     >
@@ -57,7 +55,6 @@ export const MiniPlayer = () => {
                         )}
                     </View>
 
-                    {/* Track Info */}
                     <View className="flex-1 overflow-hidden">
                         <MarqueeText
                             text={currentTrack.title}
@@ -71,7 +68,6 @@ export const MiniPlayer = () => {
                         />
                     </View>
 
-                    {/* Controls */}
                     <View className="flex-row items-center gap-5">
                         <Pressable onPress={(e) => { e.stopPropagation(); togglePlayback(); }} className="active:opacity-60">
                             <Ionicons
