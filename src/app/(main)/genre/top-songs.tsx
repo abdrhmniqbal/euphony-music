@@ -77,14 +77,14 @@ export default function GenreTopSongsScreen() {
 
     const handlePlayAll = useCallback(() => {
         if (topSongs.length > 0) {
-            playTrack(topSongs[0]);
+            playTrack(topSongs[0], topSongs);
         }
     }, [topSongs]);
 
     const handleShuffle = useCallback(() => {
         if (topSongs.length > 0) {
             const randomIndex = Math.floor(Math.random() * topSongs.length);
-            playTrack(topSongs[randomIndex]);
+            playTrack(topSongs[randomIndex], topSongs);
         }
     }, [topSongs]);
 

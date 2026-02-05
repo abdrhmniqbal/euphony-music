@@ -120,23 +120,23 @@ export const PlaybackService = async () => {
     });
 };
 
-export const playTrack = async (track: Track) => {
+export const playTrack = async (track: Track, playlistTracks?: Track[]) => {
     if (!isPlayerReady) {
         return;
     }
 
     try {
-        // Reset and add the track
+        const { $queue, setQueue } = await import('./queue-store');
+
         await TrackPlayer.reset();
 
-        // Find current track index in the queue
-        const tracks = $tracks.get();
+        const tracks = playlistTracks || $tracks.get();
         currentTrackIndex = tracks.findIndex(t => t.id === track.id);
 
-        // Add all tracks to the queue starting from the current one
         const queue = tracks.slice(currentTrackIndex).concat(tracks.slice(0, currentTrackIndex));
 
-        // Map our Track interface to TrackPlayer's expected format
+        setQueue(queue);
+
         await TrackPlayer.add(
             queue.map(t => ({
                 id: t.id,
@@ -151,7 +151,6 @@ export const playTrack = async (track: Track) => {
 
         $currentTrack.set(track);
 
-        // Add to history and increment play count
         addToHistory(track.id);
         incrementPlayCount(track.id);
 

@@ -32,9 +32,9 @@ export const SongList: React.FC<SongListProps> = ({
         if (onSongPress) {
             onSongPress(track);
         } else {
-            playTrack(track);
+            playTrack(track, data);
         }
-    }, [onSongPress]);
+    }, [onSongPress, data]);
 
     const renderSongItem = useCallback((item: Track, index: number) => (
         <Item

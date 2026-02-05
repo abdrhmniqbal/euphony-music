@@ -49,14 +49,14 @@ export default function TopSongsScreen() {
 
     const handlePlayAll = useCallback(() => {
         if (currentSongs.length > 0) {
-            playTrack(currentSongs[0]);
+            playTrack(currentSongs[0], currentSongs);
         }
     }, [currentSongs]);
 
     const handleShuffle = useCallback(() => {
         if (currentSongs.length > 0) {
             const randomIndex = Math.floor(Math.random() * currentSongs.length);
-            playTrack(currentSongs[randomIndex]);
+            playTrack(currentSongs[randomIndex], currentSongs);
         }
     }, [currentSongs]);
 

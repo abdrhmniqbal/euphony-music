@@ -64,19 +64,19 @@ export default function PlaylistDetailsScreen() {
     }
 
     const handlePlayTrack = (track: Track) => {
-        playTrack(track);
+        playTrack(track, tracks);
     };
 
     const handlePlayAll = () => {
         if (tracks.length > 0) {
-            playTrack(tracks[0]);
+            playTrack(tracks[0], tracks);
         }
     };
 
     const handleShuffle = () => {
         if (tracks.length > 0) {
             const randomIndex = Math.floor(Math.random() * tracks.length);
-            playTrack(tracks[randomIndex]);
+            playTrack(tracks[randomIndex], tracks);
         }
     };
 

@@ -129,19 +129,19 @@ export default function AlbumDetailsScreen() {
     }, [navigation]);
 
     const handlePlayTrack = (track: Track) => {
-        playTrack(track);
+        playTrack(track, sortedTracks);
     };
 
     const handlePlayAll = () => {
         if (sortedTracks.length > 0) {
-            playTrack(sortedTracks[0]);
+            playTrack(sortedTracks[0], sortedTracks);
         }
     };
 
     const handleShuffle = () => {
         if (sortedTracks.length > 0) {
             const randomIndex = Math.floor(Math.random() * sortedTracks.length);
-            playTrack(sortedTracks[randomIndex]);
+            playTrack(sortedTracks[randomIndex], sortedTracks);
         }
     };
 

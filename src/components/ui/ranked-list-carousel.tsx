@@ -32,7 +32,7 @@ export function RankedListCarousel({
         if (onItemPress) {
             onItemPress(track);
         } else {
-            playTrack(track);
+            playTrack(track, data);
         }
     };
 

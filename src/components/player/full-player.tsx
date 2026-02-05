@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { View, Dimensions } from "react-native";
 import { useStore } from "@nanostores/react";
-import { $currentTrack, $isPlaying, $currentTime, $duration, $tracks } from "@/store/player-store";
+import { $currentTrack, $isPlaying, $currentTime, $duration } from "@/store/player-store";
+import { $queue } from "@/store/queue-store";
 import { $isPlayerExpanded, $showPlayerQueue } from "@/store/ui-store";
 import { $currentColors, updateColorsForImage } from "@/store/color-cache-store";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,7 +30,7 @@ export const FullPlayer = () => {
     const isPlaying = useStore($isPlaying);
     const currentTimeVal = useStore($currentTime);
     const durationVal = useStore($duration);
-    const tracks = useStore($tracks);
+    const queue = useStore($queue);
     const showQueue = useStore($showPlayerQueue);
     const colors = useStore($currentColors);
 
@@ -112,7 +113,7 @@ export const FullPlayer = () => {
                         <PlayerHeader onClose={closePlayer} />
 
                         {showQueue ? (
-                            <QueueView tracks={tracks} currentTrack={currentTrack} />
+                            <QueueView tracks={queue} currentTrack={currentTrack} />
                         ) : (
                             <AlbumArtView currentTrack={currentTrack} />
                         )}

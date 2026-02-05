@@ -3,14 +3,17 @@ import { View, Text, Pressable, Image, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
 import { Track, playTrack } from "@/store/player-store";
+import { useStore } from "@nanostores/react";
+import { $queueInfo, removeFromQueue } from "@/store/queue-store";
 
 interface QueueItemProps {
     track: Track;
     isCurrentTrack: boolean;
     onPress: () => void;
+    onRemove: () => void;
 }
 
-export const QueueItem: React.FC<QueueItemProps> = ({ track, isCurrentTrack, onPress }) => (
+export const QueueItem: React.FC<QueueItemProps> = ({ track, isCurrentTrack, onPress, onRemove }) => (
     <Pressable
         onPress={onPress}
         className={`flex-row items-center py-3 px-2 rounded-xl ${isCurrentTrack ? 'bg-white/10' : 'active:bg-white/5'
@@ -50,7 +53,13 @@ export const QueueItem: React.FC<QueueItemProps> = ({ track, isCurrentTrack, onP
             </Text>
         </View>
 
-        <View className="ml-2">
+        {!isCurrentTrack && (
+            <Pressable onPress={onRemove} className="p-2 active:opacity-50">
+                <Ionicons name="close" size={20} color="rgba(255,255,255,0.5)" />
+            </Pressable>
+        )}
+
+        <View className="ml-1">
             <Ionicons name="reorder-three" size={24} color="rgba(255,255,255,0.4)" />
         </View>
     </Pressable>
@@ -61,13 +70,15 @@ interface QueueViewProps {
     currentTrack: Track | null;
 }
 
-export const QueueView: React.FC<QueueViewProps> = ({ tracks, currentTrack }) => {
-    if (!currentTrack || tracks.length === 0) return null;
+export const QueueView: React.FC<QueueViewProps> = ({ currentTrack }) => {
+    const queueInfo = useStore($queueInfo);
+    const { queue, upNext } = queueInfo;
 
-    const currentIndex = tracks.findIndex(t => t.id === currentTrack.id);
-    const orderedQueue = currentIndex === -1
-        ? tracks
-        : [...tracks.slice(currentIndex), ...tracks.slice(0, currentIndex)];
+    if (!currentTrack || queue.length === 0) return null;
+
+    const handleRemove = async (trackId: string) => {
+        await removeFromQueue(trackId);
+    };
 
     return (
         <Animated.View
@@ -76,9 +87,9 @@ export const QueueView: React.FC<QueueViewProps> = ({ tracks, currentTrack }) =>
             layout={Layout.duration(300)}
             className="flex-1 my-3 -mx-2 overflow-hidden"
         >
-            <View className="mb-2 px-2">
+            <View className="mb-2 px-2 flex-row justify-between items-center">
                 <Text className="text-white/60 text-sm">
-                    {tracks.length} {tracks.length === 1 ? 'song' : 'songs'}
+                    Up Next • {upNext.length} {upNext.length === 1 ? 'song' : 'songs'}
                 </Text>
             </View>
             <View className="flex-1 h-0">
@@ -87,12 +98,13 @@ export const QueueView: React.FC<QueueViewProps> = ({ tracks, currentTrack }) =>
                     contentContainerStyle={{ paddingBottom: 20 }}
                 >
                     <View className="gap-1">
-                        {orderedQueue.map((track) => (
+                        {queue.map((track) => (
                             <QueueItem
                                 key={track.id}
                                 track={track}
                                 isCurrentTrack={track.id === currentTrack.id}
-                                onPress={() => playTrack(track)}
+                                onPress={() => playTrack(track, queue)}
+                                onRemove={() => handleRemove(track.id)}
                             />
                         ))}
                     </View>

@@ -87,7 +87,7 @@ export default function HomeScreen() {
     const renderRecentlyPlayedItem = useCallback((item: Track, index: number) => (
         <Item
             variant="grid"
-            onPress={() => playTrack(item)}
+            onPress={() => playTrack(item, recentlyPlayedTracks)}
         >
             <ItemImage icon="musical-note" image={item.image} />
             <ItemContent>
@@ -95,7 +95,7 @@ export default function HomeScreen() {
                 <ItemDescription>{item.artist || "Unknown Artist"}</ItemDescription>
             </ItemContent>
         </Item>
-    ), []);
+    ), [recentlyPlayedTracks]);
 
     return (
         <ScrollView

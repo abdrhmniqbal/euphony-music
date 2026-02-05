@@ -94,7 +94,7 @@ export default function ArtistDetailsScreen() {
     }, [navigation]);
 
     const handlePlayTrack = (track: Track) => {
-        playTrack(track);
+        playTrack(track, sortedArtistTracks);
     };
 
     const sortedAlbums = (() => {
@@ -117,14 +117,14 @@ export default function ArtistDetailsScreen() {
 
     const handlePlayAll = () => {
         if (artistTracks.length > 0) {
-            playTrack(artistTracks[0]);
+            playTrack(artistTracks[0], sortedArtistTracks);
         }
     };
 
     const handleShuffle = () => {
         if (artistTracks.length > 0) {
             const randomIndex = Math.floor(Math.random() * artistTracks.length);
-            playTrack(artistTracks[randomIndex]);
+            playTrack(artistTracks[randomIndex], sortedArtistTracks);
         }
     };
 

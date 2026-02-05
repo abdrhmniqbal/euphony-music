@@ -41,14 +41,14 @@ export default function RecentlyPlayedScreen() {
 
     const handlePlayFirst = useCallback(() => {
         if (history.length > 0) {
-            playTrack(history[0]);
+            playTrack(history[0], history);
         }
     }, [history]);
 
     const handleShuffle = useCallback(() => {
         if (history.length > 0) {
             const randomIndex = Math.floor(Math.random() * history.length);
-            playTrack(history[randomIndex]);
+            playTrack(history[randomIndex], history);
         }
     }, [history]);
 
