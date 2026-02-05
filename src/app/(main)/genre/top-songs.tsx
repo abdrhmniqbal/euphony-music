@@ -12,9 +12,7 @@ import { useStore } from "@nanostores/react";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { startIndexing, $indexerState } from "@/features/indexer";
 import { SongList } from "@/components/library/song-list";
-import { db } from "@/db/client";
-import { genres, trackGenres } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { getAllSongsByGenre } from "@/db/operations";
 
 export default function GenreTopSongsScreen() {
     const { name } = useLocalSearchParams<{ name: string }>();
@@ -23,11 +21,10 @@ export default function GenreTopSongsScreen() {
     const insets = useSafeAreaInsets();
     const indexerState = useStore($indexerState);
     const theme = useThemeColors();
-    const allTracks = useStore($tracks);
 
     const genreName = decodeURIComponent(name || "");
 
-    const [genreTrackIds, setGenreTrackIds] = useState<Set<string>>(new Set());
+    const [topSongs, setTopSongs] = useState<Track[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -36,44 +33,26 @@ export default function GenreTopSongsScreen() {
         });
     }, [navigation]);
 
-    const loadGenreTrackIds = useCallback(async () => {
+    const loadSongs = useCallback(async () => {
         setIsLoading(true);
         try {
-            const genreRecord = await db.query.genres.findFirst({
-                where: eq(genres.name, genreName),
-            });
-
-            if (genreRecord) {
-                const trackGenreLinks = await db.query.trackGenres.findMany({
-                    where: eq(trackGenres.genreId, genreRecord.id),
-                });
-                setGenreTrackIds(new Set(trackGenreLinks.map(tg => tg.trackId)));
-            } else {
-                setGenreTrackIds(new Set());
-            }
+            const songs = await getAllSongsByGenre(genreName);
+            setTopSongs(songs);
         } catch (e) {
-            setGenreTrackIds(new Set());
+            setTopSongs([]);
         } finally {
             setIsLoading(false);
         }
     }, [genreName]);
 
     useEffect(() => {
-        loadGenreTrackIds();
-    }, [loadGenreTrackIds]);
-
-    const topSongs = (() => {
-        if (genreTrackIds.size === 0) return [];
-
-        return allTracks
-            .filter(t => genreTrackIds.has(t.id) && !t.isDeleted)
-            .sort((a, b) => (b.playCount || 0) - (a.playCount || 0));
-    })();
+        loadSongs();
+    }, [loadSongs]);
 
     const handleRefresh = useCallback(async () => {
         startIndexing(true);
-        await loadGenreTrackIds();
-    }, [loadGenreTrackIds]);
+        await loadSongs();
+    }, [loadSongs]);
 
     const handlePlayAll = useCallback(() => {
         if (topSongs.length > 0) {

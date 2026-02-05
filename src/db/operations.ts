@@ -1,7 +1,8 @@
 import { db } from "@/db/client";
 import { tracks, playHistory, artists, albums, playlists, genres, trackGenres, playlistTracks } from "@/db/schema";
-import { eq, desc, sql, and, inArray } from "drizzle-orm";
+import { eq, desc, asc, sql, and, inArray } from "drizzle-orm";
 import type { Track } from "@/store/player-store";
+import { transformDBTrackToTrack } from "@/utils/transformers";
 
 // Play History Operations
 export async function addToHistory(trackId: string): Promise<void> {
@@ -252,78 +253,64 @@ export async function getAllGenres(): Promise<string[]> {
   }
 }
 
-export async function getTopSongsByGenre(genre: string, limit: number = 25): Promise<any[]> {
+export async function getTopSongsByGenre(genre: string, limit: number = 25): Promise<Track[]> {
   try {
-    // First find the genre by name
-    const genreRecord = await db.query.genres.findFirst({
-      where: eq(genres.name, genre),
+    const trimmedGenre = genre.trim();
+
+    // Find matching genre IDs first (to keep it fast)
+    const matchingGenres = await db.query.genres.findMany({
+      where: (g, { sql }) => sql`${g.name} LIKE ${trimmedGenre}`,
+      columns: { id: true }
     });
 
-    if (!genreRecord) {
-      return [];
-    }
+    if (matchingGenres.length === 0) return [];
+    const genreIds = matchingGenres.map(g => g.id);
 
-    // Get track IDs linked to this genre
-    const trackGenreLinks = await db.query.trackGenres.findMany({
-      where: eq(trackGenres.genreId, genreRecord.id),
-    });
-
-    if (trackGenreLinks.length === 0) {
-      return [];
-    }
-
-    const trackIds = trackGenreLinks.map(tg => tg.trackId);
-
-    // Fetch tracks by IDs, filter deleted and sort by play count
+    // Fetch tracks that are linked to these genres
     const songs = await db.query.tracks.findMany({
-      where: and(
-        inArray(tracks.id, trackIds),
-        eq(tracks.isDeleted, 0)
+      where: (t, { and, inArray, eq }) => and(
+        eq(t.isDeleted, 0),
+        // Use a subquery to find tracks linked to these genres
+        sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(genreIds.map(id => sql`${id}`), sql`, `)}))`
       ),
-      orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
+      with: {
+        artist: true,
+        album: true,
+      },
+      orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt), asc(tracks.title)],
       limit,
     });
 
-    const playedSongs = songs.filter((t: any) => t.playCount && t.playCount > 0);
-
-    return playedSongs;
+    return songs.map(transformDBTrackToTrack);
   } catch (e) {
     return [];
   }
 }
 
-export async function getAllSongsByGenre(genre: string): Promise<any[]> {
+export async function getAllSongsByGenre(genre: string): Promise<Track[]> {
   try {
-    // First find the genre by name
-    const genreRecord = await db.query.genres.findFirst({
-      where: eq(genres.name, genre),
+    const trimmedGenre = genre.trim();
+    const matchingGenres = await db.query.genres.findMany({
+      where: (g, { sql }) => sql`${g.name} LIKE ${trimmedGenre}`,
+      columns: { id: true }
     });
 
-    if (!genreRecord) {
-      return [];
-    }
+    if (matchingGenres.length === 0) return [];
+    const genreIds = matchingGenres.map(g => g.id);
 
-    // Get track IDs linked to this genre
-    const trackGenreLinks = await db.query.trackGenres.findMany({
-      where: eq(trackGenres.genreId, genreRecord.id),
-    });
-
-    if (trackGenreLinks.length === 0) {
-      return [];
-    }
-
-    const trackIds = trackGenreLinks.map(tg => tg.trackId);
-
-    // Fetch all tracks by IDs, filter deleted
     const songs = await db.query.tracks.findMany({
-      where: and(
-        inArray(tracks.id, trackIds),
-        eq(tracks.isDeleted, 0)
+      where: (t, { and, inArray, eq }) => and(
+        eq(t.isDeleted, 0),
+        sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(genreIds.map(id => sql`${id}`), sql`, `)}))`
       ),
-      orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
+      with: {
+        artist: true,
+        album: true,
+      },
+      orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt), asc(tracks.title)],
     });
 
-    return songs;
+    return songs.map(transformDBTrackToTrack);
   } catch (e) {
     return [];
   }
@@ -339,32 +326,20 @@ export interface AlbumInfo {
 
 export async function getAlbumsByGenre(genre: string): Promise<AlbumInfo[]> {
   try {
-    // First find the genre by name
-    const genreRecord = await db.query.genres.findFirst({
-      where: eq(genres.name, genre),
+    const trimmedGenre = genre.trim();
+    const matchingGenres = await db.query.genres.findMany({
+      where: (g, { sql }) => sql`LOWER(${g.name}) LIKE LOWER(${trimmedGenre})`,
+      columns: { id: true }
     });
 
-    if (!genreRecord) {
-      return [];
-    }
+    if (matchingGenres.length === 0) return [];
+    const genreIds = matchingGenres.map(g => g.id);
 
-    // Get track IDs linked to this genre
-    const trackGenreLinks = await db.query.trackGenres.findMany({
-      where: eq(trackGenres.genreId, genreRecord.id),
-    });
-
-    if (trackGenreLinks.length === 0) {
-      return [];
-    }
-
-    const trackIds = trackGenreLinks.map(tg => tg.trackId);
-
-    // Fetch tracks with their albums and artists
     const tracksInGenre = await db.query.tracks.findMany({
-      where: and(
-        inArray(tracks.id, trackIds),
-        eq(tracks.isDeleted, 0),
-        sql`${tracks.albumId} IS NOT NULL`
+      where: (t, { and, eq }) => and(
+        eq(t.isDeleted, 0),
+        sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(genreIds.map(id => sql`${id}`), sql`, `)}))`,
+        sql`${t.albumId} IS NOT NULL`
       ),
       with: {
         album: true,

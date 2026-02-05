@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { $tracks, playTrack, Track } from "@/store/player-store";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/store/ui-store";
-import { getAlbumsByGenre, AlbumInfo } from "@/db/operations";
+import { getAlbumsByGenre, AlbumInfo, getTopSongsByGenre } from "@/db/operations";
 import { db } from "@/db/client";
 import { genres, trackGenres } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -23,36 +23,27 @@ export default function GenreDetailsScreen() {
     const navigation = useNavigation();
     const router = useRouter();
     const insets = useSafeAreaInsets();
-    const allTracks = useStore($tracks);
     const theme = useThemeColors();
     const indexerState = useStore($indexerState);
 
     const genreName = decodeURIComponent(name || "");
 
-    const [genreTrackIds, setGenreTrackIds] = useState<Set<string>>(new Set());
+    const [topSongs, setTopSongs] = useState<Track[]>([]);
     const [albums, setAlbums] = useState<AlbumInfo[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const loadGenreData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const genreRecord = await db.query.genres.findFirst({
-                where: eq(genres.name, genreName),
-            });
-
-            if (genreRecord) {
-                const trackGenreLinks = await db.query.trackGenres.findMany({
-                    where: eq(trackGenres.genreId, genreRecord.id),
-                });
-                setGenreTrackIds(new Set(trackGenreLinks.map(tg => tg.trackId)));
-            } else {
-                setGenreTrackIds(new Set());
-            }
-
-            const albumList = await getAlbumsByGenre(genreName);
+            const [topSongsList, albumList] = await Promise.all([
+                getTopSongsByGenre(genreName, PREVIEW_LIMIT),
+                getAlbumsByGenre(genreName)
+            ]);
+            setTopSongs(topSongsList);
             setAlbums(albumList);
         } catch (e) {
-            setGenreTrackIds(new Set());
+            setTopSongs([]);
+            setAlbums([]);
         } finally {
             setIsLoading(false);
         }
@@ -68,15 +59,6 @@ export default function GenreDetailsScreen() {
         });
     }, [navigation]);
 
-    const allTopSongs = (() => {
-        if (genreTrackIds.size === 0) return [];
-
-        return allTracks
-            .filter(t => genreTrackIds.has(t.id) && !t.isDeleted)
-            .sort((a, b) => (b.playCount || 0) - (a.playCount || 0));
-    })();
-
-    const topSongs = allTopSongs.slice(0, PREVIEW_LIMIT);
     const previewAlbums = albums
         .sort((a, b) => (b.year || 0) - (a.year || 0))
         .slice(0, ALBUM_PREVIEW_LIMIT);
