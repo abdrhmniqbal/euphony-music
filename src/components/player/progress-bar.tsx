@@ -10,7 +10,7 @@ import Animated, {
     SharedValue,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { seekTo } from "@/store/player-store";
+import { seekTo } from "@/features/player/player.store";
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 

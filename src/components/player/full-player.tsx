@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { View, Dimensions } from "react-native";
 import { useStore } from "@nanostores/react";
-import { $currentTrack, $isPlaying, $currentTime, $duration } from "@/store/player-store";
-import { $queue } from "@/store/queue-store";
-import { $isPlayerExpanded, $showPlayerQueue } from "@/store/ui-store";
-import { $currentColors, updateColorsForImage } from "@/store/color-cache-store";
+import { $currentTrack, $isPlaying, $currentTime, $duration } from "@/features/player/player.store";
+import { $queue } from "@/features/player/queue.store";
+import { $isPlayerExpanded, $showPlayerQueue } from "@/shared/hooks/scroll-bars.store";
+import { $currentColors, updateColorsForImage } from "@/features/player/player-colors.store";
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
     useSharedValue,

@@ -3,14 +3,14 @@ import { ArtistGrid, Artist } from "@/components/library/artist-grid";
 import { LibrarySkeleton } from "@/components/library/library-skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { useArtists } from "@/features/library/api/use-library";
-import { SortConfig } from "@/store/sort-store";
+import { SortConfig } from "@/features/library/library-sort.store";
 
 interface ArtistsTabProps {
     onArtistPress?: (artist: Artist) => void;
     sortConfig?: SortConfig;
 }
 
-export const ArtistsTab = React.memo(({ onArtistPress, sortConfig }: ArtistsTabProps) => {
+export const ArtistsTab: React.FC<ArtistsTabProps> = ({ onArtistPress, sortConfig }) => {
     // Use database-level sorting - much faster than client-side
     const orderByField = sortConfig?.field || 'name';
     const order = sortConfig?.order || 'asc';
@@ -45,6 +45,4 @@ export const ArtistsTab = React.memo(({ onArtistPress, sortConfig }: ArtistsTabP
 
     // Render grid with data from React Query (already sorted by database)
     return <ArtistGrid data={artists} onArtistPress={handleArtistPress} scrollEnabled={false} />;
-});
-
-ArtistsTab.displayName = 'ArtistsTab';
+};

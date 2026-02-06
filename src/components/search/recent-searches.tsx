@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
@@ -26,13 +26,13 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
 }) => {
     const theme = useThemeColors();
 
-    const handleItemPress = useCallback((item: RecentSearchItem) => {
+    const handleItemPress = (item: RecentSearchItem) => {
         onItemPress(item);
-    }, [onItemPress]);
+    };
 
-    const handleRemoveItem = useCallback((id: string) => {
+    const handleRemoveItem = (id: string) => {
         onRemoveItem(id);
-    }, [onRemoveItem]);
+    };
 
     const getIconForType = (type?: string): keyof typeof Ionicons.glyphMap => {
         switch (type) {

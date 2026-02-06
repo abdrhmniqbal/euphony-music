@@ -1,14 +1,14 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { View, Pressable, Image as RNImage } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { playTrack, Track, $tracks } from "@/store/player-store";
+import { playTrack, Track, $tracks } from "@/features/player/player.store";
 import { FavoriteEntry, FavoriteType } from "@/db/operations";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "expo-router";
-import { toggleFavoriteItem } from "@/store/favorites-store";
+import { toggleFavoriteItem } from "@/features/favorites/favorites.store";
 import { EmptyState } from "@/components/empty-state";
 
 interface FavoritesListProps {
@@ -132,7 +132,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data, scrollEnable
         return <EmptyState icon="heart" title="No Favorites" message="Your favorite songs, artists, and albums will appear here." />;
     }
 
-    const handlePress = useCallback((favorite: FavoriteEntry) => {
+    const handlePress = (favorite: FavoriteEntry) => {
         switch (favorite.type) {
             case 'track':
                 const track = tracks.find(t => t.id === favorite.id);
@@ -150,13 +150,13 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data, scrollEnable
                 router.push(`./playlist/${favorite.id}`);
                 break;
         }
-    }, [tracks, router]);
+    };
 
-    const handleRemoveFavorite = useCallback((favorite: FavoriteEntry) => {
+    const handleRemoveFavorite = (favorite: FavoriteEntry) => {
         toggleFavoriteItem(favorite.id, favorite.type, favorite.name);
-    }, []);
+    };
 
-    const renderFavoriteItem = useCallback((item: FavoriteEntry) => (
+    const renderFavoriteItem = (item: FavoriteEntry) => (
         <Item
             key={item.id}
             onPress={() => handlePress(item)}
@@ -181,7 +181,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data, scrollEnable
                 </Pressable>
             </ItemAction>
         </Item>
-    ), [handlePress, handleRemoveFavorite]);
+    );
 
     if (!scrollEnabled) {
         return (

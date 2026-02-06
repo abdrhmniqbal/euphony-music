@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { View, Text, Image } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
@@ -31,13 +31,13 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
 }) => {
     const theme = useThemeColors();
 
-    const handlePress = useCallback((playlist: Playlist) => {
+    const handlePress = (playlist: Playlist) => {
         onPlaylistPress?.(playlist);
-    }, [onPlaylistPress]);
+    };
 
-    const handleCreate = useCallback(() => {
+    const handleCreate = () => {
         onCreatePlaylist?.();
-    }, [onCreatePlaylist]);
+    };
 
     const formatSongCount = (count: number) =>
         `${count} ${count === 1 ? 'song' : 'songs'}`;
@@ -53,7 +53,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         </Item>
     );
 
-    const renderPlaylistItem = useCallback((item: Playlist) => (
+    const renderPlaylistItem = (item: Playlist) => (
         <Item
             key={item.id}
             onPress={() => handlePress(item)}
@@ -96,7 +96,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
                 <Ionicons name="chevron-forward" size={24} color={theme.muted} />
             </ItemAction>
         </Item>
-    ), [handlePress, theme.muted]);
+    );
 
     if (!scrollEnabled) {
         return (

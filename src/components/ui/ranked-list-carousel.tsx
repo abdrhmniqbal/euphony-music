@@ -2,7 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemRank } from "@/components/item";
 import { MediaCarousel } from "./media-carousel";
-import { Track, playTrack } from "@/store/player-store";
+import { Track, playTrack } from "@/features/player/player.store";
 import { chunkArray } from "@/utils/array";
 
 interface EmptyStateConfig {

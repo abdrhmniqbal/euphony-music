@@ -1,6 +1,6 @@
-import type { Track } from "@/store/types";
+import type { Track } from "@/features/player/player.types";
 import type { DBTrack, DBAlbum, DBArtist } from "@/types/database";
-import type { Album, Artist } from "@/store/types";
+import type { Album, Artist } from "@/features/player/player.types";
 
 export const transformDBTrackToTrack = (dbTrack: DBTrack): Track => ({
     id: dbTrack.id,

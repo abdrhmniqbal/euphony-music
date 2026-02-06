@@ -1,7 +1,7 @@
 import { db } from "@/db/client";
 import { tracks, playHistory, artists, albums, playlists, genres, trackGenres, playlistTracks } from "@/db/schema";
 import { eq, desc, asc, sql, and, inArray } from "drizzle-orm";
-import type { Track } from "@/store/player-store";
+import type { Track } from "@/features/player/player.store";
 import { transformDBTrackToTrack } from "@/utils/transformers";
 
 // Play History Operations

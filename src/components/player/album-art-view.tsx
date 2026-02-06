@@ -2,7 +2,7 @@ import React from "react";
 import { View, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
-import { Track } from "@/store/player-store";
+import { Track } from "@/features/player/player.store";
 
 interface AlbumArtViewProps {
     currentTrack: Track;

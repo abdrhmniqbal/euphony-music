@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
-import { playTrack, Track } from "@/store/player-store";
+import { playTrack, Track } from "@/features/player/player.store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 const SEARCH_TABS = ["All", "Song", "Album", "Artist", "Playlist"] as const;
@@ -91,9 +91,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         return Array.from(albumMap.values()).slice(0, 4);
     })();
 
-    const handleTrackPress = useCallback((track: Track) => {
+    const handleTrackPress = (track: Track) => {
         playTrack(track);
-    }, []);
+    };
 
     const formatFollowerCount = (count: number): string => {
         if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { View, Dimensions } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription } from "@/components/item";
@@ -25,14 +25,14 @@ const HORIZONTAL_PADDING = 28;
 const ITEM_WIDTH = (SCREEN_WIDTH - HORIZONTAL_PADDING - (GAP * (NUM_COLUMNS - 1))) / NUM_COLUMNS;
 
 export const ArtistGrid: React.FC<ArtistGridProps> = ({ data, onArtistPress, scrollEnabled = true }) => {
-    const handlePress = useCallback((artist: Artist) => {
+    const handlePress = (artist: Artist) => {
         onArtistPress?.(artist);
-    }, [onArtistPress]);
+    };
 
     const formatTrackCount = (count: number) =>
         `${count} ${count === 1 ? 'track' : 'tracks'}`;
 
-    const renderArtistItem = useCallback((item: Artist) => (
+    const renderArtistItem = (item: Artist) => (
         <Item
             key={item.id}
             variant="grid"
@@ -45,7 +45,7 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({ data, onArtistPress, scr
                 <ItemDescription className="text-center">{formatTrackCount(item.trackCount)}</ItemDescription>
             </ItemContent>
         </Item>
-    ), [handlePress]);
+    );
 
     if (data.length === 0) {
         return <EmptyState icon="people" title="No Artists" message="Artists from your music library will appear here." />;

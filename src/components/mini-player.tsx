@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '@nanostores/react';
-import { $currentTrack, $isPlaying, $currentTime, $duration, togglePlayback, playNext } from '@/store/player-store';
+import { $currentTrack, $isPlaying, $currentTime, $duration, togglePlayback, playNext } from '@/features/player/player.store';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { $isPlayerExpanded, $showPlayerQueue } from '@/store/ui-store';
+import { $isPlayerExpanded, $showPlayerQueue } from '@/shared/hooks/scroll-bars.store';
 import { MarqueeText } from './marquee-text';
 
 export const MiniPlayer = () => {

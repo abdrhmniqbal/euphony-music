@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
@@ -20,14 +20,14 @@ interface FolderListProps {
 export const FolderList: React.FC<FolderListProps> = ({ data, onFolderPress }) => {
     const theme = useThemeColors();
 
-    const handlePress = useCallback((folder: Folder) => {
+    const handlePress = (folder: Folder) => {
         onFolderPress?.(folder);
-    }, [onFolderPress]);
+    };
 
     const formatFileCount = (count: number) =>
         `${count} ${count === 1 ? 'file' : 'files'}`;
 
-    const renderItem = useCallback(({ item }: LegendListRenderItemProps<Folder>) => (
+    const renderItem = ({ item }: LegendListRenderItemProps<Folder>) => (
         <Item
             onPress={() => handlePress(item)}
         >
@@ -40,7 +40,7 @@ export const FolderList: React.FC<FolderListProps> = ({ data, onFolderPress }) =
                 <Ionicons name="chevron-forward" size={24} color={theme.muted} />
             </ItemAction>
         </Item>
-    ), [handlePress, theme.muted]);
+    );
 
     if (data.length === 0) {
         return <EmptyState icon="folder" title="No Folders" message="Music folders you add will appear here." />;

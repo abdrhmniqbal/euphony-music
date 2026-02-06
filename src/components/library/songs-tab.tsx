@@ -3,8 +3,8 @@ import { SongList } from "@/components/library/song-list";
 import { LibrarySkeleton } from "@/components/library/library-skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { useTracks } from "@/features/library/api/use-library";
-import { Track } from "@/store/player-store";
-import { SortConfig } from "@/store/sort-store";
+import { Track } from "@/features/player/player.store";
+import { SortConfig } from "@/features/library/library-sort.store";
 import { transformDBTrackToTrack } from "@/utils/transformers";
 import type { DBTrack } from "@/types/database";
 
@@ -13,7 +13,7 @@ interface SongsTabProps {
     sortConfig?: SortConfig;
 }
 
-export const SongsTab = React.memo(({ onSongPress, sortConfig }: SongsTabProps) => {
+export const SongsTab: React.FC<SongsTabProps> = ({ onSongPress, sortConfig }) => {
     const orderByField = sortConfig?.field === 'filename' ? 'title' : (sortConfig?.field || 'title');
     const order = sortConfig?.order || 'asc';
 
@@ -41,6 +41,4 @@ export const SongsTab = React.memo(({ onSongPress, sortConfig }: SongsTabProps) 
     }
 
     return <SongList data={tracks} onSongPress={handleSongPress} scrollEnabled={false} />;
-});
-
-SongsTab.displayName = 'SongsTab';
+};

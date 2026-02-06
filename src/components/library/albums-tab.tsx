@@ -3,14 +3,14 @@ import { AlbumGrid, Album } from "@/components/library/album-grid";
 import { LibrarySkeleton } from "@/components/library/library-skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { useAlbums } from "@/features/library/api/use-library";
-import { SortConfig } from "@/store/sort-store";
+import { SortConfig } from "@/features/library/library-sort.store";
 
 interface AlbumsTabProps {
     onAlbumPress?: (album: Album) => void;
     sortConfig?: SortConfig;
 }
 
-export const AlbumsTab = React.memo(({ onAlbumPress, sortConfig }: AlbumsTabProps) => {
+export const AlbumsTab: React.FC<AlbumsTabProps> = ({ onAlbumPress, sortConfig }) => {
     // Use database-level sorting - much faster than client-side
     const orderByField = sortConfig?.field === 'artist' ? 'title' : (sortConfig?.field || 'title');
     const order = sortConfig?.order || 'asc';
@@ -48,6 +48,4 @@ export const AlbumsTab = React.memo(({ onAlbumPress, sortConfig }: AlbumsTabProp
 
     // Render grid with data from React Query (already sorted by database)
     return <AlbumGrid data={albums} onAlbumPress={handleAlbumPress} scrollEnabled={false} />;
-});
-
-AlbumsTab.displayName = 'AlbumsTab';
+};

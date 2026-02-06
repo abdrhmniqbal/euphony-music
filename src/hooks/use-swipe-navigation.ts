@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
-import { useCallback } from "react";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Gesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
 
 const MAIN_TABS = ["(home)", "(search)", "(library)"] as const;
@@ -9,7 +8,7 @@ type MainTab = typeof MAIN_TABS[number];
 export function useSwipeNavigation(currentTab: MainTab) {
     const router = useRouter();
 
-    const navigateTab = useCallback((direction: 'left' | 'right') => {
+    const navigateTab = (direction: 'left' | 'right') => {
         const currentIndex = MAIN_TABS.indexOf(currentTab);
         if (direction === 'left' && currentIndex < MAIN_TABS.length - 1) {
             const nextTab = MAIN_TABS[currentIndex + 1];
@@ -18,7 +17,7 @@ export function useSwipeNavigation(currentTab: MainTab) {
             const prevTab = MAIN_TABS[currentIndex - 1];
             router.replace(`/${prevTab}`);
         }
-    }, [currentTab, router]);
+    };
 
     const swipeGesture = Gesture.Pan()
         .activeOffsetX([-20, 20])

@@ -6,50 +6,16 @@ import { Stack } from "expo-router";
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUniwind } from "uniwind";
-import { useEffect, useState } from "react";
-import * as MediaLibrary from "expo-media-library";
-import TrackPlayer from '@weights-ai/react-native-track-player';
+import { useAppBootstrap } from "@/features/bootstrap/use-app-bootstrap";
 
 import { FullPlayer } from "@/components/full-player";
 import { IndexingProgress } from "@/components/indexing-progress";
-import { setupPlayer, PlaybackService } from "@/store/player-store";
-import { scanMediaLibrary } from "@/features/indexer/utils/media-scanner";
 import { Providers } from "@/components/providers";
-
-let isPlaybackServiceRegistered = false;
 
 export default function Layout() {
   const { theme: currentTheme } = useUniwind();
   const theme = useThemeColors();
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    const init = async () => {
-      // Register playback service only once
-      if (!isPlaybackServiceRegistered) {
-        try {
-          TrackPlayer.registerPlaybackService(() => PlaybackService);
-          isPlaybackServiceRegistered = true;
-        } catch {
-          // Already registered, ignore
-        }
-      }
-
-      // Setup audio player
-      await setupPlayer();
-
-      // Request permissions
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status === 'granted') {
-        // Scan media library on startup
-        scanMediaLibrary(undefined, false);
-      }
-
-      setIsInitialized(true);
-    };
-
-    init();
-  }, []);
+  useAppBootstrap();
 
   const navigationTheme = {
     ...(currentTheme === 'dark' ? DarkTheme : DefaultTheme),

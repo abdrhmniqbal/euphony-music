@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from "react-native";
 import { db } from "@/db/client";
-import { loadFavorites } from "@/store/favorites-store";
-import { loadTracks } from "@/store/player-store";
+import { loadFavorites } from "@/features/favorites/favorites.store";
+import { loadTracks } from "@/features/player/player.store";
 
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);

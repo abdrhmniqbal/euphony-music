@@ -1,6 +1,7 @@
 // Indexer feature exports
-export { scanMediaLibrary } from './utils/media-scanner';
+export { scanMediaLibrary } from './indexer.service';
 export { extractMetadata, saveArtworkToCache } from './utils/metadata-extractor';
+export type { IndexerScanProgress } from './indexer.types';
 export { 
   $indexerState, 
   startIndexing, 

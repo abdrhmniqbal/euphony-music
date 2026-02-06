@@ -2,7 +2,7 @@ import React from "react";
 import { View, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/colors";
-import { $showPlayerQueue } from "@/store/ui-store";
+import { $showPlayerQueue } from "@/shared/hooks/scroll-bars.store";
 import { useStore } from "@nanostores/react";
 
 export const PlayerFooter: React.FC = () => {

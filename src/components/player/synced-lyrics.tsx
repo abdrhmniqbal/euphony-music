@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, ScrollView, Dimensions } from 'react-native';
 import { useStore } from '@nanostores/react';
-import { $currentTrack, $currentTime } from '@/store/player-store';
+import { $currentTrack, $currentTime } from '@/features/player/player.store';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 

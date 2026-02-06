@@ -1,6 +1,6 @@
 import { atom } from 'nanostores';
-import { scanMediaLibrary } from '@/features/indexer/utils/media-scanner';
-import { loadTracks } from '@/store/player-store';
+import { scanMediaLibrary } from '@/features/indexer/indexer.service';
+import { loadTracks } from '@/features/player/player.store';
 import { queryClient } from '@/lib/tanstack-query';
 
 export interface IndexerState {

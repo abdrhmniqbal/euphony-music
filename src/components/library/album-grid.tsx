@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { View, ScrollView, Dimensions } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription } from "@/components/item";
@@ -36,11 +36,11 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
     containerClassName = "",
     scrollEnabled = true
 }) => {
-    const handlePress = useCallback((album: Album) => {
+    const handlePress = (album: Album) => {
         onAlbumPress?.(album);
-    }, [onAlbumPress]);
+    };
 
-    const renderAlbumItem = useCallback((item: Album) => (
+    const renderAlbumItem = (item: Album) => (
         <Item
             key={item.id}
             variant="grid"
@@ -53,9 +53,9 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
                 <ItemDescription numberOfLines={1}>
                     {item.albumArtist || item.artist}{item.trackCount ? ` • ${item.trackCount} tracks` : ""}
                 </ItemDescription>
-            </ItemContent>
+                </ItemContent>
         </Item>
-    ), [handlePress]);
+    );
 
     if (data.length === 0) {
         return <EmptyState icon="disc" title="No Albums" message="Albums you add to your library will appear here." />;

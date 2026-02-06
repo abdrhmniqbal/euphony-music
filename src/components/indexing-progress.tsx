@@ -10,7 +10,7 @@ import Animated, {
     FadeOut
 } from 'react-native-reanimated';
 import { $indexerState, stopIndexing } from '@/features/indexer';
-import { $currentTrack } from '@/store/player-store';
+import { $currentTrack } from '@/features/player/player.store';
 
 const PHASE_LABELS: Record<string, string> = {
     idle: '',

@@ -4,7 +4,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { MiniPlayer } from "@/components/mini-player";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import { useStore } from "@nanostores/react";
-import { $barsVisible } from "@/store/ui-store";
+import { $barsVisible } from "@/shared/hooks/scroll-bars.store";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 
 const TAB_BAR_HEIGHT = 90;

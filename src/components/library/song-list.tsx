@@ -1,11 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useState } from "react";
 import { View, Text } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
+import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription } from "@/components/item";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { playTrack, Track } from "@/store/player-store";
+import { playTrack, Track } from "@/features/player/player.store";
 import { EmptyState } from "@/components/empty-state";
+import { TrackActionSheet } from "@/components/track-action-sheet";
 
 interface SongListProps {
     data: Track[];
@@ -27,16 +28,23 @@ export const SongList: React.FC<SongListProps> = ({
     scrollEnabled = true
 }) => {
     const theme = useThemeColors();
+    const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+    const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-    const handlePress = useCallback((track: Track) => {
+    const handlePress = (track: Track) => {
         if (onSongPress) {
             onSongPress(track);
         } else {
             playTrack(track, data);
         }
-    }, [onSongPress, data]);
+    };
 
-    const renderSongItem = useCallback((item: Track, index: number) => (
+    const showActionMenu = (track: Track) => {
+        setSelectedTrack(track);
+        setIsSheetOpen(true);
+    };
+
+    const renderSongItem = (item: Track, index: number) => (
         <Item
             key={item.id}
             onPress={() => handlePress(item)}
@@ -57,11 +65,16 @@ export const SongList: React.FC<SongListProps> = ({
                 <ItemTitle>{item.title}</ItemTitle>
                 {!hideArtist && <ItemDescription>{item.artist || "Unknown Artist"}</ItemDescription>}
             </ItemContent>
-            <ItemAction>
-                <Ionicons name="ellipsis-horizontal" size={24} color={theme.muted} />
-            </ItemAction>
+            <View className="p-2">
+                <Ionicons 
+                    name="ellipsis-horizontal" 
+                    size={24} 
+                    color={theme.muted}
+                    onPress={() => showActionMenu(item)}
+                />
+            </View>
         </Item>
-    ), [handlePress, showNumbers, hideCover, hideArtist, getNumber, theme.muted]);
+    );
 
     if (data.length === 0) {
         return <EmptyState icon="musical-note" title="No Songs" message="Songs you add to your library will appear here." />;
@@ -69,22 +82,38 @@ export const SongList: React.FC<SongListProps> = ({
 
     if (!scrollEnabled) {
         return (
-            <View style={{ gap: 8 }}>
-                {data.map((item, index) => renderSongItem(item, index))}
-            </View>
+            <>
+                <View style={{ gap: 8 }}>
+                    {data.map((item, index) => renderSongItem(item, index))}
+                </View>
+                <TrackActionSheet
+                    track={selectedTrack}
+                    isOpen={isSheetOpen}
+                    onClose={() => setIsSheetOpen(false)}
+                    tracks={data}
+                />
+            </>
         );
     }
 
     return (
-        <LegendList
-            data={data}
-            renderItem={({ item, index }: LegendListRenderItemProps<Track>) => renderSongItem(item, index)}
-            keyExtractor={(item) => item.id}
-            style={{ flex: 1 }}
-            contentContainerStyle={{ gap: 8 }}
-            recycleItems={true}
-            estimatedItemSize={72}
-            drawDistance={250}
-        />
+        <>
+            <LegendList
+                data={data}
+                renderItem={({ item, index }: LegendListRenderItemProps<Track>) => renderSongItem(item, index)}
+                keyExtractor={(item) => item.id}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ gap: 8 }}
+                recycleItems={true}
+                estimatedItemSize={72}
+                drawDistance={250}
+            />
+            <TrackActionSheet
+                track={selectedTrack}
+                isOpen={isSheetOpen}
+                onClose={() => setIsSheetOpen(false)}
+                tracks={data}
+            />
+        </>
     );
 };

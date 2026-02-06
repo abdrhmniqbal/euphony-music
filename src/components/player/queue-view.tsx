@@ -2,9 +2,9 @@ import React from "react";
 import { View, Text, Pressable, Image, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
-import { Track, playTrack } from "@/store/player-store";
+import { Track, playTrack } from "@/features/player/player.store";
 import { useStore } from "@nanostores/react";
-import { $queueInfo, removeFromQueue } from "@/store/queue-store";
+import { $queueInfo, removeFromQueue } from "@/features/player/queue.store";
 
 interface QueueItemProps {
     track: Track;
