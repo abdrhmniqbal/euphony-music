@@ -1,5 +1,6 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const { withUniwindConfig } = require("uniwind/metro");
+const { withMonicon } = require("@monicon/metro");
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
@@ -13,4 +14,6 @@ const uniwindConfig = withUniwindConfig(config, {
   dtsFile: "./src/uniwind-types.d.ts",
 });
 
-module.exports = uniwindConfig;
+const moniconConfig = withMonicon(uniwindConfig);
+
+module.exports = moniconConfig;
