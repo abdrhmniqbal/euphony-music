@@ -8,7 +8,11 @@ import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { $isPlayerExpanded, $showPlayerQueue } from '@/hooks/scroll-bars.store';
 import { MarqueeText } from './marquee-text';
 
-export const MiniPlayer = () => {
+interface MiniPlayerProps {
+    bottomOffset?: number;
+}
+
+export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => {
     const currentTrack = useStore($currentTrack);
     const isPlaying = useStore($isPlaying);
     const currentTime = useStore($currentTime);
@@ -26,7 +30,7 @@ export const MiniPlayer = () => {
             exiting={SlideOutDown.duration(300)}
             className="absolute left-0 right-0 h-[64px] border-t border-divider overflow-hidden bg-surface-secondary"
             style={{
-                bottom: 90,
+                bottom: bottomOffset,
                 borderTopColor: theme.divider
             }}
         >

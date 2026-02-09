@@ -11,6 +11,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { $indexerState, stopIndexing } from '@/modules/indexer';
 import { $currentTrack } from '@/modules/player/player.store';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MINI_PLAYER_HEIGHT, getTabBarHeight } from '@/constants/layout';
 
 const PHASE_LABELS: Record<string, string> = {
     idle: '',
@@ -20,17 +22,17 @@ const PHASE_LABELS: Record<string, string> = {
     complete: 'Complete!',
 };
 
-const MINI_PLAYER_HEIGHT = 80;
-const TAB_BAR_HEIGHT = 80;
 const BOTTOM_MARGIN = 16;
 
 export const IndexingProgress: React.FC = () => {
     const theme = useThemeColors();
     const state = useStore($indexerState);
     const currentTrack = useStore($currentTrack);
+    const insets = useSafeAreaInsets();
 
     const hasMiniPlayer = currentTrack !== null;
-    const bottomOffset = TAB_BAR_HEIGHT + BOTTOM_MARGIN + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0);
+    const tabBarHeight = getTabBarHeight(insets.bottom);
+    const bottomOffset = tabBarHeight + BOTTOM_MARGIN + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0);
 
     const progressStyle = useAnimatedStyle(() => ({
         width: withSpring(`${state.progress}%`, {
