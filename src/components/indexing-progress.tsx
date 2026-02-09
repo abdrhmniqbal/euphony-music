@@ -6,13 +6,17 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, {
     useAnimatedStyle,
     withSpring,
+    withTiming,
     FadeIn,
-    FadeOut
+    FadeOut,
+    useSharedValue,
 } from 'react-native-reanimated';
 import { $indexerState, stopIndexing } from '@/modules/indexer';
 import { $currentTrack } from '@/modules/player/player.store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MINI_PLAYER_HEIGHT, getTabBarHeight } from '@/constants/layout';
+import { $barsVisible } from '@/hooks/scroll-bars.store';
+import { useEffect } from 'react';
 
 const PHASE_LABELS: Record<string, string> = {
     idle: '',
@@ -28,11 +32,23 @@ export const IndexingProgress: React.FC = () => {
     const theme = useThemeColors();
     const state = useStore($indexerState);
     const currentTrack = useStore($currentTrack);
+    const barsVisible = useStore($barsVisible);
     const insets = useSafeAreaInsets();
 
     const hasMiniPlayer = currentTrack !== null;
     const tabBarHeight = getTabBarHeight(insets.bottom);
-    const bottomOffset = tabBarHeight + BOTTOM_MARGIN + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0);
+    const bottomOffsetVisible = tabBarHeight + BOTTOM_MARGIN + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0);
+    const bottomOffsetHidden = insets.bottom + BOTTOM_MARGIN;
+    const targetBottomOffset = barsVisible ? bottomOffsetVisible : bottomOffsetHidden;
+    const animatedBottomOffset = useSharedValue(targetBottomOffset);
+
+    useEffect(() => {
+        animatedBottomOffset.value = withTiming(targetBottomOffset, { duration: 250 });
+    }, [animatedBottomOffset, targetBottomOffset]);
+
+    const containerStyle = useAnimatedStyle(() => ({
+        bottom: animatedBottomOffset.value,
+    }));
 
     const progressStyle = useAnimatedStyle(() => ({
         width: withSpring(`${state.progress}%`, {
@@ -51,7 +67,7 @@ export const IndexingProgress: React.FC = () => {
                 entering={FadeIn.duration(200)}
                 exiting={FadeOut.duration(200)}
                 className="absolute left-4 right-4 bg-surface-secondary rounded-2xl p-4 shadow-lg"
-                style={{ bottom: bottomOffset }}
+                style={containerStyle}
             >
                 <View className="flex-row items-center gap-3">
                     <View className="w-10 h-10 rounded-full bg-accent/20 items-center justify-center">
@@ -71,7 +87,7 @@ export const IndexingProgress: React.FC = () => {
             entering={FadeIn.duration(200)}
             exiting={FadeOut.duration(200)}
             className="absolute left-4 right-4 bg-surface-secondary rounded-2xl p-4 shadow-lg"
-            style={{ bottom: bottomOffset }}
+            style={containerStyle}
         >
             <View className="flex-row items-center justify-between mb-3">
                 <View className="flex-row items-center gap-2">
