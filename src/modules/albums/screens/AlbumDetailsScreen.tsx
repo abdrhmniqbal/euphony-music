@@ -3,11 +3,10 @@ import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { useNavigation, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { Button } from "heroui-native";
 import { toggleFavoriteItem } from "@/modules/favorites/favorites.store";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
-import { SortSheet } from "@/components/library/sort-sheet";
-import { TrackList } from "@/components/library/track-list";
+import { SortSheet } from "@/components/blocks/sort-sheet";
+import { TrackList } from "@/components/blocks/track-list";
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -19,6 +18,8 @@ import {
     type SortField,
 } from "@/modules/library/library-sort.store";
 import { useAlbumDetailsScreen } from "../hooks/use-album-details-screen";
+import { PlaybackActionsRow } from "@/components/blocks";
+import { cn } from "tailwind-variants";
 
 export default function AlbumDetailsScreen() {
     const navigation = useNavigation();
@@ -110,7 +111,7 @@ export default function AlbumDetailsScreen() {
                     <View className="w-22 flex-row">
                         <Pressable
                             onPress={() => router.back()}
-                            className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}
+                            className={cn("w-10 h-10 rounded-full items-center justify-center active:opacity-50", getButtonBackground())}
                         >
                             <Ionicons name="chevron-back" size={24} color={getIconColor()} />
                         </Pressable>
@@ -131,7 +132,7 @@ export default function AlbumDetailsScreen() {
                     <View className="w-22 flex-row justify-end gap-3">
                         {albumId && (
                             <Pressable
-                                className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}
+                                className={cn("w-10 h-10 rounded-full items-center justify-center active:opacity-50", getButtonBackground())}
                                 onPress={() => {
                                     toggleFavoriteItem(
                                         albumId,
@@ -149,7 +150,7 @@ export default function AlbumDetailsScreen() {
                                 />
                             </Pressable>
                         )}
-                        <Pressable className={`w-10 h-10 rounded-full items-center justify-center active:opacity-50 ${getButtonBackground()}`}>
+                        <Pressable className={cn("w-10 h-10 rounded-full items-center justify-center active:opacity-50", getButtonBackground())}>
                             <Ionicons name="ellipsis-horizontal" size={22} color={getIconColor()} />
                         </Pressable>
                     </View>
@@ -201,22 +202,9 @@ export default function AlbumDetailsScreen() {
 
                 <Animated.View
                     entering={FadeIn.duration(300)}
-                    className="px-6 flex-row gap-4 mb-6"
+                    className="px-6"
                 >
-                    <Button
-                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                        onPress={playAllTracks}
-                    >
-                        <Ionicons name="play" size={20} color={theme.foreground} />
-                        <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                    </Button>
-                    <Button
-                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                        onPress={shuffleTracks}
-                    >
-                        <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                        <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                    </Button>
+                    <PlaybackActionsRow onPlay={playAllTracks} onShuffle={shuffleTracks} />
                 </Animated.View>
 
                 <View className="px-6 flex-row items-center justify-between mb-4">

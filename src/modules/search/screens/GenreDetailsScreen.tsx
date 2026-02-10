@@ -1,4 +1,4 @@
-import { View, ScrollView, RefreshControl, Image, Pressable, Text } from "react-native";
+import { View, ScrollView, RefreshControl, Pressable, Text } from "react-native";
 import { useEffect } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,11 +7,20 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { useStore } from "@nanostores/react";
 import { $indexerState } from "@/modules/indexer";
-import { ContentSection, MediaCarousel, RankedListCarousel } from "@/components/ui";
+import { ContentSection, MediaCarousel, RankedTrackCarousel } from "@/components/blocks";
+import { MusicCard } from "@/components/patterns";
 import { useGenreDetailsScreen } from "../hooks/use-genre-details-screen";
 import type { GenreAlbumInfo } from "@/modules/genres/genres.api";
 
 const CHUNK_SIZE = 5;
+
+const MusicalNotesOutlineIcon = ({ size = 48, color }: { size?: number; color?: string }) => (
+    <Ionicons name="musical-notes-outline" size={size} color={color} />
+);
+
+const DiscOutlineIcon = ({ size = 48, color }: { size?: number; color?: string }) => (
+    <Ionicons name="disc-outline" size={size} color={color} />
+);
 
 export default function GenreDetailsScreen() {
     const { name } = useLocalSearchParams<{ name: string }>();
@@ -31,31 +40,16 @@ export default function GenreDetailsScreen() {
     }, [navigation]);
 
     function renderAlbumItem(album: GenreAlbumInfo) {
+        const subtitle = `${album.artist || "Unknown Artist"} · ${album.trackCount} tracks`;
+
         return (
-            <Pressable
+            <MusicCard
+                title={album.name}
+                subtitle={subtitle}
+                image={album.image}
+                icon="disc"
                 onPress={() => router.push(`/(main)/(library)/album/${encodeURIComponent(album.name)}`)}
-                className="active:opacity-70"
-            >
-                <View className="w-36 h-36 rounded-lg overflow-hidden bg-surface-secondary mb-2">
-                    {album.image ? (
-                        <Image
-                            source={{ uri: album.image }}
-                            className="w-full h-full"
-                            resizeMode="cover"
-                        />
-                    ) : (
-                        <View className="w-full h-full items-center justify-center">
-                            <Ionicons name="disc" size={48} color={theme.muted} />
-                        </View>
-                    )}
-                </View>
-                <Text className="text-sm font-bold text-foreground w-36" numberOfLines={1}>
-                    {album.name}
-                </Text>
-                <Text className="text-xs text-muted w-36" numberOfLines={1}>
-                    {album.artist || "Unknown Artist"} · {album.trackCount} tracks
-                </Text>
-            </Pressable>
+            />
         );
     }
 
@@ -112,12 +106,12 @@ export default function GenreDetailsScreen() {
                     data={topTracks}
                     onViewMore={() => router.push(`./top-tracks?name=${encodeURIComponent(genreName)}`)}
                     emptyState={{
-                        icon: "musical-notes-outline",
+                        icon: MusicalNotesOutlineIcon,
                         title: "No top tracks",
                         message: `Play some ${genreName} music to see top tracks!`,
                     }}
                     renderContent={(data) => (
-                        <RankedListCarousel
+                        <RankedTrackCarousel
                             data={data}
                             chunkSize={CHUNK_SIZE}
                         />
@@ -129,7 +123,7 @@ export default function GenreDetailsScreen() {
                     data={previewAlbums}
                     onViewMore={() => router.push(`./albums?name=${encodeURIComponent(genreName)}`)}
                     emptyState={{
-                        icon: "disc-outline",
+                        icon: DiscOutlineIcon,
                         title: "No albums found",
                         message: `No albums available in ${genreName}`,
                     }}

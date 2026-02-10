@@ -1,13 +1,12 @@
 import { View, Text, ScrollView, RefreshControl } from "react-native";
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/ui";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { Button } from "heroui-native";
-import { Ionicons } from "@expo/vector-icons";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { useStore } from "@nanostores/react";
 import { $indexerState } from "@/modules/indexer";
-import { TrackList } from "@/components/library/track-list";
+import { TrackList } from "@/components/blocks/track-list";
 import { useRecentlyPlayedScreen } from "@/modules/history/hooks/use-recently-played-screen";
+import { PlaybackActionsRow } from "@/components/blocks";
 
 export default function RecentlyPlayedScreen() {
     const theme = useThemeColors();
@@ -30,22 +29,7 @@ export default function RecentlyPlayedScreen() {
                 }
             >
                 {history.length > 0 && (
-                    <View className="flex-row px-4 py-4 gap-4">
-                        <Button
-                            className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                            onPress={playFirst}
-                        >
-                            <Ionicons name="play" size={20} color={theme.foreground} />
-                            <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                        </Button>
-                        <Button
-                            className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                            onPress={shuffle}
-                        >
-                            <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                            <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                        </Button>
-                    </View>
+                    <PlaybackActionsRow onPlay={playFirst} onShuffle={shuffle} className="px-4 py-4" />
                 )}
 
                 <View className="px-4">

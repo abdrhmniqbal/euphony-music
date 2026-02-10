@@ -3,9 +3,8 @@ import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { Button } from "heroui-native";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
-import { TrackList } from "@/components/library/track-list";
+import { TrackList } from "@/components/blocks/track-list";
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -14,6 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { formatDuration } from "@/modules/playlist/playlist.utils";
 import { usePlaylistDetailsScreen } from "../hooks/use-playlist-details-screen";
+import { PlaybackActionsRow } from "@/components/blocks";
 
 export default function PlaylistDetailsScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
@@ -190,22 +190,9 @@ export default function PlaylistDetailsScreen() {
 
                 <Animated.View
                     entering={FadeIn.duration(300)}
-                    className="px-6 flex-row gap-4 mb-6"
+                    className="px-6"
                 >
-                    <Button
-                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                        onPress={playAll}
-                    >
-                        <Ionicons name="play" size={20} color={theme.foreground} />
-                        <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                    </Button>
-                    <Button
-                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                        onPress={shuffle}
-                    >
-                        <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                        <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                    </Button>
+                    <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} />
                 </Animated.View>
 
                 <View className="px-4">

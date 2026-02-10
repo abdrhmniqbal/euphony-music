@@ -5,4 +5,5 @@ export { ProgressBar } from "./progress-bar";
 export { PlaybackControls } from "./playback-controls";
 export { PlayerHeader } from "./player-header";
 export { PlayerFooter } from "./player-footer";
+export { SyncedLyrics } from "./synced-lyrics";
 export { TrackInfo } from "./track-info";

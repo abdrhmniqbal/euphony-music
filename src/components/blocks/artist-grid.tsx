@@ -1,8 +1,7 @@
 import React from "react";
 import { View, Dimensions } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription } from "@/components/item";
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState, Item, ItemContent, ItemDescription, ItemImage, ItemTitle } from "@/components/ui";
 
 export interface Artist {
     id: string;

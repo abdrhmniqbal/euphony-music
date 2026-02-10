@@ -2,9 +2,8 @@ import React from "react";
 import { View, Text, Image } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
+import { EmptyState, Item, ItemAction, ItemContent, ItemDescription, ItemImage, ItemTitle } from "@/components/ui";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { EmptyState } from "@/components/empty-state";
 
 export interface Playlist {
     id: string;
@@ -20,8 +19,6 @@ interface PlaylistListProps {
     onCreatePlaylist?: () => void;
     scrollEnabled?: boolean;
 }
-
-const GRID_ITEMS = [1, 2, 3, 4] as const;
 
 export const PlaylistList: React.FC<PlaylistListProps> = ({
     data,

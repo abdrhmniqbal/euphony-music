@@ -1,7 +1,6 @@
-// Utility functions
-export function cn(...inputs: (string | undefined | null | false)[]): string {
-  return inputs.filter(Boolean).join(' ');
-}
+import { cn as twCn } from "tailwind-variants";
+
+export const cn = twCn;
 
 export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

@@ -4,8 +4,8 @@ import { useNavigation, useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { $tracks } from "@/modules/player/player.store";
-import { SearchResults } from "@/components/search/search-results";
-import { RecentSearches, RecentSearchItem } from "@/components/search/recent-searches";
+import { SearchResults } from "@/components/blocks/search-results";
+import { RecentSearches, RecentSearchItem } from "@/components/blocks/recent-searches";
 import { useStore } from "@nanostores/react";
 
 export default function SearchInteractionScreen() {

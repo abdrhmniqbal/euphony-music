@@ -1,7 +1,7 @@
 import React from "react";
-import { TrackList } from "@/components/library/track-list";
-import { LibrarySkeleton } from "@/components/library/library-skeleton";
-import { EmptyState } from "@/components/empty-state";
+import { TrackList } from "@/components/blocks/track-list";
+import { LibrarySkeleton } from "@/components/blocks/library-skeleton";
+import { EmptyState } from "@/components/ui";
 import { useTracks } from "@/modules/tracks/tracks.queries";
 import { Track } from "@/modules/player/player.store";
 import { SortConfig } from "@/modules/library/library-sort.store";

@@ -12,7 +12,7 @@ import {
   sortTracks,
   type SortField,
 } from '@/modules/library/library-sort.store';
-import { type Album } from '@/components/library/album-grid';
+import { type Album } from '@/components/blocks/album-grid';
 import { buildArtistAlbums } from '../artists.utils';
 
 export function useArtistDetailsScreen() {

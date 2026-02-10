@@ -7,9 +7,10 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { useStore } from "@nanostores/react";
 import { $indexerState } from "@/modules/indexer";
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/ui";
 import { useSearchScreen } from "../hooks/use-search-screen";
 import type { GenreCategory as Category, PatternType } from "@/modules/genres/genres.utils";
+import { cn } from "tailwind-variants";
 
 interface CategoryCardProps {
     title: string;
@@ -21,7 +22,7 @@ interface CategoryCardProps {
 const CategoryCard: React.FC<CategoryCardProps> = ({ title, color, pattern, onPress }) => {
     return (
         <Pressable onPress={onPress} className="w-[47.5%] active:opacity-80">
-            <Card className={`h-24 p-4 justify-start overflow-hidden border-none ${color} relative`}>
+            <Card className={cn("relative h-24 justify-start overflow-hidden border-none p-4", color)}>
                 <Text className="text-white font-bold text-[17px] z-10 leading-tight">{title}</Text>
                 <View className="absolute inset-0 opacity-30">
                     {pattern === 'circles' && (

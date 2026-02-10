@@ -18,8 +18,8 @@ import {
 import { useAlbums } from '@/modules/albums/albums.queries';
 import { useArtists } from '@/modules/artists/artists.queries';
 import { usePlaylists } from '@/modules/playlist/playlist.queries';
-import type { Folder } from '@/components/library/folder-list';
-import type { Playlist } from '@/components/library/playlist-list';
+import type { Folder } from '@/components/blocks/folder-list';
+import type { Playlist } from '@/components/blocks/playlist-list';
 
 export const LIBRARY_TABS = ['Tracks', 'Albums', 'Artists', 'Playlists', 'Folders', 'Favorites'] as const;
 export type LibraryTab = (typeof LIBRARY_TABS)[number];

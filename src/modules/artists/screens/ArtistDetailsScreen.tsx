@@ -13,15 +13,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { SectionTitle } from "@/components/section-title";
-import { Button } from "heroui-native";
-import { TrackList } from "@/components/library/track-list";
+import { SectionTitle } from "@/components/ui";
+import { TrackList } from "@/components/blocks/track-list";
 import { TRACK_SORT_OPTIONS, ALBUM_SORT_OPTIONS, type SortField } from "@/modules/library/library-sort.store";
-import { AlbumGrid } from "@/components/library/album-grid";
-import { Album } from "@/components/library/album-grid";
-import { SortSheet } from "@/components/library/sort-sheet";
+import { AlbumGrid } from "@/components/blocks/album-grid";
+import { Album } from "@/components/blocks/album-grid";
+import { SortSheet } from "@/components/blocks/sort-sheet";
 import { toggleFavoriteItem } from "@/modules/favorites/favorites.store";
 import { useArtistDetailsScreen } from "../hooks/use-artist-details-screen";
+import { PlaybackActionsRow } from "@/components/blocks";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -266,22 +266,7 @@ export default function ArtistDetailsScreen() {
                                 </Pressable>
                             </View>
 
-                            <View className="flex-row gap-4 mb-6">
-                                <Button
-                                    className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                                    onPress={playAllTracks}
-                                >
-                                    <Ionicons name="play" size={20} color={theme.foreground} />
-                                    <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                                </Button>
-                                <Button
-                                    className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                                    onPress={shuffleTracks}
-                                >
-                                    <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                                    <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                                </Button>
-                            </View>
+                            <PlaybackActionsRow onPlay={playAllTracks} onShuffle={shuffleTracks} />
 
                             <TrackList data={sortedArtistTracks} />
                         </>

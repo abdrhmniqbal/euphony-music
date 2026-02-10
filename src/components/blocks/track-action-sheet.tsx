@@ -72,7 +72,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
             <BottomSheet.Portal>
                 <BottomSheet.Overlay />
                 <BottomSheet.Content className="border-none rounded-t-3xl px-6 pb-8 pt-2">
-                    {/* Row 1: Cover and Title */}
                     <View className="flex-row items-center gap-4 mb-6">
                         <View className="w-20 h-20 rounded-xl bg-default overflow-hidden">
                             {track.image ? (
@@ -94,7 +93,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                         </View>
                     </View>
 
-                    {/* Row 2: Play Button (2/3) + Favorite Button (1/3) */}
                     <View className="flex-row gap-3 mb-3">
                         <Button
                             variant="primary"
@@ -119,7 +117,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                         </Button>
                     </View>
 
-                    {/* Row 3: Add to Queue + Play Next */}
                     <View className="flex-row gap-3 mb-3">
                         <Button
                             variant="secondary"
@@ -143,7 +140,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                         </Button>
                     </View>
 
-                    {/* Row 4: Add to Playlist */}
                     {onAddToPlaylist && (
                         <Button
                             variant="ghost"

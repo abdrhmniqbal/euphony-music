@@ -6,7 +6,7 @@ import { $currentTrack, $isPlaying, $currentTime, $duration, togglePlayback, pla
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { $isPlayerExpanded, $showPlayerQueue } from '@/hooks/scroll-bars.store';
-import { MarqueeText } from './marquee-text';
+import { MarqueeText } from '@/components/ui/marquee-text';
 
 interface MiniPlayerProps {
     bottomOffset?: number;

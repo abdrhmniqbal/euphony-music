@@ -1,7 +1,7 @@
 import React from "react";
-import { ArtistGrid, Artist } from "@/components/library/artist-grid";
-import { LibrarySkeleton } from "@/components/library/library-skeleton";
-import { EmptyState } from "@/components/empty-state";
+import { ArtistGrid, Artist } from "@/components/blocks/artist-grid";
+import { LibrarySkeleton } from "@/components/blocks/library-skeleton";
+import { EmptyState } from "@/components/ui";
 import { useArtists } from "@/modules/library/library.queries";
 import { SortConfig } from "@/modules/library/library-sort.store";
 
@@ -11,26 +11,23 @@ interface ArtistsTabProps {
 }
 
 export const ArtistsTab: React.FC<ArtistsTabProps> = ({ onArtistPress, sortConfig }) => {
-    // Use database-level sorting - much faster than client-side
     const orderByField = sortConfig?.field || 'name';
     const order = sortConfig?.order || 'asc';
 
     const { data: artistsData, isLoading, isPending } = useArtists(orderByField as any, order);
 
-    // Transform data to match Artist interface (no sorting needed - already sorted by DB)
     const artists: Artist[] = artistsData?.map(artist => ({
         id: artist.id,
         name: artist.name,
         trackCount: artist.trackCount || 0,
         image: artist.artwork || artist.albumArtwork || undefined,
-        dateAdded: 0, // Not available from this query
+        dateAdded: 0,
     })) || [];
 
     const handleArtistPress = (artist: Artist) => {
         onArtistPress?.(artist);
     };
 
-    // Show skeleton while loading
     if (isLoading || isPending) {
         return <LibrarySkeleton type="artists" />;
     }
@@ -43,6 +40,5 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({ onArtistPress, sortConfi
         />;
     }
 
-    // Render grid with data from React Query (already sorted by database)
     return <ArtistGrid data={artists} onArtistPress={handleArtistPress} scrollEnabled={false} />;
 };

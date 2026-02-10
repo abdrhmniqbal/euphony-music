@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
+import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/ui";
 import { playTrack, Track } from "@/modules/player/player.store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { cn } from "tailwind-variants";
 
 const SEARCH_TABS = ["All", "Track", "Album", "Artist", "Playlist"] as const;
 type SearchTab = typeof SEARCH_TABS[number];
@@ -117,9 +118,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                     <Pressable
                         key={tab}
                         onPress={() => setActiveTab(tab)}
-                        className={`px-4 py-1.5 rounded-full ${activeTab === tab ? 'bg-accent' : 'bg-transparent'}`}
+                        className={cn("rounded-full px-4 py-1.5", activeTab === tab ? "bg-accent" : "bg-transparent")}
                     >
-                        <Text className={`font-medium ${activeTab === tab ? 'text-white' : 'text-muted'}`}>
+                        <Text className={cn("font-medium", activeTab === tab ? "text-white" : "text-muted")}>
                             {tab}
                         </Text>
                     </Pressable>

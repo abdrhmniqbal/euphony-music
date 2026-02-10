@@ -1,9 +1,8 @@
 import React from "react";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
+import { EmptyState, Item, ItemAction, ItemContent, ItemDescription, ItemImage, ItemTitle } from "@/components/ui";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { EmptyState } from "@/components/empty-state";
 
 export interface Folder {
     id: string;

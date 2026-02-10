@@ -2,14 +2,14 @@ import { View, ScrollView, Pressable, RefreshControl, Text } from "react-native"
 import { useEffect } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/ui";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { Ionicons } from "@expo/vector-icons";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { useStore } from "@nanostores/react";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { $indexerState } from "@/modules/indexer";
-import { AlbumGrid, Album } from "@/components/library/album-grid";
+import { AlbumGrid, Album } from "@/components/blocks/album-grid";
 import { useGenreAlbumsScreen } from "../hooks/use-genre-albums-screen";
 
 export default function GenreAlbumsScreen() {

@@ -15,10 +15,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MINI_PLAYER_HEIGHT, getTabBarHeight } from "@/constants/layout";
 import { $barsVisible } from "@/hooks/scroll-bars.store";
 import { useEffect } from "react";
-import { AnimatedProgressBar } from "@/components/organisms/progress/animated-progress";
-import LocalLibrarySolidIcon from "./icons/local/library-solid";
-import LocalCancelIcon from "./icons/local/cancel";
-import LocalCheckmarkCircleSolidIcon from "./icons/local/checkmark-circle-solid";
+import { AnimatedProgressBar } from "@/components/ui/animated-progress-bar";
+import LocalLibrarySolidIcon from "@/components/icons/local/library-solid";
+import LocalCancelIcon from "@/components/icons/local/cancel";
+import LocalCheckmarkCircleSolidIcon from "@/components/icons/local/checkmark-circle-solid";
 
 const PHASE_LABELS: Record<string, string> = {
   idle: "",

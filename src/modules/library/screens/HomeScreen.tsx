@@ -4,14 +4,22 @@ import { useNavigation, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useStore } from "@nanostores/react";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription } from "@/components/item";
-import { ContentSection, MediaCarousel, RankedListCarousel } from "@/components/ui";
+import { TrackRow } from "@/components/patterns";
+import { ContentSection, MediaCarousel, RankedTrackCarousel } from "@/components/blocks";
 import { $indexerState } from "@/modules/indexer";
 import { playTrack, type Track } from "@/modules/player/player.store";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { useHomeScreen } from "@/modules/library/hooks/use-home-screen";
 
 const CHUNK_SIZE = 5;
+
+const TimeOutlineIcon = ({ size = 48, color }: { size?: number; color?: string }) => (
+    <Ionicons name="time-outline" size={size} color={color} />
+);
+
+const MusicalNotesOutlineIcon = ({ size = 48, color }: { size?: number; color?: string }) => (
+    <Ionicons name="musical-notes-outline" size={size} color={color} />
+);
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -40,16 +48,11 @@ export default function HomeScreen() {
 
     function renderRecentlyPlayedItem(item: Track) {
         return (
-            <Item
+            <TrackRow
+                track={item}
                 variant="grid"
                 onPress={() => playTrack(item, recentlyPlayedTracks)}
-            >
-                <ItemImage icon="musical-note" image={item.image} />
-                <ItemContent>
-                    <ItemTitle>{item.title}</ItemTitle>
-                    <ItemDescription>{item.artist || "Unknown Artist"}</ItemDescription>
-                </ItemContent>
-            </Item>
+            />
         );
     }
 
@@ -73,7 +76,7 @@ export default function HomeScreen() {
                     data={recentlyPlayedTracks}
                     onViewMore={() => router.push("/(main)/(home)/recently-played")}
                     emptyState={{
-                        icon: "time-outline",
+                        icon: TimeOutlineIcon,
                         title: "No recently played",
                         message: "Start playing music!",
                     }}
@@ -92,12 +95,12 @@ export default function HomeScreen() {
                     data={topTracks}
                     onViewMore={() => router.push("/(main)/(home)/top-tracks")}
                     emptyState={{
-                        icon: "musical-notes-outline",
+                        icon: MusicalNotesOutlineIcon,
                         title: "No top tracks",
                         message: "Play more music together!",
                     }}
                     renderContent={(data) => (
-                        <RankedListCarousel
+                        <RankedTrackCarousel
                             data={data}
                             chunkSize={CHUNK_SIZE}
                         />

@@ -6,7 +6,7 @@ import {
   type GenreAlbumInfo,
 } from '@/modules/genres/genres.api';
 import type { Track } from '@/modules/player/player.types';
-import type { Album } from '@/components/library/album-grid';
+import type { Album } from '@/components/blocks/album-grid';
 
 export type PatternType = 'circles' | 'waves' | 'grid' | 'diamonds' | 'triangles' | 'rings' | 'pills';
 

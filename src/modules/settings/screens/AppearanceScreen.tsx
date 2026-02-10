@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/constants/colors";
 import { Uniwind, useUniwind } from "uniwind";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 
 type ThemeValue = "light" | "dark" | "system";
 
@@ -19,7 +19,7 @@ const APPEARANCE_OPTIONS: AppearanceOption[] = [
 
 export default function AppearanceScreen() {
     const { theme: currentTheme, hasAdaptiveThemes } = useUniwind();
-    const theme = Colors[currentTheme === 'dark' ? 'dark' : 'light'];
+    const theme = useThemeColors();
 
     const currentMode: ThemeValue = hasAdaptiveThemes ? "system" : currentTheme as ThemeValue;
 

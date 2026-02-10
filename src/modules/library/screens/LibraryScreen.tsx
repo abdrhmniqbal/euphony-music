@@ -2,23 +2,24 @@ import React, { useLayoutEffect } from "react";
 import { Text, ScrollView, View, Pressable, RefreshControl } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Button } from "heroui-native";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { GestureDetector } from "react-native-gesture-handler";
+import { cn } from "tailwind-variants";
 
-import { SortSheet } from "@/components/library/sort-sheet";
-import { PlaylistList } from "@/components/library/playlist-list";
-import { FolderList } from "@/components/library/folder-list";
-import { FavoritesList } from "@/components/library/favorites-list";
-import { TracksTab } from "@/components/library/tracks-tab";
-import { AlbumsTab } from "@/components/library/albums-tab";
-import { ArtistsTab } from "@/components/library/artists-tab";
+import { SortSheet } from "@/components/blocks/sort-sheet";
+import { PlaylistList } from "@/components/blocks/playlist-list";
+import { FolderList } from "@/components/blocks/folder-list";
+import { FavoritesList } from "@/components/blocks/favorites-list";
+import { TracksTab } from "@/components/blocks/tracks-tab";
+import { AlbumsTab } from "@/components/blocks/albums-tab";
+import { ArtistsTab } from "@/components/blocks/artists-tab";
 import {
     LIBRARY_TABS,
     LIBRARY_TAB_SORT_OPTIONS,
     useLibraryScreen,
 } from "../hooks/use-library-screen";
+import { PlaybackActionsRow } from "@/components/blocks";
 
 export default function LibraryScreen() {
     const navigation = useNavigation();
@@ -34,7 +35,6 @@ export default function LibraryScreen() {
         swipeGesture,
         indexerState,
         sortConfig,
-        tracks,
         favorites,
         playlists,
         folders,
@@ -132,7 +132,7 @@ export default function LibraryScreen() {
                                     onPress={() => setActiveTab(tab)}
                                     className="active:opacity-50 py-2"
                                 >
-                                    <Text className={`text-xl font-bold ${activeTab === tab ? 'text-foreground' : 'text-muted'}`}>
+                                    <Text className={cn("text-xl font-bold", activeTab === tab ? "text-foreground" : "text-muted")}>
                                         {tab}
                                     </Text>
                                     {activeTab === tab && (
@@ -144,22 +144,7 @@ export default function LibraryScreen() {
 
                         <View className="px-4 py-4">
                             {showPlayButtons && (
-                                <View className="flex-row gap-4 mb-6">
-                                    <Button
-                                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                                        onPress={playAll}
-                                    >
-                                        <Ionicons name="play" size={20} color={theme.foreground} />
-                                        <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                                    </Button>
-                                    <Button
-                                        className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                                        onPress={shuffle}
-                                    >
-                                        <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                                        <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                                    </Button>
-                                </View>
+                                <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} />
                             )}
 
                             <View className="flex-row items-center justify-between mb-4">

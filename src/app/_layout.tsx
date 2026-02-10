@@ -8,8 +8,8 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUniwind } from "uniwind";
 import { useAppBootstrap } from "@/modules/bootstrap/hooks/use-app-bootstrap";
 
-import { FullPlayer } from "@/components/full-player";
-import { IndexingProgress } from "@/components/indexing-progress";
+import { FullPlayer } from "@/components/blocks/full-player";
+import { IndexingProgress } from "@/components/blocks/indexing-progress";
 import { Providers } from "@/components/providers";
 
 export default function Layout() {

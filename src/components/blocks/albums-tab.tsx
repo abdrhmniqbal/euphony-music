@@ -1,7 +1,7 @@
 import React from "react";
-import { AlbumGrid, Album } from "@/components/library/album-grid";
-import { LibrarySkeleton } from "@/components/library/library-skeleton";
-import { EmptyState } from "@/components/empty-state";
+import { AlbumGrid, Album } from "@/components/blocks/album-grid";
+import { LibrarySkeleton } from "@/components/blocks/library-skeleton";
+import { EmptyState } from "@/components/ui";
 import { useAlbums } from "@/modules/library/library.queries";
 import { SortConfig } from "@/modules/library/library-sort.store";
 
@@ -11,13 +11,11 @@ interface AlbumsTabProps {
 }
 
 export const AlbumsTab: React.FC<AlbumsTabProps> = ({ onAlbumPress, sortConfig }) => {
-    // Use database-level sorting - much faster than client-side
     const orderByField = sortConfig?.field === 'artist' ? 'title' : (sortConfig?.field || 'title');
     const order = sortConfig?.order || 'asc';
 
     const { data: albumsData, isLoading, isPending } = useAlbums(orderByField as any, order);
 
-    // Transform data to match Album interface (no sorting needed - already sorted by DB)
     const albums: Album[] = albumsData?.map(album => ({
         id: album.id,
         title: album.title,
@@ -26,14 +24,13 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({ onAlbumPress, sortConfig }
         image: album.artwork || undefined,
         trackCount: album.trackCount || 0,
         year: album.year || 0,
-        dateAdded: 0, // Not available from this query
+        dateAdded: 0,
     })) || [];
 
     const handleAlbumPress = (album: Album) => {
         onAlbumPress?.(album);
     };
 
-    // Show skeleton while loading
     if (isLoading || isPending) {
         return <LibrarySkeleton type="albums" />;
     }
@@ -46,6 +43,5 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({ onAlbumPress, sortConfig }
         />;
     }
 
-    // Render grid with data from React Query (already sorted by database)
     return <AlbumGrid data={albums} onAlbumPress={handleAlbumPress} scrollEnabled={false} />;
 };

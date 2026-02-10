@@ -2,16 +2,16 @@ import { View, Text, ScrollView, Pressable, RefreshControl } from "react-native"
 import { useEffect } from "react";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/ui";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { Button } from "heroui-native";
 import { Ionicons } from "@expo/vector-icons";
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/hooks/scroll-bars.store";
 import { useStore } from "@nanostores/react";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { $indexerState } from "@/modules/indexer";
-import { TrackList } from "@/components/library/track-list";
+import { TrackList } from "@/components/blocks/track-list";
 import { useGenreTopTracksScreen } from "../hooks/use-genre-top-tracks-screen";
+import { PlaybackActionsRow } from "@/components/blocks";
 
 export default function GenreTopTracksScreen() {
     const { name } = useLocalSearchParams<{ name: string }>();
@@ -79,22 +79,7 @@ export default function GenreTopTracksScreen() {
                 }
             >
                 {tracks.length > 0 && (
-                    <View className="flex-row px-4 py-4 gap-4">
-                        <Button
-                            className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                            onPress={playAll}
-                        >
-                            <Ionicons name="play" size={20} color={theme.foreground} />
-                            <Text className="text-lg font-bold text-foreground uppercase">Play</Text>
-                        </Button>
-                        <Button
-                            className="flex-1 h-14 rounded-xl bg-default flex-row items-center justify-center gap-2"
-                            onPress={shuffle}
-                        >
-                            <Ionicons name="shuffle" size={20} color={theme.foreground} />
-                            <Text className="text-lg font-bold text-foreground uppercase">Shuffle</Text>
-                        </Button>
-                    </View>
+                    <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} className="px-4 py-4" />
                 )}
 
                 <Animated.View

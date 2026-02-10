@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
+import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/ui";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface RecentSearchItem {

@@ -2,21 +2,18 @@ import React from "react";
 import { View, Pressable, Image as RNImage } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
-import { Item, ItemImage, ItemContent, ItemTitle, ItemDescription, ItemAction } from "@/components/item";
+import { EmptyState, Item, ItemAction, ItemContent, ItemDescription, ItemImage, ItemTitle } from "@/components/ui";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { playTrack, Track, $tracks } from "@/modules/player/player.store";
 import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/favorites.store";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "expo-router";
 import { toggleFavoriteItem } from "@/modules/favorites/favorites.store";
-import { EmptyState } from "@/components/empty-state";
 
 interface FavoritesListProps {
     data: FavoriteEntry[];
     scrollEnabled?: boolean;
 }
-
-const GRID_ITEMS = [1, 2, 3, 4] as const;
 
 const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({ favorite }) => {
     const theme = useThemeColors();
@@ -109,13 +106,8 @@ const getTypeLabel = (type: FavoriteType): string => {
 };
 
 const TypeBadge: React.FC<{ type: FavoriteType }> = ({ type }) => {
-    const theme = useThemeColors();
-
     return (
-        <View
-            className="px-2 py-0.5 rounded-full mr-2"
-            style={{ backgroundColor: theme.muted + '30' }}
-        >
+        <View className="mr-2 rounded-full bg-muted/20 px-2 py-0.5">
             <ItemDescription className="text-xs font-medium">
                 {getTypeLabel(type)}
             </ItemDescription>

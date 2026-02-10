@@ -1,7 +1,7 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { MiniPlayer } from "@/components/mini-player";
+import { MiniPlayer } from "@/components/blocks/mini-player";
 import {
   BottomTabBar,
   type BottomTabBarProps,

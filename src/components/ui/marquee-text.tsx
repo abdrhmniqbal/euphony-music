@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { useState } from 'react';
 import { Text, View, LayoutChangeEvent } from 'react-native';
 import { Marquee } from '@animatereactnative/marquee';
 
@@ -34,7 +34,6 @@ export const MarqueeText = ({
 
     return (
         <View onLayout={onContainerLayout} style={{ width: '100%', overflow: 'hidden' }}>
-            {/* Measurement View */}
             <View style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', flexDirection: 'row' }}>
                 <View style={{ width: 9999, flexDirection: 'row' }}>
                     <Text
