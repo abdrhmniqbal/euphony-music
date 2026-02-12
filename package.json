@@ -34,7 +34,7 @@
     "expo-sqlite": "^16.0.10",
     "expo-status-bar": "~3.0.8",
     "expo-symbols": "^1.0.8",
-    "heroui-native": "^1.0.0-beta.12",
+    "heroui-native": "^1.0.0-beta.13",
     "nanostores": "^1.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",

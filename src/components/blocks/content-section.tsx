@@ -1,14 +1,9 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "tailwind-variants";
 import { EmptyState, SectionHeader } from "@/components/ui";
 
-type EmptyStateIconComponent = ComponentType<{
-  size?: number;
-  color?: string;
-}>;
-
 interface EmptyStateConfig {
-  icon: EmptyStateIconComponent;
+  icon: ReactNode;
   title: string;
   message: string;
 }
@@ -43,7 +38,7 @@ export function ContentSection<T>({
         renderContent(data)
       ) : (
         <EmptyState
-          iconComponent={emptyState.icon}
+          icon={emptyState.icon}
           title={emptyState.title}
           message={emptyState.message}
           className={cn("mb-8 py-8", className)}

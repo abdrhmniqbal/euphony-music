@@ -14,14 +14,6 @@ import type { GenreAlbumInfo } from "@/modules/genres/genres.api";
 
 const CHUNK_SIZE = 5;
 
-const MusicalNotesOutlineIcon = ({ size = 48, color }: { size?: number; color?: string }) => (
-    <Ionicons name="musical-notes-outline" size={size} color={color} />
-);
-
-const DiscOutlineIcon = ({ size = 48, color }: { size?: number; color?: string }) => (
-    <Ionicons name="disc-outline" size={size} color={color} />
-);
-
 export default function GenreDetailsScreen() {
     const { name } = useLocalSearchParams<{ name: string }>();
     const navigation = useNavigation();
@@ -106,7 +98,7 @@ export default function GenreDetailsScreen() {
                     data={topTracks}
                     onViewMore={() => router.push(`./top-tracks?name=${encodeURIComponent(genreName)}`)}
                     emptyState={{
-                        icon: MusicalNotesOutlineIcon,
+                        icon: <><Ionicons name="musical-notes-outline" size={48} color={theme.muted} /></>,
                         title: "No top tracks",
                         message: `Play some ${genreName} music to see top tracks!`,
                     }}
@@ -123,7 +115,7 @@ export default function GenreDetailsScreen() {
                     data={previewAlbums}
                     onViewMore={() => router.push(`./albums?name=${encodeURIComponent(genreName)}`)}
                     emptyState={{
-                        icon: DiscOutlineIcon,
+                        icon: <><Ionicons name="disc-outline" size={48} color={theme.muted} /></>,
                         title: "No albums found",
                         message: `No albums available in ${genreName}`,
                     }}

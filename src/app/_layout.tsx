@@ -1,9 +1,13 @@
 import "../global.css";
-import { HeroUINativeProvider, ToastProvider } from 'heroui-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { HeroUINativeProvider } from "heroui-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { View } from "react-native";
 import { Stack } from "expo-router";
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import {
+  ThemeProvider,
+  DarkTheme,
+  DefaultTheme,
+} from "@react-navigation/native";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUniwind } from "uniwind";
 import { useAppBootstrap } from "@/modules/bootstrap/hooks/use-app-bootstrap";
@@ -18,9 +22,9 @@ export default function Layout() {
   useAppBootstrap();
 
   const navigationTheme = {
-    ...(currentTheme === 'dark' ? DarkTheme : DefaultTheme),
+    ...(currentTheme === "dark" ? DarkTheme : DefaultTheme),
     colors: {
-      ...(currentTheme === 'dark' ? DarkTheme.colors : DefaultTheme.colors),
+      ...(currentTheme === "dark" ? DarkTheme.colors : DefaultTheme.colors),
       background: theme.background,
       card: theme.background,
       text: theme.foreground,
@@ -30,42 +34,50 @@ export default function Layout() {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.background }}>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: theme.background }}
+    >
       <ThemeProvider value={navigationTheme}>
         <View style={{ flex: 1, backgroundColor: theme.background }}>
-          <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
-            <ToastProvider defaultProps={{
-              placement: "bottom"
-            }}>
-              <Providers>
-                <View className="flex-1">
-                  <Stack screenOptions={{
+          <HeroUINativeProvider
+            config={{
+              devInfo: { stylingPrinciples: false },
+              toast: {
+                defaultProps: {
+                  placement: "bottom",
+                },
+              },
+            }}
+          >
+            <Providers>
+              <View className="flex-1">
+                <Stack
+                  screenOptions={{
                     headerShown: false,
                     contentStyle: { backgroundColor: theme.background },
-                  }}>
-                    <Stack.Screen name="(main)" />
-                    <Stack.Screen
-                      name="search-interaction"
-                      options={{
-                        animation: 'fade',
-                        title: 'Search',
-                      }}
-                    />
-                    <Stack.Screen
-                      name="settings"
-                      options={{
-                        headerShown: false,
-                        presentation: 'modal',
-                        animation: 'slide_from_bottom',
-                      }}
-                    />
-
-                  </Stack>
-                  <IndexingProgress />
-                  <FullPlayer />
-                </View>
-              </Providers>
-            </ToastProvider>
+                  }}
+                >
+                  <Stack.Screen name="(main)" />
+                  <Stack.Screen
+                    name="search-interaction"
+                    options={{
+                      animation: "fade",
+                      title: "Search",
+                    }}
+                  />
+                  <Stack.Screen
+                    name="settings"
+                    options={{
+                      headerShown: false,
+                      presentation: "modal",
+                      animation: "slide_from_bottom",
+                    }}
+                  />
+                </Stack>
+                <IndexingProgress />
+                <FullPlayer />
+              </View>
+            </Providers>
           </HeroUINativeProvider>
         </View>
       </ThemeProvider>

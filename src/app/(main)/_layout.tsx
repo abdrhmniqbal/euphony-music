@@ -108,9 +108,9 @@ export default function MainLayout() {
           title: "Home",
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalHomeSolidIcon color={color} width={size} height={size} />
+              <LocalHomeSolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalHomeIcon color={color} width={size} height={size} />
+              <LocalHomeIcon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />
@@ -120,9 +120,9 @@ export default function MainLayout() {
           title: "Search",
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalSearchSolidIcon color={color} width={size} height={size} />
+              <LocalSearchSolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalSearchIcon color={color} width={size} height={size} />
+              <LocalSearchIcon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />
@@ -132,9 +132,9 @@ export default function MainLayout() {
           title: "Library",
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalLibrarySolidIcon color={color} width={size} height={size} />
+              <LocalLibrarySolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalLibraryIcon color={color} width={size} height={size} />
+              <LocalLibraryIcon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />
