@@ -1,39 +1,33 @@
-import { useEffect, useState } from 'react';
-import { useIsFocused } from '@react-navigation/native';
-import { startIndexing } from '@/modules/indexer';
-import { playTrack } from '@/modules/player/player.store';
-import type { Track } from '@/modules/player/player.types';
-import { fetchRecentlyPlayedTracks } from '@/modules/history/history.utils';
+import { useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
+import { startIndexing } from "@/modules/indexer";
+import { playTrack } from "@/modules/player/player.store";
+import type { Track } from "@/modules/player/player.types";
+import { fetchRecentlyPlayedTracks } from "@/modules/history/history.utils";
+
+const RECENTLY_PLAYED_QUERY_KEY = ["recently-played-screen"] as const;
 
 export function useRecentlyPlayedScreen() {
-  const [history, setHistory] = useState<Track[]>([]);
   const isFocused = useIsFocused();
+  const { data: history = [], refetch: refetchHistory } = useQuery<Track[]>({
+    queryKey: RECENTLY_PLAYED_QUERY_KEY,
+    queryFn: () => fetchRecentlyPlayedTracks(),
+    enabled: false,
+    initialData: [],
+  });
 
   useEffect(() => {
     if (!isFocused) {
       return;
     }
 
-    let isActive = true;
-
-    async function load() {
-      const tracks = await fetchRecentlyPlayedTracks();
-      if (isActive) {
-        setHistory(tracks);
-      }
-    }
-
-    void load();
-
-    return () => {
-      isActive = false;
-    };
-  }, [isFocused]);
+    void refetchHistory();
+  }, [isFocused, refetchHistory]);
 
   async function refresh() {
     startIndexing(true);
-    const tracks = await fetchRecentlyPlayedTracks();
-    setHistory(tracks);
+    await refetchHistory();
   }
 
   function playFirst() {

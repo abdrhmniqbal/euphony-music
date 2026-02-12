@@ -4,6 +4,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { Button } from "heroui-native";
 import LocalSearchIcon from "@/components/icons/local/search";
 import LocalSettingsIcon from "@/components/icons/local/settings";
+import { BackButton } from "@/components/patterns";
 
 export default function HomeLayout() {
   const theme = useThemeColors();
@@ -63,7 +64,12 @@ export default function HomeLayout() {
       />
       <Stack.Screen
         name="recently-played"
-        options={{ title: "Recently Played" }}
+        options={{
+          title: "Recently Played",
+          headerBackButtonMenuEnabled: false,
+          headerBackVisible: false,
+          headerLeft: () => <BackButton className="-ml-2" />,
+        }}
       />
       <Stack.Screen name="top-tracks" options={{ title: "Top Tracks" }} />
     </Stack>
