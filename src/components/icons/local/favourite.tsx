@@ -1,0 +1,10 @@
+import React from "react";
+import { SvgXml, type SvgProps } from "react-native-svg";
+
+const LocalFavouriteIcon = (props: Omit<SvgProps, "xml">) => {
+  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20.5C12 20.5 2 14.5 2 8.69444C2 5.82563 4.10526 3.5 7 3.5C8.5 3.5 10 4 12 6C14 4 15.5 3.5 17 3.5C19.8947 3.5 22 5.82563 22 8.69444C22 14.5 12 20.5 12 20.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>`;
+
+  return <SvgXml xml={xml} {...props} />;
+};
+
+export default LocalFavouriteIcon;

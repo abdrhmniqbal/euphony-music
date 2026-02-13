@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Button } from "heroui-native";
 import LocalSearchIcon from "@/components/icons/local/search";
 import LocalSettingsIcon from "@/components/icons/local/settings";
+import { BackButton } from "@/components/patterns";
 
 export default function LibraryLayout() {
   const theme = useThemeColors();
@@ -68,7 +69,10 @@ export default function LibraryLayout() {
       <Stack.Screen
         name="album/[name]"
         options={{
-          headerShown: false,
+          headerTitleAlign: "center",
+          headerBackButtonMenuEnabled: false,
+          headerBackVisible: false,
+          headerLeft: () => <BackButton className="-ml-2" />,
         }}
       />
       <Stack.Screen
