@@ -67,8 +67,13 @@ export const startIndexing = async (forceFullScan = false, showProgress = true) 
             
             // Invalidate React Query cache for albums and artists
             // This will trigger a refetch in the library screen
+            queryClient.invalidateQueries({ queryKey: ['tracks'] });
+            queryClient.invalidateQueries({ queryKey: ['library', 'tracks'] });
             queryClient.invalidateQueries({ queryKey: ['albums'] });
             queryClient.invalidateQueries({ queryKey: ['artists'] });
+            queryClient.invalidateQueries({ queryKey: ['playlists'] });
+            queryClient.invalidateQueries({ queryKey: ['favorites'] });
+            queryClient.invalidateQueries({ queryKey: ['library', 'favorites'] });
             queryClient.invalidateQueries({ queryKey: ['search', 'genres'] });
             
             updateState({
