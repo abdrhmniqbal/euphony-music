@@ -102,7 +102,14 @@ export default function AlbumDetailsScreen() {
     }
 
     return (
-        <View className="flex-1 bg-background">
+        <SortSheet
+            visible={sortModalVisible}
+            onOpenChange={setSortModalVisible}
+            currentField={sortConfig.field}
+            currentOrder={sortConfig.order}
+            onSelect={handleSortSelect}
+        >
+            <View className="flex-1 bg-background">
             <Animated.View
                 className="absolute top-0 left-0 right-0 z-20 pt-12 pb-3 px-4"
                 style={headerAnimatedStyle}
@@ -209,17 +216,10 @@ export default function AlbumDetailsScreen() {
 
                 <View className="px-6 flex-row items-center justify-between mb-4">
                     <Text className="text-lg font-bold text-foreground">{sortedTracks.length} Tracks</Text>
-                    <Pressable
-                        className="flex-row items-center gap-1 active:opacity-50"
-                        onPress={() => setSortModalVisible(true)}
-                    >
-                        <Text className="text-sm font-medium text-muted">{getSortLabel()}</Text>
-                        <Ionicons
-                            name={sortConfig.order === 'asc' ? 'arrow-up' : 'arrow-down'}
-                            size={16}
-                            color={theme.muted}
-                        />
-                    </Pressable>
+                    <SortSheet.Trigger
+                        label={getSortLabel()}
+                        iconSize={16}
+                    />
                 </View>
 
                 <View className="px-4">
@@ -243,14 +243,8 @@ export default function AlbumDetailsScreen() {
                 </View>
             </ScrollView>
 
-            <SortSheet
-                visible={sortModalVisible}
-                onClose={() => setSortModalVisible(false)}
-                options={TRACK_SORT_OPTIONS}
-                currentField={sortConfig.field}
-                currentOrder={sortConfig.order}
-                onSelect={handleSortSelect}
-            />
-        </View>
+                <SortSheet.Content options={TRACK_SORT_OPTIONS} />
+            </View>
+        </SortSheet>
     );
 }

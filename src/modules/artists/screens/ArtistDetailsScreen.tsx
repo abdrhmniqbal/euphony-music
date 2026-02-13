@@ -103,7 +103,14 @@ export default function ArtistDetailsScreen() {
     };
 
     return (
-        <View className="flex-1 bg-background">
+        <SortSheet
+            visible={sortModalVisible}
+            onOpenChange={setSortModalVisible}
+            currentField={sortConfig.field}
+            currentOrder={sortConfig.order}
+            onSelect={handleSortSelect}
+        >
+            <View className="flex-1 bg-background">
             <Animated.View
                 className="absolute top-0 left-0 right-0 z-20 pt-12 pb-3 px-4"
                 style={headerAnimatedStyle}
@@ -257,13 +264,10 @@ export default function ArtistDetailsScreen() {
                                     <Text className="text-lg font-bold text-foreground">All Tracks</Text>
                                 </View>
 
-                                <Pressable
-                                    className="flex-row items-center gap-1 active:opacity-50"
-                                    onPress={() => setSortModalVisible(true)}
-                                >
-                                    <Text className="text-sm font-medium text-muted">{getSortLabel()}</Text>
-                                    <Ionicons name={sortConfig.order === 'asc' ? 'arrow-up' : 'arrow-down'} size={14} color={theme.muted} />
-                                </Pressable>
+                                <SortSheet.Trigger
+                                    label={getSortLabel()}
+                                    iconSize={14}
+                                />
                             </View>
 
                             <PlaybackActionsRow onPlay={playAllTracks} onShuffle={shuffleTracks} />
@@ -283,13 +287,10 @@ export default function ArtistDetailsScreen() {
                                     <Text className="text-lg font-bold text-foreground">All Albums</Text>
                                 </View>
 
-                                <Pressable
-                                    className="flex-row items-center gap-1 active:opacity-50"
-                                    onPress={() => setSortModalVisible(true)}
-                                >
-                                    <Text className="text-sm font-medium text-muted">{getSortLabel()}</Text>
-                                    <Ionicons name={sortConfig.order === 'asc' ? 'arrow-up' : 'arrow-down'} size={14} color={theme.muted} />
-                                </Pressable>
+                                <SortSheet.Trigger
+                                    label={getSortLabel()}
+                                    iconSize={14}
+                                />
                             </View>
 
                             <AlbumGrid data={sortedAlbums} onAlbumPress={openAlbum} scrollEnabled={false} />
@@ -298,14 +299,10 @@ export default function ArtistDetailsScreen() {
                 </Animated.View>
             </ScrollView>
 
-            <SortSheet
-                visible={sortModalVisible}
-                onClose={() => setSortModalVisible(false)}
-                options={activeView === "tracks" ? TRACK_SORT_OPTIONS : activeView === "albums" ? ALBUM_SORT_OPTIONS : []}
-                currentField={sortConfig.field}
-                currentOrder={sortConfig.order}
-                onSelect={handleSortSelect}
-            />
-        </View>
+                <SortSheet.Content
+                    options={activeView === "tracks" ? TRACK_SORT_OPTIONS : activeView === "albums" ? ALBUM_SORT_OPTIONS : []}
+                />
+            </View>
+        </SortSheet>
     );
 }

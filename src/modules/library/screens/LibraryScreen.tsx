@@ -99,7 +99,13 @@ export default function LibraryScreen() {
     }
 
     return (
-        <>
+        <SortSheet
+            visible={sortModalVisible}
+            onOpenChange={(open) => (open ? setSortModalVisible(true) : closeSortModal())}
+            currentField={sortConfig.field}
+            currentOrder={sortConfig.order}
+            onSelect={handleSortSelect}
+        >
             <GestureDetector gesture={swipeGesture}>
                 <View className="flex-1 bg-background">
                     <ScrollView
@@ -152,17 +158,10 @@ export default function LibraryScreen() {
                                     {getItemCount()} {activeTab}
                                 </Text>
                                 {currentSortOptions.length > 0 && (
-                                    <Pressable
-                                        className="flex-row items-center gap-1 active:opacity-50"
-                                        onPress={() => setSortModalVisible(true)}
-                                    >
-                                        <Text className="text-sm font-medium text-muted">{getSortLabel()}</Text>
-                                        <Ionicons
-                                            name={sortConfig.order === 'asc' ? 'arrow-up' : 'arrow-down'}
-                                            size={16}
-                                            color={theme.muted}
-                                        />
-                                    </Pressable>
+                                    <SortSheet.Trigger
+                                        label={getSortLabel()}
+                                        iconSize={16}
+                                    />
                                 )}
                             </View>
 
@@ -174,14 +173,7 @@ export default function LibraryScreen() {
                 </View>
             </GestureDetector>
 
-            <SortSheet
-                visible={sortModalVisible}
-                onClose={closeSortModal}
-                options={currentSortOptions}
-                currentField={sortConfig.field}
-                currentOrder={sortConfig.order}
-                onSelect={handleSortSelect}
-            />
-        </>
+            <SortSheet.Content options={currentSortOptions} />
+        </SortSheet>
     );
 }
