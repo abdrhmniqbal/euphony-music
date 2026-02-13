@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useStore } from '@nanostores/react';
-import { useIsFavorite } from '@/modules/favorites/favorites.store';
-import { $tracks, playTrack, type Track } from '@/modules/player/player.store';
+import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useStore } from "@nanostores/react";
+import { useQuery } from "@tanstack/react-query";
+import { useIsFavorite } from "@/modules/favorites/favorites.store";
+import { getAllTracks } from "@/modules/player/player.api";
+import { playTrack, type Track } from "@/modules/player/player.store";
 import {
   $sortConfig,
   ALBUM_SORT_OPTIONS,
@@ -11,21 +13,29 @@ import {
   sortAlbums,
   sortTracks,
   type SortField,
-} from '@/modules/library/library-sort.store';
-import { type Album } from '@/components/blocks/album-grid';
-import { buildArtistAlbums } from '../artists.utils';
+} from "@/modules/library/library-sort.store";
+import { type Album } from "@/components/blocks/album-grid";
+import { buildArtistAlbums } from "../artists.utils";
+
+const LIBRARY_TRACKS_QUERY_KEY = ["library", "tracks"] as const;
 
 export function useArtistDetailsScreen() {
   const { name } = useLocalSearchParams<{ name: string }>();
   const router = useRouter();
 
-  const tracks = useStore($tracks);
+  const { data: tracks = [] } = useQuery<Track[]>({
+    queryKey: LIBRARY_TRACKS_QUERY_KEY,
+    queryFn: getAllTracks,
+  });
   const allSortConfigs = useStore($sortConfig);
+  const artistName = decodeURIComponent(name || "");
 
-  const artistTracks = tracks.filter((track) => track.artist?.toLowerCase() === name?.toLowerCase());
+  const artistTracks = tracks.filter(
+    (track) => track.artist?.toLowerCase() === artistName.toLowerCase(),
+  );
   const artistId = artistTracks[0]?.artistId;
   const artistImage = artistTracks.find((track) => track.image)?.image;
-  const isArtistFavorite = useIsFavorite(artistId || '', 'artist');
+  const isArtistFavorite = useIsFavorite(artistId || "", "artist");
 
   const albums = buildArtistAlbums(artistTracks);
   const sortedArtistTracks = sortTracks(artistTracks, allSortConfigs.ArtistTracks);
@@ -36,18 +46,23 @@ export function useArtistDetailsScreen() {
     allSortConfigs.ArtistAlbums,
   );
 
-  const [activeView, setActiveView] = useState<'overview' | 'tracks' | 'albums'>('overview');
-  const [navDirection, setNavDirection] = useState<'forward' | 'back'>('forward');
+  const [activeView, setActiveView] = useState<"overview" | "tracks" | "albums">("overview");
+  const [navDirection, setNavDirection] = useState<"forward" | "back">("forward");
   const [sortModalVisible, setSortModalVisible] = useState(false);
 
-  const currentTab = activeView === 'tracks' ? 'ArtistTracks' : activeView === 'albums' ? 'ArtistAlbums' : 'ArtistTracks';
+  const currentTab =
+    activeView === "tracks"
+      ? "ArtistTracks"
+      : activeView === "albums"
+        ? "ArtistAlbums"
+        : "ArtistTracks";
   const sortConfig = allSortConfigs[currentTab];
 
-  function navigateTo(view: 'overview' | 'tracks' | 'albums') {
-    if (view === 'overview') {
-      setNavDirection('back');
+  function navigateTo(view: "overview" | "tracks" | "albums") {
+    if (view === "overview") {
+      setNavDirection("back");
     } else {
-      setNavDirection('forward');
+      setNavDirection("forward");
     }
 
     setActiveView(view);
@@ -74,17 +89,17 @@ export function useArtistDetailsScreen() {
     router.push(`../album/${encodeURIComponent(album.title)}`);
   }
 
-  function selectSort(field: SortField, order?: 'asc' | 'desc') {
+  function selectSort(field: SortField, order?: "asc" | "desc") {
     setSortConfig(currentTab, field, order);
   }
 
   function getSortLabel() {
-    const options = activeView === 'tracks' ? TRACK_SORT_OPTIONS : ALBUM_SORT_OPTIONS;
-    return options.find((option) => option.field === sortConfig.field)?.label || 'Sort';
+    const options = activeView === "tracks" ? TRACK_SORT_OPTIONS : ALBUM_SORT_OPTIONS;
+    return options.find((option) => option.field === sortConfig.field)?.label || "Sort";
   }
 
   return {
-    name,
+    name: artistName,
     artistTracks,
     artistId,
     artistImage,

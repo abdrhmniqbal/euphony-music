@@ -134,15 +134,15 @@ export default function LibraryScreen() {
                 <Tabs.ScrollView
                   scrollAlign="start"
                   showsHorizontalScrollIndicator={false}
-                  contentContainerClassName="px-1 gap-2"
+                  contentContainerClassName="px-1 gap-4"
                 >
                   <Tabs.Indicator />
                   {LIBRARY_TABS.map((tab) => (
-                    <Tabs.Trigger key={tab} value={tab} className="px-4 py-2">
+                    <Tabs.Trigger key={tab} value={tab} className="py-2">
                       {({ isSelected }) => (
                         <Tabs.Label
                           className={cn(
-                            "text-base font-semibold",
+                            "text-lg font-semibold",
                             isSelected ? "text-foreground" : "text-muted",
                           )}
                         >

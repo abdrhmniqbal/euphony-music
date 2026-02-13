@@ -1,7 +1,6 @@
 import { Stack, useRouter } from "expo-router";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { Ionicons } from "@expo/vector-icons";
 import { Button } from "heroui-native";
 import LocalSearchIcon from "@/components/icons/local/search";
 import LocalSettingsIcon from "@/components/icons/local/settings";
@@ -63,7 +62,10 @@ export default function LibraryLayout() {
       <Stack.Screen
         name="artist/[name]"
         options={{
-          headerShown: false,
+          headerTitleAlign: "center",
+          headerBackButtonMenuEnabled: false,
+          headerBackVisible: false,
+          headerLeft: () => <BackButton className="-ml-2" />,
         }}
       />
       <Stack.Screen
@@ -72,13 +74,15 @@ export default function LibraryLayout() {
           headerTitleAlign: "center",
           headerBackButtonMenuEnabled: false,
           headerBackVisible: false,
-          headerLeft: () => <BackButton className="-ml-2" />,
         }}
       />
       <Stack.Screen
         name="playlist/[id]"
         options={{
-          headerShown: false,
+          headerTitleAlign: "center",
+          headerBackButtonMenuEnabled: false,
+          headerBackVisible: false,
+          headerLeft: () => <BackButton className="-ml-2" />,
         }}
       />
       <Stack.Screen
