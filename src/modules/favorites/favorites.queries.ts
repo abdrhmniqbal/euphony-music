@@ -30,6 +30,7 @@ export interface FavoriteEntry {
   name: string;
   subtitle?: string;
   artwork?: string;
+  images?: string[];
   favoritedAt: number;
 }
 
@@ -93,16 +94,47 @@ export function useFavorites(type?: FavoriteType) {
       if (!type || type === "playlist") {
         const playlistFavorites = await db.query.playlists.findMany({
           where: eq(playlists.isFavorite, 1),
+          with: {
+            tracks: {
+              with: {
+                track: {
+                  with: {
+                    album: true,
+                  },
+                },
+              },
+              limit: 4,
+            },
+          },
         });
         favorites.push(
-          ...playlistFavorites.map((p) => ({
-            id: p.id,
-            type: "playlist" as const,
-            name: p.name,
-            subtitle: `${p.trackCount} tracks`,
-            artwork: p.artwork || undefined,
-            favoritedAt: p.favoritedAt || Date.now(),
-          }))
+          ...playlistFavorites.map((p) => {
+            const images: string[] = [];
+
+            if (p.artwork) {
+              images.push(p.artwork);
+            }
+
+            p.tracks.forEach((playlistTrack) => {
+              const artwork =
+                playlistTrack.track?.artwork ||
+                playlistTrack.track?.album?.artwork;
+
+              if (artwork && !images.includes(artwork) && images.length < 4) {
+                images.push(artwork);
+              }
+            });
+
+            return {
+              id: p.id,
+              type: "playlist" as const,
+              name: p.name,
+              subtitle: `${p.trackCount} tracks`,
+              artwork: p.artwork || undefined,
+              images,
+              favoritedAt: p.favoritedAt || Date.now(),
+            };
+          })
         );
       }
 

@@ -23,9 +23,12 @@ import LocalFavouriteIcon from "@/components/icons/local/favourite";
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid";
 import { EmptyState } from "@/components/ui";
 
+const HEADER_COLLAPSE_THRESHOLD = 120;
+
 export default function AlbumDetailsScreen() {
   const theme = useThemeColors();
   const [sortModalVisible, setSortModalVisible] = useState(false);
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
 
   const {
     albumInfo,
@@ -75,7 +78,7 @@ export default function AlbumDetailsScreen() {
       <View className="flex-1 bg-background">
         <Stack.Screen
           options={{
-            title: albumInfo.title,
+            title: showHeaderTitle ? albumInfo.title : "",
             headerRight: () =>
               albumId && (
                 <Button
@@ -115,7 +118,14 @@ export default function AlbumDetailsScreen() {
           className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 200 }}
-          onScroll={(event) => handleScroll(event.nativeEvent.contentOffset.y)}
+          onScroll={(event) => {
+            const y = event.nativeEvent.contentOffset.y;
+            handleScroll(y);
+            const nextShowHeaderTitle = y > HEADER_COLLAPSE_THRESHOLD;
+            if (nextShowHeaderTitle !== showHeaderTitle) {
+              setShowHeaderTitle(nextShowHeaderTitle);
+            }
+          }}
           onScrollBeginDrag={handleScrollStart}
           onMomentumScrollEnd={handleScrollStop}
           onScrollEndDrag={handleScrollStop}

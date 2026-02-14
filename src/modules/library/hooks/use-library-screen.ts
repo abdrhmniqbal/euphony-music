@@ -14,6 +14,7 @@ import {
   ARTIST_SORT_OPTIONS,
   PLAYLIST_SORT_OPTIONS,
   TRACK_SORT_OPTIONS,
+  sortGeneric,
   type SortField,
   setSortConfig,
 } from "@/modules/library/library-sort.store";
@@ -72,7 +73,10 @@ export function useLibraryScreen() {
   const { data: artistsData, refetch: refetchArtists } = useArtists();
   const { data: playlistsData, refetch: refetchPlaylists } = usePlaylists();
 
-  const playlists: Playlist[] = playlistsData || [];
+  const playlists: Playlist[] = sortGeneric(
+    playlistsData || [],
+    allSortConfigs.Playlists,
+  );
   const folders: Folder[] = [];
 
   function closeSortModal() {
@@ -141,8 +145,8 @@ export function useLibraryScreen() {
     router.push(`./playlist/${id}`);
   }
 
-  function openCreatePlaylist() {
-    router.push("./playlist/create");
+  function openPlaylistForm() {
+    router.push("/(main)/(library)/playlist/form");
   }
 
   function playSingleTrack(track: Track) {
@@ -244,7 +248,7 @@ export function useLibraryScreen() {
     openArtist,
     openAlbum,
     openPlaylist,
-    openCreatePlaylist,
+    openPlaylistForm,
     playSingleTrack,
     playAll,
     shuffle,

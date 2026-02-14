@@ -49,11 +49,11 @@ export function buildPlaylistTracks(playlist?: PlaylistEntity | null): Track[] {
 }
 
 export function buildPlaylistImages(playlist: PlaylistEntity | null | undefined, tracks: Track[]): string[] {
-  if (playlist?.artwork) {
-    return [playlist.artwork];
-  }
-
   const images = new Set<string>();
+
+  if (playlist?.artwork) {
+    images.add(playlist.artwork);
+  }
 
   for (const track of tracks) {
     if (track.image) {

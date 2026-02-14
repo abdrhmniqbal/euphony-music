@@ -170,7 +170,7 @@ function SortSheetContent<T extends string>({
                   "text-base",
                   currentField === option.field
                     ? "text-accent font-semibold"
-                    : "text-foreground",
+                    : "text-foreground font-medium",
                 )}
               >
                 {option.label}

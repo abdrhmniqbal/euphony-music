@@ -25,6 +25,11 @@ export function usePlaylists() {
 
       return results.map((playlist) => {
         const images = new Set<string>();
+
+        if (playlist.artwork) {
+          images.add(playlist.artwork);
+        }
+
         for (const pt of playlist.tracks) {
           const t = pt.track;
           const img = t.artwork || (typeof t.album === "object" && t.album ? (t.album as any).artwork : undefined);
@@ -34,7 +39,9 @@ export function usePlaylists() {
 
         return {
           id: playlist.id,
+          name: playlist.name,
           title: playlist.name,
+          dateAdded: playlist.createdAt,
           trackCount: playlist.trackCount || 0,
           image: playlist.artwork || undefined,
           images: Array.from(images),
@@ -44,11 +51,12 @@ export function usePlaylists() {
   });
 }
 
-export function usePlaylist(id: string) {
+export function usePlaylist(id: string, enabled: boolean = true) {
   return useQuery({
     queryKey: [PLAYLISTS_KEY, id],
+    enabled: enabled && id.length > 0,
     queryFn: async () => {
-      return db.query.playlists.findFirst({
+      const result = await db.query.playlists.findFirst({
         where: eq(playlists.id, id),
         with: {
           tracks: {
@@ -64,6 +72,7 @@ export function usePlaylist(id: string) {
           },
         },
       });
+      return result ?? null;
     },
   });
 }
@@ -109,8 +118,17 @@ export function useDeletePlaylist() {
     mutationFn: async (id: string) => {
       await db.delete(playlists).where(eq(playlists.id, id));
     },
-    onSuccess: () => {
+    onSuccess: (_, deletedPlaylistId) => {
       queryClient.invalidateQueries({ queryKey: [PLAYLISTS_KEY] });
+      queryClient.invalidateQueries({
+        queryKey: [PLAYLISTS_KEY, deletedPlaylistId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
+      queryClient.invalidateQueries({ queryKey: ["favorites", "playlist"] });
+      queryClient.invalidateQueries({
+        queryKey: ["favorites", "playlist", deletedPlaylistId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["library", "favorites"] });
     },
   });
 }

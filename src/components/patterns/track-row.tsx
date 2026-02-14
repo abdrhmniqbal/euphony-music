@@ -6,6 +6,7 @@ interface TrackRowProps {
   track: Track;
   onPress?: () => void;
   variant?: "list" | "grid";
+  leftAction?: ReactNode;
   rank?: ReactNode;
   showCover?: boolean;
   showArtist?: boolean;
@@ -20,6 +21,7 @@ export function TrackRow({
   track,
   onPress,
   variant = "list",
+  leftAction,
   rank,
   showCover = true,
   showArtist = true,
@@ -31,6 +33,7 @@ export function TrackRow({
 }: TrackRowProps) {
   return (
     <MediaItem variant={variant} onPress={onPress} className={className}>
+      {leftAction ? <View className="py-2 pr-1">{leftAction}</View> : null}
       {showCover ? <MediaItem.Image icon="musical-note" image={track.image} className={imageClassName} /> : null}
       {rank !== undefined && rank !== null ? <MediaItem.Rank>{rank}</MediaItem.Rank> : null}
       <MediaItem.Content>

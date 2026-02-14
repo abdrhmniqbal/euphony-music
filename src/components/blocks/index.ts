@@ -3,6 +3,7 @@ export { AlbumsTab } from "./albums-tab";
 export { ArtistGrid } from "./artist-grid";
 export { ArtistsTab } from "./artists-tab";
 export { ContentSection } from "./content-section";
+export { DeletePlaylistDialog } from "./delete-playlist-dialog";
 export { FavoritesList } from "./favorites-list";
 export { FolderList } from "./folder-list";
 export { FullPlayer } from "./full-player";
@@ -12,6 +13,7 @@ export { LibrarySkeleton } from "./library-skeleton";
 export { MediaCarousel } from "./media-carousel";
 export { MiniPlayer } from "./mini-player";
 export { PlaybackActionsRow } from "./playback-actions-row";
+export { PlaylistActionsSheet } from "./playlist-actions-sheet";
 export {
   AlbumArtView,
   PlaybackControls,

@@ -3,8 +3,9 @@ import { View, Pressable, Image as RNImage } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
 import { EmptyState, Item, ItemAction, ItemContent, ItemDescription, ItemImage, ItemTitle } from "@/components/ui";
+import { PlaylistArtwork } from "@/components/patterns";
 import { useThemeColors } from "@/hooks/use-theme-colors";
-import { playTrack, Track, $tracks } from "@/modules/player/player.store";
+import { playTrack, $tracks } from "@/modules/player/player.store";
 import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/favorites.store";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "expo-router";
@@ -39,34 +40,15 @@ const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({ favorite }) 
         case 'playlist':
             return (
                 <ItemImage className="bg-default items-center justify-center overflow-hidden">
-                    {favorite.image ? (
-                        <RNImage
-                            source={{ uri: favorite.image }}
-                            className="w-full h-full"
-                            resizeMode="cover"
-                        />
-                    ) : favorite.images && favorite.images.length >= 4 ? (
-                        <View className="flex-row flex-wrap w-full h-full overflow-hidden">
-                            {favorite.images.slice(0, 4).map((img, i) => (
-                                <RNImage
-                                    key={i}
-                                    source={{ uri: img }}
-                                    className="w-1/2 h-1/2"
-                                    resizeMode="cover"
-                                />
-                            ))}
-                        </View>
-                    ) : favorite.images && favorite.images.length > 0 ? (
-                        <RNImage
-                            source={{ uri: favorite.images[0] }}
-                            className="w-full h-full"
-                            resizeMode="cover"
-                        />
-                    ) : (
-                        <View className="w-full h-full items-center justify-center bg-muted/20">
-                            <Ionicons name="musical-notes" size={24} color={theme.muted} />
-                        </View>
-                    )}
+                    <PlaylistArtwork
+                        images={
+                            favorite.images && favorite.images.length > 0
+                                ? favorite.images
+                                : favorite.image
+                                  ? [favorite.image]
+                                  : undefined
+                        }
+                    />
                 </ItemImage>
             );
 
@@ -116,7 +98,6 @@ const TypeBadge: React.FC<{ type: FavoriteType }> = ({ type }) => {
 };
 
 export const FavoritesList: React.FC<FavoritesListProps> = ({ data, scrollEnabled = true }) => {
-    const theme = useThemeColors();
     const tracks = useStore($tracks);
     const router = useRouter();
 

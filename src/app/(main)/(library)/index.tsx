@@ -44,7 +44,7 @@ export default function LibraryScreen() {
     openArtist,
     openAlbum,
     openPlaylist,
-    openCreatePlaylist,
+    openPlaylistForm,
     playSingleTrack,
     playAll,
     shuffle,
@@ -78,12 +78,12 @@ export default function LibraryScreen() {
         );
       case "Playlists":
         return (
-          <PlaylistList
-            data={playlists}
-            scrollEnabled={false}
-            onCreatePlaylist={openCreatePlaylist}
-            onPlaylistPress={(playlist) => openPlaylist(playlist.id)}
-          />
+            <PlaylistList
+              data={playlists}
+              scrollEnabled={false}
+              onCreatePlaylist={openPlaylistForm}
+              onPlaylistPress={(playlist) => openPlaylist(playlist.id)}
+            />
         );
       case "Folders":
         return <FolderList data={folders} />;

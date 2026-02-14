@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View } from "react-native";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Ionicons } from "@expo/vector-icons";
 import { EmptyState, Item, ItemAction, ItemContent, ItemDescription, ItemImage, ItemTitle } from "@/components/ui";
+import { PlaylistArtwork } from "@/components/patterns";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 
 export interface Playlist {
@@ -56,34 +57,9 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
             onPress={() => handlePress(item)}
         >
             <ItemImage className="bg-default items-center justify-center overflow-hidden">
-                {item.image ? (
-                    <Image
-                        source={{ uri: item.image }}
-                        className="w-full h-full"
-                        resizeMode="cover"
-                    />
-                ) : item.images && item.images.length >= 4 ? (
-                    <View className="flex-row flex-wrap w-full h-full overflow-hidden">
-                        {item.images.slice(0, 4).map((img, i) => (
-                            <Image
-                                key={i}
-                                source={{ uri: img }}
-                                className="w-1/2 h-1/2"
-                                resizeMode="cover"
-                            />
-                        ))}
-                    </View>
-                ) : item.images && item.images.length > 0 ? (
-                    <Image
-                        source={{ uri: item.images[0] }}
-                        className="w-full h-full"
-                        resizeMode="cover"
-                    />
-                ) : (
-                    <View className="w-full h-full items-center justify-center bg-muted/20">
-                        <Ionicons name="musical-notes" size={24} color={theme.muted} />
-                    </View>
-                )}
+                <PlaylistArtwork
+                    images={item.images && item.images.length > 0 ? item.images : item.image ? [item.image] : undefined}
+                />
             </ItemImage>
             <ItemContent>
                 <ItemTitle>{item.title}</ItemTitle>

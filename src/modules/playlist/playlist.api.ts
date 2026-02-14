@@ -1,5 +1,6 @@
 import { db } from "@/db/client";
-import { playlistTracks, playlists } from "@/db/schema";
+import { playlistTracks, playlists, tracks } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
 
 function generateId(): string {
   if (globalThis.crypto && globalThis.crypto.randomUUID) {
@@ -11,18 +12,21 @@ function generateId(): string {
 
 export async function createPlaylist(
   name: string,
-  description: string = "",
+  description?: string | null,
   trackIds: string[] = [],
 ): Promise<void> {
   try {
     const id = generateId();
     const now = Date.now();
+    const duration = await getPlaylistDuration(trackIds);
+    const normalizedDescription = normalizeDescription(description);
 
     await db.insert(playlists).values({
       id,
       name,
-      description,
+      description: normalizedDescription,
       trackCount: trackIds.length,
+      duration,
       createdAt: now,
       updatedAt: now,
     });
@@ -40,5 +44,69 @@ export async function createPlaylist(
     }
   } catch (e) {
     console.error("Failed to create playlist", e);
+    throw e;
   }
+}
+
+export async function updatePlaylist(
+  id: string,
+  name: string,
+  description?: string | null,
+  trackIds: string[] = [],
+): Promise<void> {
+  try {
+    const now = Date.now();
+    const duration = await getPlaylistDuration(trackIds);
+    const normalizedDescription = normalizeDescription(description);
+
+    await db
+      .update(playlists)
+      .set({
+        name,
+        description: normalizedDescription,
+        trackCount: trackIds.length,
+        duration,
+        updatedAt: now,
+      })
+      .where(eq(playlists.id, id));
+
+    await db.delete(playlistTracks).where(eq(playlistTracks.playlistId, id));
+
+    if (trackIds.length > 0) {
+      await db.insert(playlistTracks).values(
+        trackIds.map((trackId, index) => ({
+          id: generateId(),
+          playlistId: id,
+          trackId,
+          position: index,
+          addedAt: now,
+        })),
+      );
+    }
+  } catch (e) {
+    console.error("Failed to update playlist", e);
+    throw e;
+  }
+}
+
+async function getPlaylistDuration(trackIds: string[]): Promise<number> {
+  if (trackIds.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .select({ duration: tracks.duration })
+    .from(tracks)
+    .where(inArray(tracks.id, trackIds));
+
+  return rows.reduce((sum, row) => sum + (row.duration || 0), 0);
+}
+
+function normalizeDescription(description?: string | null): string | null {
+  const value = description?.trim();
+  if (!value) {
+    return null;
+  }
+
+  return description ?? null;
 }

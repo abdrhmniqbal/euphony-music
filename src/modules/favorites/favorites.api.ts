@@ -168,14 +168,17 @@ export async function getFavorites(type?: FavoriteType): Promise<FavoriteEntry[]
       favorites.push(
         ...favPlaylists.map((p) => {
           const images: string[] = [];
-          if (!p.artwork) {
-            p.tracks.forEach((pt) => {
-              const artwork = pt.track?.artwork || pt.track?.album?.artwork;
-              if (artwork && !images.includes(artwork)) {
-                images.push(artwork);
-              }
-            });
+
+          if (p.artwork) {
+            images.push(p.artwork);
           }
+
+          p.tracks.forEach((pt) => {
+            const artwork = pt.track?.artwork || pt.track?.album?.artwork;
+            if (artwork && !images.includes(artwork) && images.length < 4) {
+              images.push(artwork);
+            }
+          });
 
           return {
             id: p.id,
@@ -183,7 +186,7 @@ export async function getFavorites(type?: FavoriteType): Promise<FavoriteEntry[]
             name: p.name,
             subtitle: `${p.trackCount} tracks`,
             image: p.artwork || undefined,
-            images: images.length > 0 ? images : undefined,
+            images,
             dateAdded: p.favoritedAt || Date.now(),
           };
         }),

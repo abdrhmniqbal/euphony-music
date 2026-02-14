@@ -1,11 +1,24 @@
-import { usePlaylist } from '@/modules/playlist/playlist.queries';
-import { useIsFavorite, toggleFavoriteItem } from '@/modules/favorites/favorites.store';
-import { playTrack } from '@/modules/player/player.store';
-import { buildPlaylistImages, buildPlaylistTracks, getPlaylistDuration } from '@/modules/playlist/playlist.utils';
+import {
+  useDeletePlaylist,
+  usePlaylist,
+} from "@/modules/playlist/playlist.queries";
+import {
+  useIsFavorite,
+  useToggleFavorite,
+} from "@/modules/favorites/favorites.queries";
+import { playTrack } from "@/modules/player/player.store";
+import {
+  buildPlaylistImages,
+  buildPlaylistTracks,
+  getPlaylistDuration,
+} from "@/modules/playlist/playlist.utils";
 
 export function usePlaylistDetailsScreen(id: string) {
   const { data: playlist, isLoading } = usePlaylist(id);
-  const isFavorite = useIsFavorite(id, 'playlist');
+  const { data: isFavoriteData = false } = useIsFavorite("playlist", id);
+  const toggleFavoriteMutation = useToggleFavorite();
+  const deletePlaylistMutation = useDeletePlaylist();
+  const isFavorite = Boolean(isFavoriteData);
 
   const tracks = buildPlaylistTracks(playlist);
   const playlistImages = buildPlaylistImages(playlist, tracks);
@@ -40,13 +53,24 @@ export function usePlaylistDetailsScreen(id: string) {
       return;
     }
 
-    await toggleFavoriteItem(
-      playlist.id,
-      'playlist',
-      playlist.name,
-      `${tracks.length} tracks`,
-      playlist.artwork || (tracks.length > 0 ? tracks[0].image : undefined),
-    );
+    await toggleFavoriteMutation.mutateAsync({
+      type: "playlist",
+      itemId: playlist.id,
+      isCurrentlyFavorite: isFavorite,
+    });
+  }
+
+  async function deletePlaylist(): Promise<boolean> {
+    if (!playlist) {
+      return false;
+    }
+
+    try {
+      await deletePlaylistMutation.mutateAsync(playlist.id);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   return {
@@ -60,5 +84,7 @@ export function usePlaylistDetailsScreen(id: string) {
     playAll,
     shuffle,
     toggleFavorite,
+    deletePlaylist,
+    isDeleting: deletePlaylistMutation.isPending,
   };
 }

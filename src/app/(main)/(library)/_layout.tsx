@@ -74,11 +74,13 @@ export default function LibraryLayout() {
           headerTitleAlign: "center",
           headerBackButtonMenuEnabled: false,
           headerBackVisible: false,
+          headerLeft: () => <BackButton className="-ml-2" />,
         }}
       />
       <Stack.Screen
         name="playlist/[id]"
         options={{
+          title: "Playlist",
           headerTitleAlign: "center",
           headerBackButtonMenuEnabled: false,
           headerBackVisible: false,
@@ -86,11 +88,13 @@ export default function LibraryLayout() {
         }}
       />
       <Stack.Screen
-        name="playlist/create"
+        name="playlist/form"
         options={{
-          presentation: "modal",
-          headerShown: true,
-          title: "Create Playlist",
+          title: "Playlist",
+          headerTitleAlign: "center",
+          headerBackButtonMenuEnabled: false,
+          headerBackVisible: false,
+          headerLeft: () => <BackButton className="-ml-2" />,
         }}
       />
     </Stack>
