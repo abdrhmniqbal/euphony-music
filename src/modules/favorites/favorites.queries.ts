@@ -167,7 +167,9 @@ export function useAddFavorite() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [FAVORITES_KEY] });
+      queryClient.invalidateQueries({ queryKey: ["library", "favorites"] });
       queryClient.invalidateQueries({ queryKey: ["tracks"] });
+      queryClient.invalidateQueries({ queryKey: ["library", "tracks"] });
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       queryClient.invalidateQueries({ queryKey: ["albums"] });
       queryClient.invalidateQueries({ queryKey: ["playlists"] });
@@ -197,7 +199,9 @@ export function useRemoveFavorite() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [FAVORITES_KEY] });
+      queryClient.invalidateQueries({ queryKey: ["library", "favorites"] });
       queryClient.invalidateQueries({ queryKey: ["tracks"] });
+      queryClient.invalidateQueries({ queryKey: ["library", "tracks"] });
       queryClient.invalidateQueries({ queryKey: ["artists"] });
       queryClient.invalidateQueries({ queryKey: ["albums"] });
       queryClient.invalidateQueries({ queryKey: ["playlists"] });

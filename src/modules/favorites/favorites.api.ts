@@ -33,13 +33,19 @@ export async function addFavorite(entry: FavoriteEntry): Promise<void> {
   try {
     const table = getTableForType(entry.type);
     const now = Date.now();
+    const nextValues: Record<string, unknown> = {
+      isFavorite: 1,
+      favoritedAt: now,
+    };
+
+    // Persist incoming image so favorites list can render cover/artwork consistently.
+    if (entry.image) {
+      nextValues.artwork = entry.image;
+    }
 
     await db
       .update(table)
-      .set({
-        isFavorite: 1,
-        favoritedAt: now,
-      } as any)
+      .set(nextValues as any)
       .where(eq(table.id, entry.id));
   } catch (e) {
   }
@@ -118,6 +124,14 @@ export async function getFavorites(type?: FavoriteType): Promise<FavoriteEntry[]
       const favArtists = await db.query.artists.findMany({
         where: eq(artists.isFavorite, 1),
         orderBy: [desc(artists.favoritedAt)],
+        with: {
+          tracks: {
+            limit: 1,
+            with: {
+              album: true,
+            },
+          },
+        },
       });
       favorites.push(
         ...favArtists.map((a) => ({
@@ -125,7 +139,7 @@ export async function getFavorites(type?: FavoriteType): Promise<FavoriteEntry[]
           type: "artist" as FavoriteType,
           name: a.name,
           subtitle: `${a.trackCount} tracks`,
-          image: a.artwork || undefined,
+          image: a.artwork || a.tracks[0]?.artwork || a.tracks[0]?.album?.artwork || undefined,
           dateAdded: a.favoritedAt || Date.now(),
         })),
       );

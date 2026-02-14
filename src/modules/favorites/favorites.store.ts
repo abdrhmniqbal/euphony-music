@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
 import { useStore } from '@nanostores/react';
+import { queryClient } from '@/lib/tanstack-query';
 import type { FavoriteEntry, FavoriteType } from '@/modules/favorites/favorites.api';
 import {
     addFavorite,
@@ -14,6 +15,18 @@ export { toggleFavoriteDB } from '@/modules/favorites/favorites.api';
 
 // Store for all favorites
 export const $favorites = atom<FavoriteEntry[]>([]);
+
+const invalidateFavoriteQueries = async () => {
+    await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['favorites'] }),
+        queryClient.invalidateQueries({ queryKey: ['library', 'favorites'] }),
+        queryClient.invalidateQueries({ queryKey: ['tracks'] }),
+        queryClient.invalidateQueries({ queryKey: ['library', 'tracks'] }),
+        queryClient.invalidateQueries({ queryKey: ['artists'] }),
+        queryClient.invalidateQueries({ queryKey: ['albums'] }),
+        queryClient.invalidateQueries({ queryKey: ['playlists'] }),
+    ]);
+};
 
 // Load favorites from database
 export const loadFavorites = async () => {
@@ -37,6 +50,7 @@ export const toggleFavoriteItem = async (
         await removeFavorite(id, type);
         const newFavorites = currentFavorites.filter(f => !(f.id === id && f.type === type));
         $favorites.set(newFavorites);
+        await invalidateFavoriteQueries();
         return false;
     } else {
         // Add to favorites
@@ -53,6 +67,7 @@ export const toggleFavoriteItem = async (
         // Re-sort by dateAdded
         newFavorites.sort((a, b) => b.dateAdded - a.dateAdded);
         $favorites.set(newFavorites);
+        await invalidateFavoriteQueries();
         return true;
     }
 };

@@ -126,7 +126,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({ data, scrollEnable
     };
 
     const handleRemoveFavorite = (favorite: FavoriteEntry) => {
-        toggleFavoriteItem(favorite.id, favorite.type, favorite.name);
+        void toggleFavoriteItem(favorite.id, favorite.type, favorite.name);
     };
 
     const renderFavoriteItem = (item: FavoriteEntry) => (
