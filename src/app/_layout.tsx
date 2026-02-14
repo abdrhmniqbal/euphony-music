@@ -4,6 +4,13 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { View } from "react-native";
 import { Stack } from "expo-router";
 import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
+import {
   ThemeProvider,
   DarkTheme,
   DefaultTheme,
@@ -11,15 +18,88 @@ import {
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useUniwind } from "uniwind";
 import { useAppBootstrap } from "@/modules/bootstrap/hooks/use-app-bootstrap";
+import { useStore } from "@nanostores/react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MINI_PLAYER_HEIGHT, getTabBarHeight } from "@/constants/layout";
+import { $barsVisible } from "@/hooks/scroll-bars.store";
+import { $currentTrack } from "@/modules/player/player.store";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 import { FullPlayer } from "@/components/blocks/full-player";
 import { IndexingProgress } from "@/components/blocks/indexing-progress";
 import { Providers } from "@/components/providers";
 
+const TOAST_OFFSET_ANIMATION_DURATION_MS = 250;
+const TOAST_HIDDEN_BOTTOM_GAP = 0;
+const TOAST_VISIBLE_BOTTOM_GAP = 0;
+
+function ToastAnimatedWrapper({
+  children,
+  extraBottom,
+}: {
+  children: ReactNode;
+  extraBottom: number;
+}) {
+  const animatedExtraBottom = useSharedValue(extraBottom);
+
+  useEffect(() => {
+    animatedExtraBottom.value = withTiming(extraBottom, {
+      duration: TOAST_OFFSET_ANIMATION_DURATION_MS,
+    });
+  }, [animatedExtraBottom, extraBottom]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    paddingBottom: animatedExtraBottom.value,
+  }));
+
+  if (isValidElement(children)) {
+    return (
+      <Animated.View
+        style={[{ flex: 1 }, animatedStyle]}
+        pointerEvents="box-none"
+      >
+        {cloneElement(children, {
+          ...(children.props as object),
+          pointerEvents: "box-none",
+        })}
+      </Animated.View>
+    );
+  }
+
+  return (
+    <Animated.View style={[{ flex: 1 }, animatedStyle]} pointerEvents="box-none">
+      {children}
+    </Animated.View>
+  );
+}
+
 export default function Layout() {
   const { theme: currentTheme } = useUniwind();
   const theme = useThemeColors();
+  const insets = useSafeAreaInsets();
+  const barsVisible = useStore($barsVisible);
+  const currentTrack = useStore($currentTrack);
   useAppBootstrap();
+  const tabBarHeight = getTabBarHeight(insets.bottom);
+  const hasMiniPlayer = currentTrack !== null;
+  const toastExtraBottomOffset = barsVisible
+    ? tabBarHeight + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) + TOAST_VISIBLE_BOTTOM_GAP
+    : TOAST_HIDDEN_BOTTOM_GAP;
+
+  const toastContentWrapper = useCallback(
+    (children: ReactNode) => {
+      return (
+        <ToastAnimatedWrapper extraBottom={toastExtraBottomOffset}>
+          {children}
+        </ToastAnimatedWrapper>
+      );
+    },
+    [toastExtraBottomOffset],
+  );
 
   const navigationTheme = {
     ...(currentTheme === "dark" ? DarkTheme : DefaultTheme),
@@ -46,6 +126,7 @@ export default function Layout() {
                 defaultProps: {
                   placement: "bottom",
                 },
+                contentWrapper: toastContentWrapper,
               },
             }}
           >

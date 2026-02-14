@@ -1,146 +1,173 @@
-import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { PressableFeedback, Toast, useToast, type ToastComponentProps } from "heroui-native";
 import { useStore } from "@nanostores/react";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useEffect, useRef } from "react";
+import { Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
-  withTiming,
-  FadeIn,
-  FadeOut,
   useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
+import { useThemeColors } from "@/hooks/use-theme-colors";
 import { $indexerState, stopIndexing } from "@/modules/indexer";
-import { $currentTrack } from "@/modules/player/player.store";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MINI_PLAYER_HEIGHT, getTabBarHeight } from "@/constants/layout";
-import { $barsVisible } from "@/hooks/scroll-bars.store";
-import { useEffect } from "react";
-import { AnimatedProgressBar } from "@/components/ui/animated-progress-bar";
-import LocalLibrarySolidIcon from "@/components/icons/local/library-solid";
 import LocalCancelIcon from "@/components/icons/local/cancel";
-import LocalCheckmarkCircleSolidIcon from "@/components/icons/local/checkmark-circle-solid";
+
+const TOAST_ID = "indexing-progress-toast";
+const COMPLETE_HIDE_DELAY_MS = 1500;
 
 const PHASE_LABELS: Record<string, string> = {
   idle: "",
   scanning: "Scanning files...",
   processing: "Processing tracks...",
   cleanup: "Cleaning up...",
-  complete: "Complete!",
+  complete: "Library Updated",
+  paused: "Paused",
 };
 
-const BOTTOM_MARGIN = 16;
-
-export const IndexingProgress: React.FC = () => {
+function IndexingProgressToast(props: ToastComponentProps) {
   const theme = useThemeColors();
   const state = useStore($indexerState);
-  const currentTrack = useStore($currentTrack);
-  const barsVisible = useStore($barsVisible);
-  const insets = useSafeAreaInsets();
-
-  const hasMiniPlayer = currentTrack !== null;
-  const tabBarHeight = getTabBarHeight(insets.bottom);
-  const bottomOffsetVisible =
-    tabBarHeight + BOTTOM_MARGIN + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0);
-  const bottomOffsetHidden = insets.bottom + BOTTOM_MARGIN;
-  const targetBottomOffset = barsVisible
-    ? bottomOffsetVisible
-    : bottomOffsetHidden;
-  const animatedBottomOffset = useSharedValue(targetBottomOffset);
-
-  useEffect(() => {
-    animatedBottomOffset.value = withTiming(targetBottomOffset, {
-      duration: 250,
-    });
-  }, [animatedBottomOffset, targetBottomOffset]);
-
-  const containerStyle = useAnimatedStyle(() => ({
-    bottom: animatedBottomOffset.value,
-  }));
 
   const normalizedProgress = Math.min(Math.max(state.progress / 100, 0), 1);
+  const animatedProgress = useSharedValue(normalizedProgress);
 
-  if (
-    !state.showProgress ||
-    (!state.isIndexing && state.phase !== "complete")
-  ) {
-    return null;
-  }
+  useEffect(() => {
+    animatedProgress.value = withTiming(normalizedProgress, {
+      duration: 300,
+    });
+  }, [animatedProgress, normalizedProgress]);
+
+  const progressBarStyle = useAnimatedStyle(() => ({
+    width: `${animatedProgress.value * 100}%`,
+  }));
 
   if (state.phase === "complete") {
     return (
-      <Animated.View
-        entering={FadeIn.duration(200)}
-        exiting={FadeOut.duration(200)}
-        className="absolute left-4 right-4 bg-surface-secondary rounded-2xl p-4 shadow-lg"
-        style={containerStyle}
+      <Toast
+        {...props}
+        variant="accent"
+        placement="bottom"
+        isSwipeable={false}
       >
-        <View className="flex-row items-center gap-3">
-          <View className="w-10 h-10 rounded-full bg-accent/20 items-center justify-center">
-            <LocalCheckmarkCircleSolidIcon
-              width={24}
-              height={24}
-              color={theme.accent}
-            />
-          </View>
+        <View className="flex-row items-center gap-3 px-4 py-3">
           <View className="flex-1">
-            <Text className="text-foreground font-semibold">
-              Library Updated
-            </Text>
-            <Text className="text-muted text-sm">
+            <Toast.Title className="text-sm font-semibold">
+              {PHASE_LABELS.complete}
+            </Toast.Title>
+            <Toast.Description className="text-xs text-muted">
               {state.totalFiles} tracks indexed
-            </Text>
+            </Toast.Description>
           </View>
         </View>
-      </Animated.View>
+      </Toast>
     );
   }
 
   return (
-    <Animated.View
-      entering={FadeIn.duration(200)}
-      exiting={FadeOut.duration(200)}
-      className="absolute left-4 right-4 bg-surface-secondary rounded-2xl p-4 shadow-lg"
-      style={containerStyle}
+    <Toast
+      {...props}
+      variant="accent"
+      placement="bottom"
+      isSwipeable={false}
     >
-      <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-row items-center gap-2">
-          <LocalLibrarySolidIcon width={20} height={20} color={theme.accent} />
-          <Text className="text-foreground font-semibold">
-            {PHASE_LABELS[state.phase]}
+      <View className="gap-2 px-4 py-3">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center gap-2">
+            <Toast.Title className="text-sm font-semibold">
+              {PHASE_LABELS[state.phase]}
+            </Toast.Title>
+          </View>
+
+          <PressableFeedback
+            onPress={stopIndexing}
+            className="p-1 active:opacity-50"
+            hitSlop={8}
+          >
+            <LocalCancelIcon width={18} height={18} color={theme.muted} />
+          </PressableFeedback>
+        </View>
+
+        <View className="h-1.5 w-full overflow-hidden rounded-full bg-muted/20">
+          <Animated.View
+            style={progressBarStyle}
+            className="h-full rounded-full bg-accent"
+          />
+        </View>
+
+        <View className="flex-row items-center justify-between">
+          <Text
+            className="flex-1 text-xs text-muted"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {state.currentFile || "Preparing..."}
+          </Text>
+          <Text className="ml-2 text-xs text-muted">
+            {state.processedFiles}/{state.totalFiles}
           </Text>
         </View>
-        <Pressable
-          onPress={stopIndexing}
-          className="p-1 active:opacity-50"
-          hitSlop={10}
-        >
-          <LocalCancelIcon width={20} height={20} color={theme.muted} />
-        </Pressable>
       </View>
-
-      <AnimatedProgressBar
-        progress={normalizedProgress}
-        width="100%"
-        height={8}
-        borderRadius={999}
-        progressColor={theme.accent}
-        trackColor={`${theme.muted}33`}
-        animationDuration={400}
-        containerStyle={{ marginBottom: 8 }}
-      />
-
-      <View className="flex-row justify-between">
-        <Text
-          className="text-muted text-xs"
-          numberOfLines={1}
-          style={{ flex: 1 }}
-        >
-          {state.currentFile || "Preparing..."}
-        </Text>
-        <Text className="text-muted text-xs ml-2">
-          {state.processedFiles}/{state.totalFiles}
-        </Text>
-      </View>
-    </Animated.View>
+    </Toast>
   );
-};
+}
+
+export function IndexingProgress() {
+  const state = useStore($indexerState);
+  const { toast } = useToast();
+  const isToastVisibleRef = useRef(false);
+  const isCompleteDismissedRef = useRef(false);
+
+  useEffect(() => {
+    const shouldShowToast =
+      state.showProgress && (state.isIndexing || state.phase === "complete");
+
+    if (state.phase !== "complete") {
+      isCompleteDismissedRef.current = false;
+    }
+
+    if (
+      shouldShowToast &&
+      !isToastVisibleRef.current &&
+      !(state.phase === "complete" && isCompleteDismissedRef.current)
+    ) {
+      toast.show({
+        id: TOAST_ID,
+        duration: "persistent",
+        component: (props) => <IndexingProgressToast {...props} />,
+      });
+      isToastVisibleRef.current = true;
+      return;
+    }
+
+    if (!shouldShowToast) {
+      if (isToastVisibleRef.current) {
+        toast.hide(TOAST_ID);
+        isToastVisibleRef.current = false;
+      }
+    }
+  }, [state.isIndexing, state.phase, state.showProgress, toast]);
+
+  useEffect(() => {
+    if (state.phase !== "complete") {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      toast.hide(TOAST_ID);
+      isToastVisibleRef.current = false;
+      isCompleteDismissedRef.current = true;
+    }, COMPLETE_HIDE_DELAY_MS);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [state.phase, toast]);
+
+  useEffect(() => {
+    return () => {
+      toast.hide(TOAST_ID);
+      isToastVisibleRef.current = false;
+    };
+  }, [toast]);
+
+  return null;
+}
