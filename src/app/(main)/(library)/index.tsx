@@ -12,7 +12,7 @@ import { Tabs } from "heroui-native";
 
 import { SortSheet } from "@/components/blocks/sort-sheet";
 import { PlaylistList } from "@/components/blocks/playlist-list";
-import { FolderList } from "@/components/blocks/folder-list";
+import { FolderTab } from "@/components/blocks/folder-tab";
 import { FavoritesList } from "@/components/blocks/favorites-list";
 import { TracksTab } from "@/components/blocks/tracks-tab";
 import { AlbumsTab } from "@/components/blocks/albums-tab";
@@ -40,11 +40,17 @@ export default function LibraryScreen() {
     favorites,
     playlists,
     folders,
+    folderTracks,
+    folderBreadcrumbs,
     refresh,
     openArtist,
     openAlbum,
     openPlaylist,
     openPlaylistForm,
+    openFolder,
+    goBackFolder,
+    navigateToFolderPath,
+    playFolderTrack,
     playSingleTrack,
     playAll,
     shuffle,
@@ -86,7 +92,17 @@ export default function LibraryScreen() {
             />
         );
       case "Folders":
-        return <FolderList data={folders} />;
+        return (
+          <FolderTab
+            folders={folders}
+            folderTracks={folderTracks}
+            folderBreadcrumbs={folderBreadcrumbs}
+            onOpenFolder={openFolder}
+            onBackFolder={goBackFolder}
+            onNavigateToFolderPath={navigateToFolderPath}
+            onTrackPress={playFolderTrack}
+          />
+        );
       case "Favorites":
         return <FavoritesList data={favorites} scrollEnabled={false} />;
       default:
@@ -162,7 +178,7 @@ export default function LibraryScreen() {
 
               <View className="flex-row items-center justify-between mb-4">
                 <Text className="text-lg font-bold text-foreground">
-                  {getItemCount()} {activeTab}
+                  {activeTab === "Folders" ? `${getItemCount()} Items` : `${getItemCount()} ${activeTab}`}
                 </Text>
                 {currentSortOptions.length > 0 && (
                   <SortSheet.Trigger label={getSortLabel()} iconSize={16} />

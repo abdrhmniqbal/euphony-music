@@ -5,8 +5,9 @@ export type TrackSortField = 'title' | 'artist' | 'album' | 'year' | 'dateAdded'
 export type AlbumSortField = 'title' | 'artist' | 'year' | 'dateAdded' | 'trackCount';
 export type ArtistSortField = 'name' | 'dateAdded' | 'trackCount';
 export type PlaylistSortField = 'name' | 'dateAdded' | 'trackCount';
+export type FolderSortField = 'name' | 'dateAdded' | 'trackCount';
 
-export type SortField = TrackSortField | AlbumSortField | ArtistSortField | PlaylistSortField;
+export type SortField = TrackSortField | AlbumSortField | ArtistSortField | PlaylistSortField | FolderSortField;
 export type SortOrder = 'asc' | 'desc';
 export type TabName = 'Tracks' | 'Albums' | 'Artists' | 'Genres' | 'Playlists' | 'Folders' | 'Favorites' | 'ArtistTracks' | 'ArtistAlbums' | 'AlbumTracks';
 
@@ -71,6 +72,12 @@ export const PLAYLIST_SORT_OPTIONS: { label: string; field: PlaylistSortField }[
     { label: 'Name', field: 'name' },
     { label: 'Date Added', field: 'dateAdded' },
     { label: 'Number of Tracks', field: 'trackCount' },
+];
+
+export const FOLDER_SORT_OPTIONS: { label: string; field: FolderSortField }[] = [
+    { label: 'Name', field: 'name' },
+    { label: 'Date Added', field: 'dateAdded' },
+    { label: 'Number of Files', field: 'trackCount' },
 ];
 
 export const GENRE_SORT_OPTIONS: { label: string; field: ArtistSortField }[] = [

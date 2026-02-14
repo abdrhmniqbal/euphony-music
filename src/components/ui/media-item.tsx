@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, type ReactNode } from "react";
 import {
   Image,
   Pressable,
@@ -71,7 +71,7 @@ function MediaItemRoot({
 }
 
 type MediaItemImageProps = ViewProps & {
-  icon?: keyof typeof Ionicons.glyphMap;
+  icon?: keyof typeof Ionicons.glyphMap | ReactNode;
   image?: string;
 };
 
@@ -87,7 +87,11 @@ function MediaItemImage({ className, icon, image, children, ...props }: MediaIte
           <Image source={{ uri: image }} className="h-full w-full" style={{ width: "100%", height: "100%" }} />
         </View>
       ) : icon ? (
-        <Ionicons name={icon} size={variant === "list" ? 24 : 48} color={theme.foreground} />
+        typeof icon === "string" ? (
+          <Ionicons name={icon} size={variant === "list" ? 24 : 48} color={theme.foreground} />
+        ) : (
+          icon
+        )
       ) : (
         children
       )}

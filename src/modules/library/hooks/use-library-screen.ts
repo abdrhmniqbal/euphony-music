@@ -12,6 +12,7 @@ import {
   $sortConfig,
   ALBUM_SORT_OPTIONS,
   ARTIST_SORT_OPTIONS,
+  FOLDER_SORT_OPTIONS,
   PLAYLIST_SORT_OPTIONS,
   TRACK_SORT_OPTIONS,
   sortGeneric,
@@ -22,8 +23,8 @@ import { useAlbums } from "@/modules/albums/albums.queries";
 import { useArtists } from "@/modules/artists/artists.queries";
 import { usePlaylists } from "@/modules/playlist/playlist.queries";
 import type { FavoriteEntry } from "@/modules/favorites/favorites.api";
-import type { Folder } from "@/components/blocks/folder-list";
 import type { Playlist } from "@/components/blocks/playlist-list";
+import { useFolderBrowser } from "@/modules/library/hooks/use-folder-browser";
 
 export const LIBRARY_TABS = [
   "Tracks",
@@ -42,7 +43,7 @@ export const LIBRARY_TAB_SORT_OPTIONS: Record<LibraryTab, LibrarySortOption[]> =
     Albums: ALBUM_SORT_OPTIONS,
     Artists: ARTIST_SORT_OPTIONS,
     Playlists: PLAYLIST_SORT_OPTIONS,
-    Folders: [],
+    Folders: FOLDER_SORT_OPTIONS,
     Favorites: [],
   };
 
@@ -77,7 +78,15 @@ export function useLibraryScreen() {
     playlistsData || [],
     allSortConfigs.Playlists,
   );
-  const folders: Folder[] = [];
+
+  const {
+    folders,
+    folderTracks,
+    folderBreadcrumbs,
+    openFolder,
+    goBackFolder,
+    navigateToFolderPath,
+  } = useFolderBrowser(tracks, allSortConfigs.Folders);
 
   function closeSortModal() {
     setSortModalVisible(false);
@@ -147,6 +156,10 @@ export function useLibraryScreen() {
 
   function openPlaylistForm() {
     router.push("/(main)/(library)/playlist/form");
+  }
+
+  function playFolderTrack(track: Track) {
+    playTrack(track, folderTracks);
   }
 
   function playSingleTrack(track: Track) {
@@ -225,7 +238,7 @@ export function useLibraryScreen() {
       case "Playlists":
         return playlists.length;
       case "Folders":
-        return folders.length;
+        return folders.length + folderTracks.length;
       default:
         return 0;
     }
@@ -244,11 +257,17 @@ export function useLibraryScreen() {
     favorites,
     playlists,
     folders,
+    folderTracks,
+    folderBreadcrumbs,
     refresh,
     openArtist,
     openAlbum,
     openPlaylist,
     openPlaylistForm,
+    openFolder,
+    goBackFolder,
+    navigateToFolderPath,
+    playFolderTrack,
     playSingleTrack,
     playAll,
     shuffle,

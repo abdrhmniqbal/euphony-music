@@ -6,6 +6,7 @@ export { ContentSection } from "./content-section";
 export { DeletePlaylistDialog } from "./delete-playlist-dialog";
 export { FavoritesList } from "./favorites-list";
 export { FolderList } from "./folder-list";
+export { FolderTab } from "./folder-tab";
 export { FullPlayer } from "./full-player";
 export { IndexingProgress } from "./indexing-progress";
 export { LibraryLoadingState } from "./library-loading-state";
