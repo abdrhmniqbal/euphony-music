@@ -1,54 +1,56 @@
-import React from "react";
-import { View, Image } from "react-native";
-import { useStore } from "@nanostores/react";
+import * as React from "react"
+import { useStore } from "@nanostores/react"
+import { PressableFeedback } from "heroui-native"
+import { Image, View } from "react-native"
+import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated"
+
+import { $isPlayerExpanded, $showPlayerQueue } from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
 import {
-  $currentTrack,
-  $isPlaying,
   $currentTime,
+  $currentTrack,
   $duration,
-  togglePlayback,
+  $isPlaying,
   playNext,
-} from "@/modules/player/player.store";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated";
-import { $isPlayerExpanded, $showPlayerQueue } from "@/hooks/scroll-bars.store";
-import { MarqueeText } from "@/components/ui/marquee-text";
-import LocalPlaySolidIcon from "@/components/icons/local/play-solid";
-import LocalPauseSolidIcon from "@/components/icons/local/pause-solid";
-import LocalNextSolidIcon from "@/components/icons/local/next-solid";
-import { PressableFeedback } from "heroui-native";
-import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid";
-import LocalRightToLeftListNumberIcon from "../icons/local/right-to-left-list-number";
+  togglePlayback,
+} from "@/modules/player/player.store"
+import LocalNextSolidIcon from "@/components/icons/local/next-solid"
+import LocalPauseSolidIcon from "@/components/icons/local/pause-solid"
+import LocalPlaySolidIcon from "@/components/icons/local/play-solid"
+import { MarqueeText } from "@/components/ui/marquee-text"
+
+import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid"
+import LocalRightToLeftListNumberIcon from "../icons/local/right-to-left-list-number"
 
 interface MiniPlayerProps {
-  bottomOffset?: number;
+  bottomOffset?: number
 }
 
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   bottomOffset = 90,
 }) => {
-  const currentTrack = useStore($currentTrack);
-  const isPlaying = useStore($isPlaying);
-  const currentTime = useStore($currentTime);
-  const duration = useStore($duration);
+  const currentTrack = useStore($currentTrack)
+  const isPlaying = useStore($isPlaying)
+  const currentTime = useStore($currentTime)
+  const duration = useStore($duration)
 
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
 
-  const theme = useThemeColors();
+  const theme = useThemeColors()
 
-  if (!currentTrack) return null;
+  if (!currentTrack) return null
 
   return (
     <Animated.View
       entering={SlideInDown.duration(300)}
       exiting={SlideOutDown.duration(300)}
-      className="absolute left-0 right-0 h-16 border-t border-border overflow-hidden bg-surface-secondary"
+      className="absolute right-0 left-0 h-16 overflow-hidden border-t border-border bg-surface-secondary"
       style={{
         bottom: bottomOffset,
         borderTopColor: theme.border,
       }}
     >
-      <View className="absolute top-0 left-0 right-0 h-0.75 bg-surface-tertiary">
+      <View className="absolute top-0 right-0 left-0 h-0.75 bg-surface-tertiary">
         <View
           style={{
             width: `${progressPercent}%`,
@@ -58,16 +60,16 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
         />
       </View>
 
-      <View className="flex-1 flex-row items-center px-4 gap-3">
+      <View className="flex-1 flex-row items-center gap-3 px-4">
         <PressableFeedback
           onPress={() => $isPlayerExpanded.set(true)}
-          className="flex-row items-center flex-1 gap-3 active:opacity-80"
+          className="flex-1 flex-row items-center gap-3 active:opacity-80"
         >
-          <View className="w-11 h-11 rounded-md bg-surface items-center justify-center overflow-hidden">
+          <View className="h-11 w-11 items-center justify-center overflow-hidden rounded-md bg-surface">
             {currentTrack.image ? (
               <Image
                 source={{ uri: currentTrack.image }}
-                className="w-full h-full"
+                className="h-full w-full"
               />
             ) : (
               <LocalMusicNoteSolidIcon
@@ -127,8 +129,8 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
           </PressableFeedback>
           <PressableFeedback
             onPress={() => {
-              $showPlayerQueue.set(true);
-              $isPlayerExpanded.set(true);
+              $showPlayerQueue.set(true)
+              $isPlayerExpanded.set(true)
             }}
             className="p-2 active:opacity-60"
           >
@@ -142,5 +144,5 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
         </View>
       </View>
     </Animated.View>
-  );
-};
+  )
+}

@@ -1,1 +1,1 @@
-export { useArtist, useArtists } from '@/modules/library/library.queries';
+export { useArtist, useArtists } from "@/modules/library/library.queries"

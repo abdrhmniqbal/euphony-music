@@ -1,1 +1,1 @@
-export { useAlbum, useAlbums } from '@/modules/library/library.queries';
+export { useAlbum, useAlbums } from "@/modules/library/library.queries"

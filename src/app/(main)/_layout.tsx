@@ -1,50 +1,49 @@
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { MiniPlayer } from "@/components/blocks/mini-player";
+import { useCallback, useEffect } from "react"
+import { useStore } from "@nanostores/react"
 import {
   BottomTabBar,
   type BottomTabBarProps,
-} from "@react-navigation/bottom-tabs";
-import { useStore } from "@nanostores/react";
-import { $barsVisible } from "@/hooks/scroll-bars.store";
+} from "@react-navigation/bottom-tabs"
+import { Tabs } from "expo-router"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useCallback, useEffect } from "react";
+} from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+
 import {
   MINI_PLAYER_HEIGHT,
   getTabBarBottomPadding,
   getTabBarHeight,
-} from "@/constants/layout";
-import LocalHomeIcon from "@/components/icons/local/home";
-import LocalHomeSolidIcon from "@/components/icons/local/home-solid";
-import LocalSearchSolidIcon from "@/components/icons/local/search-solid";
-import LocalSearchIcon from "@/components/icons/local/search";
-import LocalLibrarySolidIcon from "@/components/icons/local/library-solid";
-import LocalLibraryIcon from "@/components/icons/local/library";
+} from "@/constants/layout"
+import { $barsVisible } from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalHomeIcon from "@/components/icons/local/home"
+import LocalHomeSolidIcon from "@/components/icons/local/home-solid"
+import LocalLibraryIcon from "@/components/icons/local/library"
+import LocalLibrarySolidIcon from "@/components/icons/local/library-solid"
+import LocalSearchIcon from "@/components/icons/local/search"
+import LocalSearchSolidIcon from "@/components/icons/local/search-solid"
+import { MiniPlayer } from "@/components/blocks/mini-player"
 
-const TAB_HIDE_DURATION_MS = 250;
-const TAB_HIDE_EXTRA_OFFSET = 16;
+const TAB_HIDE_DURATION_MS = 250
+const TAB_HIDE_EXTRA_OFFSET = 16
 
 export default function MainLayout() {
-  const theme = useThemeColors();
-  const insets = useSafeAreaInsets();
-  const barsVisible = useStore($barsVisible);
-  const tabBarBottomPadding = getTabBarBottomPadding(insets.bottom);
-  const tabBarHeight = getTabBarHeight(insets.bottom);
-  const hiddenOffset =
-    tabBarHeight + MINI_PLAYER_HEIGHT + TAB_HIDE_EXTRA_OFFSET;
-  const translateY = useSharedValue(0);
+  const theme = useThemeColors()
+  const insets = useSafeAreaInsets()
+  const barsVisible = useStore($barsVisible)
+  const tabBarBottomPadding = getTabBarBottomPadding(insets.bottom)
+  const tabBarHeight = getTabBarHeight(insets.bottom)
+  const hiddenOffset = tabBarHeight + MINI_PLAYER_HEIGHT + TAB_HIDE_EXTRA_OFFSET
+  const translateY = useSharedValue(0)
 
   useEffect(() => {
     translateY.value = withTiming(barsVisible ? 0 : hiddenOffset, {
       duration: TAB_HIDE_DURATION_MS,
-    });
-  }, [barsVisible, hiddenOffset, translateY]);
+    })
+  }, [barsVisible, hiddenOffset, translateY])
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -53,8 +52,8 @@ export default function MainLayout() {
           translateY: translateY.value,
         },
       ],
-    };
-  });
+    }
+  })
 
   const renderTabBar = useCallback(
     (props: BottomTabBarProps) => {
@@ -74,10 +73,10 @@ export default function MainLayout() {
           <MiniPlayer bottomOffset={tabBarHeight} />
           <BottomTabBar {...props} />
         </Animated.View>
-      );
+      )
     },
-    [animatedStyle, tabBarHeight],
-  );
+    [animatedStyle, tabBarHeight]
+  )
 
   return (
     <Tabs
@@ -90,7 +89,7 @@ export default function MainLayout() {
         tabBarStyle: {
           backgroundColor: theme.background,
           borderTopWidth: 1,
-          borderTopColor: theme.divider,
+          borderTopColor: theme.border,
           height: tabBarHeight,
           paddingTop: 8,
           paddingBottom: tabBarBottomPadding,
@@ -108,9 +107,19 @@ export default function MainLayout() {
           title: "Home",
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalHomeSolidIcon fill="none" color={color} width={size} height={size} />
+              <LocalHomeSolidIcon
+                fill="none"
+                color={color}
+                width={size}
+                height={size}
+              />
             ) : (
-              <LocalHomeIcon fill="none" color={color} width={size} height={size} />
+              <LocalHomeIcon
+                fill="none"
+                color={color}
+                width={size}
+                height={size}
+              />
             ),
         }}
       />
@@ -120,9 +129,19 @@ export default function MainLayout() {
           title: "Search",
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalSearchSolidIcon fill="none" color={color} width={size} height={size} />
+              <LocalSearchSolidIcon
+                fill="none"
+                color={color}
+                width={size}
+                height={size}
+              />
             ) : (
-              <LocalSearchIcon fill="none" color={color} width={size} height={size} />
+              <LocalSearchIcon
+                fill="none"
+                color={color}
+                width={size}
+                height={size}
+              />
             ),
         }}
       />
@@ -130,14 +149,25 @@ export default function MainLayout() {
         name="(library)"
         options={{
           title: "Library",
+          popToTopOnBlur: true,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalLibrarySolidIcon fill="none" color={color} width={size} height={size} />
+              <LocalLibrarySolidIcon
+                fill="none"
+                color={color}
+                width={size}
+                height={size}
+              />
             ) : (
-              <LocalLibraryIcon fill="none" color={color} width={size} height={size} />
+              <LocalLibraryIcon
+                fill="none"
+                color={color}
+                width={size}
+                height={size}
+              />
             ),
         }}
       />
     </Tabs>
-  );
+  )
 }

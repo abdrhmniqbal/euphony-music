@@ -1,14 +1,13 @@
-import { Stack, useRouter } from "expo-router";
-import { Pressable } from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { Ionicons } from "@expo/vector-icons";
-import { PressableFeedback } from "heroui-native";
-import LocalCancelIcon from "@/components/icons/local/cancel";
-import { BackButton } from "@/components/patterns";
+import { Stack, useRouter } from "expo-router"
+import { PressableFeedback } from "heroui-native"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalCancelIcon from "@/components/icons/local/cancel"
+import { BackButton } from "@/components/patterns"
 
 export default function SettingsLayout() {
-  const theme = useThemeColors();
-  const router = useRouter();
+  const theme = useThemeColors()
+  const router = useRouter()
 
   return (
     <Stack
@@ -50,5 +49,5 @@ export default function SettingsLayout() {
         }}
       />
     </Stack>
-  );
+  )
 }

@@ -1,22 +1,22 @@
-import { TrackPlayer } from '@/modules/player/player.utils';
-import { PlaybackService, setupPlayer } from '@/modules/player/player.store';
+import { PlaybackService, setupPlayer } from "@/modules/player/player.store"
+import { TrackPlayer } from "@/modules/player/player.utils"
 
-let isPlaybackServiceRegistered = false;
+let isPlaybackServiceRegistered = false
 
 export function registerPlaybackService(): void {
   if (isPlaybackServiceRegistered) {
-    return;
+    return
   }
 
   try {
-    TrackPlayer.registerPlaybackService(() => PlaybackService);
-    isPlaybackServiceRegistered = true;
+    TrackPlayer.registerPlaybackService(() => PlaybackService)
+    isPlaybackServiceRegistered = true
   } catch {
     // TrackPlayer throws when service is already registered.
-    isPlaybackServiceRegistered = true;
+    isPlaybackServiceRegistered = true
   }
 }
 
 export async function initializeTrackPlayer(): Promise<void> {
-  await setupPlayer();
+  await setupPlayer()
 }

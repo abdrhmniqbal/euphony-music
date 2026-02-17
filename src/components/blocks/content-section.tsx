@@ -1,21 +1,22 @@
-import type { ReactNode } from "react";
-import { cn } from "tailwind-variants";
-import { EmptyState, SectionHeader } from "@/components/ui";
+import type { ReactNode } from "react"
+import { cn } from "tailwind-variants"
+
+import { EmptyState, SectionHeader } from "@/components/ui"
 
 interface EmptyStateConfig {
-  icon: ReactNode;
-  title: string;
-  message: string;
+  icon: ReactNode
+  title: string
+  message: string
 }
 
 interface ContentSectionProps<T> {
-  title: string;
-  onViewMore?: () => void;
-  data: T[];
-  renderContent: (data: T[]) => ReactNode;
-  emptyState: EmptyStateConfig;
-  className?: string;
-  titleClassName?: string;
+  title: string
+  onViewMore?: () => void
+  data: T[]
+  renderContent: (data: T[]) => ReactNode
+  emptyState: EmptyStateConfig
+  className?: string
+  titleClassName?: string
 }
 
 export function ContentSection<T>({
@@ -45,5 +46,5 @@ export function ContentSection<T>({
         />
       )}
     </>
-  );
+  )
 }

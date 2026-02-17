@@ -89,23 +89,17 @@
       "indexes": {
         "albums_title_idx": {
           "name": "albums_title_idx",
-          "columns": [
-            "title"
-          ],
+          "columns": ["title"],
           "isUnique": false
         },
         "albums_artist_idx": {
           "name": "albums_artist_idx",
-          "columns": [
-            "artist_id"
-          ],
+          "columns": ["artist_id"],
           "isUnique": false
         },
         "albums_year_idx": {
           "name": "albums_year_idx",
-          "columns": [
-            "year"
-          ],
+          "columns": ["year"],
           "isUnique": false
         }
       },
@@ -114,12 +108,8 @@
           "name": "albums_artist_id_artists_id_fk",
           "tableFrom": "albums",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artist_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artist_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -231,16 +221,12 @@
       "indexes": {
         "artists_name_idx": {
           "name": "artists_name_idx",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": false
         },
         "artists_sort_name_idx": {
           "name": "artists_sort_name_idx",
-          "columns": [
-            "sort_name"
-          ],
+          "columns": ["sort_name"],
           "isUnique": false
         }
       },
@@ -373,24 +359,17 @@
       "indexes": {
         "favorites_type_idx": {
           "name": "favorites_type_idx",
-          "columns": [
-            "type"
-          ],
+          "columns": ["type"],
           "isUnique": false
         },
         "favorites_item_idx": {
           "name": "favorites_item_idx",
-          "columns": [
-            "type",
-            "item_id"
-          ],
+          "columns": ["type", "item_id"],
           "isUnique": false
         },
         "favorites_created_at_idx": {
           "name": "favorites_created_at_idx",
-          "columns": [
-            "created_at"
-          ],
+          "columns": ["created_at"],
           "isUnique": false
         }
       },
@@ -435,16 +414,12 @@
       "indexes": {
         "genres_name_unique": {
           "name": "genres_name_unique",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": true
         },
         "genres_name_idx": {
           "name": "genres_name_idx",
-          "columns": [
-            "name"
-          ],
+          "columns": ["name"],
           "isUnique": false
         }
       },
@@ -527,16 +502,12 @@
       "indexes": {
         "play_history_track_idx": {
           "name": "play_history_track_idx",
-          "columns": [
-            "track_id"
-          ],
+          "columns": ["track_id"],
           "isUnique": false
         },
         "play_history_played_at_idx": {
           "name": "play_history_played_at_idx",
-          "columns": [
-            "played_at"
-          ],
+          "columns": ["played_at"],
           "isUnique": false
         }
       },
@@ -545,12 +516,8 @@
           "name": "play_history_track_id_tracks_id_fk",
           "tableFrom": "play_history",
           "tableTo": "tracks",
-          "columnsFrom": [
-            "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["track_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -601,24 +568,17 @@
       "indexes": {
         "playlist_tracks_playlist_idx": {
           "name": "playlist_tracks_playlist_idx",
-          "columns": [
-            "playlist_id"
-          ],
+          "columns": ["playlist_id"],
           "isUnique": false
         },
         "playlist_tracks_track_idx": {
           "name": "playlist_tracks_track_idx",
-          "columns": [
-            "track_id"
-          ],
+          "columns": ["track_id"],
           "isUnique": false
         },
         "playlist_tracks_position_idx": {
           "name": "playlist_tracks_position_idx",
-          "columns": [
-            "playlist_id",
-            "position"
-          ],
+          "columns": ["playlist_id", "position"],
           "isUnique": false
         }
       },
@@ -627,12 +587,8 @@
           "name": "playlist_tracks_playlist_id_playlists_id_fk",
           "tableFrom": "playlist_tracks",
           "tableTo": "playlists",
-          "columnsFrom": [
-            "playlist_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["playlist_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -640,12 +596,8 @@
           "name": "playlist_tracks_track_id_tracks_id_fk",
           "tableFrom": "playlist_tracks",
           "tableTo": "tracks",
-          "columnsFrom": [
-            "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["track_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -758,16 +710,12 @@
       "indexes": {
         "track_artists_track_idx": {
           "name": "track_artists_track_idx",
-          "columns": [
-            "track_id"
-          ],
+          "columns": ["track_id"],
           "isUnique": false
         },
         "track_artists_artist_idx": {
           "name": "track_artists_artist_idx",
-          "columns": [
-            "artist_id"
-          ],
+          "columns": ["artist_id"],
           "isUnique": false
         }
       },
@@ -776,12 +724,8 @@
           "name": "track_artists_track_id_tracks_id_fk",
           "tableFrom": "track_artists",
           "tableTo": "tracks",
-          "columnsFrom": [
-            "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["track_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -789,22 +733,15 @@
           "name": "track_artists_artist_id_artists_id_fk",
           "tableFrom": "track_artists",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artist_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artist_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "track_artists_track_id_artist_id_pk": {
-          "columns": [
-            "track_id",
-            "artist_id"
-          ],
+          "columns": ["track_id", "artist_id"],
           "name": "track_artists_track_id_artist_id_pk"
         }
       },
@@ -832,16 +769,12 @@
       "indexes": {
         "track_genres_track_idx": {
           "name": "track_genres_track_idx",
-          "columns": [
-            "track_id"
-          ],
+          "columns": ["track_id"],
           "isUnique": false
         },
         "track_genres_genre_idx": {
           "name": "track_genres_genre_idx",
-          "columns": [
-            "genre_id"
-          ],
+          "columns": ["genre_id"],
           "isUnique": false
         }
       },
@@ -850,12 +783,8 @@
           "name": "track_genres_track_id_tracks_id_fk",
           "tableFrom": "track_genres",
           "tableTo": "tracks",
-          "columnsFrom": [
-            "track_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["track_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -863,22 +792,15 @@
           "name": "track_genres_genre_id_genres_id_fk",
           "tableFrom": "track_genres",
           "tableTo": "genres",
-          "columnsFrom": [
-            "genre_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["genre_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
         "track_genres_track_id_genre_id_pk": {
-          "columns": [
-            "track_id",
-            "genre_id"
-          ],
+          "columns": ["track_id", "genre_id"],
           "name": "track_genres_track_id_genre_id_pk"
         }
       },
@@ -1063,51 +985,37 @@
       "indexes": {
         "tracks_artist_idx": {
           "name": "tracks_artist_idx",
-          "columns": [
-            "artist_id"
-          ],
+          "columns": ["artist_id"],
           "isUnique": false
         },
         "tracks_album_idx": {
           "name": "tracks_album_idx",
-          "columns": [
-            "album_id"
-          ],
+          "columns": ["album_id"],
           "isUnique": false
         },
         "tracks_title_idx": {
           "name": "tracks_title_idx",
-          "columns": [
-            "title"
-          ],
+          "columns": ["title"],
           "isUnique": false
         },
         "tracks_favorite_idx": {
           "name": "tracks_favorite_idx",
-          "columns": [
-            "is_favorite"
-          ],
+          "columns": ["is_favorite"],
           "isUnique": false
         },
         "tracks_deleted_idx": {
           "name": "tracks_deleted_idx",
-          "columns": [
-            "is_deleted"
-          ],
+          "columns": ["is_deleted"],
           "isUnique": false
         },
         "tracks_play_count_idx": {
           "name": "tracks_play_count_idx",
-          "columns": [
-            "play_count"
-          ],
+          "columns": ["play_count"],
           "isUnique": false
         },
         "tracks_last_played_idx": {
           "name": "tracks_last_played_idx",
-          "columns": [
-            "last_played_at"
-          ],
+          "columns": ["last_played_at"],
           "isUnique": false
         }
       },
@@ -1116,12 +1024,8 @@
           "name": "tracks_artist_id_artists_id_fk",
           "tableFrom": "tracks",
           "tableTo": "artists",
-          "columnsFrom": [
-            "artist_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["artist_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1129,12 +1033,8 @@
           "name": "tracks_album_id_albums_id_fk",
           "tableFrom": "tracks",
           "tableTo": "albums",
-          "columnsFrom": [
-            "album_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["album_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }

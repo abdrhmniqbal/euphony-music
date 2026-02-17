@@ -1,32 +1,33 @@
-import React, { useLayoutEffect } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
-import { useRouter } from "expo-router";
-import { useStore } from "@nanostores/react";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { TrackRow } from "@/components/patterns";
-import {
-  ContentSection,
-  MediaCarousel,
-  RankedTrackCarousel,
-} from "@/components/blocks";
-import { $indexerState } from "@/modules/indexer";
-import { playTrack, type Track } from "@/modules/player/player.store";
+import * as React from "react"
+import { useStore } from "@nanostores/react"
+import { useRouter } from "expo-router"
+import { RefreshControl, ScrollView, View } from "react-native"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { useHomeScreen } from "@/modules/library/hooks/use-home-screen";
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid";
-import LocalClockSolidIcon from "@/components/icons/local/clock-solid";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { $indexerState } from "@/modules/indexer"
+import { useHomeScreen } from "@/modules/library/hooks/use-home-screen"
+import { playTrack, type Track } from "@/modules/player/player.store"
+import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import {
+  ContentSection,
+  MediaCarousel,
+  RankedTrackCarousel,
+} from "@/components/blocks"
+import { TrackRow } from "@/components/patterns"
 
-const CHUNK_SIZE = 5;
+const CHUNK_SIZE = 5
 
 export default function HomeScreen() {
-  const router = useRouter();
-  const theme = useThemeColors();
-  const indexerState = useStore($indexerState);
-  const { recentlyPlayedTracks, topTracks, refresh } = useHomeScreen();
+  const router = useRouter()
+  const theme = useThemeColors()
+  const indexerState = useStore($indexerState)
+  const { recentlyPlayedTracks, topTracks, refresh } = useHomeScreen()
 
   function renderRecentlyPlayedItem(item: Track) {
     return (
@@ -35,7 +36,7 @@ export default function HomeScreen() {
         variant="grid"
         onPress={() => playTrack(item, recentlyPlayedTracks)}
       />
-    );
+    )
   }
 
   return (
@@ -105,5 +106,5 @@ export default function HomeScreen() {
         />
       </View>
     </ScrollView>
-  );
+  )
 }

@@ -1,22 +1,23 @@
-import { View, Text, ScrollView, RefreshControl } from "react-native";
-import { EmptyState } from "@/components/ui";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useStore } from "@nanostores/react"
+import { RefreshControl, ScrollView, View } from "react-native"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { useStore } from "@nanostores/react";
-import { $indexerState } from "@/modules/indexer";
-import { TrackList } from "@/components/blocks/track-list";
-import { useRecentlyPlayedScreen } from "@/modules/history/hooks/use-recently-played-screen";
-import { PlaybackActionsRow } from "@/components/blocks";
-import LocalClockSolidIcon from "@/components/icons/local/clock-solid";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useRecentlyPlayedScreen } from "@/modules/history/hooks/use-recently-played-screen"
+import { $indexerState } from "@/modules/indexer"
+import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
+import { PlaybackActionsRow } from "@/components/blocks"
+import { TrackList } from "@/components/blocks/track-list"
+import { EmptyState } from "@/components/ui"
 
 export default function RecentlyPlayedScreen() {
-  const theme = useThemeColors();
-  const indexerState = useStore($indexerState);
-  const { history, refresh, playFirst, shuffle } = useRecentlyPlayedScreen();
+  const theme = useThemeColors()
+  const indexerState = useStore($indexerState)
+  const { history, refresh, playFirst, shuffle } = useRecentlyPlayedScreen()
 
   return (
     <View className="flex-1 bg-background">
@@ -66,5 +67,5 @@ export default function RecentlyPlayedScreen() {
         </View>
       </ScrollView>
     </View>
-  );
+  )
 }

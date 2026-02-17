@@ -1,52 +1,58 @@
-import React, { useState } from "react";
+import * as React from "react"
+import { useState } from "react"
+import { LinearGradient } from "expo-linear-gradient"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { Button } from "heroui-native"
 import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Image,
   Dimensions,
-} from "react-native";
-import { Stack, useRouter } from "expo-router";
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native"
 import Animated, {
   FadeIn,
   SlideInLeft,
   SlideInRight,
-} from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
-import { Button } from "heroui-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+} from "react-native-reanimated"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { SectionTitle } from "@/components/ui";
-import { TrackList } from "@/components/blocks/track-list";
-import { AlbumGrid, type Album } from "@/components/blocks/album-grid";
-import { PlaybackActionsRow } from "@/components/blocks";
-import { SortSheet } from "@/components/blocks/sort-sheet";
-import LocalArrowLeftIcon from "@/components/icons/local/arrow-left";
-import LocalFavouriteIcon from "@/components/icons/local/favourite";
-import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid";
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid";
-import { toggleFavoriteItem } from "@/modules/favorites/favorites.store";
-import { useArtistDetailsScreen } from "@/modules/artists/hooks/use-artist-details-screen";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useArtistDetailsScreen } from "@/modules/artists/hooks/use-artist-details-screen"
+import { toggleFavoriteItem } from "@/modules/favorites/favorites.store"
 import {
-  TRACK_SORT_OPTIONS,
   ALBUM_SORT_OPTIONS,
+  TRACK_SORT_OPTIONS,
   type SortField,
-} from "@/modules/library/library-sort.store";
-import { cn } from "@/utils/common";
-import LocalChevronLeftIcon from "@/components/icons/local/chevron-left";
+} from "@/modules/library/library-sort.store"
+import { cn } from "@/utils/common"
+import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
+import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
+import LocalFavouriteIcon from "@/components/icons/local/favourite"
+import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import LocalUserSolidIcon from "@/components/icons/local/user-solid"
+import { PlaybackActionsRow } from "@/components/blocks"
+import { AlbumGrid, type Album } from "@/components/blocks/album-grid"
+import { SortSheet } from "@/components/blocks/sort-sheet"
+import { TrackList } from "@/components/blocks/track-list"
+import { SectionTitle } from "@/components/ui"
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const HEADER_COLLAPSE_THRESHOLD = SCREEN_WIDTH - 120;
+const SCREEN_WIDTH = Dimensions.get("window").width
+const HEADER_COLLAPSE_THRESHOLD = SCREEN_WIDTH - 120
 
 export default function ArtistDetailsScreen() {
-  const theme = useThemeColors();
-  const router = useRouter();
-  const [isHeaderSolid, setIsHeaderSolid] = useState(false);
+  const theme = useThemeColors()
+  const router = useRouter()
+  const { from, query } = useLocalSearchParams<{
+    from?: string
+    query?: string
+  }>()
+  const [isHeaderSolid, setIsHeaderSolid] = useState(false)
   const {
     name,
     artistTracks,
@@ -69,12 +75,24 @@ export default function ArtistDetailsScreen() {
     openAlbum,
     selectSort,
     getSortLabel,
-  } = useArtistDetailsScreen();
+  } = useArtistDetailsScreen()
 
-  const artistName = name || "Unknown Artist";
+  const artistName = name || "Unknown Artist"
+
+  function handleBack() {
+    if (from === "search") {
+      router.replace({
+        pathname: "/search-interaction",
+        params: query ? { query } : {},
+      })
+      return
+    }
+
+    router.back()
+  }
 
   function handleSortSelect(field: SortField, order?: "asc" | "desc") {
-    selectSort(field, order);
+    selectSort(field, order)
   }
 
   return (
@@ -97,7 +115,7 @@ export default function ArtistDetailsScreen() {
             headerBackVisible: false,
             headerLeft: () => (
               <Button
-                onPress={() => router.back()}
+                onPress={handleBack}
                 variant="ghost"
                 className={cn("-ml-2", !isHeaderSolid && "bg-overlay/30")}
                 isIconOnly
@@ -119,8 +137,8 @@ export default function ArtistDetailsScreen() {
                       "artist",
                       artistName,
                       `${artistTracks.length} tracks`,
-                      artistImage,
-                    );
+                      artistImage
+                    )
                   }}
                   variant="ghost"
                   className={cn("-ml-2", !isHeaderSolid && "bg-overlay/30")}
@@ -151,11 +169,11 @@ export default function ArtistDetailsScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 200 }}
           onScroll={(e) => {
-            const y = e.nativeEvent.contentOffset.y;
-            handleScroll(y);
-            const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD;
+            const y = e.nativeEvent.contentOffset.y
+            handleScroll(y)
+            const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
             if (nextHeaderSolid !== isHeaderSolid) {
-              setIsHeaderSolid(nextHeaderSolid);
+              setIsHeaderSolid(nextHeaderSolid)
             }
           }}
           onScrollBeginDrag={handleScrollStart}
@@ -171,8 +189,8 @@ export default function ArtistDetailsScreen() {
                 resizeMode="cover"
               />
             ) : (
-              <View className="w-full h-full bg-surface-secondary items-center justify-center">
-                <LocalMusicNoteSolidIcon
+              <View className="h-full w-full items-center justify-center bg-surface-secondary">
+                <LocalUserSolidIcon
                   fill="none"
                   width={120}
                   height={120}
@@ -193,8 +211,8 @@ export default function ArtistDetailsScreen() {
               }}
             />
 
-            <View className="absolute bottom-8 left-6 right-6">
-              <Text className="text-4xl font-bold text-white mb-2">
+            <View className="absolute right-6 bottom-8 left-6">
+              <Text className="mb-2 text-4xl font-bold text-white">
                 {artistName}
               </Text>
               <Text className="text-base text-white/70">
@@ -236,7 +254,7 @@ export default function ArtistDetailsScreen() {
                     <AlbumGrid
                       horizontal
                       data={albums.map(
-                        (album) => ({ ...album, id: album.title }) as Album,
+                        (album) => ({ ...album, id: album.title }) as Album
                       )}
                       onAlbumPress={openAlbum}
                     />
@@ -245,7 +263,7 @@ export default function ArtistDetailsScreen() {
               </>
             ) : activeView === "tracks" ? (
               <>
-                <View className="flex-row items-center justify-between mb-6">
+                <View className="mb-6 flex-row items-center justify-between">
                   <View className="flex-row items-center gap-3">
                     <Pressable
                       onPress={() => navigateTo("overview")}
@@ -275,7 +293,7 @@ export default function ArtistDetailsScreen() {
               </>
             ) : (
               <>
-                <View className="flex-row items-center justify-between mb-6">
+                <View className="mb-6 flex-row items-center justify-between">
                   <View className="flex-row items-center gap-3">
                     <Pressable
                       onPress={() => navigateTo("overview")}
@@ -317,5 +335,5 @@ export default function ArtistDetailsScreen() {
         />
       </View>
     </SortSheet>
-  );
+  )
 }

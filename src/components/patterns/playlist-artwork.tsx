@@ -1,53 +1,56 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Image, View, type ReactNode } from "react-native";
-import { cn } from "tailwind-variants";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import LocalPlaylistSolidIcon from "../icons/local/playlist-solid";
+import type { ReactNode } from "react"
+import { Image, View } from "react-native"
+import { cn } from "tailwind-variants"
+
+import { ICON_SIZES } from "@/constants/icon-sizes"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+
+import LocalPlaylistSolidIcon from "../icons/local/playlist-solid"
 
 interface PlaylistArtworkProps {
-  images?: string[];
-  className?: string;
-  fallback?: ReactNode;
+  images?: string[]
+  className?: string
+  fallback?: ReactNode
 }
 
 function normalizeImages(images?: string[]): string[] {
   if (!images?.length) {
-    return [];
+    return []
   }
 
-  const uniqueImages: string[] = [];
+  const uniqueImages: string[] = []
 
   for (const image of images) {
     if (!image || uniqueImages.includes(image)) {
-      continue;
+      continue
     }
 
-    uniqueImages.push(image);
+    uniqueImages.push(image)
 
     if (uniqueImages.length >= 4) {
-      break;
+      break
     }
   }
 
-  return uniqueImages;
+  return uniqueImages
 }
 
 function buildGridImages(images: string[]): string[] {
   if (images.length === 0) {
-    return [];
+    return []
   }
 
   if (images.length >= 4) {
-    return images.slice(0, 4);
+    return images.slice(0, 4)
   }
 
-  const gridImages: string[] = [];
+  const gridImages: string[] = []
 
   for (let i = 0; i < 4; i += 1) {
-    gridImages.push(images[i % images.length]);
+    gridImages.push(images[i % images.length])
   }
 
-  return gridImages;
+  return gridImages
 }
 
 export function PlaylistArtwork({
@@ -55,44 +58,49 @@ export function PlaylistArtwork({
   className,
   fallback,
 }: PlaylistArtworkProps) {
-  const theme = useThemeColors();
-  const gridImages = buildGridImages(normalizeImages(images));
+  const theme = useThemeColors()
+  const gridImages = buildGridImages(normalizeImages(images))
+  const imageKeyCounter = new Map<string, number>()
 
   if (gridImages.length === 0) {
     return (
       <View
         className={cn(
           "h-full w-full items-center justify-center bg-surface",
-          className,
+          className
         )}
       >
         {fallback || (
           <LocalPlaylistSolidIcon
             fill="none"
-            width={24}
-            height={24}
+            width={ICON_SIZES.listFallback}
+            height={ICON_SIZES.listFallback}
             color={theme.muted}
           />
         )}
       </View>
-    );
+    )
   }
 
   return (
     <View
       className={cn(
         "h-full w-full flex-row flex-wrap overflow-hidden",
-        className,
+        className
       )}
     >
-      {gridImages.map((image, index) => (
-        <Image
-          key={`${image}-${index}`}
-          source={{ uri: image }}
-          className="h-1/2 w-1/2"
-          resizeMode="cover"
-        />
-      ))}
+      {gridImages.map((image) => {
+        const nextCount = (imageKeyCounter.get(image) || 0) + 1
+        imageKeyCounter.set(image, nextCount)
+        return (
+          <Image
+            key={`${image}-${nextCount}`}
+            source={{ uri: image }}
+            className="h-1/2 w-1/2"
+            resizeMode="cover"
+          />
+        )
+      })}
     </View>
-  );
+  )
 }

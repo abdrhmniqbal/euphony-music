@@ -1,31 +1,32 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { db } from "@/db/client";
-import { tracks, playHistory } from "@/db/schema";
-import { eq, desc, sql, count } from "drizzle-orm";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { desc, eq, sql } from "drizzle-orm"
 
-const HISTORY_KEY = "play-history";
+import { db } from "@/db/client"
+import { playHistory, tracks } from "@/db/schema"
 
-export type PlayPeriod = "all" | "day" | "week";
+const HISTORY_KEY = "play-history"
+
+export type PlayPeriod = "all" | "day" | "week"
 
 export function usePlayHistory(limit?: number) {
   return useQuery({
     queryKey: [HISTORY_KEY, limit],
     queryFn: async () => {
-      let query = db.query.playHistory.findMany({
+      const query = db.query.playHistory.findMany({
         orderBy: [desc(playHistory.playedAt)],
         with: {
           track: true,
         },
         limit: limit || 50,
-      });
+      })
 
-      return query;
+      return query
     },
-  });
+  })
 }
 
 export function useAddToHistory() {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (trackId: string) => {
@@ -35,32 +36,32 @@ export function useAddToHistory() {
         playedAt: Date.now(),
         duration: 0,
         completed: 0,
-      });
+      })
 
       // Keep only last 50 entries
       const count = await db
         .select({ count: sql<number>`count(*)` })
-        .from(playHistory);
-      
+        .from(playHistory)
+
       if (count[0]?.count > 50) {
         await db
           .delete(playHistory)
           .where(
             sql`id NOT IN (SELECT id FROM ${playHistory} ORDER BY played_at DESC LIMIT 50)`
-          );
+          )
       }
 
-      return trackId;
+      return trackId
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HISTORY_KEY] });
+      queryClient.invalidateQueries({ queryKey: [HISTORY_KEY] })
     },
-  });
+  })
 }
 
 export function useIncrementPlayCount() {
-  const queryClient = useQueryClient();
-  const addToHistory = useAddToHistory();
+  const queryClient = useQueryClient()
+  const addToHistory = useAddToHistory()
 
   return useMutation({
     mutationFn: async (trackId: string) => {
@@ -71,18 +72,18 @@ export function useIncrementPlayCount() {
           playCount: sql`${tracks.playCount} + 1`,
           lastPlayedAt: Date.now(),
         })
-        .where(eq(tracks.id, trackId));
+        .where(eq(tracks.id, trackId))
 
       // Add to history
-      await addToHistory.mutateAsync(trackId);
+      await addToHistory.mutateAsync(trackId)
 
-      return trackId;
+      return trackId
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tracks"] });
-      queryClient.invalidateQueries({ queryKey: [HISTORY_KEY] });
+      queryClient.invalidateQueries({ queryKey: ["tracks"] })
+      queryClient.invalidateQueries({ queryKey: [HISTORY_KEY] })
     },
-  });
+  })
 }
 
 export function useTopTracks(period: PlayPeriod = "all", limit: number = 25) {
@@ -94,30 +95,33 @@ export function useTopTracks(period: PlayPeriod = "all", limit: number = 25) {
           where: sql`${tracks.playCount} > 0 AND ${tracks.isDeleted} = 0`,
           orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
           limit,
-        });
+        })
       } else {
         const timeThreshold =
           period === "day"
             ? Date.now() - 24 * 60 * 60 * 1000
-            : Date.now() - 7 * 24 * 60 * 60 * 1000;
+            : Date.now() - 7 * 24 * 60 * 60 * 1000
 
         const history = await db.query.playHistory.findMany({
           where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
           with: {
             track: true,
           },
-        });
+        })
 
         // Group by track and count plays
-        const trackCounts = new Map<string, { track: typeof history[0]["track"]; count: number }>();
-        
+        const trackCounts = new Map<
+          string,
+          { track: (typeof history)[0]["track"]; count: number }
+        >()
+
         for (const entry of history) {
           if (entry.track && !entry.track.isDeleted) {
-            const existing = trackCounts.get(entry.trackId);
+            const existing = trackCounts.get(entry.trackId)
             if (existing) {
-              existing.count++;
+              existing.count++
             } else {
-              trackCounts.set(entry.trackId, { track: entry.track, count: 1 });
+              trackCounts.set(entry.trackId, { track: entry.track, count: 1 })
             }
           }
         }
@@ -126,10 +130,10 @@ export function useTopTracks(period: PlayPeriod = "all", limit: number = 25) {
         const sorted = Array.from(trackCounts.values())
           .sort((a, b) => b.count - a.count)
           .slice(0, limit)
-          .map((item) => item.track);
+          .map((item) => item.track)
 
-        return sorted;
+        return sorted
       }
     },
-  });
+  })
 }

@@ -1,17 +1,18 @@
-import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { useUniwind } from "uniwind";
-import LocalChevronRightIcon from "@/components/icons/local/chevron-right";
+import * as React from "react"
+import { useRouter } from "expo-router"
+import { PressableFeedback } from "heroui-native"
+import { ScrollView, Text, View } from "react-native"
+import { useUniwind } from "uniwind"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
 
 interface SettingItemProps {
-  title: string;
-  value?: string;
-  onPress?: () => void;
-  showChevron?: boolean;
-  rightIcon?: React.ReactNode;
+  title: string
+  value?: string
+  onPress?: () => void
+  showChevron?: boolean
+  rightIcon?: React.ReactNode
 }
 
 const SettingItem: React.FC<SettingItemProps> = ({
@@ -21,14 +22,14 @@ const SettingItem: React.FC<SettingItemProps> = ({
   showChevron = true,
   rightIcon,
 }) => {
-  const theme = useThemeColors();
+  const theme = useThemeColors()
 
   return (
-    <Pressable
+    <PressableFeedback
       onPress={onPress}
-      className="flex-row items-center px-6 py-4 active:opacity-70 bg-background"
+      className="flex-row items-center bg-background px-6 py-4 active:opacity-70"
     >
-      <Text className="flex-1 text-[17px] text-foreground font-normal">
+      <Text className="flex-1 text-[17px] font-normal text-foreground">
         {title}
       </Text>
       <View className="flex-row items-center gap-2">
@@ -43,31 +44,31 @@ const SettingItem: React.FC<SettingItemProps> = ({
           />
         )}
       </View>
-    </Pressable>
-  );
-};
+    </PressableFeedback>
+  )
+}
 
 interface SectionHeaderProps {
-  title: string;
+  title: string
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ title }) => (
   <View className="px-6 pt-8 pb-3">
-    <Text className="text-[13px] font-medium text-muted uppercase tracking-wider">
+    <Text className="text-[13px] font-medium tracking-wider text-muted uppercase">
       {title}
     </Text>
   </View>
-);
+)
 
 interface SettingSection {
-  title: string;
+  title: string
   items: {
-    id: string;
-    title: string;
-    value?: string;
-    route?: string;
-    showChevron?: boolean;
-  }[];
+    id: string
+    title: string
+    value?: string
+    route?: string
+    showChevron?: boolean
+  }[]
 }
 
 const SETTINGS_SECTIONS: SettingSection[] = [
@@ -77,30 +78,30 @@ const SETTINGS_SECTIONS: SettingSection[] = [
       { id: "appearance", title: "Appearance", route: "/settings/appearance" },
     ],
   },
-];
+]
 
 export default function SettingsScreen() {
-  const router = useRouter();
-  const { theme: currentTheme, hasAdaptiveThemes } = useUniwind();
+  const router = useRouter()
+  const { theme: currentTheme, hasAdaptiveThemes } = useUniwind()
 
   const currentAppearance = hasAdaptiveThemes
     ? "System"
     : currentTheme === "dark"
       ? "Dark"
-      : "Light";
+      : "Light"
 
   function handleItemPress(route?: string) {
     if (route) {
-      router.push(route as never);
+      router.push(route as never)
     }
   }
 
   function getItemValue(itemId: string): string | undefined {
     switch (itemId) {
       case "appearance":
-        return currentAppearance;
+        return currentAppearance
       default:
-        return undefined;
+        return undefined
     }
   }
 
@@ -124,5 +125,5 @@ export default function SettingsScreen() {
         </View>
       ))}
     </ScrollView>
-  );
+  )
 }

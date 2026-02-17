@@ -23,7 +23,7 @@ Configure the Stack.Screen with transparent backgrounds and sheet presentation:
 
 ```tsx
 // app/_layout.tsx
-import { Stack } from "expo-router";
+import { Stack } from "expo-router"
 
 export default function Layout() {
   return (
@@ -42,7 +42,7 @@ export default function Layout() {
         <Stack.Header style={{ backgroundColor: "transparent" }}></Stack.Header>
       </Stack.Screen>
     </Stack>
-  );
+  )
 }
 ```
 
@@ -54,7 +54,7 @@ Use `flex: 1` to allow the content to fill available space, enabling footer posi
 
 ```tsx
 // app/about.tsx
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native"
 
 export default function AboutSheet() {
   return (
@@ -69,7 +69,7 @@ export default function AboutSheet() {
         <Text>Footer Content</Text>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   footer: {
     padding: 16,
   },
-});
+})
 ```
 
 ## Key Options
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
 
 ```tsx
 // _layout.tsx
-import { Stack } from "expo-router";
+import { Stack } from "expo-router"
 
 export default function Layout() {
   return (
@@ -130,14 +130,14 @@ export default function Layout() {
         </Stack.Header>
       </Stack.Screen>
     </Stack>
-  );
+  )
 }
 ```
 
 ```tsx
 // app/confirm.tsx
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { router } from "expo-router";
+import { router } from "expo-router"
+import { Pressable, StyleSheet, Text, View } from "react-native"
 
 export default function ConfirmSheet() {
   return (
@@ -158,7 +158,7 @@ export default function ConfirmSheet() {
         </Pressable>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "white",
   },
-});
+})
 ```
 
 ## Troubleshooting

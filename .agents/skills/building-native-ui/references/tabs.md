@@ -8,11 +8,11 @@ Always prefer NativeTabs from 'expo-router/unstable-native-tabs' for the best iO
 
 ```tsx
 import {
-  NativeTabs,
+  Badge,
   Icon,
   Label,
-  Badge,
-} from "expo-router/unstable-native-tabs";
+  NativeTabs,
+} from "expo-router/unstable-native-tabs"
 
 export default function TabLayout() {
   return (
@@ -30,7 +30,7 @@ export default function TabLayout() {
         <Label>Search</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
-  );
+  )
 }
 ```
 
@@ -170,13 +170,13 @@ Hide tabs conditionally:
 If you must use @expo/vector-icons instead of SF Symbols:
 
 ```tsx
-import { VectorIcon } from "expo-router/unstable-native-tabs";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import Ionicons from "@expo/vector-icons/Ionicons"
+import { VectorIcon } from "expo-router/unstable-native-tabs"
 
-<NativeTabs.Trigger name="home">
+;<NativeTabs.Trigger name="home">
   <VectorIcon vector={Ionicons} name="home" />
   <Label>Home</Label>
-</NativeTabs.Trigger>;
+</NativeTabs.Trigger>
 ```
 
 **Prefer SF Symbols over vector icons for native feel on Apple platforms.**
@@ -187,7 +187,10 @@ Native tabs don't render headers. Nest Stacks inside each tab for navigation hea
 
 ```tsx
 // app/(tabs)/_layout.tsx
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+
+// app/(tabs)/(home)/_layout.tsx
+import Stack from "expo-router/stack"
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs"
 
 export default function TabLayout() {
   return (
@@ -197,11 +200,8 @@ export default function TabLayout() {
         <Icon sf="house.fill" />
       </NativeTabs.Trigger>
     </NativeTabs>
-  );
+  )
 }
-
-// app/(tabs)/(home)/_layout.tsx
-import Stack from "expo-router/stack";
 
 export default function HomeStack() {
   return (
@@ -212,7 +212,7 @@ export default function HomeStack() {
       />
       <Stack.Screen name="details" options={{ title: "Details" }} />
     </Stack>
-  );
+  )
 }
 ```
 
@@ -221,7 +221,7 @@ export default function HomeStack() {
 ### Before (JS Tabs)
 
 ```tsx
-import { Tabs } from "expo-router";
+import { Tabs } from "expo-router"
 
 export default function TabLayout() {
   return (
@@ -243,14 +243,14 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-  );
+  )
 }
 ```
 
 ### After (Native Tabs)
 
 ```tsx
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs"
 
 export default function TabLayout() {
   return (
@@ -264,7 +264,7 @@ export default function TabLayout() {
         <Icon sf="gear" />
       </NativeTabs.Trigger>
     </NativeTabs>
-  );
+  )
 }
 ```
 
@@ -284,15 +284,14 @@ export default function TabLayout() {
 
    ```tsx
    // Remove
-   import { Tabs } from "expo-router";
-
+   import { Tabs } from "expo-router"
    // Add
    import {
-     NativeTabs,
+     Badge,
      Icon,
      Label,
-     Badge,
-   } from "expo-router/unstable-native-tabs";
+     NativeTabs,
+   } from "expo-router/unstable-native-tabs"
    ```
 
 2. **Replace Tabs with NativeTabs**

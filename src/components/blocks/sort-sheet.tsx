@@ -1,61 +1,65 @@
-import React, { createContext, useContext } from "react";
-import { View, Text, Pressable, type PressableProps } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { BottomSheet, Button, PressableFeedback } from "heroui-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { cn } from "tailwind-variants";
-import LocalArrowUpIcon from "@/components/icons/local/arrow-up";
-import LocalArrowDownIcon from "@/components/icons/local/arrow-down";
+import * as React from "react"
+import { createContext, use } from "react"
+import { BottomSheet, Button, PressableFeedback } from "heroui-native"
+import { Text } from "react-native"
+import { cn } from "tailwind-variants"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalArrowDownIcon from "@/components/icons/local/arrow-down"
+import LocalArrowUpIcon from "@/components/icons/local/arrow-up"
 
 export interface SortOption<T extends string> {
-  field: T;
-  label: string;
+  field: T
+  label: string
 }
 
-type SortOrder = "asc" | "desc";
+type SortOrder = "asc" | "desc"
 
 interface SortSheetContextValue<T extends string> {
-  visible: boolean;
-  onOpenChange: (open: boolean) => void;
-  currentField: T;
-  currentOrder: SortOrder;
-  onSelect: (field: T, order?: SortOrder) => void;
+  visible: boolean
+  onOpenChange: (open: boolean) => void
+  currentField: T
+  currentOrder: SortOrder
+  onSelect: (field: T, order?: SortOrder) => void
 }
 
 interface SortSheetRootProps<T extends string> {
-  visible: boolean;
-  onOpenChange: (open: boolean) => void;
-  currentField: T;
-  currentOrder: SortOrder;
-  onSelect: (field: T, order?: SortOrder) => void;
-  children: React.ReactNode;
+  visible: boolean
+  onOpenChange: (open: boolean) => void
+  currentField: T
+  currentOrder: SortOrder
+  onSelect: (field: T, order?: SortOrder) => void
+  children: React.ReactNode
 }
 
-interface SortSheetTriggerProps extends PressableProps {
-  label: string;
-  iconSize?: number;
-  className?: string;
-  textClassName?: string;
+interface SortSheetTriggerProps extends Omit<
+  React.ComponentProps<typeof PressableFeedback>,
+  "children"
+> {
+  label: string
+  iconSize?: number
+  className?: string
+  textClassName?: string
 }
 
 interface SortSheetContentProps<T extends string> {
-  options: SortOption<T>[];
-  title?: string;
-  className?: string;
+  options: SortOption<T>[]
+  title?: string
+  className?: string
 }
 
 const SortSheetContext = createContext<SortSheetContextValue<string> | null>(
-  null,
-);
+  null
+)
 
 function useSortSheetContext<T extends string>() {
-  const context = useContext(SortSheetContext);
+  const context = use(SortSheetContext)
   if (!context) {
     throw new Error(
-      "SortSheet compound components must be used inside SortSheet.",
-    );
+      "SortSheet compound components must be used inside SortSheet."
+    )
   }
-  return context as unknown as SortSheetContextValue<T>;
+  return context as unknown as SortSheetContextValue<T>
 }
 
 function SortSheetRoot<T extends string>({
@@ -67,7 +71,7 @@ function SortSheetRoot<T extends string>({
   children,
 }: SortSheetRootProps<T>) {
   return (
-    <SortSheetContext.Provider
+    <SortSheetContext
       value={
         {
           visible,
@@ -79,8 +83,8 @@ function SortSheetRoot<T extends string>({
       }
     >
       {children}
-    </SortSheetContext.Provider>
-  );
+    </SortSheetContext>
+  )
 }
 
 function SortSheetTrigger({
@@ -91,18 +95,20 @@ function SortSheetTrigger({
   onPress,
   ...props
 }: SortSheetTriggerProps) {
-  const theme = useThemeColors();
-  const { onOpenChange, currentOrder } = useSortSheetContext<string>();
+  const theme = useThemeColors()
+  const { onOpenChange, currentOrder } = useSortSheetContext<string>()
 
   function handlePress(
-    event: Parameters<NonNullable<PressableProps["onPress"]>>[0],
+    event: Parameters<
+      NonNullable<React.ComponentProps<typeof PressableFeedback>["onPress"]>
+    >[0]
   ) {
-    onPress?.(event);
-    onOpenChange(true);
+    onPress?.(event)
+    onOpenChange(true)
   }
 
   return (
-    <Pressable
+    <PressableFeedback
       className={cn("flex-row items-center gap-1 active:opacity-50", className)}
       onPress={handlePress}
       {...props}
@@ -110,7 +116,7 @@ function SortSheetTrigger({
       <Text className={cn("text-sm font-medium text-muted", textClassName)}>
         {label}
       </Text>
-      {currentOrder == "asc" ? (
+      {currentOrder === "asc" ? (
         <LocalArrowUpIcon
           fill="none"
           width={iconSize}
@@ -125,8 +131,8 @@ function SortSheetTrigger({
           color={theme.muted}
         />
       )}
-    </Pressable>
-  );
+    </PressableFeedback>
+  )
 }
 
 function SortSheetContent<T extends string>({
@@ -134,43 +140,43 @@ function SortSheetContent<T extends string>({
   title = "Sort By",
   className,
 }: SortSheetContentProps<T>) {
-  const theme = useThemeColors();
+  const theme = useThemeColors()
   const { visible, onOpenChange, currentField, currentOrder, onSelect } =
-    useSortSheetContext<T>();
+    useSortSheetContext<T>()
 
   const handleSelect = (field: T) => {
     if (currentField === field) {
-      const newOrder = currentOrder === "asc" ? "desc" : "asc";
-      onSelect(field, newOrder);
+      const newOrder = currentOrder === "asc" ? "desc" : "asc"
+      onSelect(field, newOrder)
     } else {
-      onSelect(field, "asc");
+      onSelect(field, "asc")
     }
-    onOpenChange(false);
-  };
+    onOpenChange(false)
+  }
 
   return (
     <BottomSheet isOpen={visible} onOpenChange={onOpenChange}>
-      <BottomSheet.Portal >
+      <BottomSheet.Portal>
         <BottomSheet.Overlay />
         <BottomSheet.Content
-        backgroundClassName="bg-surface"
+          backgroundClassName="bg-surface"
           className={cn("gap-1", className)}
         >
-          <BottomSheet.Title className="text-xl mb-2">
+          <BottomSheet.Title className="mb-2 text-xl">
             {title}
           </BottomSheet.Title>
           {options.map((option) => (
             <PressableFeedback
               key={option.field}
-              className="flex-row items-center justify-between h-14 active:opacity-50"
+              className="h-14 flex-row items-center justify-between active:opacity-50"
               onPress={() => handleSelect(option.field)}
             >
               <Text
                 className={cn(
                   "text-base",
                   currentField === option.field
-                    ? "text-accent font-semibold"
-                    : "text-foreground font-medium",
+                    ? "font-semibold text-accent"
+                    : "font-medium text-foreground"
                 )}
               >
                 {option.label}
@@ -178,7 +184,7 @@ function SortSheetContent<T extends string>({
 
               {currentField === option.field && (
                 <Button variant="ghost" isIconOnly>
-                  {currentOrder == "asc" ? (
+                  {currentOrder === "asc" ? (
                     <LocalArrowUpIcon
                       fill="none"
                       width={24}
@@ -200,10 +206,16 @@ function SortSheetContent<T extends string>({
         </BottomSheet.Content>
       </BottomSheet.Portal>
     </BottomSheet>
-  );
+  )
 }
 
-export const SortSheet = Object.assign(SortSheetRoot, {
-  Trigger: SortSheetTrigger,
-  Content: SortSheetContent,
-});
+type SortSheetComponent = typeof SortSheetRoot & {
+  Trigger: typeof SortSheetTrigger
+  Content: typeof SortSheetContent
+}
+
+const SortSheet = SortSheetRoot as SortSheetComponent
+SortSheet.Trigger = SortSheetTrigger
+SortSheet.Content = SortSheetContent
+
+export { SortSheet }

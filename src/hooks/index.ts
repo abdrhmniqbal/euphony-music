@@ -1,1 +1,1 @@
-export * from './scroll-bars.store';
+export * from "./scroll-bars.store"

@@ -1,29 +1,30 @@
-import { useEffect } from "react";
-import { useIsFocused } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
-import { startIndexing } from "@/modules/indexer";
-import type { Track } from "@/modules/player/player.types";
-import { fetchRecentlyPlayedTracks } from "@/modules/history/history.utils";
-import { getTopTracks } from "@/modules/tracks/tracks.api";
+import { useEffect } from "react"
+import { useIsFocused } from "@react-navigation/native"
+import { useQuery } from "@tanstack/react-query"
 
-const RECENTLY_PLAYED_LIMIT = 8;
-const TOP_TRACKS_LIMIT = 25;
+import { fetchRecentlyPlayedTracks } from "@/modules/history/history.utils"
+import { startIndexing } from "@/modules/indexer"
+import type { Track } from "@/modules/player/player.types"
+import { getTopTracks } from "@/modules/tracks/tracks.api"
+
+const RECENTLY_PLAYED_LIMIT = 8
+const TOP_TRACKS_LIMIT = 25
 
 const HOME_RECENTLY_PLAYED_QUERY_KEY = [
   "home",
   "recently-played",
   RECENTLY_PLAYED_LIMIT,
-] as const;
+] as const
 
 const HOME_TOP_TRACKS_QUERY_KEY = [
   "home",
   "top-tracks",
   "all",
   TOP_TRACKS_LIMIT,
-] as const;
+] as const
 
 export function useHomeScreen() {
-  const isFocused = useIsFocused();
+  const isFocused = useIsFocused()
   const {
     data: recentlyPlayedTracks = [],
     refetch: refetchRecentlyPlayedTracks,
@@ -32,33 +33,33 @@ export function useHomeScreen() {
     queryFn: () => fetchRecentlyPlayedTracks(RECENTLY_PLAYED_LIMIT),
     enabled: false,
     initialData: [],
-  });
+  })
   const { data: topTracks = [], refetch: refetchTopTracks } = useQuery<Track[]>(
     {
       queryKey: HOME_TOP_TRACKS_QUERY_KEY,
       queryFn: () => getTopTracks("all", TOP_TRACKS_LIMIT),
       enabled: false,
       initialData: [],
-    },
-  );
+    }
+  )
 
   useEffect(() => {
     if (!isFocused) {
-      return;
+      return
     }
 
-    void Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()]);
-  }, [isFocused, refetchRecentlyPlayedTracks, refetchTopTracks]);
+    void Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()])
+  }, [isFocused, refetchRecentlyPlayedTracks, refetchTopTracks])
 
   async function refresh() {
-    startIndexing(true);
+    startIndexing(true)
 
-    await Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()]);
+    await Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()])
   }
 
   return {
     recentlyPlayedTracks,
     topTracks,
     refresh,
-  };
+  }
 }

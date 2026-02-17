@@ -1,27 +1,31 @@
-import * as FileSystem from 'expo-file-system/legacy';
-import { db } from "@/db/client";
-import { artworkCache } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { getMetadata, getArtwork } from "@missingcore/react-native-metadata-retriever";
+import {
+  getArtwork,
+  getMetadata,
+} from "@missingcore/react-native-metadata-retriever"
+import { eq } from "drizzle-orm"
+import * as FileSystem from "expo-file-system/legacy"
+
+import { db } from "@/db/client"
+import { artworkCache } from "@/db/schema"
 
 export interface ExtractedMetadata {
-  title: string;
-  artist?: string;
-  artists: string[];
-  album?: string;
-  albumArtist?: string;
-  genres: string[];
-  year?: number;
-  trackNumber?: number;
-  discNumber?: number;
-  duration: number;
-  composer?: string;
-  comment?: string;
-  lyrics?: string;
-  artwork?: string;
+  title: string
+  artist?: string
+  artists: string[]
+  album?: string
+  albumArtist?: string
+  genres: string[]
+  year?: number
+  trackNumber?: number
+  discNumber?: number
+  duration: number
+  composer?: string
+  comment?: string
+  lyrics?: string
+  artwork?: string
 }
 
-const ARTWORK_DIR_NAME = "artwork";
+const ARTWORK_DIR_NAME = "artwork"
 
 // Define the fields we want to extract
 const metadataFields = [
@@ -36,7 +40,7 @@ const metadataFields = [
   "description",
   "year",
   "artworkData",
-] as const;
+] as const
 
 export async function extractMetadata(
   uri: string,
@@ -45,10 +49,10 @@ export async function extractMetadata(
 ): Promise<ExtractedMetadata> {
   try {
     // Get metadata from the file
-    const metadata = await getMetadata(uri, metadataFields);
-    
+    const metadata = await getMetadata(uri, metadataFields)
+
     // Get artwork separately
-    const artwork = await getArtwork(uri).catch(() => null);
+    const artwork = await getArtwork(uri).catch(() => null)
 
     return {
       title: metadata.title || cleanFilename(filename),
@@ -65,64 +69,63 @@ export async function extractMetadata(
       comment: metadata.description || undefined,
       lyrics: undefined,
       artwork: artwork || undefined,
-    };
-  } catch (error) {
+    }
+  } catch {
     return {
       title: cleanFilename(filename),
       artists: [],
       genres: [],
       duration,
-    };
+    }
   }
 }
 
 export async function saveArtworkToCache(
-  artworkData: string | undefined,
-  trackId: string
+  artworkData: string | undefined
 ): Promise<string | undefined> {
-  if (!artworkData) return undefined;
+  if (!artworkData) return undefined
 
   try {
     // If already a file path, return as-is
     if (artworkData.startsWith("file://") || artworkData.startsWith("/")) {
-      return artworkData;
+      return artworkData
     }
 
     // Generate hash from artwork data
-    const hash = generateArtworkHash(artworkData);
+    const hash = generateArtworkHash(artworkData)
 
     // Check if already cached
     const existing = await db.query.artworkCache.findFirst({
       where: eq(artworkCache.hash, hash),
-    });
+    })
 
     if (existing) {
-      const fileInfo = await FileSystem.getInfoAsync(existing.path);
+      const fileInfo = await FileSystem.getInfoAsync(existing.path)
       if (fileInfo.exists) {
-        return existing.path;
+        return existing.path
       }
     }
 
     // Save to cache directory
-    const cacheDir = `${FileSystem.cacheDirectory}${ARTWORK_DIR_NAME}`;
-    const dirInfo = await FileSystem.getInfoAsync(cacheDir);
+    const cacheDir = `${FileSystem.cacheDirectory}${ARTWORK_DIR_NAME}`
+    const dirInfo = await FileSystem.getInfoAsync(cacheDir)
     if (!dirInfo.exists) {
-      await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true });
+      await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true })
     }
 
-    const artworkPath = `${cacheDir}/${hash}.jpg`;
+    const artworkPath = `${cacheDir}/${hash}.jpg`
 
     // Remove data URI prefix if present
-    let base64Data = artworkData;
+    let base64Data = artworkData
     if (artworkData.startsWith("data:")) {
-      base64Data = artworkData.split(",")[1] || "";
+      base64Data = artworkData.split(",")[1] || ""
     }
 
-    if (!base64Data) return undefined;
+    if (!base64Data) return undefined
 
     await FileSystem.writeAsStringAsync(artworkPath, base64Data, {
       encoding: FileSystem.EncodingType.Base64,
-    });
+    })
 
     // Save to database
     await db.insert(artworkCache).values({
@@ -131,33 +134,33 @@ export async function saveArtworkToCache(
       mimeType: "image/jpeg",
       source: "embedded",
       createdAt: Date.now(),
-    });
+    })
 
-    return artworkPath;
-  } catch (error) {
-    return undefined;
+    return artworkPath
+  } catch {
+    return undefined
   }
 }
 
 // Parse multi-value fields (semicolon or slash delimited)
 function parseMultiValue(value: string | null): string[] {
-  if (!value) return [];
+  if (!value) return []
   return value
-    .split(/[;\/]/)
+    .split(/[;/]/)
     .map((v) => v.trim())
-    .filter((v) => v.length > 0);
+    .filter((v) => v.length > 0)
 }
 
 function cleanFilename(filename: string): string {
-  return filename.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+  return filename.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ")
 }
 
 function generateArtworkHash(data: string): string {
-  const sample = data.slice(0, 1024);
-  let hash = 0;
+  const sample = data.slice(0, 1024)
+  let hash = 0
   for (let i = 0; i < sample.length; i++) {
-    hash = ((hash << 5) - hash) + data.charCodeAt(i);
-    hash |= 0;
+    hash = (hash << 5) - hash + data.charCodeAt(i)
+    hash |= 0
   }
-  return `${Math.abs(hash).toString(16)}_${data.length}`;
+  return `${Math.abs(hash).toString(16)}_${data.length}`
 }

@@ -1,12 +1,12 @@
-import { Button, Dialog } from "heroui-native";
-import { View } from "react-native";
+import { Button, Dialog } from "heroui-native"
+import { View } from "react-native"
 
-type DeletePlaylistDialogProps = {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
-  isDeleting?: boolean;
-};
+interface DeletePlaylistDialogProps {
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  onConfirm: () => void
+  isDeleting?: boolean
+}
 
 export function DeletePlaylistDialog({
   isOpen,
@@ -45,5 +45,5 @@ export function DeletePlaylistDialog({
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog>
-  );
+  )
 }

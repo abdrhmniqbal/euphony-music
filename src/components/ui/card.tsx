@@ -1,6 +1,5 @@
-import type { ViewProps } from "react-native";
-import { View } from "react-native";
-import { cn, tv, type VariantProps } from "tailwind-variants";
+import { View, type ViewProps } from "react-native"
+import { cn, tv, type VariantProps } from "tailwind-variants"
 
 const cardStyles = tv({
   base: "rounded-xl border",
@@ -21,12 +20,14 @@ const cardStyles = tv({
     tone: "surface",
     padding: "md",
   },
-});
+})
 
-type CardVariants = VariantProps<typeof cardStyles>;
+type CardVariants = VariantProps<typeof cardStyles>
 
-type CardProps = ViewProps & CardVariants;
+type CardProps = ViewProps & CardVariants
 
 export function Card({ tone, padding, className, ...props }: CardProps) {
-  return <View className={cn(cardStyles({ tone, padding }), className)} {...props} />;
+  return (
+    <View className={cn(cardStyles({ tone, padding }), className)} {...props} />
+  )
 }

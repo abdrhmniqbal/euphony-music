@@ -9,7 +9,7 @@ export type GenreShape =
   | "stripes"
   | "stars"
   | "zigzag"
-  | "crosses";
+  | "crosses"
 
 export const GENRE_COLORS = [
   "bg-rainbow-lime",
@@ -22,7 +22,7 @@ export const GENRE_COLORS = [
   "bg-rainbow-red",
   "bg-rainbow-orange",
   "bg-rainbow-amber",
-] as const;
+] as const
 
 export const GENRE_SHAPES: readonly GenreShape[] = [
   "circles",
@@ -36,4 +36,4 @@ export const GENRE_SHAPES: readonly GenreShape[] = [
   "stars",
   "zigzag",
   "crosses",
-] as const;
+] as const

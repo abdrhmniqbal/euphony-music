@@ -1,40 +1,35 @@
-import React from "react";
-import {
-  Text,
-  View,
-  ScrollView,
-  Pressable,
-  RefreshControl,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { Input } from "heroui-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import * as React from "react"
+import { useStore } from "@nanostores/react"
+import { useRouter } from "expo-router"
+import { Input, PressableFeedback } from "heroui-native"
+import { RefreshControl, ScrollView, Text, View } from "react-native"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { useStore } from "@nanostores/react";
-import { $indexerState } from "@/modules/indexer";
-import { EmptyState } from "@/components/ui";
-import { GenreCard } from "@/components/patterns";
-import { useSearchScreen } from "@/modules/search/hooks/use-search-screen";
-import type { GenreCategory as Category } from "@/modules/genres/genres.utils";
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import type { GenreCategory as Category } from "@/modules/genres/genres.utils"
+import { $indexerState } from "@/modules/indexer"
+import { useSearchScreen } from "@/modules/search/hooks/use-search-screen"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalSearchIcon from "@/components/icons/local/search"
+import { GenreCard } from "@/components/patterns"
+import { EmptyState } from "@/components/ui"
 
 export default function SearchScreen() {
-  const theme = useThemeColors();
-  const router = useRouter();
-  const indexerState = useStore($indexerState);
-  const { categories, refresh } = useSearchScreen();
+  const theme = useThemeColors()
+  const router = useRouter()
+  const indexerState = useStore($indexerState)
+  const { categories, refresh } = useSearchScreen()
 
   function handleGenrePress(genre: Category) {
-    router.push(`./genre/${encodeURIComponent(genre.title)}`);
+    router.push(`./genre/${encodeURIComponent(genre.title)}`)
   }
 
   function handleSearchPress() {
-    router.push("/search-interaction");
+    router.push("/search-interaction")
   }
 
   return (
@@ -58,17 +53,22 @@ export default function SearchScreen() {
       }
     >
       <View className="relative mb-6">
-        <View className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
-          <Ionicons name="search-outline" size={20} color={theme.muted} />
+        <View className="absolute top-1/2 left-4 z-10 -translate-y-1/2">
+          <LocalSearchIcon
+            fill="none"
+            width={24}
+            height={24}
+            color={theme.muted}
+          />
         </View>
         <Input
           value=""
           editable={false}
           showSoftInputOnFocus={false}
           placeholder="Search for tracks, artists, albums..."
-          className="pl-10"
+          className="pl-12"
         />
-        <Pressable
+        <PressableFeedback
           onPress={handleSearchPress}
           className="absolute inset-0 z-20"
           accessibilityRole="button"
@@ -76,7 +76,7 @@ export default function SearchScreen() {
         />
       </View>
 
-      <Text className="text-xl font-bold text-foreground mb-4">
+      <Text className="mb-4 text-xl font-bold text-foreground">
         Browse by Genre
       </Text>
 
@@ -108,5 +108,5 @@ export default function SearchScreen() {
         />
       )}
     </ScrollView>
-  );
+  )
 }

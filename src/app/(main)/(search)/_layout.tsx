@@ -1,13 +1,14 @@
-import { Stack, useRouter } from "expo-router";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { View } from "react-native";
-import { Button } from "heroui-native";
-import LocalSettingsIcon from "@/components/icons/local/settings";
-import { BackButton } from "@/components/patterns";
+import { Stack, useRouter } from "expo-router"
+import { Button } from "heroui-native"
+import { View } from "react-native"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalSettingsIcon from "@/components/icons/local/settings"
+import { BackButton } from "@/components/patterns"
 
 export default function SearchLayout() {
-  const theme = useThemeColors();
-  const router = useRouter();
+  const theme = useThemeColors()
+  const router = useRouter()
 
   return (
     <Stack
@@ -27,7 +28,7 @@ export default function SearchLayout() {
           headerLargeTitle: true,
           headerTitleAlign: "left",
           headerRight: () => (
-            <View className="flex-row gap-4 -mr-2">
+            <View className="-mr-2 flex-row gap-4">
               <Button
                 onPress={() => router.push("/settings")}
                 variant="ghost"
@@ -75,5 +76,5 @@ export default function SearchLayout() {
         }}
       />
     </Stack>
-  );
+  )
 }

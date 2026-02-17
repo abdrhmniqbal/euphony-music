@@ -1,4 +1,7 @@
-import { addTrackToHistory, incrementTrackPlayCount } from "@/modules/history/history.api";
+import {
+  addTrackToHistory,
+  incrementTrackPlayCount,
+} from "@/modules/history/history.api"
 
-export const addToHistory = addTrackToHistory;
-export const incrementPlayCount = incrementTrackPlayCount;
+export const addToHistory = addTrackToHistory
+export const incrementPlayCount = incrementTrackPlayCount

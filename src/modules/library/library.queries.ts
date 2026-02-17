@@ -1,13 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import { db } from "@/db/client";
-import { tracks, artists, albums, genres } from "@/db/schema";
-import { asc, desc, like, and, eq } from "drizzle-orm";
-import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
+import { useDebouncedValue } from "@tanstack/react-pacer/debouncer"
+import { useQuery } from "@tanstack/react-query"
+import { and, asc, desc, eq, like } from "drizzle-orm"
 
-const ARTISTS_KEY = "artists";
-const ALBUMS_KEY = "albums";
+import { db } from "@/db/client"
+import { albums, artists, genres, tracks } from "@/db/schema"
 
-export function useArtists(orderByField: 'name' | 'trackCount' | 'dateAdded' = 'name', order: 'asc' | 'desc' = 'asc') {
+const ARTISTS_KEY = "artists"
+const ALBUMS_KEY = "albums"
+
+export function useArtists(
+  orderByField: "name" | "trackCount" | "dateAdded" = "name",
+  order: "asc" | "desc" = "asc"
+) {
   return useQuery({
     queryKey: [ARTISTS_KEY, orderByField, order],
     queryFn: async () => {
@@ -22,7 +26,7 @@ export function useArtists(orderByField: 'name' | 'trackCount' | 'dateAdded' = '
             limit: 1,
           },
         },
-      });
+      })
 
       const mapped = results.map((artist) => ({
         id: artist.id,
@@ -32,32 +36,32 @@ export function useArtists(orderByField: 'name' | 'trackCount' | 'dateAdded' = '
         createdAt: artist.createdAt,
         albumArtwork: artist.albums[0]?.artwork || null,
         trackCount: artist.tracks.length,
-      }));
+      }))
 
-      const multiplier = order === 'asc' ? 1 : -1;
+      const multiplier = order === "asc" ? 1 : -1
       return mapped.sort((a, b) => {
-        let aVal: string | number;
-        let bVal: string | number;
+        let aVal: string | number
+        let bVal: string | number
         switch (orderByField) {
-          case 'trackCount':
-            aVal = a.trackCount;
-            bVal = b.trackCount;
-            break;
-          case 'dateAdded':
-            aVal = a.createdAt;
-            bVal = b.createdAt;
-            break;
-          case 'name':
+          case "trackCount":
+            aVal = a.trackCount
+            bVal = b.trackCount
+            break
+          case "dateAdded":
+            aVal = a.createdAt
+            bVal = b.createdAt
+            break
+          case "name":
           default:
-            aVal = (a.sortName || a.name).toLowerCase();
-            bVal = (b.sortName || b.name).toLowerCase();
+            aVal = (a.sortName || a.name).toLowerCase()
+            bVal = (b.sortName || b.name).toLowerCase()
         }
-        if (aVal < bVal) return -1 * multiplier;
-        if (aVal > bVal) return 1 * multiplier;
-        return 0;
-      });
+        if (aVal < bVal) return -1 * multiplier
+        if (aVal > bVal) return 1 * multiplier
+        return 0
+      })
     },
-  });
+  })
 }
 
 export function useArtist(id: string) {
@@ -77,12 +81,15 @@ export function useArtist(id: string) {
             },
           },
         },
-      });
+      })
     },
-  });
+  })
 }
 
-export function useAlbums(orderByField: 'title' | 'artist' | 'year' | 'trackCount' = 'title', order: 'asc' | 'desc' = 'asc') {
+export function useAlbums(
+  orderByField: "title" | "artist" | "year" | "trackCount" = "title",
+  order: "asc" | "desc" = "asc"
+) {
   return useQuery({
     queryKey: [ALBUMS_KEY, orderByField, order],
     queryFn: async () => {
@@ -94,7 +101,7 @@ export function useAlbums(orderByField: 'title' | 'artist' | 'year' | 'trackCoun
             columns: { id: true },
           },
         },
-      });
+      })
 
       const mapped = results.map((album) => ({
         id: album.id,
@@ -105,36 +112,36 @@ export function useAlbums(orderByField: 'title' | 'artist' | 'year' | 'trackCoun
         createdAt: album.createdAt,
         artist: album.artist,
         trackCount: album.tracks.length,
-      }));
+      }))
 
-      const multiplier = order === 'asc' ? 1 : -1;
+      const multiplier = order === "asc" ? 1 : -1
       return mapped.sort((a, b) => {
-        let aVal: string | number | null;
-        let bVal: string | number | null;
+        let aVal: string | number | null
+        let bVal: string | number | null
         switch (orderByField) {
-          case 'year':
-            aVal = a.year || 0;
-            bVal = b.year || 0;
-            break;
-          case 'trackCount':
-            aVal = a.trackCount;
-            bVal = b.trackCount;
-            break;
-          case 'artist':
-            aVal = (a.artist?.sortName || a.artist?.name || '').toLowerCase();
-            bVal = (b.artist?.sortName || b.artist?.name || '').toLowerCase();
-            break;
-          case 'title':
+          case "year":
+            aVal = a.year || 0
+            bVal = b.year || 0
+            break
+          case "trackCount":
+            aVal = a.trackCount
+            bVal = b.trackCount
+            break
+          case "artist":
+            aVal = (a.artist?.sortName || a.artist?.name || "").toLowerCase()
+            bVal = (b.artist?.sortName || b.artist?.name || "").toLowerCase()
+            break
+          case "title":
           default:
-            aVal = a.title.toLowerCase();
-            bVal = b.title.toLowerCase();
+            aVal = a.title.toLowerCase()
+            bVal = b.title.toLowerCase()
         }
-        if (aVal < bVal) return -1 * multiplier;
-        if (aVal > bVal) return 1 * multiplier;
-        return 0;
-      });
+        if (aVal < bVal) return -1 * multiplier
+        if (aVal > bVal) return 1 * multiplier
+        return 0
+      })
     },
-  });
+  })
 }
 
 export function useAlbum(id: string) {
@@ -157,32 +164,29 @@ export function useAlbum(id: string) {
             },
           },
         },
-      });
+      })
     },
-  });
+  })
 }
 
 export function useSearch(query: string) {
   const [debouncedQuery] = useDebouncedValue(query, {
     wait: 300,
-  });
+  })
 
   return useQuery({
     queryKey: ["search", debouncedQuery],
     queryFn: async () => {
       if (!debouncedQuery || debouncedQuery.length < 2) {
-        return { tracks: [], artists: [], albums: [], genres: [] };
+        return { tracks: [], artists: [], albums: [], genres: [] }
       }
 
-      const searchTerm = `%${debouncedQuery}%`;
+      const searchTerm = `%${debouncedQuery}%`
 
       const [trackResults, artistResults, albumResults, genreResults] =
         await Promise.all([
           db.query.tracks.findMany({
-            where: and(
-              like(tracks.title, searchTerm),
-              eq(tracks.isDeleted, 0),
-            ),
+            where: and(like(tracks.title, searchTerm), eq(tracks.isDeleted, 0)),
             with: { artist: true, album: true },
             limit: 20,
           }),
@@ -199,24 +203,24 @@ export function useSearch(query: string) {
             where: like(genres.name, searchTerm),
             limit: 10,
           }),
-        ]);
+        ])
 
       return {
         tracks: trackResults,
         artists: artistResults,
         albums: albumResults,
         genres: genreResults,
-      };
+      }
     },
     enabled: debouncedQuery.length >= 2,
-  });
+  })
 }
 
 export function useRecentSearches() {
   return useQuery({
     queryKey: ["recent-searches"],
     queryFn: async () => {
-      return [] as string[];
+      return [] as string[]
     },
-  });
+  })
 }

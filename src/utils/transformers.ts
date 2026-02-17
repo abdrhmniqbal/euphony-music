@@ -1,8 +1,8 @@
-import type { Track } from "@/modules/player/player.types";
-import type { DBTrack, DBAlbum, DBArtist } from "@/types/database";
-import type { Album, Artist } from "@/modules/player/player.types";
+import type { DBAlbum, DBArtist, DBTrack } from "@/types/database"
+import type { Album, Artist, Track } from "@/modules/player/player.types"
 
-export const transformDBTrackToTrack = (dbTrack: DBTrack): Track => ({
+export function transformDBTrackToTrack(dbTrack: DBTrack): Track {
+  return {
     id: dbTrack.id,
     title: dbTrack.title,
     artist: dbTrack.artist?.name,
@@ -26,9 +26,11 @@ export const transformDBTrackToTrack = (dbTrack: DBTrack): Track => ({
     discNumber: dbTrack.discNumber || undefined,
     trackNumber: dbTrack.trackNumber || undefined,
     genre: dbTrack.genres?.[0]?.genre?.name,
-});
+  }
+}
 
-export const transformDBAlbumToAlbum = (dbAlbum: DBAlbum): Album => ({
+export function transformDBAlbumToAlbum(dbAlbum: DBAlbum): Album {
+  return {
     id: dbAlbum.id,
     title: dbAlbum.title,
     artist: dbAlbum.artist?.name || "Unknown Artist",
@@ -37,12 +39,15 @@ export const transformDBAlbumToAlbum = (dbAlbum: DBAlbum): Album => ({
     trackCount: dbAlbum.trackCount || 0,
     year: dbAlbum.year || 0,
     dateAdded: dbAlbum.createdAt,
-});
+  }
+}
 
-export const transformDBArtistToArtist = (dbArtist: DBArtist): Artist => ({
+export function transformDBArtistToArtist(dbArtist: DBArtist): Artist {
+  return {
     id: dbArtist.id,
     name: dbArtist.name,
     trackCount: dbArtist.trackCount || 0,
     image: dbArtist.artwork || undefined,
     dateAdded: dbArtist.createdAt,
-});
+  }
+}

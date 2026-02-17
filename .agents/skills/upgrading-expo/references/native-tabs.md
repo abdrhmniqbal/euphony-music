@@ -61,11 +61,11 @@ New `md` prop for Material icon glyphs on Android (alongside existing `drawable`
 
 ```tsx
 import {
-  NativeTabs,
+  Badge,
   Icon,
   Label,
-  Badge,
-} from "expo-router/unstable-native-tabs";
+  NativeTabs,
+} from "expo-router/unstable-native-tabs"
 
 export default function TabLayout() {
   return (
@@ -83,14 +83,14 @@ export default function TabLayout() {
         <Label>Search</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
-  );
+  )
 }
 ```
 
 ### After (SDK 55+)
 
 ```tsx
-import { NativeTabs } from "expo-router/unstable-native-tabs";
+import { NativeTabs } from "expo-router/unstable-native-tabs"
 
 export default function TabLayout() {
   return (
@@ -108,7 +108,7 @@ export default function TabLayout() {
         <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
-  );
+  )
 }
 ```
 

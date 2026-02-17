@@ -1,25 +1,26 @@
-import { useEffect, useState } from 'react';
-import { bootstrapApp } from '@/modules/bootstrap/bootstrap.utils';
+import { useEffect, useState } from "react"
+
+import { bootstrapApp } from "@/modules/bootstrap/bootstrap.utils"
 
 export function useAppBootstrap() {
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false)
 
   useEffect(() => {
-    let isMounted = true;
+    let isMounted = true
 
     async function initialize() {
-      await bootstrapApp();
+      await bootstrapApp()
       if (isMounted) {
-        setIsInitialized(true);
+        setIsInitialized(true)
       }
     }
 
-    void initialize();
+    void initialize()
 
     return () => {
-      isMounted = false;
-    };
-  }, []);
+      isMounted = false
+    }
+  }, [])
 
-  return { isInitialized };
+  return { isInitialized }
 }

@@ -1,6 +1,14 @@
-import React from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import * as React from "react"
+import { Button, PressableFeedback } from "heroui-native"
+import { ScrollView, Text, View } from "react-native"
+
+import { ICON_SIZES } from "@/constants/icon-sizes"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import type { Track } from "@/modules/player/player.store"
+import { formatDuration } from "@/utils/format"
+import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
+import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
+import LocalFolderSolidIcon from "@/components/icons/local/folder-solid"
 import {
   EmptyState,
   Item,
@@ -9,36 +17,30 @@ import {
   ItemDescription,
   ItemImage,
   ItemTitle,
-} from "@/components/ui";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import type { Track } from "@/modules/player/player.store";
-import { formatDuration } from "@/utils/format";
-import LocalFolderSolidIcon from "@/components/icons/local/folder-solid";
-import LocalChevronLeftIcon from "@/components/icons/local/chevron-left";
-import { Button, PressableFeedback } from "heroui-native";
-import LocalChevronRightIcon from "@/components/icons/local/chevron-right";
-import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid";
+} from "@/components/ui"
+
+import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid"
 
 export interface Folder {
-  id: string;
-  name: string;
-  fileCount: number;
-  path?: string;
+  id: string
+  name: string
+  fileCount: number
+  path?: string
 }
 
 export interface FolderBreadcrumb {
-  name: string;
-  path: string;
+  name: string
+  path: string
 }
 
 interface FolderListProps {
-  data: Folder[];
-  tracks?: Track[];
-  breadcrumbs?: FolderBreadcrumb[];
-  onFolderPress?: (folder: Folder) => void;
-  onTrackPress?: (track: Track) => void;
-  onBackPress?: () => void;
-  onBreadcrumbPress?: (path: string) => void;
+  data: Folder[]
+  tracks?: Track[]
+  breadcrumbs?: FolderBreadcrumb[]
+  onFolderPress?: (folder: Folder) => void
+  onTrackPress?: (track: Track) => void
+  onBackPress?: () => void
+  onBreadcrumbPress?: (path: string) => void
 }
 
 export const FolderList: React.FC<FolderListProps> = ({
@@ -50,18 +52,18 @@ export const FolderList: React.FC<FolderListProps> = ({
   onBackPress,
   onBreadcrumbPress,
 }) => {
-  const theme = useThemeColors();
+  const theme = useThemeColors()
 
   const handlePress = (folder: Folder) => {
-    onFolderPress?.(folder);
-  };
+    onFolderPress?.(folder)
+  }
 
   const handleTrackPress = (track: Track) => {
-    onTrackPress?.(track);
-  };
+    onTrackPress?.(track)
+  }
 
   const formatItemCount = (count: number) =>
-    `${count} ${count === 1 ? "item" : "items"}`;
+    `${count} ${count === 1 ? "item" : "items"}`
 
   const renderFolderItem = (item: Folder) => (
     <Item key={item.id} onPress={() => handlePress(item)}>
@@ -69,8 +71,8 @@ export const FolderList: React.FC<FolderListProps> = ({
         icon={
           <LocalFolderSolidIcon
             fill="none"
-            width={24}
-            height={24}
+            width={ICON_SIZES.listFallback}
+            height={ICON_SIZES.listFallback}
             color={theme.muted}
           />
         }
@@ -88,7 +90,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         />
       </ItemAction>
     </Item>
-  );
+  )
 
   const renderTrackItem = (track: Track) => (
     <Item key={track.id} onPress={() => handleTrackPress(track)}>
@@ -96,8 +98,8 @@ export const FolderList: React.FC<FolderListProps> = ({
         icon={
           <LocalMusicNoteSolidIcon
             fill="none"
-            width={24}
-            height={24}
+            width={ICON_SIZES.listFallback}
+            height={ICON_SIZES.listFallback}
             color={theme.muted}
           />
         }
@@ -113,10 +115,10 @@ export const FolderList: React.FC<FolderListProps> = ({
         </ItemDescription>
       </ItemContent>
     </Item>
-  );
+  )
 
-  const hasEntries = data.length > 0 || tracks.length > 0;
-  const hasNestedPath = breadcrumbs.length > 0;
+  const hasEntries = data.length > 0 || tracks.length > 0
+  const hasNestedPath = breadcrumbs.length > 0
 
   if (!hasEntries) {
     return (
@@ -132,18 +134,18 @@ export const FolderList: React.FC<FolderListProps> = ({
         title="No Folders"
         message="Music folders you add will appear here."
       />
-    );
+    )
   }
 
   return (
     <View style={{ gap: 8 }}>
       {hasNestedPath ? (
         <View className="mb-2">
-          <View className="flex-row items-center gap-2 mb-2">
+          <View className="mb-2 flex-row items-center gap-2">
             <Button
               onPress={onBackPress}
               variant="secondary"
-              className="w-8 h-8"
+              className="h-8 w-8"
               isIconOnly
             >
               <LocalChevronLeftIcon
@@ -202,5 +204,5 @@ export const FolderList: React.FC<FolderListProps> = ({
       {data.map(renderFolderItem)}
       {tracks.map(renderTrackItem)}
     </View>
-  );
-};
+  )
+}

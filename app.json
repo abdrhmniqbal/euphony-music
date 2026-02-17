@@ -31,9 +31,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "dev.euphony.music-player",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "audio"
-        ]
+        "UIBackgroundModes": ["audio"]
       }
     },
     "android": {
@@ -44,9 +42,6 @@
         "FOREGROUND_SERVICE_AUDIO_PLAYBACK"
       ]
     },
-    "plugins": [
-      "expo-router",
-      "expo-media-library"
-    ]
+    "plugins": ["expo-router", "expo-media-library"]
   }
 }

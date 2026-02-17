@@ -1,40 +1,41 @@
-import React from "react";
-import { View, Text, ScrollView } from "react-native";
-import { Uniwind, useUniwind } from "uniwind";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { PressableFeedback } from "heroui-native";
-import LocalTickIcon from "@/components/icons/local/tick";
+import * as React from "react"
+import { PressableFeedback } from "heroui-native"
+import { ScrollView, Text, View } from "react-native"
+import { Uniwind, useUniwind } from "uniwind"
 
-type ThemeValue = "light" | "dark" | "system";
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalTickIcon from "@/components/icons/local/tick"
+
+type ThemeValue = "light" | "dark" | "system"
 
 interface AppearanceOption {
-  label: string;
-  value: ThemeValue;
+  label: string
+  value: ThemeValue
 }
 
 const APPEARANCE_OPTIONS: AppearanceOption[] = [
   { label: "Light", value: "light" },
   { label: "Dark", value: "dark" },
   { label: "System", value: "system" },
-];
+]
 
 export default function AppearanceScreen() {
-  const { theme: currentTheme, hasAdaptiveThemes } = useUniwind();
-  const theme = useThemeColors();
+  const { theme: currentTheme, hasAdaptiveThemes } = useUniwind()
+  const theme = useThemeColors()
 
   const currentMode: ThemeValue = hasAdaptiveThemes
     ? "system"
-    : (currentTheme as ThemeValue);
+    : (currentTheme as ThemeValue)
 
   function handleThemeChange(value: ThemeValue) {
-    Uniwind.setTheme(value);
+    Uniwind.setTheme(value)
   }
 
   return (
     <ScrollView className="flex-1 bg-background">
       <View className="py-2">
         <View className="px-6 pt-8 pb-3">
-          <Text className="text-[13px] font-medium text-muted uppercase tracking-wider">
+          <Text className="text-[13px] font-medium tracking-wider text-muted uppercase">
             Theme Mode
           </Text>
         </View>
@@ -42,9 +43,9 @@ export default function AppearanceScreen() {
           <PressableFeedback
             key={option.value}
             onPress={() => handleThemeChange(option.value)}
-            className="flex-row items-center px-6 py-4 active:opacity-70 bg-background"
+            className="flex-row items-center bg-background px-6 py-4 active:opacity-70"
           >
-            <Text className="flex-1 text-[17px] text-foreground font-normal">
+            <Text className="flex-1 text-[17px] font-normal text-foreground">
               {option.label}
             </Text>
             {currentMode === option.value && (
@@ -59,5 +60,5 @@ export default function AppearanceScreen() {
         ))}
       </View>
     </ScrollView>
-  );
+  )
 }

@@ -1,32 +1,32 @@
-import React from "react";
-import { Text, ScrollView, View, RefreshControl } from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import * as React from "react"
+import { Tabs } from "heroui-native"
+import { RefreshControl, ScrollView, Text, View } from "react-native"
+import { GestureDetector } from "react-native-gesture-handler"
+import { cn } from "tailwind-variants"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { GestureDetector } from "react-native-gesture-handler";
-import { cn } from "tailwind-variants";
-import { Tabs } from "heroui-native";
-
-import { SortSheet } from "@/components/blocks/sort-sheet";
-import { PlaylistList } from "@/components/blocks/playlist-list";
-import { FolderTab } from "@/components/blocks/folder-tab";
-import { FavoritesList } from "@/components/blocks/favorites-list";
-import { TracksTab } from "@/components/blocks/tracks-tab";
-import { AlbumsTab } from "@/components/blocks/albums-tab";
-import { ArtistsTab } from "@/components/blocks/artists-tab";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
 import {
   LIBRARY_TABS,
   LIBRARY_TAB_SORT_OPTIONS,
-  type LibraryTab,
   useLibraryScreen,
-} from "@/modules/library/hooks/use-library-screen";
-import { PlaybackActionsRow } from "@/components/blocks";
+  type LibraryTab,
+} from "@/modules/library/hooks/use-library-screen"
+import { PlaybackActionsRow } from "@/components/blocks"
+import { AlbumsTab } from "@/components/blocks/albums-tab"
+import { ArtistsTab } from "@/components/blocks/artists-tab"
+import { FavoritesList } from "@/components/blocks/favorites-list"
+import { FolderTab } from "@/components/blocks/folder-tab"
+import { PlaylistList } from "@/components/blocks/playlist-list"
+import { SortSheet } from "@/components/blocks/sort-sheet"
+import { TracksTab } from "@/components/blocks/tracks-tab"
 
 export default function LibraryScreen() {
-  const theme = useThemeColors();
+  const theme = useThemeColors()
 
   const {
     activeTab,
@@ -57,40 +57,40 @@ export default function LibraryScreen() {
     handleSortSelect,
     getSortLabel,
     getItemCount,
-  } = useLibraryScreen();
+  } = useLibraryScreen()
 
-  const showPlayButtons = activeTab === "Tracks" || activeTab === "Favorites";
-  const currentSortOptions = LIBRARY_TAB_SORT_OPTIONS[activeTab];
+  const showPlayButtons = activeTab === "Tracks" || activeTab === "Favorites"
+  const currentSortOptions = LIBRARY_TAB_SORT_OPTIONS[activeTab]
 
   function renderTabContent() {
     switch (activeTab) {
       case "Tracks":
         return (
           <TracksTab sortConfig={sortConfig} onTrackPress={playSingleTrack} />
-        );
+        )
       case "Albums":
         return (
           <AlbumsTab
             sortConfig={sortConfig}
             onAlbumPress={(album) => openAlbum(album.title)}
           />
-        );
+        )
       case "Artists":
         return (
           <ArtistsTab
             sortConfig={sortConfig}
             onArtistPress={(artist) => openArtist(artist.name)}
           />
-        );
+        )
       case "Playlists":
         return (
-            <PlaylistList
-              data={playlists}
-              scrollEnabled={false}
-              onCreatePlaylist={openPlaylistForm}
-              onPlaylistPress={(playlist) => openPlaylist(playlist.id)}
-            />
-        );
+          <PlaylistList
+            data={playlists}
+            scrollEnabled={false}
+            onCreatePlaylist={openPlaylistForm}
+            onPlaylistPress={(playlist) => openPlaylist(playlist.id)}
+          />
+        )
       case "Folders":
         return (
           <FolderTab
@@ -102,11 +102,11 @@ export default function LibraryScreen() {
             onNavigateToFolderPath={navigateToFolderPath}
             onTrackPress={playFolderTrack}
           />
-        );
+        )
       case "Favorites":
-        return <FavoritesList data={favorites} scrollEnabled={false} />;
+        return <FavoritesList data={favorites} scrollEnabled={false} />
       default:
-        return null;
+        return null
     }
   }
 
@@ -144,7 +144,7 @@ export default function LibraryScreen() {
               value={activeTab}
               onValueChange={(value) => setActiveTab(value as LibraryTab)}
               variant="secondary"
-              className="px-4 py-4 gap-1.5"
+              className="gap-1.5 px-4 py-4"
             >
               <Tabs.List className="w-full">
                 <Tabs.ScrollView
@@ -159,7 +159,7 @@ export default function LibraryScreen() {
                         <Tabs.Label
                           className={cn(
                             "text-lg font-semibold",
-                            isSelected ? "text-foreground" : "text-muted",
+                            isSelected ? "text-foreground" : "text-muted"
                           )}
                         >
                           {tab}
@@ -176,9 +176,11 @@ export default function LibraryScreen() {
                 <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} />
               )}
 
-              <View className="flex-row items-center justify-between mb-4">
+              <View className="mb-4 flex-row items-center justify-between">
                 <Text className="text-lg font-bold text-foreground">
-                  {activeTab === "Folders" ? `${getItemCount()} Items` : `${getItemCount()} ${activeTab}`}
+                  {activeTab === "Folders"
+                    ? `${getItemCount()} Items`
+                    : `${getItemCount()} ${activeTab}`}
                 </Text>
                 {currentSortOptions.length > 0 && (
                   <SortSheet.Trigger label={getSortLabel()} iconSize={16} />
@@ -195,5 +197,5 @@ export default function LibraryScreen() {
 
       <SortSheet.Content options={currentSortOptions} />
     </SortSheet>
-  );
+  )
 }

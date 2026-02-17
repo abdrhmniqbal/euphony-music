@@ -1,123 +1,155 @@
-import React from "react";
-import { View } from "react-native";
-import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
-import { Ionicons } from "@expo/vector-icons";
-import { EmptyState, Item, ItemAction, ItemContent, ItemDescription, ItemImage, ItemTitle } from "@/components/ui";
-import { PlaylistArtwork } from "@/components/patterns";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import * as React from "react"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+import { View } from "react-native"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalAddIcon from "@/components/icons/local/add"
+import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
+import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import { PlaylistArtwork } from "@/components/patterns"
+import {
+  EmptyState,
+  Item,
+  ItemAction,
+  ItemContent,
+  ItemDescription,
+  ItemImage,
+  ItemTitle,
+} from "@/components/ui"
 
 export interface Playlist {
-    id: string;
-    title: string;
-    trackCount: number;
-    image?: string;
-    images?: string[];
+  id: string
+  title: string
+  trackCount: number
+  image?: string
+  images?: string[]
 }
 
 interface PlaylistListProps {
-    data: Playlist[];
-    onPlaylistPress?: (playlist: Playlist) => void;
-    onCreatePlaylist?: () => void;
-    scrollEnabled?: boolean;
+  data: Playlist[]
+  onPlaylistPress?: (playlist: Playlist) => void
+  onCreatePlaylist?: () => void
+  scrollEnabled?: boolean
 }
 
 export const PlaylistList: React.FC<PlaylistListProps> = ({
-    data,
-    onPlaylistPress,
-    onCreatePlaylist,
-    scrollEnabled = true
+  data,
+  onPlaylistPress,
+  onCreatePlaylist,
+  scrollEnabled = true,
 }) => {
-    const theme = useThemeColors();
+  const theme = useThemeColors()
 
-    const handlePress = (playlist: Playlist) => {
-        onPlaylistPress?.(playlist);
-    };
+  const handlePress = (playlist: Playlist) => {
+    onPlaylistPress?.(playlist)
+  }
 
-    const handleCreate = () => {
-        onCreatePlaylist?.();
-    };
+  const handleCreate = () => {
+    onCreatePlaylist?.()
+  }
 
-    const formatTrackCount = (count: number) =>
-        `${count} ${count === 1 ? 'track' : 'tracks'}`;
+  const formatTrackCount = (count: number) =>
+    `${count} ${count === 1 ? "track" : "tracks"}`
 
-    const renderCreateButton = () => (
-        <Item key="create" onPress={handleCreate}>
-            <ItemImage className="bg-default items-center justify-center">
-                <Ionicons name="add" size={32} color={theme.foreground} />
-            </ItemImage>
-            <ItemContent>
-                <ItemTitle>New Playlist</ItemTitle>
-            </ItemContent>
-        </Item>
-    );
-
-    const renderPlaylistItem = (item: Playlist) => (
-        <Item
-            key={item.id}
-            onPress={() => handlePress(item)}
-        >
-            <ItemImage className="bg-default items-center justify-center overflow-hidden">
-                <PlaylistArtwork
-                    images={item.images && item.images.length > 0 ? item.images : item.image ? [item.image] : undefined}
-                />
-            </ItemImage>
-            <ItemContent>
-                <ItemTitle>{item.title}</ItemTitle>
-                <ItemDescription>{formatTrackCount(item.trackCount)}</ItemDescription>
-            </ItemContent>
-            <ItemAction>
-                <Ionicons name="chevron-forward" size={24} color={theme.muted} />
-            </ItemAction>
-        </Item>
-    );
-
-    if (!scrollEnabled) {
-        return (
-            <View style={{ gap: 8 }}>
-                {renderCreateButton()}
-                {data.map(renderPlaylistItem)}
-            </View>
-        );
-    }
-
-    if (data.length === 0) {
-        return (
-            <LegendList
-                data={[{ id: 'create', isCreateButton: true }]}
-                renderItem={() => renderCreateButton()}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={{ gap: 8 }}
-                recycleItems={true}
-                ListEmptyComponent={
-                    <EmptyState icon="list" title="No Playlists" message="Create your first playlist to organize your music." />
-                }
-                estimatedItemSize={72}
-                drawDistance={250}
-                style={{ flex: 1 }}
-            />
-        );
-    }
-
-    const listData = [
-        { id: 'create', isCreateButton: true },
-        ...data
-    ];
-
-    return (
-        <LegendList
-            data={listData}
-            renderItem={({ item }: LegendListRenderItemProps<any>) => {
-                if (item.isCreateButton) {
-                    return renderCreateButton();
-                }
-                return renderPlaylistItem(item);
-            }}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ gap: 8 }}
-            recycleItems={true}
-            estimatedItemSize={72}
-            drawDistance={250}
-            style={{ flex: 1 }}
+  const renderCreateButton = () => (
+    <Item key="create" onPress={handleCreate}>
+      <ItemImage className="items-center justify-center bg-surface">
+        <LocalAddIcon
+          fill="none"
+          width={24}
+          height={24}
+          color={theme.foreground}
         />
-    );
-};
+      </ItemImage>
+      <ItemContent>
+        <ItemTitle>New Playlist</ItemTitle>
+      </ItemContent>
+    </Item>
+  )
+
+  const renderPlaylistItem = (item: Playlist) => (
+    <Item key={item.id} onPress={() => handlePress(item)}>
+      <ItemImage className="items-center justify-center overflow-hidden bg-default">
+        <PlaylistArtwork
+          images={
+            item.images && item.images.length > 0
+              ? item.images
+              : item.image
+                ? [item.image]
+                : undefined
+          }
+        />
+      </ItemImage>
+      <ItemContent>
+        <ItemTitle>{item.title}</ItemTitle>
+        <ItemDescription>{formatTrackCount(item.trackCount)}</ItemDescription>
+      </ItemContent>
+      <ItemAction>
+        <LocalChevronRightIcon
+          fill="none"
+          width={24}
+          height={24}
+          color={theme.muted}
+        />
+      </ItemAction>
+    </Item>
+  )
+
+  if (!scrollEnabled) {
+    return (
+      <View style={{ gap: 8 }}>
+        {renderCreateButton()}
+        {data.map(renderPlaylistItem)}
+      </View>
+    )
+  }
+
+  if (data.length === 0) {
+    return (
+      <LegendList
+        data={[{ id: "create", isCreateButton: true }]}
+        renderItem={() => renderCreateButton()}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ gap: 8 }}
+        recycleItems={true}
+        ListEmptyComponent={
+          <EmptyState
+            icon={
+              <LocalPlaylistSolidIcon
+                fill="none"
+                width={48}
+                height={48}
+                color={theme.muted}
+              />
+            }
+            title="No Playlists"
+            message="Create your first playlist to organize your music."
+          />
+        }
+        estimatedItemSize={72}
+        drawDistance={250}
+        style={{ flex: 1 }}
+      />
+    )
+  }
+
+  const listData = [{ id: "create", isCreateButton: true }, ...data]
+
+  return (
+    <LegendList
+      data={listData}
+      renderItem={({ item }: LegendListRenderItemProps<any>) => {
+        if (item.isCreateButton) {
+          return renderCreateButton()
+        }
+        return renderPlaylistItem(item)
+      }}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={{ gap: 8 }}
+      recycleItems={true}
+      estimatedItemSize={72}
+      drawDistance={250}
+      style={{ flex: 1 }}
+    />
+  )
+}

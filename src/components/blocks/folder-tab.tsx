@@ -1,14 +1,18 @@
-import { FolderList, type Folder, type FolderBreadcrumb } from "@/components/blocks/folder-list";
-import type { Track } from "@/modules/player/player.store";
+import type { Track } from "@/modules/player/player.store"
+import {
+  FolderList,
+  type Folder,
+  type FolderBreadcrumb,
+} from "@/components/blocks/folder-list"
 
 interface FolderTabProps {
-  folders: Folder[];
-  folderTracks: Track[];
-  folderBreadcrumbs: FolderBreadcrumb[];
-  onOpenFolder: (path: string) => void;
-  onBackFolder: () => void;
-  onNavigateToFolderPath: (path: string) => void;
-  onTrackPress: (track: Track) => void;
+  folders: Folder[]
+  folderTracks: Track[]
+  folderBreadcrumbs: FolderBreadcrumb[]
+  onOpenFolder: (path: string) => void
+  onBackFolder: () => void
+  onNavigateToFolderPath: (path: string) => void
+  onTrackPress: (track: Track) => void
 }
 
 export function FolderTab({
@@ -27,12 +31,12 @@ export function FolderTab({
       breadcrumbs={folderBreadcrumbs}
       onFolderPress={(folder) => {
         if (folder.path) {
-          onOpenFolder(folder.path);
+          onOpenFolder(folder.path)
         }
       }}
       onBackPress={onBackFolder}
       onBreadcrumbPress={onNavigateToFolderPath}
       onTrackPress={onTrackPress}
     />
-  );
+  )
 }

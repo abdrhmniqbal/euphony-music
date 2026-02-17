@@ -1,10 +1,10 @@
-import React from "react";
-import { SvgXml, type SvgProps } from "react-native-svg";
+import * as React from "react"
+import { SvgXml, type SvgProps } from "react-native-svg"
 
-const LocalShuffleIcon = (props: Omit<SvgProps, "xml">) => {
-  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 20L21 17.5H16.5834C15.9075 17.5 15.2774 17.1586 14.9082 16.5925L8.59182 6.90746C8.22262 6.34135 7.59247 6 6.9166 6H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 4L21 6.5H16.6324C15.9299 6.5 15.2788 6.8686 14.9174 7.47101L14 9M3 18H6.92963C7.59834 18 8.2228 17.6658 8.59373 17.1094L10 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function LocalShuffleIcon(props: Omit<SvgProps, "xml">) {
+  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 20L21 17.5H16.5834C15.9075 17.5 15.2774 17.1586 14.9082 16.5925L8.59182 6.90746C8.22262 6.34135 7.59247 6 6.9166 6H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 4L21 6.5H16.6324C15.9299 6.5 15.2788 6.8686 14.9174 7.47101L14 9M3 18H6.92963C7.59834 18 8.2228 17.6658 8.59373 17.1094L10 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 
-  return <SvgXml xml={xml} {...props} />;
-};
+  return <SvgXml xml={xml} {...props} />
+}
 
-export default LocalShuffleIcon;
+export default LocalShuffleIcon

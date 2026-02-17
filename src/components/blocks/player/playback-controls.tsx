@@ -1,58 +1,59 @@
-import React from "react";
-import { View } from "react-native";
-import Animated, { Layout } from "react-native-reanimated";
-import { useStore } from "@nanostores/react";
+import * as React from "react"
+import { useStore } from "@nanostores/react"
+import { PressableFeedback } from "heroui-native"
+import { View } from "react-native"
+import Animated, { Layout } from "react-native-reanimated"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
 import {
+  $repeatMode,
   playNext,
   playPrevious,
   togglePlayback,
   toggleRepeatMode,
-  $repeatMode,
-  RepeatModeType,
-} from "@/modules/player/player.store";
-import { toggleShuffle, $isShuffled } from "@/modules/player/queue.store";
-import { PressableFeedback } from "heroui-native";
-import LocalShuffleIcon from "@/components/icons/local/shuffle";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import LocalNextSolidIcon from "@/components/icons/local/next-solid";
-import LocalPreviousSolidIcon from "@/components/icons/local/previous-solid";
-import { cn } from "@/utils/common";
-import LocalPlayCircleSolidIcon from "@/components/icons/local/play-circle-solid";
-import LocalPauseCircleSolidIcon from "@/components/icons/local/pause-circle-solid";
-import LocalRepeatOneIcon from "@/components/icons/local/repeat-one";
-import LocalRepeatIcon from "@/components/icons/local/repeat";
+  type RepeatModeType,
+} from "@/modules/player/player.store"
+import { $isShuffled, toggleShuffle } from "@/modules/player/queue.store"
+import { cn } from "@/utils/common"
+import LocalNextSolidIcon from "@/components/icons/local/next-solid"
+import LocalPauseCircleSolidIcon from "@/components/icons/local/pause-circle-solid"
+import LocalPlayCircleSolidIcon from "@/components/icons/local/play-circle-solid"
+import LocalPreviousSolidIcon from "@/components/icons/local/previous-solid"
+import LocalRepeatIcon from "@/components/icons/local/repeat"
+import LocalRepeatOneIcon from "@/components/icons/local/repeat-one"
+import LocalShuffleIcon from "@/components/icons/local/shuffle"
 
 interface PlaybackControlsProps {
-  isPlaying: boolean;
-  compact?: boolean;
+  isPlaying: boolean
+  compact?: boolean
 }
 
-const getRepeatIcon = (mode: RepeatModeType) => {
-  return mode === "track" ? "repeat-once" : "repeat";
-};
+function getRepeatIcon(mode: RepeatModeType) {
+  return mode === "track" ? "repeat-once" : "repeat"
+}
 
 export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   isPlaying,
   compact = false,
 }) => {
-  const theme = useThemeColors();
-  const iconSize = compact ? 32 : 36;
-  const playButtonSize = compact ? 64 : 80;
-  const containerClass = compact ? "w-16 h-16" : "w-20 h-20";
-  const gapClass = compact ? "gap-6" : "gap-8";
-  const repeatMode = useStore($repeatMode);
-  const isShuffled = useStore($isShuffled);
+  const theme = useThemeColors()
+  const iconSize = compact ? 32 : 36
+  const playButtonSize = compact ? 64 : 80
+  const containerClass = compact ? "w-16 h-16" : "w-20 h-20"
+  const gapClass = compact ? "gap-6" : "gap-8"
+  const repeatMode = useStore($repeatMode)
+  const isShuffled = useStore($isShuffled)
 
   const getRepeatColor = (mode: RepeatModeType) => {
-    return mode === "off" ? "white" : theme.accent;
-  };
+    return mode === "off" ? "white" : theme.accent
+  }
 
   return (
     <Animated.View
       layout={Layout.duration(300)}
       className={cn(
-        "flex-row justify-between items-center",
-        compact ? "mb-6" : "mb-8",
+        "flex-row items-center justify-between",
+        compact ? "mb-6" : "mb-8"
       )}
     >
       <PressableFeedback
@@ -129,5 +130,5 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         />
       </PressableFeedback>
     </Animated.View>
-  );
-};
+  )
+}

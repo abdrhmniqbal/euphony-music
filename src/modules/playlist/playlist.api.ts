@@ -1,25 +1,26 @@
-import { db } from "@/db/client";
-import { playlistTracks, playlists, tracks } from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm"
+
+import { db } from "@/db/client"
+import { playlistTracks, playlists, tracks } from "@/db/schema"
 
 function generateId(): string {
   if (globalThis.crypto && globalThis.crypto.randomUUID) {
-    return globalThis.crypto.randomUUID();
+    return globalThis.crypto.randomUUID()
   }
 
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  return Date.now().toString(36) + Math.random().toString(36).substring(2)
 }
 
 export async function createPlaylist(
   name: string,
   description?: string | null,
-  trackIds: string[] = [],
+  trackIds: string[] = []
 ): Promise<void> {
   try {
-    const id = generateId();
-    const now = Date.now();
-    const duration = await getPlaylistDuration(trackIds);
-    const normalizedDescription = normalizeDescription(description);
+    const id = generateId()
+    const now = Date.now()
+    const duration = await getPlaylistDuration(trackIds)
+    const normalizedDescription = normalizeDescription(description)
 
     await db.insert(playlists).values({
       id,
@@ -29,7 +30,7 @@ export async function createPlaylist(
       duration,
       createdAt: now,
       updatedAt: now,
-    });
+    })
 
     if (trackIds.length > 0) {
       await db.insert(playlistTracks).values(
@@ -39,12 +40,12 @@ export async function createPlaylist(
           trackId,
           position: index,
           addedAt: now,
-        })),
-      );
+        }))
+      )
     }
   } catch (e) {
-    console.error("Failed to create playlist", e);
-    throw e;
+    console.error("Failed to create playlist", e)
+    throw e
   }
 }
 
@@ -52,12 +53,12 @@ export async function updatePlaylist(
   id: string,
   name: string,
   description?: string | null,
-  trackIds: string[] = [],
+  trackIds: string[] = []
 ): Promise<void> {
   try {
-    const now = Date.now();
-    const duration = await getPlaylistDuration(trackIds);
-    const normalizedDescription = normalizeDescription(description);
+    const now = Date.now()
+    const duration = await getPlaylistDuration(trackIds)
+    const normalizedDescription = normalizeDescription(description)
 
     await db
       .update(playlists)
@@ -68,9 +69,9 @@ export async function updatePlaylist(
         duration,
         updatedAt: now,
       })
-      .where(eq(playlists.id, id));
+      .where(eq(playlists.id, id))
 
-    await db.delete(playlistTracks).where(eq(playlistTracks.playlistId, id));
+    await db.delete(playlistTracks).where(eq(playlistTracks.playlistId, id))
 
     if (trackIds.length > 0) {
       await db.insert(playlistTracks).values(
@@ -80,33 +81,33 @@ export async function updatePlaylist(
           trackId,
           position: index,
           addedAt: now,
-        })),
-      );
+        }))
+      )
     }
   } catch (e) {
-    console.error("Failed to update playlist", e);
-    throw e;
+    console.error("Failed to update playlist", e)
+    throw e
   }
 }
 
 async function getPlaylistDuration(trackIds: string[]): Promise<number> {
   if (trackIds.length === 0) {
-    return 0;
+    return 0
   }
 
   const rows = await db
     .select({ duration: tracks.duration })
     .from(tracks)
-    .where(inArray(tracks.id, trackIds));
+    .where(inArray(tracks.id, trackIds))
 
-  return rows.reduce((sum, row) => sum + (row.duration || 0), 0);
+  return rows.reduce((sum, row) => sum + (row.duration || 0), 0)
 }
 
 function normalizeDescription(description?: string | null): string | null {
-  const value = description?.trim();
+  const value = description?.trim()
   if (!value) {
-    return null;
+    return null
   }
 
-  return description ?? null;
+  return description ?? null
 }

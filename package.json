@@ -1,7 +1,17 @@
 {
   "name": "emp",
   "version": "1.0.0",
+  "private": "true",
   "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "knip": "knip",
+    "lint": "expo lint",
+    "format": "prettier --write ."
+  },
   "dependencies": {
     "@animatereactnative/marquee": "^0.5.2",
     "@expo/vector-icons": "^15.0.3",
@@ -52,17 +62,22 @@
     "uniwind": "1.2.4"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^7.4.3",
+    "@eslint-react/eslint-plugin": "^2.13.0",
+    "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
+    "@types/node": "^25.2.3",
     "@types/react": "19.1.10",
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-kit": "^0.31.8",
-    "typescript": "~5.9.2"
-  },
-  "private": true,
-  "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web"
+    "eslint": "^9.0.0",
+    "eslint-plugin-expo": "^1.0.0",
+    "eslint-plugin-format": "^1.4.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.0",
+    "eslint-plugin-tailwindcss": "^4.0.0-beta.0",
+    "knip": "^5.83.1",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
   },
   "expo": {
     "doctor": {

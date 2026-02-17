@@ -1,24 +1,24 @@
-import type { Track } from '@/modules/player/player.types';
+import type { Track } from "@/modules/player/player.types"
 
 export interface ArtistAlbum {
-  title: string;
-  artist?: string;
-  albumArtist?: string;
-  image?: string;
-  year?: number;
-  trackCount: number;
+  title: string
+  artist?: string
+  albumArtist?: string
+  image?: string
+  year?: number
+  trackCount: number
 }
 
 export function buildArtistAlbums(artistTracks: Track[]): ArtistAlbum[] {
-  const albumMap = new Map<string, ArtistAlbum>();
+  const albumMap = new Map<string, ArtistAlbum>()
 
   artistTracks.forEach((track) => {
-    const albumName = track.album || 'Unknown Album';
-    const existing = albumMap.get(albumName);
+    const albumName = track.album || "Unknown Album"
+    const existing = albumMap.get(albumName)
 
     if (existing) {
-      existing.trackCount += 1;
-      return;
+      existing.trackCount += 1
+      return
     }
 
     albumMap.set(albumName, {
@@ -28,8 +28,8 @@ export function buildArtistAlbums(artistTracks: Track[]): ArtistAlbum[] {
       image: track.image,
       year: track.year,
       trackCount: 1,
-    });
-  });
+    })
+  })
 
-  return Array.from(albumMap.values());
+  return Array.from(albumMap.values())
 }

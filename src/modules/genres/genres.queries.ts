@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { db } from "@/db/client";
-import { genres } from "@/db/schema";
-import { asc, eq } from "drizzle-orm";
+import { useQuery } from "@tanstack/react-query"
+import { asc, eq } from "drizzle-orm"
 
-const GENRES_KEY = "genres";
+import { db } from "@/db/client"
+import { genres } from "@/db/schema"
+
+const GENRES_KEY = "genres"
 
 export function useGenres() {
   return useQuery({
@@ -11,9 +12,9 @@ export function useGenres() {
     queryFn: async () => {
       return db.query.genres.findMany({
         orderBy: [asc(genres.name)],
-      });
+      })
     },
-  });
+  })
 }
 
 export function useGenre(id: string) {
@@ -34,7 +35,7 @@ export function useGenre(id: string) {
             },
           },
         },
-      });
+      })
     },
-  });
+  })
 }

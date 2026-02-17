@@ -1,17 +1,17 @@
-import React from "react";
-import { View, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { PressableFeedback } from "heroui-native";
-import LocalSlidersVerticalIcon from "@/components/icons/local/sliders-vertical";
-import LocalLiveStreamingIcon from "@/components/icons/local/live-streaming";
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid";
+import * as React from "react"
+import { PressableFeedback } from "heroui-native"
+import { View } from "react-native"
+
+import LocalLiveStreamingIcon from "@/components/icons/local/live-streaming"
+import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
+import LocalSlidersVerticalIcon from "@/components/icons/local/sliders-vertical"
 
 interface PlayerHeaderProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export const PlayerHeader: React.FC<PlayerHeaderProps> = ({ onClose }) => (
-  <View className="flex-row items-center justify-between mt-2 h-10 relative">
+  <View className="relative mt-2 h-10 flex-row items-center justify-between">
     <PressableFeedback>
       <LocalSlidersVerticalIcon
         fill="none"
@@ -23,12 +23,12 @@ export const PlayerHeader: React.FC<PlayerHeaderProps> = ({ onClose }) => (
 
     <PressableFeedback
       onPress={onClose}
-      className="absolute left-0 right-0 items-center justify-center -top-4 bottom-0 z-0 p-4"
+      className="absolute -top-4 right-0 bottom-0 left-0 z-0 items-center justify-center p-4"
     >
-      <View className="w-12 h-1.5 bg-white/40 rounded-full" />
+      <View className="h-1.5 w-12 rounded-full bg-white/40" />
     </PressableFeedback>
 
-    <View className="flex-row gap-8 z-10">
+    <View className="z-10 flex-row gap-8">
       <PressableFeedback>
         <LocalLiveStreamingIcon
           fill="none"
@@ -47,4 +47,4 @@ export const PlayerHeader: React.FC<PlayerHeaderProps> = ({ onClose }) => (
       </PressableFeedback>
     </View>
   </View>
-);
+)

@@ -3,6 +3,6 @@ import TrackPlayer, {
   Event,
   RepeatMode,
   State,
-} from '@weights-ai/react-native-track-player';
+} from "@weights-ai/react-native-track-player"
 
-export { TrackPlayer, Capability, Event, RepeatMode, State };
+export { Capability, Event, RepeatMode, State, TrackPlayer }

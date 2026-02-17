@@ -1,23 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import { startIndexing } from "@/modules/indexer";
+import { useQuery } from "@tanstack/react-query"
+
 import {
   fetchGenreDetails,
   getPreviewAlbums,
-} from "@/modules/genres/genres.utils";
+} from "@/modules/genres/genres.utils"
+import { startIndexing } from "@/modules/indexer"
 
 export function useGenreDetailsScreen(genreName: string) {
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["genre-details", genreName],
     queryFn: () => fetchGenreDetails(genreName),
     enabled: genreName.length > 0,
-  });
+  })
 
-  const topTracks = data?.topTracks ?? [];
-  const albums = data?.albums ?? [];
+  const topTracks = data?.topTracks ?? []
+  const albums = data?.albums ?? []
 
   async function refresh() {
-    await startIndexing(true);
-    await refetch();
+    await startIndexing(true)
+    await refetch()
   }
 
   return {
@@ -26,5 +27,5 @@ export function useGenreDetailsScreen(genreName: string) {
     previewAlbums: getPreviewAlbums(albums),
     isLoading: isLoading || isFetching,
     refresh,
-  };
+  }
 }

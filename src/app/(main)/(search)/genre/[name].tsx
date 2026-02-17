@@ -1,38 +1,39 @@
-import { View, ScrollView, RefreshControl } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useStore } from "@nanostores/react"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { RefreshControl, ScrollView, View } from "react-native"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { useStore } from "@nanostores/react";
-import { $indexerState } from "@/modules/indexer";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import type { GenreAlbumInfo } from "@/modules/genres/genres.api"
+import { useGenreDetailsScreen } from "@/modules/genres/hooks/use-genre-details-screen"
+import { $indexerState } from "@/modules/indexer"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
 import {
   ContentSection,
   MediaCarousel,
   RankedTrackCarousel,
-} from "@/components/blocks";
-import { MusicCard } from "@/components/patterns";
-import { useGenreDetailsScreen } from "@/modules/genres/hooks/use-genre-details-screen";
-import type { GenreAlbumInfo } from "@/modules/genres/genres.api";
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid";
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid";
+} from "@/components/blocks"
+import { MusicCard } from "@/components/patterns"
 
-const CHUNK_SIZE = 5;
+const CHUNK_SIZE = 5
 
 export default function GenreDetailsScreen() {
-  const { name } = useLocalSearchParams<{ name: string }>();
-  const router = useRouter();
-  const theme = useThemeColors();
-  const indexerState = useStore($indexerState);
+  const { name } = useLocalSearchParams<{ name: string }>()
+  const router = useRouter()
+  const theme = useThemeColors()
+  const indexerState = useStore($indexerState)
 
-  const genreName = decodeURIComponent(name || "");
+  const genreName = decodeURIComponent(name || "")
   const { topTracks, previewAlbums, isLoading, refresh } =
-    useGenreDetailsScreen(genreName);
+    useGenreDetailsScreen(genreName)
 
   function renderAlbumItem(album: GenreAlbumInfo) {
-    const subtitle = `${album.artist || "Unknown Artist"} · ${album.trackCount} tracks`;
+    const subtitle = `${album.artist || "Unknown Artist"} · ${album.trackCount} tracks`
 
     return (
       <MusicCard
@@ -49,20 +50,20 @@ export default function GenreDetailsScreen() {
         }
         onPress={() =>
           router.push(
-            `/(main)/(library)/album/${encodeURIComponent(album.name)}`,
+            `/(main)/(library)/album/${encodeURIComponent(album.name)}`
           )
         }
       />
-    );
+    )
   }
 
   return (
     <View className="flex-1 bg-background">
       <Stack.Screen
-          options={{
-            title: genreName,
-          }}
-        />
+        options={{
+          title: genreName,
+        }}
+      />
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -133,5 +134,5 @@ export default function GenreDetailsScreen() {
         />
       </ScrollView>
     </View>
-  );
+  )
 }

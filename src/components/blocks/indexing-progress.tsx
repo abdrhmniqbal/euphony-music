@@ -1,18 +1,24 @@
-import { PressableFeedback, Toast, useToast, type ToastComponentProps } from "heroui-native";
-import { useStore } from "@nanostores/react";
-import { useEffect, useRef } from "react";
-import { Text, View } from "react-native";
+import { useEffect, useRef } from "react"
+import { useStore } from "@nanostores/react"
+import {
+  PressableFeedback,
+  Toast,
+  useToast,
+  type ToastComponentProps,
+} from "heroui-native"
+import { Text, View } from "react-native"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { $indexerState, stopIndexing } from "@/modules/indexer";
-import LocalCancelIcon from "@/components/icons/local/cancel";
+} from "react-native-reanimated"
 
-const TOAST_ID = "indexing-progress-toast";
-const COMPLETE_HIDE_DELAY_MS = 1500;
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { $indexerState, stopIndexing } from "@/modules/indexer"
+import LocalCancelIcon from "@/components/icons/local/cancel"
+
+const TOAST_ID = "indexing-progress-toast"
+const COMPLETE_HIDE_DELAY_MS = 1500
 
 const PHASE_LABELS: Record<string, string> = {
   idle: "",
@@ -21,33 +27,28 @@ const PHASE_LABELS: Record<string, string> = {
   cleanup: "Cleaning up...",
   complete: "Library Updated",
   paused: "Paused",
-};
+}
 
 function IndexingProgressToast(props: ToastComponentProps) {
-  const theme = useThemeColors();
-  const state = useStore($indexerState);
+  const theme = useThemeColors()
+  const state = useStore($indexerState)
 
-  const normalizedProgress = Math.min(Math.max(state.progress / 100, 0), 1);
-  const animatedProgress = useSharedValue(normalizedProgress);
+  const normalizedProgress = Math.min(Math.max(state.progress / 100, 0), 1)
+  const animatedProgress = useSharedValue(normalizedProgress)
 
   useEffect(() => {
     animatedProgress.value = withTiming(normalizedProgress, {
       duration: 300,
-    });
-  }, [animatedProgress, normalizedProgress]);
+    })
+  }, [animatedProgress, normalizedProgress])
 
   const progressBarStyle = useAnimatedStyle(() => ({
     width: `${animatedProgress.value * 100}%`,
-  }));
+  }))
 
   if (state.phase === "complete") {
     return (
-      <Toast
-        {...props}
-        variant="accent"
-        placement="bottom"
-        isSwipeable={false}
-      >
+      <Toast {...props} variant="accent" placement="bottom" isSwipeable={false}>
         <View className="flex-row items-center gap-3 px-4 py-3">
           <View className="flex-1">
             <Toast.Title className="text-sm font-semibold">
@@ -59,16 +60,11 @@ function IndexingProgressToast(props: ToastComponentProps) {
           </View>
         </View>
       </Toast>
-    );
+    )
   }
 
   return (
-    <Toast
-      {...props}
-      variant="accent"
-      placement="bottom"
-      isSwipeable={false}
-    >
+    <Toast {...props} variant="accent" placement="bottom" isSwipeable={false}>
       <View className="gap-2 px-4 py-3">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
@@ -82,7 +78,12 @@ function IndexingProgressToast(props: ToastComponentProps) {
             className="p-1 active:opacity-50"
             hitSlop={8}
           >
-            <LocalCancelIcon width={18} height={18} color={theme.muted} />
+            <LocalCancelIcon
+              fill="none"
+              width={18}
+              height={18}
+              color={theme.muted}
+            />
           </PressableFeedback>
         </View>
 
@@ -107,21 +108,21 @@ function IndexingProgressToast(props: ToastComponentProps) {
         </View>
       </View>
     </Toast>
-  );
+  )
 }
 
 export function IndexingProgress() {
-  const state = useStore($indexerState);
-  const { toast } = useToast();
-  const isToastVisibleRef = useRef(false);
-  const isCompleteDismissedRef = useRef(false);
+  const state = useStore($indexerState)
+  const { toast } = useToast()
+  const isToastVisibleRef = useRef(false)
+  const isCompleteDismissedRef = useRef(false)
 
   useEffect(() => {
     const shouldShowToast =
-      state.showProgress && (state.isIndexing || state.phase === "complete");
+      state.showProgress && (state.isIndexing || state.phase === "complete")
 
     if (state.phase !== "complete") {
-      isCompleteDismissedRef.current = false;
+      isCompleteDismissedRef.current = false
     }
 
     if (
@@ -133,41 +134,41 @@ export function IndexingProgress() {
         id: TOAST_ID,
         duration: "persistent",
         component: (props) => <IndexingProgressToast {...props} />,
-      });
-      isToastVisibleRef.current = true;
-      return;
+      })
+      isToastVisibleRef.current = true
+      return
     }
 
     if (!shouldShowToast) {
       if (isToastVisibleRef.current) {
-        toast.hide(TOAST_ID);
-        isToastVisibleRef.current = false;
+        toast.hide(TOAST_ID)
+        isToastVisibleRef.current = false
       }
     }
-  }, [state.isIndexing, state.phase, state.showProgress, toast]);
+  }, [state.isIndexing, state.phase, state.showProgress, toast])
 
   useEffect(() => {
     if (state.phase !== "complete") {
-      return;
+      return
     }
 
     const timeoutId = setTimeout(() => {
-      toast.hide(TOAST_ID);
-      isToastVisibleRef.current = false;
-      isCompleteDismissedRef.current = true;
-    }, COMPLETE_HIDE_DELAY_MS);
+      toast.hide(TOAST_ID)
+      isToastVisibleRef.current = false
+      isCompleteDismissedRef.current = true
+    }, COMPLETE_HIDE_DELAY_MS)
 
     return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [state.phase, toast]);
+      clearTimeout(timeoutId)
+    }
+  }, [state.phase, toast])
 
   useEffect(() => {
     return () => {
-      toast.hide(TOAST_ID);
-      isToastVisibleRef.current = false;
-    };
-  }, [toast]);
+      toast.hide(TOAST_ID)
+      isToastVisibleRef.current = false
+    }
+  }, [toast])
 
-  return null;
+  return null
 }

@@ -1,4 +1,23 @@
-// Favorites feature exports
-export * from './favorites.api';
-export * from './favorites.queries';
-export * from './favorites.store';
+export type { FavoriteEntry, FavoriteType } from "./favorites.api"
+export {
+  addFavorite,
+  getFavorites,
+  isFavorite,
+  removeFavorite,
+  toggleFavoriteDB,
+} from "./favorites.api"
+export {
+  useAddFavorite,
+  useFavorites,
+  useIsFavorite as useIsFavoriteQuery,
+  useRemoveFavorite,
+  useToggleFavorite,
+} from "./favorites.queries"
+export {
+  $favorites,
+  checkIsFavorite,
+  getFavoritesByType,
+  loadFavorites,
+  toggleFavoriteItem,
+  useIsFavorite,
+} from "./favorites.store"

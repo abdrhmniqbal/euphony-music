@@ -1,1 +1,1 @@
-export { FullPlayer } from "./player/full-player";
+export { FullPlayer } from "./player/full-player"

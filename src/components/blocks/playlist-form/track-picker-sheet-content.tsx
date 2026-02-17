@@ -1,14 +1,16 @@
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { LinearGradient } from "expo-linear-gradient";
-import { BottomSheet, ScrollShadow, useThemeColor } from "heroui-native";
-import { EmptyState } from "@/components/ui";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid";
-import { PlaylistTrackRow } from "./playlist-track-row";
-import { SheetSearchInput } from "./sheet-search-input";
-import type { TrackPickerSheetContentProps } from "./types";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
+import { LinearGradient } from "expo-linear-gradient"
+import { BottomSheet, ScrollShadow, useThemeColor } from "heroui-native"
 
-const TRACK_PICKER_SNAP_POINTS = ["55%", "90%"];
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import { EmptyState } from "@/components/ui"
+
+import { PlaylistTrackRow } from "./playlist-track-row"
+import { SheetSearchInput } from "./sheet-search-input"
+import type { TrackPickerSheetContentProps } from "./types"
+
+const TRACK_PICKER_SNAP_POINTS = ["55%", "90%"]
 
 export function TrackPickerSheetContent({
   inputKey,
@@ -18,8 +20,8 @@ export function TrackPickerSheetContent({
   selectedTracks,
   onToggleTrack,
 }: TrackPickerSheetContentProps) {
-  const overlayColor = useThemeColor("overlay");
-  const theme = useThemeColors();
+  const overlayColor = useThemeColor("overlay")
+  const theme = useThemeColors()
 
   return (
     <BottomSheet.Content
@@ -72,5 +74,5 @@ export function TrackPickerSheetContent({
         </BottomSheetScrollView>
       </ScrollShadow>
     </BottomSheet.Content>
-  );
+  )
 }

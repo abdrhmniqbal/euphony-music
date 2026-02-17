@@ -1,30 +1,31 @@
-import { useRouter } from "expo-router";
-import type { ComponentProps } from "react";
-import { Button } from "heroui-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import LocalArrowLeftIcon from "@/components/icons/local/arrow-left";
+import type { ComponentProps } from "react"
+import { useRouter } from "expo-router"
+import { Button } from "heroui-native"
 
-type BackButtonProps = {
-  onPress?: () => void;
-  variant?: ComponentProps<typeof Button>["variant"];
-  className?: string;
-};
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
+
+interface BackButtonProps {
+  onPress?: () => void
+  variant?: ComponentProps<typeof Button>["variant"]
+  className?: string
+}
 
 export function BackButton({
   onPress,
   variant = "ghost",
   className,
 }: BackButtonProps) {
-  const theme = useThemeColors();
-  const router = useRouter();
+  const theme = useThemeColors()
+  const router = useRouter()
 
   function handlePress() {
     if (onPress) {
-      onPress();
-      return;
+      onPress()
+      return
     }
 
-    router.back();
+    router.back()
   }
 
   return (
@@ -41,5 +42,5 @@ export function BackButton({
         color={theme.foreground}
       />
     </Button>
-  );
+  )
 }

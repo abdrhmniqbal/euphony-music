@@ -1,28 +1,29 @@
-import { View, ScrollView, RefreshControl } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
-import { EmptyState } from "@/components/ui";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useStore } from "@nanostores/react"
+import { Stack, useLocalSearchParams } from "expo-router"
+import { RefreshControl, ScrollView, View } from "react-native"
+import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { useStore } from "@nanostores/react";
-import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
-import { $indexerState } from "@/modules/indexer";
-import { TrackList } from "@/components/blocks/track-list";
-import { useGenreTopTracksScreen } from "@/modules/genres/hooks/use-genre-top-tracks-screen";
-import { PlaybackActionsRow } from "@/components/blocks";
-import LocalMusicNoteIcon from "@/components/icons/local/music-note";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useGenreTopTracksScreen } from "@/modules/genres/hooks/use-genre-top-tracks-screen"
+import { $indexerState } from "@/modules/indexer"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import { PlaybackActionsRow } from "@/components/blocks"
+import { TrackList } from "@/components/blocks/track-list"
+import { EmptyState } from "@/components/ui"
 
 export default function GenreTopTracksScreen() {
-  const { name } = useLocalSearchParams<{ name: string }>();
-  const indexerState = useStore($indexerState);
-  const theme = useThemeColors();
+  const { name } = useLocalSearchParams<{ name: string }>()
+  const indexerState = useStore($indexerState)
+  const theme = useThemeColors()
 
-  const genreName = decodeURIComponent(name || "");
+  const genreName = decodeURIComponent(name || "")
   const { tracks, isLoading, refresh, playAll, shuffle } =
-    useGenreTopTracksScreen(genreName);
+    useGenreTopTracksScreen(genreName)
 
   return (
     <View className="flex-1 bg-background">
@@ -66,7 +67,7 @@ export default function GenreTopTracksScreen() {
           {tracks.length === 0 ? (
             <EmptyState
               icon={
-                <LocalMusicNoteIcon
+                <LocalMusicNoteSolidIcon
                   fill="none"
                   width={48}
                   height={48}
@@ -83,5 +84,5 @@ export default function GenreTopTracksScreen() {
         </Animated.View>
       </ScrollView>
     </View>
-  );
+  )
 }

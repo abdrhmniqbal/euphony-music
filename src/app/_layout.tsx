@@ -1,94 +1,80 @@
-import "../global.css";
-import { HeroUINativeProvider } from "heroui-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { View } from "react-native";
-import { Stack } from "expo-router";
+import { useCallback, useEffect, type ReactNode } from "react"
+import { useStore } from "@nanostores/react"
 import {
-  cloneElement,
-  isValidElement,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from "react";
-import {
-  ThemeProvider,
   DarkTheme,
   DefaultTheme,
-} from "@react-navigation/native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { useUniwind } from "uniwind";
-import { useAppBootstrap } from "@/modules/bootstrap/hooks/use-app-bootstrap";
-import { useStore } from "@nanostores/react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MINI_PLAYER_HEIGHT, getTabBarHeight } from "@/constants/layout";
-import { $barsVisible } from "@/hooks/scroll-bars.store";
-import { $currentTrack } from "@/modules/player/player.store";
+  ThemeProvider,
+} from "@react-navigation/native"
+import { Stack } from "expo-router"
+import { HeroUINativeProvider } from "heroui-native"
+import { View } from "react-native"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
+} from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useUniwind } from "uniwind"
 
-import { FullPlayer } from "@/components/blocks/full-player";
-import { IndexingProgress } from "@/components/blocks/indexing-progress";
-import { Providers } from "@/components/providers";
+import { MINI_PLAYER_HEIGHT, getTabBarHeight } from "@/constants/layout"
+import { $barsVisible } from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useAppBootstrap } from "@/modules/bootstrap/hooks/use-app-bootstrap"
+import { $currentTrack } from "@/modules/player/player.store"
+import { FullPlayer } from "@/components/blocks/full-player"
+import { IndexingProgress } from "@/components/blocks/indexing-progress"
+import { Providers } from "@/components/providers"
 
-const TOAST_OFFSET_ANIMATION_DURATION_MS = 250;
-const TOAST_HIDDEN_BOTTOM_GAP = 0;
-const TOAST_VISIBLE_BOTTOM_GAP = 0;
+import "../global.css"
+
+const TOAST_OFFSET_ANIMATION_DURATION_MS = 250
+const TOAST_HIDDEN_BOTTOM_GAP = 0
+const TOAST_VISIBLE_BOTTOM_GAP = 0
 
 function ToastAnimatedWrapper({
   children,
   extraBottom,
 }: {
-  children: ReactNode;
-  extraBottom: number;
+  children: ReactNode
+  extraBottom: number
 }) {
-  const animatedExtraBottom = useSharedValue(extraBottom);
+  const animatedExtraBottom = useSharedValue(extraBottom)
 
   useEffect(() => {
     animatedExtraBottom.value = withTiming(extraBottom, {
       duration: TOAST_OFFSET_ANIMATION_DURATION_MS,
-    });
-  }, [animatedExtraBottom, extraBottom]);
+    })
+  }, [animatedExtraBottom, extraBottom])
 
   const animatedStyle = useAnimatedStyle(() => ({
     paddingBottom: animatedExtraBottom.value,
-  }));
-
-  if (isValidElement(children)) {
-    return (
-      <Animated.View
-        style={[{ flex: 1 }, animatedStyle]}
-        pointerEvents="box-none"
-      >
-        {cloneElement(children, {
-          ...(children.props as object),
-          pointerEvents: "box-none",
-        })}
-      </Animated.View>
-    );
-  }
+  }))
 
   return (
-    <Animated.View style={[{ flex: 1 }, animatedStyle]} pointerEvents="box-none">
+    <Animated.View
+      style={[{ flex: 1 }, animatedStyle]}
+      pointerEvents="box-none"
+    >
       {children}
     </Animated.View>
-  );
+  )
 }
 
 export default function Layout() {
-  const { theme: currentTheme } = useUniwind();
-  const theme = useThemeColors();
-  const insets = useSafeAreaInsets();
-  const barsVisible = useStore($barsVisible);
-  const currentTrack = useStore($currentTrack);
-  useAppBootstrap();
-  const tabBarHeight = getTabBarHeight(insets.bottom);
-  const hasMiniPlayer = currentTrack !== null;
+  const { theme: currentTheme } = useUniwind()
+  const theme = useThemeColors()
+  const insets = useSafeAreaInsets()
+  const barsVisible = useStore($barsVisible)
+  const currentTrack = useStore($currentTrack)
+  useAppBootstrap()
+  const tabBarHeight = getTabBarHeight(insets.bottom)
+  const hasMiniPlayer = currentTrack !== null
   const toastExtraBottomOffset = barsVisible
-    ? tabBarHeight + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) + TOAST_VISIBLE_BOTTOM_GAP
-    : TOAST_HIDDEN_BOTTOM_GAP;
+    ? tabBarHeight +
+      (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) +
+      TOAST_VISIBLE_BOTTOM_GAP
+    : TOAST_HIDDEN_BOTTOM_GAP
 
   const toastContentWrapper = useCallback(
     (children: ReactNode) => {
@@ -96,10 +82,10 @@ export default function Layout() {
         <ToastAnimatedWrapper extraBottom={toastExtraBottomOffset}>
           {children}
         </ToastAnimatedWrapper>
-      );
+      )
     },
-    [toastExtraBottomOffset],
-  );
+    [toastExtraBottomOffset]
+  )
 
   const navigationTheme = {
     ...(currentTheme === "dark" ? DarkTheme : DefaultTheme),
@@ -108,10 +94,10 @@ export default function Layout() {
       background: theme.background,
       card: theme.background,
       text: theme.foreground,
-      border: theme.divider,
+      border: theme.border,
       notification: theme.accent,
     },
-  };
+  }
 
   return (
     <GestureHandlerRootView
@@ -163,5 +149,5 @@ export default function Layout() {
         </View>
       </ThemeProvider>
     </GestureHandlerRootView>
-  );
+  )
 }

@@ -1,75 +1,75 @@
 import {
-  useDeletePlaylist,
-  usePlaylist,
-} from "@/modules/playlist/playlist.queries";
-import {
   useIsFavorite,
   useToggleFavorite,
-} from "@/modules/favorites/favorites.queries";
-import { playTrack } from "@/modules/player/player.store";
+} from "@/modules/favorites/favorites.queries"
+import { playTrack } from "@/modules/player/player.store"
+import {
+  useDeletePlaylist,
+  usePlaylist,
+} from "@/modules/playlist/playlist.queries"
 import {
   buildPlaylistImages,
   buildPlaylistTracks,
   getPlaylistDuration,
-} from "@/modules/playlist/playlist.utils";
+} from "@/modules/playlist/playlist.utils"
 
 export function usePlaylistDetailsScreen(id: string) {
-  const { data: playlist, isLoading } = usePlaylist(id);
-  const { data: isFavoriteData = false } = useIsFavorite("playlist", id);
-  const toggleFavoriteMutation = useToggleFavorite();
-  const deletePlaylistMutation = useDeletePlaylist();
-  const isFavorite = Boolean(isFavoriteData);
+  const { data: playlist, isLoading } = usePlaylist(id)
+  const { data: isFavoriteData = false } = useIsFavorite("playlist", id)
+  const toggleFavoriteMutation = useToggleFavorite()
+  const deletePlaylistMutation = useDeletePlaylist()
+  const isFavorite = Boolean(isFavoriteData)
 
-  const tracks = buildPlaylistTracks(playlist);
-  const playlistImages = buildPlaylistImages(playlist, tracks);
-  const totalDuration = getPlaylistDuration(tracks);
+  const tracks = buildPlaylistTracks(playlist)
+  const playlistImages = buildPlaylistImages(playlist, tracks)
+  const totalDuration = getPlaylistDuration(tracks)
 
   function playFromPlaylist(trackId: string) {
-    const selectedTrack = tracks.find((track) => track.id === trackId);
+    const selectedTrack = tracks.find((track) => track.id === trackId)
     if (selectedTrack) {
-      playTrack(selectedTrack, tracks);
+      playTrack(selectedTrack, tracks)
     }
   }
 
   function playAll() {
     if (tracks.length === 0) {
-      return;
+      return
     }
 
-    playTrack(tracks[0], tracks);
+    playTrack(tracks[0], tracks)
   }
 
   function shuffle() {
     if (tracks.length === 0) {
-      return;
+      return
     }
 
-    const randomIndex = Math.floor(Math.random() * tracks.length);
-    playTrack(tracks[randomIndex], tracks);
+    const randomIndex = Math.floor(Math.random() * tracks.length)
+    playTrack(tracks[randomIndex], tracks)
   }
 
   async function toggleFavorite() {
     if (!playlist) {
-      return;
+      return
     }
 
     await toggleFavoriteMutation.mutateAsync({
       type: "playlist",
       itemId: playlist.id,
       isCurrentlyFavorite: isFavorite,
-    });
+    })
   }
 
   async function deletePlaylist(): Promise<boolean> {
     if (!playlist) {
-      return false;
+      return false
     }
 
     try {
-      await deletePlaylistMutation.mutateAsync(playlist.id);
-      return true;
+      await deletePlaylistMutation.mutateAsync(playlist.id)
+      return true
     } catch {
-      return false;
+      return false
     }
   }
 
@@ -86,5 +86,5 @@ export function usePlaylistDetailsScreen(id: string) {
     toggleFavorite,
     deletePlaylist,
     isDeleting: deletePlaylistMutation.isPending,
-  };
+  }
 }

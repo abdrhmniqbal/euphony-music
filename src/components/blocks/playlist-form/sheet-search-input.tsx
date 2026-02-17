@@ -1,62 +1,65 @@
-import { useBottomSheetInternal } from "@gorhom/bottom-sheet";
-import { Input, TextField } from "heroui-native";
-import React, { useCallback, useRef } from "react";
+import * as React from "react"
+import { useCallback, useRef } from "react"
+import { useBottomSheetInternal } from "@gorhom/bottom-sheet"
+import { Input, TextField } from "heroui-native"
 import {
-  findNodeHandle,
   Pressable,
   TextInput,
   View,
+  findNodeHandle,
   type BlurEvent,
   type FocusEvent,
-} from "react-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid";
-import LocalSearchIcon from "@/components/icons/local/search";
-import type { SheetSearchInputProps } from "./types";
+} from "react-native"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
+import LocalSearchIcon from "@/components/icons/local/search"
+
+import type { SheetSearchInputProps } from "./types"
 
 export function SheetSearchInput({
   inputKey,
   searchQuery,
   setSearchQuery,
 }: SheetSearchInputProps) {
-  const theme = useThemeColors();
-  const { animatedKeyboardState, textInputNodesRef } = useBottomSheetInternal();
-  const inputRef = useRef<TextInput>(null);
+  const theme = useThemeColors()
+  const { animatedKeyboardState, textInputNodesRef } = useBottomSheetInternal()
+  const inputRef = useRef<TextInput>(null)
 
   const handleOnFocus = useCallback(
     (e: FocusEvent) => {
       animatedKeyboardState.set((state) => ({
         ...state,
         target: e.nativeEvent.target,
-      }));
+      }))
     },
-    [animatedKeyboardState],
-  );
+    [animatedKeyboardState]
+  )
 
   const handleOnBlur = useCallback(
     (e: BlurEvent) => {
-      const keyboardState = animatedKeyboardState.get();
+      const keyboardState = animatedKeyboardState.get()
       const currentFocusedInput = findNodeHandle(
-        TextInput.State.currentlyFocusedInput() as TextInput | null,
-      );
+        TextInput.State.currentlyFocusedInput() as TextInput | null
+      )
       const shouldRemoveCurrentTarget =
-        keyboardState.target === e.nativeEvent.target;
+        keyboardState.target === e.nativeEvent.target
       const shouldIgnoreBlurEvent =
         currentFocusedInput &&
-        textInputNodesRef.current.has(currentFocusedInput);
+        textInputNodesRef.current.has(currentFocusedInput)
 
       if (shouldRemoveCurrentTarget && !shouldIgnoreBlurEvent) {
         animatedKeyboardState.set((state) => ({
           ...state,
           target: undefined,
-        }));
+        }))
       }
     },
-    [animatedKeyboardState, textInputNodesRef],
-  );
+    [animatedKeyboardState, textInputNodesRef]
+  )
 
   return (
-    <TextField className="absolute top-0 left-0 right-0 px-5 pt-2">
+    <TextField className="absolute top-0 right-0 left-0 px-5 pt-2">
       <View className="w-full flex-row items-center">
         <Input
           key={inputKey}
@@ -64,7 +67,7 @@ export function SheetSearchInput({
           variant="secondary"
           placeholder="Search tracks..."
           onChangeText={setSearchQuery}
-          className="flex-1 pl-10 pr-10"
+          className="flex-1 pr-10 pl-10"
           autoCapitalize="none"
           autoCorrect={false}
           onFocus={handleOnFocus}
@@ -82,8 +85,8 @@ export function SheetSearchInput({
           <Pressable
             className="absolute right-3 p-1"
             onPress={() => {
-              inputRef.current?.clear();
-              setSearchQuery("");
+              inputRef.current?.clear()
+              setSearchQuery("")
             }}
             hitSlop={12}
           >
@@ -97,5 +100,5 @@ export function SheetSearchInput({
         ) : null}
       </View>
     </TextField>
-  );
+  )
 }

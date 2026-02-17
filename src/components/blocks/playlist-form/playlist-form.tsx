@@ -1,15 +1,17 @@
-import { Button, Input, TextArea } from "heroui-native";
-import { ScrollView, Text, View } from "react-native";
-import { EmptyState } from "@/components/ui";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import LocalAddCircleIcon from "@/components/icons/local/add-circle";
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid";
+import { Button, Input, TextArea } from "heroui-native"
+import { ScrollView, Text, View } from "react-native"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
 import {
   MAX_PLAYLIST_DESCRIPTION_LENGTH,
   MAX_PLAYLIST_NAME_LENGTH,
-} from "@/modules/playlist/playlist.utils";
-import { PlaylistTrackRow } from "./playlist-track-row";
-import type { PlaylistFormProps } from "./types";
+} from "@/modules/playlist/playlist.utils"
+import LocalAddIcon from "@/components/icons/local/add"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import { EmptyState } from "@/components/ui"
+
+import { PlaylistTrackRow } from "./playlist-track-row"
+import type { PlaylistFormProps } from "./types"
 
 export function PlaylistForm({
   name,
@@ -20,7 +22,7 @@ export function PlaylistForm({
   toggleTrack,
   openTrackSheet,
 }: PlaylistFormProps) {
-  const theme = useThemeColors();
+  const theme = useThemeColors()
 
   return (
     <ScrollView
@@ -73,13 +75,13 @@ export function PlaylistForm({
         </Text>
         <Button variant="ghost" onPress={openTrackSheet}>
           <View className="flex-row items-center gap-2">
-            <LocalAddCircleIcon
+            <LocalAddIcon
               fill="none"
               width={18}
               height={18}
               color={theme.foreground}
             />
-            <Text className="text-foreground font-semibold">Add Tracks</Text>
+            <Text className="font-semibold text-foreground">Add Tracks</Text>
           </View>
         </Button>
       </View>
@@ -111,5 +113,5 @@ export function PlaylistForm({
         />
       )}
     </ScrollView>
-  );
+  )
 }

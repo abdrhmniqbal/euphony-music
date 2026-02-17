@@ -1,20 +1,21 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { BottomSheet, Button } from "heroui-native";
-import React from "react";
-import { View } from "react-native";
+import * as React from "react"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { BottomSheet, Button } from "heroui-native"
+import { View } from "react-native"
+
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { usePlaylistFormScreen } from "@/modules/playlist/hooks/use-playlist-form"
+import LocalTickIcon from "@/components/icons/local/tick"
 import {
   PlaylistForm,
   TrackPickerSheetContent,
-} from "@/components/blocks/playlist-form";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { usePlaylistFormScreen } from "@/modules/playlist/hooks/use-playlist-form";
-import LocalTickIcon from "@/components/icons/local/tick";
+} from "@/components/blocks/playlist-form"
 
 export default function PlaylistFormScreen() {
-  const router = useRouter();
-  const { id } = useLocalSearchParams<{ id?: string }>();
-  const theme = useThemeColors();
-  const playlistId = typeof id === "string" ? id : undefined;
+  const router = useRouter()
+  const { id } = useLocalSearchParams<{ id?: string }>()
+  const theme = useThemeColors()
+  const playlistId = typeof id === "string" ? id : undefined
 
   const {
     name,
@@ -35,7 +36,7 @@ export default function PlaylistFormScreen() {
     openTrackSheet,
     handleTrackSheetOpenChange,
     save,
-  } = usePlaylistFormScreen(() => router.back(), playlistId);
+  } = usePlaylistFormScreen(() => router.back(), playlistId)
 
   return (
     <View className="flex-1 bg-background">
@@ -88,5 +89,5 @@ export default function PlaylistFormScreen() {
         </BottomSheet.Portal>
       </BottomSheet>
     </View>
-  );
+  )
 }

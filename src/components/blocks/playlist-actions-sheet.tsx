@@ -1,12 +1,12 @@
-import { BottomSheet, PressableFeedback } from "heroui-native";
-import { Text } from "react-native";
+import { BottomSheet, PressableFeedback } from "heroui-native"
+import { Text } from "react-native"
 
-type PlaylistActionsSheetProps = {
-  visible: boolean;
-  onOpenChange: (open: boolean) => void;
-  onEdit: () => void;
-  onDelete: () => void;
-};
+interface PlaylistActionsSheetProps {
+  visible: boolean
+  onOpenChange: (open: boolean) => void
+  onEdit: () => void
+  onDelete: () => void
+}
 
 export function PlaylistActionsSheet({
   visible,
@@ -15,13 +15,13 @@ export function PlaylistActionsSheet({
   onDelete,
 }: PlaylistActionsSheetProps) {
   function handleEditPress() {
-    onOpenChange(false);
-    onEdit();
+    onOpenChange(false)
+    onEdit()
   }
 
   function handleDeletePress() {
-    onOpenChange(false);
-    onDelete();
+    onOpenChange(false)
+    onDelete()
   }
 
   return (
@@ -30,19 +30,23 @@ export function PlaylistActionsSheet({
         <BottomSheet.Overlay />
         <BottomSheet.Content backgroundClassName="bg-surface" className="gap-1">
           <PressableFeedback
-            className="flex-row items-center justify-between h-14 active:opacity-50"
+            className="h-14 flex-row items-center justify-between active:opacity-50"
             onPress={handleEditPress}
           >
-            <Text className="text-base font-medium text-foreground">Edit Playlist</Text>
+            <Text className="text-base font-medium text-foreground">
+              Edit Playlist
+            </Text>
           </PressableFeedback>
           <PressableFeedback
-            className="flex-row items-center justify-between h-14 active:opacity-50"
+            className="h-14 flex-row items-center justify-between active:opacity-50"
             onPress={handleDeletePress}
           >
-            <Text className="text-base font-medium text-danger">Delete Playlist</Text>
+            <Text className="text-base font-medium text-danger">
+              Delete Playlist
+            </Text>
           </PressableFeedback>
         </BottomSheet.Content>
       </BottomSheet.Portal>
     </BottomSheet>
-  );
+  )
 }

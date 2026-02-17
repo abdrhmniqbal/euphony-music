@@ -1,50 +1,48 @@
-import { View, ScrollView, RefreshControl, Text } from "react-native";
-import { useMemo, useState } from "react";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { EmptyState } from "@/components/ui";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useState } from "react"
+import { useStore } from "@nanostores/react"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { RefreshControl, ScrollView, Text, View } from "react-native"
+import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { useStore } from "@nanostores/react";
-import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
-import { $indexerState } from "@/modules/indexer";
-import { AlbumGrid, Album } from "@/components/blocks/album-grid";
-import { useGenreAlbumsScreen } from "@/modules/genres/hooks/use-genre-albums-screen";
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid";
-import { SortSheet } from "@/components/blocks/sort-sheet";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useGenreAlbumsScreen } from "@/modules/genres/hooks/use-genre-albums-screen"
+import { $indexerState } from "@/modules/indexer"
 import {
   ALBUM_SORT_OPTIONS,
   sortAlbums,
   type AlbumSortField,
   type SortOrder,
-} from "@/modules/library/library-sort.store";
+} from "@/modules/library/library-sort.store"
+import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import { AlbumGrid, type Album } from "@/components/blocks/album-grid"
+import { SortSheet } from "@/components/blocks/sort-sheet"
+import { EmptyState } from "@/components/ui"
 
 export default function GenreAlbumsScreen() {
-  const { name } = useLocalSearchParams<{ name: string }>();
-  const router = useRouter();
-  const indexerState = useStore($indexerState);
-  const theme = useThemeColors();
-  const [sortModalVisible, setSortModalVisible] = useState(false);
+  const { name } = useLocalSearchParams<{ name: string }>()
+  const router = useRouter()
+  const indexerState = useStore($indexerState)
+  const theme = useThemeColors()
+  const [sortModalVisible, setSortModalVisible] = useState(false)
   const [sortConfig, setSortConfig] = useState<{
-    field: AlbumSortField;
-    order: SortOrder;
+    field: AlbumSortField
+    order: SortOrder
   }>({
     field: "year",
     order: "desc",
-  });
+  })
 
-  const genreName = decodeURIComponent(name || "");
-  const { albumData, isLoading, refresh } = useGenreAlbumsScreen(genreName);
-  const sortedAlbumData = useMemo(
-    () => sortAlbums(albumData, sortConfig) as Album[],
-    [albumData, sortConfig],
-  );
+  const genreName = decodeURIComponent(name || "")
+  const { albumData, isLoading, refresh } = useGenreAlbumsScreen(genreName)
+  const sortedAlbumData = sortAlbums(albumData, sortConfig) as Album[]
 
   function handleAlbumPress(album: Album) {
-    router.push(`/(main)/(library)/album/${encodeURIComponent(album.title)}`);
+    router.push(`/(main)/(library)/album/${encodeURIComponent(album.title)}`)
   }
 
   function handleSortSelect(field: AlbumSortField, order?: SortOrder) {
@@ -55,17 +53,17 @@ export default function GenreAlbumsScreen() {
           ? current.order === "asc"
             ? "desc"
             : "asc"
-          : "asc");
-      return { field, order: nextOrder };
-    });
-    setSortModalVisible(false);
+          : "asc")
+      return { field, order: nextOrder }
+    })
+    setSortModalVisible(false)
   }
 
   function getSortLabel() {
     const selected = ALBUM_SORT_OPTIONS.find(
-      (option) => option.field === sortConfig.field,
-    );
-    return selected?.label || "Sort";
+      (option) => option.field === sortConfig.field
+    )
+    return selected?.label || "Sort"
   }
 
   return (
@@ -123,7 +121,7 @@ export default function GenreAlbumsScreen() {
               />
             ) : (
               <>
-                <View className="flex-row items-center justify-between mb-4">
+                <View className="mb-4 flex-row items-center justify-between">
                   <Text className="text-lg font-bold text-foreground">
                     {sortedAlbumData.length} Albums
                   </Text>
@@ -142,5 +140,5 @@ export default function GenreAlbumsScreen() {
         <SortSheet.Content options={ALBUM_SORT_OPTIONS} />
       </View>
     </SortSheet>
-  );
+  )
 }

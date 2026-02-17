@@ -1,54 +1,57 @@
-import { useEffect } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
-import { EmptyState } from "@/components/ui";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { useStore } from "@nanostores/react";
+import { useEffect } from "react"
+import { useStore } from "@nanostores/react"
+import { Tabs } from "heroui-native"
+import { RefreshControl, ScrollView, View } from "react-native"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import { $indexerState } from "@/modules/indexer";
-import { TrackList } from "@/components/blocks/track-list";
+} from "react-native-reanimated"
+
+import {
+  handleScroll,
+  handleScrollStart,
+  handleScrollStop,
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { $indexerState } from "@/modules/indexer"
 import {
   TOP_TRACKS_TABS,
-  type TopTracksTab,
   useTopTracksScreen,
-} from "@/modules/tracks/hooks/use-top-tracks-screen";
-import { PlaybackActionsRow } from "@/components/blocks";
-import { Tabs } from "heroui-native";
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid";
+  type TopTracksTab,
+} from "@/modules/tracks/hooks/use-top-tracks-screen"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import { PlaybackActionsRow } from "@/components/blocks"
+import { TrackList } from "@/components/blocks/track-list"
+import { EmptyState } from "@/components/ui"
 
 export default function TopTracksScreen() {
-  const indexerState = useStore($indexerState);
-  const theme = useThemeColors();
+  const indexerState = useStore($indexerState)
+  const theme = useThemeColors()
   const { activeTab, setActiveTab, currentTracks, refresh, playAll, shuffle } =
-    useTopTracksScreen();
-  const contentOpacity = useSharedValue(1);
+    useTopTracksScreen()
+  const contentOpacity = useSharedValue(1)
 
   const contentAnimatedStyle = useAnimatedStyle(() => ({
     opacity: contentOpacity.value,
-  }));
+  }))
 
   useEffect(() => {
-    contentOpacity.value = 0;
-    contentOpacity.value = withTiming(1, { duration: 220 });
-  }, [activeTab, contentOpacity]);
+    // eslint-disable-next-line react-hooks/immutability
+    contentOpacity.value = 0
+
+    contentOpacity.value = withTiming(1, { duration: 220 })
+  }, [activeTab, contentOpacity])
 
   return (
     <View className="flex-1 bg-background">
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as TopTracksTab)}
-        className="px-4 py-4 gap-1.5"
+        className="gap-1.5 px-4 py-4"
       >
         <Tabs.List className="w-full flex-row px-1">
-          <Tabs.Indicator className="text-surface-foreground bg-surface" />
+          <Tabs.Indicator className="bg-surface text-surface-foreground" />
           {TOP_TRACKS_TABS.map((tab) => (
             <Tabs.Trigger key={tab} value={tab} className="flex-1 py-2">
               <Tabs.Label className="text-lg">{tab}</Tabs.Label>
@@ -103,5 +106,5 @@ export default function TopTracksScreen() {
         </Animated.View>
       </ScrollView>
     </View>
-  );
+  )
 }

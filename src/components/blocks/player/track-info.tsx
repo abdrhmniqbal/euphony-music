@@ -1,37 +1,40 @@
-import React from "react";
-import { View } from "react-native";
-import Animated, { Layout } from "react-native-reanimated";
-import { Track } from "@/modules/player/player.store";
-import { toggleFavoriteItem } from "@/modules/favorites/favorites.store";
-import { useIsFavorite } from "@/modules/favorites/favorites.store";
-import { PressableFeedback } from "heroui-native";
-import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid";
-import LocalFavouriteIcon from "@/components/icons/local/favourite";
-import { MarqueeText } from "@/components/ui";
-import { cn } from "tailwind-variants";
+import * as React from "react"
+import { PressableFeedback } from "heroui-native"
+import { View } from "react-native"
+import Animated, { Layout } from "react-native-reanimated"
+import { cn } from "tailwind-variants"
+
+import {
+  toggleFavoriteItem,
+  useIsFavorite,
+} from "@/modules/favorites/favorites.store"
+import type { Track } from "@/modules/player/player.store"
+import LocalFavouriteIcon from "@/components/icons/local/favourite"
+import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import { MarqueeText } from "@/components/ui"
 
 interface TrackInfoProps {
-  track: Track;
-  compact?: boolean;
+  track: Track
+  compact?: boolean
 }
 
 export const TrackInfo: React.FC<TrackInfoProps> = ({
   track,
   compact = false,
 }) => {
-  const isFavorite = useIsFavorite(track.id);
+  const isFavorite = useIsFavorite(track.id)
 
   return (
     <Animated.View
       layout={Layout.duration(300)}
-      className={`flex-row justify-between items-center ${compact ? "mb-3" : "mb-6"}`}
+      className={`flex-row items-center justify-between ${compact ? "mb-3" : "mb-6"}`}
     >
-      <View className="flex-1 mr-4">
+      <View className="mr-4 flex-1">
         <MarqueeText
           text={track.title}
           className={cn(
-            "font-bold text-white mb-1",
-            compact ? "text-xl" : "text-2xl",
+            "mb-1 font-bold text-white",
+            compact ? "text-xl" : "text-2xl"
           )}
         />
         <MarqueeText
@@ -46,8 +49,8 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({
             "track",
             track.title,
             track.artist,
-            track.image,
-          );
+            track.image
+          )
         }}
       >
         {isFavorite ? (
@@ -67,5 +70,5 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({
         )}
       </PressableFeedback>
     </Animated.View>
-  );
-};
+  )
+}

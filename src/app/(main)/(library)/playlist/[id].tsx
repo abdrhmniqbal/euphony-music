@@ -1,38 +1,44 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import Animated, { FadeIn } from "react-native-reanimated";
-import { Button } from "heroui-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import * as React from "react"
+import { useState } from "react"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { Button } from "heroui-native"
+import { ScrollView, Text, View } from "react-native"
+import Animated, { FadeIn } from "react-native-reanimated"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { TrackList } from "@/components/blocks/track-list";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { usePlaylistDetailsScreen } from "@/modules/playlist/hooks/use-playlist-details-screen"
+import { formatDuration } from "@/modules/playlist/playlist.utils"
+import LocalFavouriteIcon from "@/components/icons/local/favourite"
+import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
+import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
 import {
   DeletePlaylistDialog,
   PlaybackActionsRow,
   PlaylistActionsSheet,
-} from "@/components/blocks";
-import { PlaylistArtwork } from "@/components/patterns";
-import { EmptyState } from "@/components/ui";
-import LocalFavouriteIcon from "@/components/icons/local/favourite";
-import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid";
-import { formatDuration } from "@/modules/playlist/playlist.utils";
-import { usePlaylistDetailsScreen } from "@/modules/playlist/hooks/use-playlist-details-screen";
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid";
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid";
+} from "@/components/blocks"
+import { TrackList } from "@/components/blocks/track-list"
+import { BackButton, PlaylistArtwork } from "@/components/patterns"
+import { EmptyState } from "@/components/ui"
 
-const HEADER_COLLAPSE_THRESHOLD = 120;
+const HEADER_COLLAPSE_THRESHOLD = 120
 
 export default function PlaylistDetailsScreen() {
-  const router = useRouter();
-  const theme = useThemeColors();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
-  const [showActionSheet, setShowActionSheet] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const router = useRouter()
+  const theme = useThemeColors()
+  const { id, from, query } = useLocalSearchParams<{
+    id: string
+    from?: string
+    query?: string
+  }>()
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false)
+  const [showActionSheet, setShowActionSheet] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const {
     playlist,
@@ -47,18 +53,30 @@ export default function PlaylistDetailsScreen() {
     toggleFavorite,
     deletePlaylist,
     isDeleting,
-  } = usePlaylistDetailsScreen(id || "");
+  } = usePlaylistDetailsScreen(id || "")
+
+  function handleBack() {
+    if (from === "search") {
+      router.replace({
+        pathname: "/search-interaction",
+        params: query ? { query } : {},
+      })
+      return
+    }
+
+    router.back()
+  }
 
   async function handleDeleteConfirm() {
-    const didDelete = await deletePlaylist();
+    const didDelete = await deletePlaylist()
     if (didDelete) {
-      setShowDeleteDialog(false);
-      router.replace("/(main)/(library)");
+      setShowDeleteDialog(false)
+      router.replace("/(main)/(library)")
     }
   }
 
   if (isLoading) {
-    return <View className="flex-1 bg-background" />;
+    return <View className="flex-1 bg-background" />
   }
 
   if (!playlist) {
@@ -76,7 +94,7 @@ export default function PlaylistDetailsScreen() {
         message="This playlist may have been removed."
         className="mt-12"
       />
-    );
+    )
   }
 
   return (
@@ -84,8 +102,12 @@ export default function PlaylistDetailsScreen() {
       <Stack.Screen
         options={{
           title: showHeaderTitle ? playlist.name : "",
+          headerBackVisible: false,
+          headerLeft: () => (
+            <BackButton className="-ml-2" onPress={handleBack} />
+          ),
           headerRight: () => (
-            <View className="flex-row gap-4 -mr-2">
+            <View className="-mr-2 flex-row gap-4">
               <Button
                 onPress={toggleFavorite}
                 variant="ghost"
@@ -130,11 +152,11 @@ export default function PlaylistDetailsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 200 }}
         onScroll={(e) => {
-          const y = e.nativeEvent.contentOffset.y;
-          handleScroll(y);
-          const nextShowHeaderTitle = y > HEADER_COLLAPSE_THRESHOLD;
+          const y = e.nativeEvent.contentOffset.y
+          handleScroll(y)
+          const nextShowHeaderTitle = y > HEADER_COLLAPSE_THRESHOLD
           if (nextShowHeaderTitle !== showHeaderTitle) {
-            setShowHeaderTitle(nextShowHeaderTitle);
+            setShowHeaderTitle(nextShowHeaderTitle)
           }
         }}
         onScrollBeginDrag={handleScrollStart}
@@ -144,7 +166,7 @@ export default function PlaylistDetailsScreen() {
       >
         <View className="px-4 pb-6">
           <View className="flex-row gap-4 pt-6">
-            <View className="w-36 h-36 rounded-lg overflow-hidden bg-surface-secondary">
+            <View className="h-36 w-36 overflow-hidden rounded-lg bg-surface-secondary">
               <PlaylistArtwork
                 images={playlistImages}
                 fallback={
@@ -167,12 +189,12 @@ export default function PlaylistDetailsScreen() {
                 {playlist.name}
               </Text>
               {playlist.description ? (
-                <Text className="text-base text-muted mt-1" numberOfLines={2}>
+                <Text className="mt-1 text-base text-muted" numberOfLines={2}>
                   {playlist.description}
                 </Text>
               ) : null}
-              <Text className="text-sm text-muted mt-2">
-                {tracks.length} tracks · {formatDuration(totalDuration)}
+              <Text className="mt-2 text-sm text-muted">
+                {tracks.length} tracks ·{formatDuration(totalDuration)}
               </Text>
             </View>
           </View>
@@ -211,5 +233,5 @@ export default function PlaylistDetailsScreen() {
         isDeleting={isDeleting}
       />
     </View>
-  );
+  )
 }

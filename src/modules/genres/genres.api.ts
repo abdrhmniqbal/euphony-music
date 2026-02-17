@@ -1,22 +1,24 @@
-import { db } from "@/db/client";
-import { tracks } from "@/db/schema";
-import type { Track } from "@/modules/player/player.types";
-import { asc, desc, eq, sql } from "drizzle-orm";
-import { transformDBTrackToTrack } from "@/utils/transformers";
-import { GENRE_COLORS, GENRE_SHAPES, type GenreShape } from "./genres.constants";
+import { asc, desc, sql } from "drizzle-orm"
+
+import { db } from "@/db/client"
+import { tracks } from "@/db/schema"
+import type { Track } from "@/modules/player/player.types"
+import { transformDBTrackToTrack } from "@/utils/transformers"
+
+import { GENRE_COLORS, GENRE_SHAPES, type GenreShape } from "./genres.constants"
 
 export interface GenreAlbumInfo {
-  name: string;
-  artist?: string;
-  image?: string;
-  trackCount: number;
-  year?: number;
+  name: string
+  artist?: string
+  image?: string
+  trackCount: number
+  year?: number
 }
 
 export interface GenreVisual {
-  name: string;
-  color: string;
-  shape: GenreShape;
+  name: string
+  color: string
+  shape: GenreShape
 }
 
 export async function getAllGenres(): Promise<string[]> {
@@ -26,11 +28,11 @@ export async function getAllGenres(): Promise<string[]> {
       columns: {
         name: true,
       },
-    });
+    })
 
-    return result.map((g) => g.name);
+    return result.map((g) => g.name)
   } catch {
-    return [];
+    return []
   }
 }
 
@@ -43,126 +45,151 @@ export async function getAllGenreVisuals(): Promise<GenreVisual[]> {
         color: true,
         shape: true,
       },
-    });
+    })
 
     return result.map((genre) => ({
       name: genre.name,
       color: genre.color,
       shape: genre.shape as GenreShape,
-    }));
+    }))
   } catch {
-    const names = await getAllGenres();
+    const names = await getAllGenres()
     return names.map((name) => {
-      const hash = hashString(name);
+      const hash = hashString(name)
       return {
         name,
         color: GENRE_COLORS[hash % GENRE_COLORS.length],
-        shape: GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length],
-      };
-    });
+        shape:
+          GENRE_SHAPES[
+            Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length
+          ],
+      }
+    })
   }
 }
 
 function hashString(value: string): number {
-  let hash = 0;
+  let hash = 0
   for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
   }
-  return hash;
+  return hash
 }
 
-export async function getTopTracksByGenre(genre: string, limit = 25): Promise<Track[]> {
+export async function getTopTracksByGenre(
+  genre: string,
+  limit = 25
+): Promise<Track[]> {
   try {
-    const trimmedGenre = genre.trim();
+    const trimmedGenre = genre.trim()
 
     const matchingGenres = await db.query.genres.findMany({
       where: (g, { sql }) => sql`${g.name} LIKE ${trimmedGenre}`,
       columns: { id: true },
-    });
+    })
 
-    if (matchingGenres.length === 0) return [];
-    const genreIds = matchingGenres.map((g) => g.id);
+    if (matchingGenres.length === 0) return []
+    const genreIds = matchingGenres.map((g) => g.id)
 
     const loadedTracks = await db.query.tracks.findMany({
       where: (t, { and, eq }) =>
         and(
           eq(t.isDeleted, 0),
-          sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(genreIds.map((id) => sql`${id}`), sql`, `)}))`,
+          sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(
+            genreIds.map((id) => sql`${id}`),
+            sql`, `
+          )}))`
         ),
       with: {
         artist: true,
         album: true,
       },
-      orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt), asc(tracks.title)],
+      orderBy: [
+        desc(tracks.playCount),
+        desc(tracks.lastPlayedAt),
+        asc(tracks.title),
+      ],
       limit,
-    });
+    })
 
-    return loadedTracks.map(transformDBTrackToTrack);
+    return loadedTracks.map(transformDBTrackToTrack)
   } catch {
-    return [];
+    return []
   }
 }
 
 export async function getAllTracksByGenre(genre: string): Promise<Track[]> {
   try {
-    const trimmedGenre = genre.trim();
+    const trimmedGenre = genre.trim()
     const matchingGenres = await db.query.genres.findMany({
       where: (g, { sql }) => sql`${g.name} LIKE ${trimmedGenre}`,
       columns: { id: true },
-    });
+    })
 
-    if (matchingGenres.length === 0) return [];
-    const genreIds = matchingGenres.map((g) => g.id);
+    if (matchingGenres.length === 0) return []
+    const genreIds = matchingGenres.map((g) => g.id)
 
     const loadedTracks = await db.query.tracks.findMany({
       where: (t, { and, eq }) =>
         and(
           eq(t.isDeleted, 0),
-          sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(genreIds.map((id) => sql`${id}`), sql`, `)}))`,
+          sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(
+            genreIds.map((id) => sql`${id}`),
+            sql`, `
+          )}))`
         ),
       with: {
         artist: true,
         album: true,
       },
-      orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt), asc(tracks.title)],
-    });
+      orderBy: [
+        desc(tracks.playCount),
+        desc(tracks.lastPlayedAt),
+        asc(tracks.title),
+      ],
+    })
 
-    return loadedTracks.map(transformDBTrackToTrack);
+    return loadedTracks.map(transformDBTrackToTrack)
   } catch {
-    return [];
+    return []
   }
 }
 
-export async function getAlbumsByGenre(genre: string): Promise<GenreAlbumInfo[]> {
+export async function getAlbumsByGenre(
+  genre: string
+): Promise<GenreAlbumInfo[]> {
   try {
-    const trimmedGenre = genre.trim();
+    const trimmedGenre = genre.trim()
     const matchingGenres = await db.query.genres.findMany({
       where: (g, { sql }) => sql`LOWER(${g.name}) LIKE LOWER(${trimmedGenre})`,
       columns: { id: true },
-    });
+    })
 
-    if (matchingGenres.length === 0) return [];
-    const genreIds = matchingGenres.map((g) => g.id);
+    if (matchingGenres.length === 0) return []
+    const genreIds = matchingGenres.map((g) => g.id)
 
     const tracksInGenre = await db.query.tracks.findMany({
       where: (t, { and, eq }) =>
         and(
           eq(t.isDeleted, 0),
-          sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(genreIds.map((id) => sql`${id}`), sql`, `)}))`,
-          sql`${t.albumId} IS NOT NULL`,
+          sql`${t.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(
+            genreIds.map((id) => sql`${id}`),
+            sql`, `
+          )}))`,
+          sql`${t.albumId} IS NOT NULL`
         ),
       with: {
         album: true,
         artist: true,
       },
-    });
+    })
 
-    const albumMap = new Map<string, GenreAlbumInfo>();
+    const albumMap = new Map<string, GenreAlbumInfo>()
 
     for (const track of tracksInGenre) {
       if (track.albumId && track.album) {
-        const albumName = track.album.title || "Unknown Album";
-        const key = `${albumName}-${track.album.artistId || ""}`;
+        const albumName = track.album.title || "Unknown Album"
+        const key = `${albumName}-${track.album.artistId || ""}`
 
         if (!albumMap.has(key)) {
           albumMap.set(key, {
@@ -171,15 +198,17 @@ export async function getAlbumsByGenre(genre: string): Promise<GenreAlbumInfo[]>
             image: track.album.artwork || track.artwork || undefined,
             trackCount: 0,
             year: track.album.year || track.year || undefined,
-          });
+          })
         }
 
-        albumMap.get(key)!.trackCount++;
+        albumMap.get(key)!.trackCount++
       }
     }
 
-    return Array.from(albumMap.values()).sort((a, b) => b.trackCount - a.trackCount);
+    return Array.from(albumMap.values()).sort(
+      (a, b) => b.trackCount - a.trackCount
+    )
   } catch {
-    return [];
+    return []
   }
 }

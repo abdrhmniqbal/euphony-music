@@ -1,6 +1,8 @@
-import { Checkbox } from "heroui-native";
-import { TrackRow } from "@/components/patterns";
-import type { PlaylistTrackRowProps } from "./types";
+import { Checkbox } from "heroui-native"
+
+import { TrackRow } from "@/components/patterns"
+
+import type { PlaylistTrackRowProps } from "./types"
 
 export function PlaylistTrackRow({
   track,
@@ -22,5 +24,5 @@ export function PlaylistTrackRow({
         />
       }
     />
-  );
+  )
 }

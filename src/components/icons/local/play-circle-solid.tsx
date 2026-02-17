@@ -1,10 +1,10 @@
-import React from "react";
-import { SvgXml, type SvgProps } from "react-native-svg";
+import * as React from "react"
+import { SvgXml, type SvgProps } from "react-native-svg"
 
-const LocalPlayCircleSolidIcon = (props: Omit<SvgProps, "xml">) => {
-  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM10.6804 8.1867C9.72723 7.6761 8.5 8.27305 8.5 9.24729V14.7527C8.5 15.727 9.72723 16.3239 10.6804 15.8133L15.8192 13.0606C16.7269 12.5743 16.7269 11.4257 15.8192 10.9394L10.6804 8.1867Z" fill="currentColor"/></svg>`;
+function LocalPlayCircleSolidIcon(props: Omit<SvgProps, "xml">) {
+  const xml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM10.6804 8.1867C9.72723 7.6761 8.5 8.27305 8.5 9.24729V14.7527C8.5 15.727 9.72723 16.3239 10.6804 15.8133L15.8192 13.0606C16.7269 12.5743 16.7269 11.4257 15.8192 10.9394L10.6804 8.1867Z" fill="currentColor"/></svg>`
 
-  return <SvgXml xml={xml} {...props} />;
-};
+  return <SvgXml xml={xml} {...props} />
+}
 
-export default LocalPlayCircleSolidIcon;
+export default LocalPlayCircleSolidIcon

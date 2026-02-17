@@ -1,34 +1,42 @@
-import React, { useState } from "react";
-import { View, Text, Image, ScrollView } from "react-native";
-import { Stack } from "expo-router";
-import Animated, { FadeIn } from "react-native-reanimated";
-import { useThemeColors } from "@/hooks/use-theme-colors";
+import * as React from "react"
+import { useState } from "react"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import { Button } from "heroui-native"
+import { Image, ScrollView, Text, View } from "react-native"
+import Animated, { FadeIn } from "react-native-reanimated"
+
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store";
-import { SortSheet } from "@/components/blocks/sort-sheet";
-import { TrackList } from "@/components/blocks/track-list";
-import { PlaybackActionsRow } from "@/components/blocks";
-import { toggleFavoriteItem } from "@/modules/favorites/favorites.store";
-import { useAlbumDetailsScreen } from "@/modules/albums/hooks/use-album-details-screen";
+} from "@/hooks/scroll-bars.store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useAlbumDetailsScreen } from "@/modules/albums/hooks/use-album-details-screen"
+import { toggleFavoriteItem } from "@/modules/favorites/favorites.store"
 import {
   TRACK_SORT_OPTIONS,
   type SortField,
-} from "@/modules/library/library-sort.store";
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid";
-import { Button } from "heroui-native";
-import LocalFavouriteIcon from "@/components/icons/local/favourite";
-import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid";
-import { EmptyState } from "@/components/ui";
+} from "@/modules/library/library-sort.store"
+import LocalFavouriteIcon from "@/components/icons/local/favourite"
+import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import { PlaybackActionsRow } from "@/components/blocks"
+import { SortSheet } from "@/components/blocks/sort-sheet"
+import { TrackList } from "@/components/blocks/track-list"
+import { BackButton } from "@/components/patterns"
+import { EmptyState } from "@/components/ui"
 
-const HEADER_COLLAPSE_THRESHOLD = 120;
+const HEADER_COLLAPSE_THRESHOLD = 120
 
 export default function AlbumDetailsScreen() {
-  const theme = useThemeColors();
-  const [sortModalVisible, setSortModalVisible] = useState(false);
-  const [showHeaderTitle, setShowHeaderTitle] = useState(false);
+  const theme = useThemeColors()
+  const router = useRouter()
+  const { from, query } = useLocalSearchParams<{
+    from?: string
+    query?: string
+  }>()
+  const [sortModalVisible, setSortModalVisible] = useState(false)
+  const [showHeaderTitle, setShowHeaderTitle] = useState(false)
 
   const {
     albumInfo,
@@ -43,10 +51,22 @@ export default function AlbumDetailsScreen() {
     shuffleTracks,
     selectSort,
     getSortLabel,
-  } = useAlbumDetailsScreen();
+  } = useAlbumDetailsScreen()
 
   function handleSortSelect(field: SortField, order?: "asc" | "desc") {
-    selectSort(field, order);
+    selectSort(field, order)
+  }
+
+  function handleBack() {
+    if (from === "search") {
+      router.replace({
+        pathname: "/search-interaction",
+        params: query ? { query } : {},
+      })
+      return
+    }
+
+    router.back()
   }
 
   if (!albumInfo) {
@@ -61,10 +81,10 @@ export default function AlbumDetailsScreen() {
           />
         }
         title="No albums found"
-        message={`No albums found`}
+        message="No albums found"
         className="mt-12"
       />
-    );
+    )
   }
 
   return (
@@ -79,6 +99,10 @@ export default function AlbumDetailsScreen() {
         <Stack.Screen
           options={{
             title: showHeaderTitle ? albumInfo.title : "",
+            headerBackVisible: false,
+            headerLeft: () => (
+              <BackButton className="-ml-2" onPress={handleBack} />
+            ),
             headerRight: () =>
               albumId && (
                 <Button
@@ -88,8 +112,8 @@ export default function AlbumDetailsScreen() {
                       "album",
                       albumInfo.title,
                       albumInfo.artist,
-                      albumInfo.image,
-                    );
+                      albumInfo.image
+                    )
                   }}
                   variant="ghost"
                   className="-mr-2"
@@ -119,11 +143,11 @@ export default function AlbumDetailsScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 200 }}
           onScroll={(event) => {
-            const y = event.nativeEvent.contentOffset.y;
-            handleScroll(y);
-            const nextShowHeaderTitle = y > HEADER_COLLAPSE_THRESHOLD;
+            const y = event.nativeEvent.contentOffset.y
+            handleScroll(y)
+            const nextShowHeaderTitle = y > HEADER_COLLAPSE_THRESHOLD
             if (nextShowHeaderTitle !== showHeaderTitle) {
-              setShowHeaderTitle(nextShowHeaderTitle);
+              setShowHeaderTitle(nextShowHeaderTitle)
             }
           }}
           onScrollBeginDrag={handleScrollStart}
@@ -133,15 +157,15 @@ export default function AlbumDetailsScreen() {
         >
           <View className="px-4 pb-6">
             <View className="flex-row gap-4 pt-6">
-              <View className="w-36 h-36 rounded-lg overflow-hidden bg-surface-secondary">
+              <View className="h-36 w-36 overflow-hidden rounded-lg bg-surface-secondary">
                 {albumInfo.image ? (
                   <Image
                     source={{ uri: albumInfo.image }}
-                    className="w-full h-full"
+                    className="h-full w-full"
                     resizeMode="cover"
                   />
                 ) : (
-                  <View className="w-full h-full items-center justify-center">
+                  <View className="h-full w-full items-center justify-center">
                     <LocalVynilSolidIcon
                       fill="none"
                       width={48}
@@ -157,9 +181,12 @@ export default function AlbumDetailsScreen() {
                   className="text-xl font-bold text-foreground"
                   numberOfLines={1}
                 >
+                  {albumInfo.title}
+                </Text>
+                <Text className="mt-1 text-sm text-muted" numberOfLines={1}>
                   {albumInfo.artist}
                 </Text>
-                <Text className="text-sm text-muted mt-2">
+                <Text className="mt-2 text-sm text-muted">
                   {albumInfo.year ? `${albumInfo.year}` : ""} ·{" "}
                   {totalDurationLabel}
                 </Text>
@@ -174,7 +201,7 @@ export default function AlbumDetailsScreen() {
             />
           </Animated.View>
 
-          <View className="px-4 flex-row items-center justify-between mb-4">
+          <View className="mb-4 flex-row items-center justify-between px-4">
             <Text className="text-lg font-bold text-foreground">
               {sortedTracks.length} Tracks
             </Text>
@@ -185,8 +212,8 @@ export default function AlbumDetailsScreen() {
             {Array.from(tracksByDisc.entries()).map(
               ([discNumber, discTracks]) => (
                 <View key={discNumber}>
-                  <View className="py-3 px-2 mb-2">
-                    <Text className="text-sm font-semibold text-muted uppercase tracking-wide">
+                  <View className="mb-2 px-2 py-3">
+                    <Text className="text-sm font-semibold tracking-wide text-muted uppercase">
                       Disc {discNumber}
                     </Text>
                   </View>
@@ -199,7 +226,7 @@ export default function AlbumDetailsScreen() {
                     onTrackPress={playSelectedTrack}
                   />
                 </View>
-              ),
+              )
             )}
           </View>
         </ScrollView>
@@ -207,5 +234,5 @@ export default function AlbumDetailsScreen() {
         <SortSheet.Content options={TRACK_SORT_OPTIONS} />
       </View>
     </SortSheet>
-  );
+  )
 }

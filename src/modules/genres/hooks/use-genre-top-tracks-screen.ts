@@ -1,39 +1,40 @@
-import { useQuery } from "@tanstack/react-query";
-import { startIndexing } from "@/modules/indexer";
-import { fetchGenreTopTracks } from "@/modules/genres/genres.utils";
-import { playTrack } from "@/modules/player/player.store";
+import { useQuery } from "@tanstack/react-query"
 
-const GENRE_TOP_TRACKS_QUERY_KEY = "genre-top-tracks";
+import { fetchGenreTopTracks } from "@/modules/genres/genres.utils"
+import { startIndexing } from "@/modules/indexer"
+import { playTrack } from "@/modules/player/player.store"
+
+const GENRE_TOP_TRACKS_QUERY_KEY = "genre-top-tracks"
 
 export function useGenreTopTracksScreen(genreName: string) {
-  const normalizedGenreName = genreName.trim();
+  const normalizedGenreName = genreName.trim()
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: [GENRE_TOP_TRACKS_QUERY_KEY, normalizedGenreName],
     queryFn: () => fetchGenreTopTracks(normalizedGenreName),
     enabled: normalizedGenreName.length > 0,
-  });
-  const tracks = data ?? [];
+  })
+  const tracks = data ?? []
 
   async function refresh() {
-    await startIndexing(true);
-    await refetch();
+    await startIndexing(true)
+    await refetch()
   }
 
   function playAll() {
     if (tracks.length === 0) {
-      return;
+      return
     }
 
-    playTrack(tracks[0], tracks);
+    playTrack(tracks[0], tracks)
   }
 
   function shuffle() {
     if (tracks.length === 0) {
-      return;
+      return
     }
 
-    const randomIndex = Math.floor(Math.random() * tracks.length);
-    playTrack(tracks[randomIndex], tracks);
+    const randomIndex = Math.floor(Math.random() * tracks.length)
+    playTrack(tracks[randomIndex], tracks)
   }
 
   return {
@@ -42,5 +43,5 @@ export function useGenreTopTracksScreen(genreName: string) {
     refresh,
     playAll,
     shuffle,
-  };
+  }
 }

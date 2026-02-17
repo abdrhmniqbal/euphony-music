@@ -1,31 +1,32 @@
-import { db } from "@/db/client";
-import { playHistory, tracks } from "@/db/schema";
-import type { Track } from "@/modules/player/player.types";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm"
 
-export type HistoryTopTracksPeriod = "all" | "day" | "week";
+import { db } from "@/db/client"
+import { playHistory, tracks } from "@/db/schema"
+import type { Track } from "@/modules/player/player.types"
 
-type TrackWithRelations = {
-  id: string;
-  title: string;
-  artistId: string | null;
-  albumId: string | null;
-  duration: number;
-  uri: string;
-  artwork: string | null;
-  playCount: number | null;
-  lastPlayedAt: number | null;
-  year: number | null;
-  isFavorite: number | null;
-  trackNumber: number | null;
-  discNumber: number | null;
+export type HistoryTopTracksPeriod = "all" | "day" | "week"
+
+interface TrackWithRelations {
+  id: string
+  title: string
+  artistId: string | null
+  albumId: string | null
+  duration: number
+  uri: string
+  artwork: string | null
+  playCount: number | null
+  lastPlayedAt: number | null
+  year: number | null
+  isFavorite: number | null
+  trackNumber: number | null
+  discNumber: number | null
   artist?: {
-    name: string | null;
-  } | null;
+    name: string | null
+  } | null
   album?: {
-    title: string | null;
-  } | null;
-};
+    title: string | null
+  } | null
+}
 
 function mapTrackRecord(track: TrackWithRelations): Track {
   return {
@@ -45,7 +46,7 @@ function mapTrackRecord(track: TrackWithRelations): Track {
     isFavorite: Boolean(track.isFavorite),
     trackNumber: track.trackNumber || undefined,
     discNumber: track.discNumber || undefined,
-  };
+  }
 }
 
 export async function getTrackHistory(): Promise<Track[]> {
@@ -61,19 +62,19 @@ export async function getTrackHistory(): Promise<Track[]> {
         },
       },
       limit: 50,
-    });
+    })
 
     return history
       .filter((item) => item.track && !item.track.isDeleted)
-      .map((item) => mapTrackRecord(item.track));
+      .map((item) => mapTrackRecord(item.track))
   } catch {
-    return [];
+    return []
   }
 }
 
 export async function getTopTracksByPeriod(
   period: HistoryTopTracksPeriod = "all",
-  limit: number = 25,
+  limit: number = 25
 ): Promise<Track[]> {
   try {
     if (period === "all") {
@@ -85,13 +86,17 @@ export async function getTopTracksByPeriod(
           album: true,
         },
         limit,
-      });
+      })
 
-      return topTracks.filter((t) => t.playCount && t.playCount > 0).map(mapTrackRecord);
+      return topTracks
+        .filter((t) => t.playCount && t.playCount > 0)
+        .map(mapTrackRecord)
     }
 
     const timeThreshold =
-      period === "day" ? Date.now() - 24 * 60 * 60 * 1000 : Date.now() - 7 * 24 * 60 * 60 * 1000;
+      period === "day"
+        ? Date.now() - 24 * 60 * 60 * 1000
+        : Date.now() - 7 * 24 * 60 * 60 * 1000
 
     const history = await db.query.playHistory.findMany({
       where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
@@ -103,17 +108,20 @@ export async function getTopTracksByPeriod(
           },
         },
       },
-    });
+    })
 
-    const trackCounts = new Map<string, { track: (typeof history)[number]["track"]; count: number }>();
+    const trackCounts = new Map<
+      string,
+      { track: (typeof history)[number]["track"]; count: number }
+    >()
 
     for (const entry of history) {
       if (entry.track && !entry.track.isDeleted) {
-        const existing = trackCounts.get(entry.trackId);
+        const existing = trackCounts.get(entry.trackId)
         if (existing) {
-          existing.count++;
+          existing.count++
         } else {
-          trackCounts.set(entry.trackId, { track: entry.track, count: 1 });
+          trackCounts.set(entry.trackId, { track: entry.track, count: 1 })
         }
       }
     }
@@ -121,9 +129,9 @@ export async function getTopTracksByPeriod(
     return Array.from(trackCounts.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, limit)
-      .map((item) => mapTrackRecord(item.track));
+      .map((item) => mapTrackRecord(item.track))
   } catch {
-    return [];
+    return []
   }
 }
 
@@ -135,16 +143,16 @@ export async function addTrackToHistory(trackId: string): Promise<void> {
       playedAt: Date.now(),
       duration: 0,
       completed: 0,
-    });
+    })
 
     const allHistory = await db.query.playHistory.findMany({
       orderBy: [desc(playHistory.playedAt)],
-    });
+    })
 
     if (allHistory.length > 50) {
-      const toDelete = allHistory.slice(50);
+      const toDelete = allHistory.slice(50)
       for (const entry of toDelete) {
-        await db.delete(playHistory).where(eq(playHistory.id, entry.id));
+        await db.delete(playHistory).where(eq(playHistory.id, entry.id))
       }
     }
   } catch {
@@ -160,9 +168,9 @@ export async function incrementTrackPlayCount(trackId: string): Promise<void> {
         playCount: sql`${tracks.playCount} + 1`,
         lastPlayedAt: Date.now(),
       })
-      .where(eq(tracks.id, trackId));
+      .where(eq(tracks.id, trackId))
 
-    await addTrackToHistory(trackId);
+    await addTrackToHistory(trackId)
   } catch {
     // no-op
   }

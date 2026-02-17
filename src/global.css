@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "uniwind";
 
-@import 'heroui-native/styles';
+@import "heroui-native/styles";
 
 @source '../node_modules/heroui-native/lib';
 
@@ -19,22 +19,22 @@
 
 @theme inline static {
   /* Rainbow Colors */
-  --rainbow-lime: #5BDD6A;
-  --rainbow-light-green: #35DB80;
-  --rainbow-teal: #20D6BE;
-  --rainbow-cyan: #26D1D1;
-  --rainbow-light-blue: #11CDF2;
-  --rainbow-sky-blue: #40B6FF;
-  --rainbow-blue: #638DFF;
-  --rainbow-indigo: #7979F7;
-  --rainbow-deep-purple: #A17DF5;
-  --rainbow-purple: #CE7AF0;
-  --rainbow-magenta: #FF70B0;
-  --rainbow-red: #FF697A;
-  --rainbow-orange: #FF875C;
-  --rainbow-amber: #FFD86B;
-  --rainbow-yellow: #FDFF78;
-  --rainbow-navy: #98A0B3;
+  --rainbow-lime: #5bdd6a;
+  --rainbow-light-green: #35db80;
+  --rainbow-teal: #20d6be;
+  --rainbow-cyan: #26d1d1;
+  --rainbow-light-blue: #11cdf2;
+  --rainbow-sky-blue: #40b6ff;
+  --rainbow-blue: #638dff;
+  --rainbow-indigo: #7979f7;
+  --rainbow-deep-purple: #a17df5;
+  --rainbow-purple: #ce7af0;
+  --rainbow-magenta: #ff70b0;
+  --rainbow-red: #ff697a;
+  --rainbow-orange: #ff875c;
+  --rainbow-amber: #ffd86b;
+  --rainbow-yellow: #fdff78;
+  --rainbow-navy: #98a0b3;
 
   --color-rainbow-lime: var(--rainbow-lime);
   --color-rainbow-light-green: var(--rainbow-light-green);

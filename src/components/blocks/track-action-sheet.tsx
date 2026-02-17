@@ -1,161 +1,216 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { BottomSheet, Button } from "heroui-native";
-import { useThemeColors } from "@/hooks/use-theme-colors";
-import { playTrack, Track } from "@/modules/player/player.store";
-import { playNext, addToQueue } from "@/modules/player/queue.store";
-import { toggleFavoriteItem } from "@/modules/favorites/favorites.store";
+import * as React from "react"
+import { useState } from "react"
+import { BottomSheet, Button } from "heroui-native"
+import { Image, Text, View } from "react-native"
+
+import { ICON_SIZES } from "@/constants/icon-sizes"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { toggleFavoriteItem } from "@/modules/favorites/favorites.store"
+import { playTrack, type Track } from "@/modules/player/player.store"
+import { addToQueue, playNext } from "@/modules/player/queue.store"
+import LocalAddIcon from "@/components/icons/local/add"
+import LocalFavouriteIcon from "@/components/icons/local/favourite"
+import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalNextSolidIcon from "@/components/icons/local/next-solid"
+import LocalPlaySolidIcon from "@/components/icons/local/play-solid"
+import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
 
 interface TrackActionSheetProps {
-    track: Track | null;
-    isOpen: boolean;
-    onClose: () => void;
-    tracks?: Track[];
-    onAddToPlaylist?: (track: Track) => void;
+  track: Track | null
+  isOpen: boolean
+  onClose: () => void
+  tracks?: Track[]
+  onAddToPlaylist?: (track: Track) => void
 }
 
 export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
-    track,
-    isOpen,
-    onClose,
-    tracks,
-    onAddToPlaylist,
+  track,
+  isOpen,
+  onClose,
+  tracks,
+  onAddToPlaylist,
 }) => {
-    const theme = useThemeColors();
-    const [isFavorite, setIsFavorite] = useState(track?.isFavorite || false);
+  const theme = useThemeColors()
+  const [favoriteOverrides, setFavoriteOverrides] = useState<
+    Record<string, boolean>
+  >({})
+  const isFavorite = track
+    ? (favoriteOverrides[track.id] ?? track.isFavorite ?? false)
+    : false
 
-    useEffect(() => {
-        setIsFavorite(track?.isFavorite || false);
-    }, [track?.id, track?.isFavorite]);
+  const handlePlay = async () => {
+    if (track) {
+      playTrack(track, tracks)
+      onClose()
+    }
+  }
 
-    const handlePlay = async () => {
-        if (track) {
-            playTrack(track, tracks);
-            onClose();
-        }
-    };
+  const handleToggleFavorite = () => {
+    if (track) {
+      const newState = !isFavorite
+      setFavoriteOverrides((prev) => ({ ...prev, [track.id]: newState }))
+      toggleFavoriteItem(
+        track.id,
+        "track",
+        track.title,
+        track.artist,
+        track.image
+      )
+    }
+  }
 
-    const handleToggleFavorite = () => {
-        if (track) {
-            const newState = !isFavorite;
-            setIsFavorite(newState);
-            toggleFavoriteItem(track.id, 'track', track.title, track.artist, track.image);
-        }
-    };
+  const handlePlayNext = async () => {
+    if (track) {
+      await playNext(track)
+      onClose()
+    }
+  }
 
-    const handlePlayNext = async () => {
-        if (track) {
-            await playNext(track);
-            onClose();
-        }
-    };
+  const handleAddToQueue = async () => {
+    if (track) {
+      await addToQueue(track)
+      onClose()
+    }
+  }
 
-    const handleAddToQueue = async () => {
-        if (track) {
-            await addToQueue(track);
-            onClose();
-        }
-    };
+  const handleAddToPlaylist = () => {
+    if (track && onAddToPlaylist) {
+      onAddToPlaylist(track)
+      onClose()
+    }
+  }
 
-    const handleAddToPlaylist = () => {
-        if (track && onAddToPlaylist) {
-            onAddToPlaylist(track);
-            onClose();
-        }
-    };
+  if (!track) return null
 
-    if (!track) return null;
+  return (
+    <BottomSheet isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <BottomSheet.Portal>
+        <BottomSheet.Overlay />
+        <BottomSheet.Content className="rounded-t-3xl border-none px-6 pt-2 pb-8">
+          <View className="mb-6 flex-row items-center gap-4">
+            <View className="h-20 w-20 overflow-hidden rounded-xl bg-surface">
+              {track.image ? (
+                <Image
+                  source={{ uri: track.image }}
+                  className="h-full w-full"
+                  resizeMode="cover"
+                />
+              ) : (
+                <View className="h-full w-full items-center justify-center">
+                  <LocalMusicNoteSolidIcon
+                    fill="none"
+                    width={ICON_SIZES.sheetArtworkFallback}
+                    height={ICON_SIZES.sheetArtworkFallback}
+                    color={theme.muted}
+                  />
+                </View>
+              )}
+            </View>
+            <View className="flex-1">
+              <Text className="text-xl leading-tight font-bold text-foreground">
+                {track.title}
+              </Text>
+            </View>
+          </View>
 
-    return (
-        <BottomSheet isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <BottomSheet.Portal>
-                <BottomSheet.Overlay />
-                <BottomSheet.Content className="border-none rounded-t-3xl px-6 pb-8 pt-2">
-                    <View className="flex-row items-center gap-4 mb-6">
-                        <View className="w-20 h-20 rounded-xl bg-default overflow-hidden">
-                            {track.image ? (
-                                <Image
-                                    source={{ uri: track.image }}
-                                    className="w-full h-full"
-                                    resizeMode="cover"
-                                />
-                            ) : (
-                                <View className="w-full h-full items-center justify-center">
-                                    <Ionicons name="musical-note" size={32} color={theme.foreground} />
-                                </View>
-                            )}
-                        </View>
-                        <View className="flex-1">
-                            <Text className="text-xl font-bold text-foreground leading-tight">
-                                {track.title}
-                            </Text>
-                        </View>
-                    </View>
+          <View className="mb-3 flex-row gap-3">
+            <Button
+              variant="primary"
+              onPress={handlePlay}
+              className="h-14 flex-[2] rounded-xl"
+            >
+              <View className="flex-row items-center gap-2">
+                <LocalPlaySolidIcon
+                  fill="none"
+                  width={24}
+                  height={24}
+                  color="white"
+                />
+                <Text className="text-lg font-bold text-white">Play</Text>
+              </View>
+            </Button>
+            <Button
+              variant="ghost"
+              onPress={handleToggleFavorite}
+              className="h-14 flex-1 rounded-xl"
+            >
+              {isFavorite ? (
+                <LocalFavouriteSolidIcon
+                  fill="none"
+                  width={28}
+                  height={28}
+                  color="#ef4444"
+                />
+              ) : (
+                <LocalFavouriteIcon
+                  fill="none"
+                  width={28}
+                  height={28}
+                  color={theme.foreground}
+                />
+              )}
+            </Button>
+          </View>
 
-                    <View className="flex-row gap-3 mb-3">
-                        <Button
-                            variant="primary"
-                            onPress={handlePlay}
-                            className="flex-[2] h-14 rounded-xl"
-                        >
-                            <View className="flex-row items-center gap-2">
-                                <Ionicons name="play" size={24} color="white" />
-                                <Text className="text-white font-bold text-lg">Play</Text>
-                            </View>
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            onPress={handleToggleFavorite}
-                            className="flex-1 h-14 rounded-xl"
-                        >
-                            <Ionicons
-                                name={isFavorite ? "heart" : "heart-outline"}
-                                size={28}
-                                color={isFavorite ? "#ef4444" : theme.foreground}
-                            />
-                        </Button>
-                    </View>
+          <View className="mb-3 flex-row gap-3">
+            <Button
+              variant="secondary"
+              onPress={handleAddToQueue}
+              className="h-12 flex-1 rounded-xl"
+            >
+              <View className="flex-row items-center gap-2">
+                <LocalAddIcon
+                  fill="none"
+                  width={20}
+                  height={20}
+                  color={theme.foreground}
+                />
+                <Text className="font-semibold text-foreground">
+                  Add to Queue
+                </Text>
+              </View>
+            </Button>
+            <Button
+              variant="secondary"
+              onPress={handlePlayNext}
+              className="h-12 flex-1 rounded-xl"
+            >
+              <View className="flex-row items-center gap-2">
+                <LocalNextSolidIcon
+                  fill="none"
+                  width={20}
+                  height={20}
+                  color={theme.foreground}
+                />
+                <Text className="font-semibold text-foreground">Play Next</Text>
+              </View>
+            </Button>
+          </View>
 
-                    <View className="flex-row gap-3 mb-3">
-                        <Button
-                            variant="secondary"
-                            onPress={handleAddToQueue}
-                            className="flex-1 h-12 rounded-xl"
-                        >
-                            <View className="flex-row items-center gap-2">
-                                <Ionicons name="add-circle" size={20} color={theme.foreground} />
-                                <Text className="text-foreground font-semibold">Add to Queue</Text>
-                            </View>
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onPress={handlePlayNext}
-                            className="flex-1 h-12 rounded-xl"
-                        >
-                            <View className="flex-row items-center gap-2">
-                                <Ionicons name="play-skip-forward" size={20} color={theme.foreground} />
-                                <Text className="text-foreground font-semibold">Play Next</Text>
-                            </View>
-                        </Button>
-                    </View>
+          {onAddToPlaylist && (
+            <Button
+              variant="ghost"
+              onPress={handleAddToPlaylist}
+              className="mb-2 h-12 w-full rounded-xl"
+            >
+              <View className="flex-row items-center gap-2">
+                <LocalPlaylistSolidIcon
+                  fill="none"
+                  width={20}
+                  height={20}
+                  color={theme.foreground}
+                />
+                <Text className="font-semibold text-foreground">
+                  Add to Playlist
+                </Text>
+              </View>
+            </Button>
+          )}
+        </BottomSheet.Content>
+      </BottomSheet.Portal>
+    </BottomSheet>
+  )
+}
 
-                    {onAddToPlaylist && (
-                        <Button
-                            variant="ghost"
-                            onPress={handleAddToPlaylist}
-                            className="w-full h-12 rounded-xl mb-2"
-                        >
-                            <View className="flex-row items-center gap-2">
-                                <Ionicons name="list-circle" size={20} color={theme.foreground} />
-                                <Text className="text-foreground font-semibold">Add to Playlist</Text>
-                            </View>
-                        </Button>
-                    )}
-                </BottomSheet.Content>
-            </BottomSheet.Portal>
-        </BottomSheet>
-    );
-};
-
-export default TrackActionSheet;
+export default TrackActionSheet
