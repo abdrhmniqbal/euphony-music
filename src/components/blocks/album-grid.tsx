@@ -4,8 +4,13 @@ import type {
   StyleProp,
   ViewStyle,
 } from 'react-native'
-import { LegendList, type LegendListRenderItemProps } from '@legendapp/list'
+import {
+  LegendList,
+  type LegendListRef,
+  type LegendListRenderItemProps,
+} from '@legendapp/list'
 import * as React from 'react'
+import { useEffect, useRef } from 'react'
 import { Dimensions, View } from 'react-native'
 
 import LocalVynilSolidIcon from '@/components/icons/local/vynil-solid'
@@ -49,6 +54,7 @@ interface AlbumGridProps {
     event: NativeSyntheticEvent<NativeScrollEvent>,
   ) => void
   refreshControl?: React.ReactElement | null
+  resetScrollKey?: string
 }
 
 const GAP = 16
@@ -75,8 +81,37 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
   onScrollEndDrag,
   onMomentumScrollEnd,
   refreshControl,
+  resetScrollKey,
 }) => {
   const theme = useThemeColors()
+  const listRef = useRef<LegendListRef | null>(null)
+
+  useEffect(() => {
+    if (!resetScrollKey) {
+      return
+    }
+
+    let frameB: number | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const frameA = requestAnimationFrame(() => {
+      frameB = requestAnimationFrame(() => {
+        listRef.current?.scrollToOffset({ offset: 0, animated: false })
+      })
+    })
+    timeoutId = setTimeout(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: false })
+    }, 80)
+
+    return () => {
+      cancelAnimationFrame(frameA)
+      if (frameB !== null) {
+        cancelAnimationFrame(frameB)
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [resetScrollKey])
 
   const handlePress = (album: Album) => {
     onAlbumPress?.(album)
@@ -128,6 +163,9 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
   if (horizontal) {
     return (
       <LegendList
+        ref={listRef}
+        maintainVisibleContentPosition={false}
+        dataVersion={resetScrollKey}
         horizontal
         data={data}
         renderItem={({ item, index }: LegendListRenderItemProps<Album>) => (
@@ -176,6 +214,9 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
 
   return (
     <LegendList
+      ref={listRef}
+      maintainVisibleContentPosition={false}
+      dataVersion={resetScrollKey}
       data={data}
       renderItem={({ item, index }: LegendListRenderItemProps<Album>) => {
         const column = index % NUM_COLUMNS

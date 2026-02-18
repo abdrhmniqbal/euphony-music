@@ -72,6 +72,7 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
       data={albums}
       onAlbumPress={handleAlbumPress}
       contentContainerStyle={{ paddingBottom: contentBottomPadding }}
+      resetScrollKey={`${orderByField}-${order}`}
     />
   )
 }

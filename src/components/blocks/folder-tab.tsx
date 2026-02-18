@@ -16,6 +16,7 @@ interface FolderTabProps {
   onNavigateToFolderPath: (path: string) => void
   onTrackPress: (track: Track) => void
   contentContainerStyle?: StyleProp<ViewStyle>
+  resetScrollKey?: string
 }
 
 export function FolderTab({
@@ -27,6 +28,7 @@ export function FolderTab({
   onNavigateToFolderPath,
   onTrackPress,
   contentContainerStyle,
+  resetScrollKey,
 }: FolderTabProps) {
   return (
     <FolderList
@@ -42,6 +44,7 @@ export function FolderTab({
       onBreadcrumbPress={onNavigateToFolderPath}
       onTrackPress={onTrackPress}
       contentContainerStyle={contentContainerStyle}
+      resetScrollKey={resetScrollKey}
     />
   )
 }

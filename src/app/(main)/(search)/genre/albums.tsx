@@ -119,6 +119,7 @@ export default function GenreAlbumsScreen() {
           <AlbumGrid
             data={sortedAlbumData}
             onAlbumPress={handleAlbumPress}
+            resetScrollKey={`${genreName}-${sortConfig.field}-${sortConfig.order}`}
             contentContainerStyle={{ paddingBottom: 200 }}
             onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
             onScrollBeginDrag={handleScrollStart}

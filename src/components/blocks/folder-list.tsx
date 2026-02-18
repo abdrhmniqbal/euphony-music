@@ -1,6 +1,11 @@
 import * as React from "react"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+import {
+  LegendList,
+  type LegendListRef,
+  type LegendListRenderItemProps,
+} from "@legendapp/list"
 import { Button, PressableFeedback } from "heroui-native"
+import { useEffect, useRef } from "react"
 import {
   ScrollView,
   Text,
@@ -49,6 +54,7 @@ interface FolderListProps {
   onBackPress?: () => void
   onBreadcrumbPress?: (path: string) => void
   contentContainerStyle?: StyleProp<ViewStyle>
+  resetScrollKey?: string
 }
 
 type FolderListItem =
@@ -64,8 +70,37 @@ export const FolderList: React.FC<FolderListProps> = ({
   onBackPress,
   onBreadcrumbPress,
   contentContainerStyle,
+  resetScrollKey,
 }) => {
   const theme = useThemeColors()
+  const listRef = useRef<LegendListRef | null>(null)
+
+  useEffect(() => {
+    if (!resetScrollKey) {
+      return
+    }
+
+    let frameB: number | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const frameA = requestAnimationFrame(() => {
+      frameB = requestAnimationFrame(() => {
+        listRef.current?.scrollToOffset({ offset: 0, animated: false })
+      })
+    })
+    timeoutId = setTimeout(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: false })
+    }, 80)
+
+    return () => {
+      cancelAnimationFrame(frameA)
+      if (frameB !== null) {
+        cancelAnimationFrame(frameB)
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [resetScrollKey])
 
   const handlePress = (folder: Folder) => {
     onFolderPress?.(folder)
@@ -164,6 +199,9 @@ export const FolderList: React.FC<FolderListProps> = ({
 
   return (
     <LegendList
+      ref={listRef}
+      maintainVisibleContentPosition={false}
+      dataVersion={resetScrollKey}
       data={listData}
       keyExtractor={(item) => item.id}
       getItemType={(item) => item.type}

@@ -1,5 +1,10 @@
 import * as React from "react"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+import {
+  LegendList,
+  type LegendListRef,
+  type LegendListRenderItemProps,
+} from "@legendapp/list"
+import { useEffect, useRef } from "react"
 import type { StyleProp, ViewStyle } from "react-native"
 
 import { useThemeColors } from "@/hooks/use-theme-colors"
@@ -35,6 +40,7 @@ interface PlaylistListProps {
   onCreatePlaylist?: () => void
   scrollEnabled?: boolean
   contentContainerStyle?: StyleProp<ViewStyle>
+  resetScrollKey?: string
 }
 
 export const PlaylistList: React.FC<PlaylistListProps> = ({
@@ -43,8 +49,37 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   onCreatePlaylist,
   scrollEnabled = true,
   contentContainerStyle,
+  resetScrollKey,
 }) => {
   const theme = useThemeColors()
+  const listRef = useRef<LegendListRef | null>(null)
+
+  useEffect(() => {
+    if (!resetScrollKey) {
+      return
+    }
+
+    let frameB: number | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const frameA = requestAnimationFrame(() => {
+      frameB = requestAnimationFrame(() => {
+        listRef.current?.scrollToOffset({ offset: 0, animated: false })
+      })
+    })
+    timeoutId = setTimeout(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: false })
+    }, 80)
+
+    return () => {
+      cancelAnimationFrame(frameA)
+      if (frameB !== null) {
+        cancelAnimationFrame(frameB)
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [resetScrollKey])
 
   const handlePress = (playlist: Playlist) => {
     onPlaylistPress?.(playlist)
@@ -104,6 +139,9 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   if (data.length === 0) {
     return (
       <LegendList
+        ref={listRef}
+        maintainVisibleContentPosition={false}
+        dataVersion={resetScrollKey}
         data={[{ id: "create", rowType: "create" }]}
         renderItem={() => renderCreateButton()}
         keyExtractor={(item) => item.id}
@@ -140,6 +178,9 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
 
   return (
     <LegendList
+      ref={listRef}
+      maintainVisibleContentPosition={false}
+      dataVersion={resetScrollKey}
       data={listData}
       renderItem={({ item }: LegendListRenderItemProps<PlaylistListRow>) => {
         if (item.rowType === "create") {

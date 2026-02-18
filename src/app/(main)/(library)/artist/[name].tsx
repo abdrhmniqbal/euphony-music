@@ -286,6 +286,7 @@ export default function ArtistDetailsScreen() {
           <TrackList
             data={sortedArtistTracks}
             onTrackPress={playArtistTrack}
+            resetScrollKey={`${artistId || artistName}-tracks-${sortConfig.field}-${sortConfig.order}`}
             contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 24 }}
             onScroll={(e) => {
               const y = e.nativeEvent.contentOffset.y
@@ -333,6 +334,7 @@ export default function ArtistDetailsScreen() {
           <AlbumGrid
             data={sortedAlbums}
             onAlbumPress={openAlbum}
+            resetScrollKey={`${artistId || artistName}-albums-${sortConfig.field}-${sortConfig.order}`}
             contentContainerStyle={{
               paddingBottom: 200,
               paddingHorizontal: 16,

@@ -1,6 +1,10 @@
 import * as React from "react"
-import { useState } from "react"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+import { useEffect, useRef, useState } from "react"
+import {
+  LegendList,
+  type LegendListRef,
+  type LegendListRenderItemProps,
+} from "@legendapp/list"
 import { PressableFeedback } from "heroui-native"
 import type {
   NativeScrollEvent,
@@ -37,6 +41,7 @@ interface TrackListProps {
     event: NativeSyntheticEvent<NativeScrollEvent>
   ) => void
   refreshControl?: React.ReactElement | null
+  resetScrollKey?: string
 }
 
 export const TrackList: React.FC<TrackListProps> = ({
@@ -57,11 +62,40 @@ export const TrackList: React.FC<TrackListProps> = ({
   onScrollEndDrag,
   onMomentumScrollEnd,
   refreshControl,
+  resetScrollKey,
 }) => {
   const theme = useThemeColors()
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const listRef = useRef<LegendListRef | null>(null)
   const isCompactNumberedList = hideCover && showNumbers
+
+  useEffect(() => {
+    if (!resetScrollKey) {
+      return
+    }
+
+    let frameB: number | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const frameA = requestAnimationFrame(() => {
+      frameB = requestAnimationFrame(() => {
+        listRef.current?.scrollToOffset({ offset: 0, animated: false })
+      })
+    })
+    timeoutId = setTimeout(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: false })
+    }, 80)
+
+    return () => {
+      cancelAnimationFrame(frameA)
+      if (frameB !== null) {
+        cancelAnimationFrame(frameB)
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [resetScrollKey])
 
   const handlePress = (track: Track) => {
     if (onTrackPress) {
@@ -129,6 +163,9 @@ export const TrackList: React.FC<TrackListProps> = ({
   return (
     <>
       <LegendList
+        ref={listRef}
+        maintainVisibleContentPosition={false}
+        dataVersion={resetScrollKey}
         data={data}
         renderItem={({ item, index }: LegendListRenderItemProps<Track>) =>
           renderTrackItem(item, index)

@@ -68,6 +68,7 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
       data={artists}
       onArtistPress={handleArtistPress}
       contentContainerStyle={{ paddingBottom: contentBottomPadding }}
+      resetScrollKey={`${orderByField}-${order}`}
     />
   )
 }

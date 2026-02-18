@@ -164,6 +164,7 @@ export default function AlbumDetailsScreen() {
           hideArtist
           getNumber={(track, index) => track.trackNumber || index + 1}
           onTrackPress={playSelectedTrack}
+          resetScrollKey={`${albumId || albumInfo.title}-${sortConfig.field}-${sortConfig.order}`}
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
           onScroll={(event) => {
             const y = event.nativeEvent.contentOffset.y

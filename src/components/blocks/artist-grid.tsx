@@ -1,5 +1,10 @@
 import * as React from "react"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+import {
+  LegendList,
+  type LegendListRef,
+  type LegendListRenderItemProps,
+} from "@legendapp/list"
+import { useEffect, useRef } from "react"
 import { Dimensions, type StyleProp, type ViewStyle } from "react-native"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
@@ -27,6 +32,7 @@ interface ArtistGridProps {
   onArtistPress?: (artist: Artist) => void
   scrollEnabled?: boolean
   contentContainerStyle?: StyleProp<ViewStyle>
+  resetScrollKey?: string
 }
 
 const GAP = 12
@@ -41,8 +47,37 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
   onArtistPress,
   scrollEnabled = true,
   contentContainerStyle,
+  resetScrollKey,
 }) => {
   const theme = useThemeColors()
+  const listRef = useRef<LegendListRef | null>(null)
+
+  useEffect(() => {
+    if (!resetScrollKey) {
+      return
+    }
+
+    let frameB: number | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    const frameA = requestAnimationFrame(() => {
+      frameB = requestAnimationFrame(() => {
+        listRef.current?.scrollToOffset({ offset: 0, animated: false })
+      })
+    })
+    timeoutId = setTimeout(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: false })
+    }, 80)
+
+    return () => {
+      cancelAnimationFrame(frameA)
+      if (frameB !== null) {
+        cancelAnimationFrame(frameB)
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [resetScrollKey])
 
   const handlePress = (artist: Artist) => {
     onArtistPress?.(artist)
@@ -70,6 +105,9 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
 
   return (
     <LegendList
+      ref={listRef}
+      maintainVisibleContentPosition={false}
+      dataVersion={resetScrollKey}
       data={data}
       renderItem={({ item, index }: LegendListRenderItemProps<Artist>) => {
         const column = index % NUM_COLUMNS

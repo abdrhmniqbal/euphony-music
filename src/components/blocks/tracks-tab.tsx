@@ -68,6 +68,7 @@ export const TracksTab: React.FC<TracksTabProps> = ({
       data={tracks}
       onTrackPress={handleTrackPress}
       contentContainerStyle={{ paddingBottom: contentBottomPadding }}
+      resetScrollKey={`${orderByField}-${order}`}
     />
   )
 }

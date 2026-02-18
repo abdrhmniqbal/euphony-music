@@ -94,6 +94,7 @@ export default function LibraryScreen() {
             onCreatePlaylist={openPlaylistForm}
             onPlaylistPress={(playlist) => openPlaylist(playlist.id)}
             contentContainerStyle={{ paddingBottom: libraryListBottomPadding }}
+            resetScrollKey={`${sortConfig.field}-${sortConfig.order}`}
           />
         )
       case "Folders":
@@ -107,6 +108,7 @@ export default function LibraryScreen() {
             onNavigateToFolderPath={navigateToFolderPath}
             onTrackPress={playFolderTrack}
             contentContainerStyle={{ paddingBottom: libraryListBottomPadding }}
+            resetScrollKey={`${sortConfig.field}-${sortConfig.order}`}
           />
         )
       case "Favorites":
