@@ -155,13 +155,15 @@ jobs:
 
           DIST_DIR="app/build/outputs/apk/dist"
           RELEASE_DIR="app/build/outputs/apk/release"
+          ./gradlew clean
           mkdir -p "${DIST_DIR}"
           rm -f "${DIST_DIR}"/*.apk
 
           build_and_copy() {
             local label="$1"
             shift
-            ./gradlew clean :app:assembleRelease "$@"
+            rm -f "${RELEASE_DIR}"/*.apk
+            ./gradlew :app:assembleRelease "$@"
             local built_apks=(${RELEASE_DIR}/*.apk)
             if [ "${#built_apks[@]}" -eq 0 ]; then
               echo "No APK found for ${label} build"
@@ -169,6 +171,7 @@ jobs:
             fi
             local latest_apk
             latest_apk="$(ls -t ${RELEASE_DIR}/*.apk | head -n1)"
+            mkdir -p "${DIST_DIR}"
             cp "${latest_apk}" "${DIST_DIR}/app-release-${label}.apk"
           }
 
