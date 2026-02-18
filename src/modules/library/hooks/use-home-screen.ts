@@ -31,14 +31,12 @@ export function useHomeScreen() {
   } = useQuery<Track[]>({
     queryKey: HOME_RECENTLY_PLAYED_QUERY_KEY,
     queryFn: () => fetchRecentlyPlayedTracks(RECENTLY_PLAYED_LIMIT),
-    enabled: false,
     initialData: [],
   })
   const { data: topTracks = [], refetch: refetchTopTracks } = useQuery<Track[]>(
     {
       queryKey: HOME_TOP_TRACKS_QUERY_KEY,
       queryFn: () => getTopTracks("all", TOP_TRACKS_LIMIT),
-      enabled: false,
       initialData: [],
     }
   )
@@ -48,6 +46,7 @@ export function useHomeScreen() {
       return
     }
 
+    // Refresh only when tab regains focus to keep first paint instant from cache.
     void Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()])
   }, [isFocused, refetchRecentlyPlayedTracks, refetchTopTracks])
 

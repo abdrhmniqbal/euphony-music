@@ -8,8 +8,14 @@ import { createPlaylist } from "@/modules/playlist/playlist.api"
 const PLAYLISTS_KEY = "playlists"
 
 export function usePlaylists() {
+  return usePlaylistsWithOptions(true)
+}
+
+export function usePlaylistsWithOptions(enabled: boolean) {
   return useQuery({
     queryKey: [PLAYLISTS_KEY],
+    enabled,
+    placeholderData: (previousData) => previousData,
     queryFn: async () => {
       const results = await db.query.playlists.findMany({
         orderBy: [desc(playlists.createdAt)],

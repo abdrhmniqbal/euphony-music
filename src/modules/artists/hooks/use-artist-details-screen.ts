@@ -1,9 +1,8 @@
 import { useState } from "react"
 import { useStore } from "@nanostores/react"
-import { useQuery } from "@tanstack/react-query"
 import { useLocalSearchParams, useRouter } from "expo-router"
 
-import { useIsFavorite } from "@/modules/favorites/favorites.store"
+import { useIsFavorite } from "@/modules/favorites/favorites.queries"
 import {
   $sortConfig,
   ALBUM_SORT_OPTIONS,
@@ -13,31 +12,45 @@ import {
   sortTracks,
   type SortField,
 } from "@/modules/library/library-sort.store"
-import { getAllTracks } from "@/modules/player/player.api"
-import { playTrack, type Track } from "@/modules/player/player.store"
+import { useTracksByArtistName } from "@/modules/library/library.queries"
+import { $tracks, playTrack, type Track } from "@/modules/player/player.store"
 import type { Album } from "@/components/blocks/album-grid"
 
 import { buildArtistAlbums } from "../artists.utils"
 
-const LIBRARY_TRACKS_QUERY_KEY = ["library", "tracks"] as const
+function getSafeRouteName(value: string | string[] | undefined) {
+  const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
+}
 
 export function useArtistDetailsScreen() {
   const { name } = useLocalSearchParams<{ name: string }>()
   const router = useRouter()
 
-  const { data: tracks = [] } = useQuery<Track[]>({
-    queryKey: LIBRARY_TRACKS_QUERY_KEY,
-    queryFn: getAllTracks,
-  })
   const allSortConfigs = useStore($sortConfig)
-  const artistName = decodeURIComponent(name || "")
+  const allTracks = useStore($tracks)
+  const artistName = getSafeRouteName(name)
+  const normalizedArtistName = artistName.trim().toLowerCase()
 
-  const artistTracks = tracks.filter(
-    (track) => track.artist?.toLowerCase() === artistName.toLowerCase()
-  )
+  const { data: artistTracksFromQuery = [] } = useTracksByArtistName(artistName)
+  const artistTracks =
+    artistTracksFromQuery.length > 0
+      ? artistTracksFromQuery
+      : allTracks.filter(
+          (track) =>
+            (track.artist || track.albumArtist || "").trim().toLowerCase() ===
+            normalizedArtistName
+        )
   const artistId = artistTracks[0]?.artistId
   const artistImage = artistTracks.find((track) => track.image)?.image
-  const isArtistFavorite = useIsFavorite(artistId || "", "artist")
+  const { data: isArtistFavorite = false } = useIsFavorite(
+    "artist",
+    artistId || ""
+  )
 
   const albums = buildArtistAlbums(artistTracks)
   const sortedArtistTracks = sortTracks(

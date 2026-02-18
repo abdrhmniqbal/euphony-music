@@ -57,6 +57,9 @@ export function usePlaylistDetailsScreen(id: string) {
       type: "playlist",
       itemId: playlist.id,
       isCurrentlyFavorite: isFavorite,
+      name: playlist.name,
+      subtitle: `${playlist.trackCount || 0} tracks`,
+      image: playlist.artwork || undefined,
     })
   }
 

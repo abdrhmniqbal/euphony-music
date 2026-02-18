@@ -4,7 +4,6 @@ import { ActivityIndicator, Text, View } from "react-native"
 
 import { db } from "@/db/client"
 import migrations from "@/db/migrations/migrations"
-import { loadFavorites } from "@/modules/favorites/favorites.store"
 import { loadTracks } from "@/modules/player/player.store"
 
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
@@ -19,7 +18,6 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
 
     const loadData = async () => {
       try {
-        await loadFavorites()
         await loadTracks()
         setReady(true)
       } catch (dataError) {

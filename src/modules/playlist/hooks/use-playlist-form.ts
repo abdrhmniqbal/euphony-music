@@ -70,7 +70,9 @@ export function usePlaylistFormScreen(
   const { data: allTracks = [] } = useQuery<Track[]>({
     queryKey: LIBRARY_TRACKS_QUERY_KEY,
     queryFn: getAllTracks,
+    enabled: isTrackSheetOpen || isEditMode || selectedTracks.size > 0,
     staleTime: 5 * 60 * 1000,
+    placeholderData: (previousData) => previousData,
   })
   const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
     wait: SEARCH_DEBOUNCE_MS,

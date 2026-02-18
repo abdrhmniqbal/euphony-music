@@ -38,6 +38,7 @@ export function TrackPickerSheetContent({
       />
       <LegendList
         data={filteredTracks}
+        getItemType={() => 'track'}
         renderItem={({ item }: LegendListRenderItemProps<(typeof filteredTracks)[number]>) => (
           <PlaylistTrackRow
             track={item}

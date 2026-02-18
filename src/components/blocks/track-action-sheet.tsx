@@ -6,7 +6,10 @@ import { Text, View } from "react-native"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/hooks/use-theme-colors"
-import { toggleFavoriteItem } from "@/modules/favorites/favorites.store"
+import {
+  useIsFavorite,
+  useToggleFavorite,
+} from "@/modules/favorites/favorites.queries"
 import { playTrack, type Track } from "@/modules/player/player.store"
 import { addToQueue, playNext } from "@/modules/player/queue.store"
 import LocalAddIcon from "@/components/icons/local/add"
@@ -33,11 +36,17 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   onAddToPlaylist,
 }) => {
   const theme = useThemeColors()
+  const toggleFavoriteMutation = useToggleFavorite()
   const [favoriteOverrides, setFavoriteOverrides] = useState<
     Record<string, boolean>
   >({})
+  const favoriteTrackId = track?.id || ""
+  const { data: isFavoriteData = track?.isFavorite ?? false } = useIsFavorite(
+    "track",
+    favoriteTrackId
+  )
   const isFavorite = track
-    ? (favoriteOverrides[track.id] ?? track.isFavorite ?? false)
+    ? (favoriteOverrides[track.id] ?? Boolean(isFavoriteData))
     : false
 
   const handlePlay = async () => {
@@ -51,13 +60,14 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
     if (track) {
       const newState = !isFavorite
       setFavoriteOverrides((prev) => ({ ...prev, [track.id]: newState }))
-      toggleFavoriteItem(
-        track.id,
-        "track",
-        track.title,
-        track.artist,
-        track.image
-      )
+      void toggleFavoriteMutation.mutateAsync({
+        type: "track",
+        itemId: track.id,
+        isCurrentlyFavorite: isFavorite,
+        name: track.title,
+        subtitle: track.artist,
+        image: track.image,
+      })
     }
   }
 

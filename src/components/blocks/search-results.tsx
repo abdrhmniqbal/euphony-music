@@ -6,6 +6,11 @@ import { Pressable, ScrollView, Text, View } from "react-native"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/hooks/use-theme-colors"
+import type {
+  SearchAlbumResult,
+  SearchArtistResult,
+  SearchPlaylistResult,
+} from "@/modules/library/library.queries"
 import { playTrack, type Track } from "@/modules/player/player.store"
 import LocalCheckmarkCircleSolidIcon from "@/components/icons/local/checkmark-circle-solid"
 import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
@@ -25,52 +30,31 @@ import {
 const SEARCH_TABS = ["All", "Track", "Album", "Artist", "Playlist"] as const
 type SearchTab = (typeof SEARCH_TABS)[number]
 
-interface ArtistResult {
-  id: string
-  name: string
-  type: string
-  followerCount: number
-  isVerified: boolean
-  image?: string
-}
-
-interface AlbumResult {
-  id: string
-  title: string
-  artist: string
-  isVerified: boolean
-  image?: string
-}
-
-interface PlaylistResult {
-  id: string
-  title: string
-  trackCount: number
-  image?: string
-  images?: string[]
-}
-
 interface SearchResultsProps {
   tracks: Track[]
-  playlists?: PlaylistResult[]
+  artists: SearchArtistResult[]
+  albums: SearchAlbumResult[]
+  playlists: SearchPlaylistResult[]
   query: string
-  onArtistPress?: (artist: ArtistResult) => void
-  onAlbumPress?: (album: AlbumResult) => void
-  onPlaylistPress?: (playlist: PlaylistResult) => void
+  onArtistPress?: (artist: SearchArtistResult) => void
+  onAlbumPress?: (album: SearchAlbumResult) => void
+  onPlaylistPress?: (playlist: SearchPlaylistResult) => void
   onSeeMoreTracks?: () => void
 }
 
 type SearchResultsListItem =
   | { id: string; type: "section-spacer" }
   | { id: string; type: "section-header"; title: string; showSeeMore?: boolean }
-  | { id: string; type: "artist"; artist: ArtistResult }
-  | { id: string; type: "album"; album: AlbumResult }
-  | { id: string; type: "playlist"; playlist: PlaylistResult }
+  | { id: string; type: "artist"; artist: SearchArtistResult }
+  | { id: string; type: "album"; album: SearchAlbumResult }
+  | { id: string; type: "playlist"; playlist: SearchPlaylistResult }
   | { id: string; type: "track"; track: Track }
 
 export const SearchResults: React.FC<SearchResultsProps> = ({
   tracks,
-  playlists = [],
+  artists,
+  albums,
+  playlists,
   query,
   onArtistPress,
   onAlbumPress,
@@ -80,91 +64,13 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   const theme = useThemeColors()
   const [activeTab, setActiveTab] = useState<SearchTab>("All")
 
-  const filteredTracks = (() => {
-    if (!query.trim()) return tracks.slice(0, 5)
-    const lowerQuery = query.toLowerCase()
-    return tracks
-      .filter(
-        (t) =>
-          t.title.toLowerCase().includes(lowerQuery) ||
-          t.artist?.toLowerCase().includes(lowerQuery)
-      )
-      .slice(0, 5)
-  })()
-
-  const artists: ArtistResult[] = (() => {
-    const artistMap = new Map<string, ArtistResult>()
-    tracks.forEach((track) => {
-      const artistName = track.artist || "Unknown Artist"
-      if (
-        !artistMap.has(artistName) &&
-        (!query.trim() ||
-          artistName.toLowerCase().includes(query.toLowerCase()))
-      ) {
-        artistMap.set(artistName, {
-          id: artistName,
-          name: artistName,
-          type: "Artist",
-          followerCount: 0,
-          isVerified: false,
-          image: track.image,
-        })
-      }
-    })
-    return Array.from(artistMap.values()).slice(0, 5)
-  })()
-
-  const albums: AlbumResult[] = (() => {
-    const albumMap = new Map<string, AlbumResult>()
-    tracks.forEach((track) => {
-      const albumName = track.album || "Unknown Album"
-      const normalizedAlbumName = albumName.trim() || "Unknown Album"
-      const normalizedArtistName =
-        (track.artist || "Unknown Artist").trim() || "Unknown Artist"
-      if (
-        !albumMap.has(normalizedAlbumName) &&
-        (!query.trim() ||
-          normalizedAlbumName.toLowerCase().includes(query.toLowerCase()))
-      ) {
-        albumMap.set(normalizedAlbumName, {
-          id: normalizedAlbumName,
-          title: normalizedAlbumName,
-          artist: normalizedArtistName,
-          isVerified: false,
-          image: track.image,
-        })
-      }
-    })
-    return Array.from(albumMap.values()).slice(0, 4)
-  })()
-
-  const filteredPlaylists: PlaylistResult[] = (() => {
-    if (!query.trim()) {
-      return playlists.slice(0, 5)
-    }
-
-    const lowerQuery = query.toLowerCase()
-    return playlists
-      .filter((playlist) => playlist.title.toLowerCase().includes(lowerQuery))
-      .slice(0, 5)
-  })()
-
-  const handleTrackPress = (track: Track) => {
-    playTrack(track)
-  }
-
-  const formatFollowerCount = (count: number): string => {
-    if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`
-    if (count >= 1000) return `${(count / 1000).toFixed(0)}K`
-    return count.toString()
-  }
-
   const showArtists = activeTab === "All" || activeTab === "Artist"
   const showAlbums = activeTab === "All" || activeTab === "Album"
   const showPlaylists = activeTab === "All" || activeTab === "Playlist"
   const showTracks = activeTab === "All" || activeTab === "Track"
   const isAllTab = activeTab === "All"
 
+  const hasQuery = query.trim().length > 0
   const listData: SearchResultsListItem[] = []
 
   const pushSectionSpacer = () => {
@@ -178,7 +84,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     })
   }
 
-  if (showArtists && artists.length > 0) {
+  if (hasQuery && showArtists && artists.length > 0) {
     pushSectionSpacer()
     if (isAllTab) {
       listData.push({
@@ -196,7 +102,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     })
   }
 
-  if (showAlbums && albums.length > 0) {
+  if (hasQuery && showAlbums && albums.length > 0) {
     pushSectionSpacer()
     if (isAllTab) {
       listData.push({
@@ -214,7 +120,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     })
   }
 
-  if (showPlaylists && filteredPlaylists.length > 0) {
+  if (hasQuery && showPlaylists && playlists.length > 0) {
     pushSectionSpacer()
     if (isAllTab) {
       listData.push({
@@ -223,7 +129,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         title: "Playlists",
       })
     }
-    filteredPlaylists.forEach((playlist) => {
+    playlists.forEach((playlist) => {
       listData.push({
         id: `playlist-${playlist.id}`,
         type: "playlist",
@@ -232,7 +138,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     })
   }
 
-  if (showTracks && filteredTracks.length > 0) {
+  if (hasQuery && showTracks && tracks.length > 0) {
     pushSectionSpacer()
     if (isAllTab || onSeeMoreTracks) {
       listData.push({
@@ -242,7 +148,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         showSeeMore: Boolean(onSeeMoreTracks),
       })
     }
-    filteredTracks.forEach((track) => {
+    tracks.forEach((track) => {
       listData.push({
         id: `track-${track.id}`,
         type: "track",
@@ -251,7 +157,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     })
   }
 
-  const renderListItem = ({ item }: LegendListRenderItemProps<SearchResultsListItem>) => {
+  const renderListItem = ({
+    item,
+  }: LegendListRenderItemProps<SearchResultsListItem>) => {
     switch (item.type) {
       case "section-spacer":
         return <View className="h-5" />
@@ -289,14 +197,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             />
             <ItemContent>
               <ItemTitle className="text-lg">{item.artist.name}</ItemTitle>
-              <View className="flex-row items-center gap-1">
-                <Text className="text-xs text-muted">{item.artist.type}</Text>
-                {item.artist.followerCount > 0 && (
-                  <Text className="text-xs text-muted">
-                    ♥{formatFollowerCount(item.artist.followerCount)}
-                  </Text>
-                )}
-              </View>
+              <Text className="text-xs text-muted">{item.artist.type}</Text>
             </ItemContent>
           </Item>
         )
@@ -358,7 +259,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         )
       case "track":
         return (
-          <Item onPress={() => handleTrackPress(item.track)}>
+          <Item onPress={() => playTrack(item.track)}>
             <ItemImage
               icon={
                 <LocalMusicNoteSolidIcon
@@ -400,7 +301,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
-        className="pb-4 pt-3"
+        className="pt-3 pb-4"
         style={{ flexGrow: 0 }}
       >
         {SEARCH_TABS.map((tab) => (
@@ -419,6 +320,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         data={listData}
         renderItem={renderListItem}
         keyExtractor={(item) => item.id}
+        getItemType={(item) => item.type}
         style={{ flex: 1, minHeight: 1 }}
         contentContainerStyle={{
           paddingTop: 6,
@@ -429,7 +331,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         contentInsetAdjustmentBehavior="never"
         automaticallyAdjustContentInsets={false}
         recycleItems={true}
-        initialContainerPoolRatio={3}
+        initialContainerPoolRatio={4}
         estimatedItemSize={72}
         drawDistance={220}
       />

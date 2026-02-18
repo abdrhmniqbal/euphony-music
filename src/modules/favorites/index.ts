@@ -9,15 +9,7 @@ export {
 export {
   useAddFavorite,
   useFavorites,
-  useIsFavorite as useIsFavoriteQuery,
+  useIsFavorite,
   useRemoveFavorite,
   useToggleFavorite,
 } from "./favorites.queries"
-export {
-  $favorites,
-  checkIsFavorite,
-  getFavoritesByType,
-  loadFavorites,
-  toggleFavoriteItem,
-  useIsFavorite,
-} from "./favorites.store"

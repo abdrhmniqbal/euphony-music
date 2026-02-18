@@ -8,11 +8,11 @@ import { View, type StyleProp, type ViewStyle } from "react-native"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useToggleFavorite } from "@/modules/favorites/favorites.queries"
 import {
-  toggleFavoriteItem,
   type FavoriteEntry,
   type FavoriteType,
-} from "@/modules/favorites/favorites.store"
+} from "@/modules/favorites/favorites.api"
 import { $tracks, playTrack } from "@/modules/player/player.store"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
@@ -141,6 +141,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   contentContainerStyle,
 }) => {
   const tracks = useStore($tracks)
+  const toggleFavoriteMutation = useToggleFavorite()
   const router = useRouter()
 
   if (data.length === 0) {
@@ -182,7 +183,14 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   }
 
   const handleRemoveFavorite = (favorite: FavoriteEntry) => {
-    void toggleFavoriteItem(favorite.id, favorite.type, favorite.name)
+    void toggleFavoriteMutation.mutateAsync({
+      type: favorite.type,
+      itemId: favorite.id,
+      isCurrentlyFavorite: true,
+      name: favorite.name,
+      subtitle: favorite.subtitle,
+      image: favorite.image,
+    })
   }
 
   const renderFavoriteItem = (item: FavoriteEntry) => (

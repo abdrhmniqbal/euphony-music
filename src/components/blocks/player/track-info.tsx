@@ -5,9 +5,9 @@ import Animated, { Layout } from "react-native-reanimated"
 import { cn } from "tailwind-variants"
 
 import {
-  toggleFavoriteItem,
   useIsFavorite,
-} from "@/modules/favorites/favorites.store"
+  useToggleFavorite,
+} from "@/modules/favorites/favorites.queries"
 import type { Track } from "@/modules/player/player.store"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
@@ -22,7 +22,12 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({
   track,
   compact = false,
 }) => {
-  const isFavorite = useIsFavorite(track.id)
+  const { data: isFavoriteQuery = track.isFavorite ?? false } = useIsFavorite(
+    "track",
+    track.id
+  )
+  const toggleFavoriteMutation = useToggleFavorite()
+  const isFavorite = Boolean(isFavoriteQuery)
 
   return (
     <Animated.View
@@ -44,13 +49,14 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({
       </View>
       <PressableFeedback
         onPress={() => {
-          toggleFavoriteItem(
-            track.id,
-            "track",
-            track.title,
-            track.artist,
-            track.image
-          )
+          void toggleFavoriteMutation.mutateAsync({
+            type: "track",
+            itemId: track.id,
+            isCurrentlyFavorite: isFavorite,
+            name: track.title,
+            subtitle: track.artist,
+            image: track.image,
+          })
         }}
       >
         {isFavorite ? (

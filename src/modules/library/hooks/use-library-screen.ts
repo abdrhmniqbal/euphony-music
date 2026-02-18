@@ -1,14 +1,10 @@
 import { useState } from "react"
 import { useStore } from "@nanostores/react"
-import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "expo-router"
 
 import { useAlbums } from "@/modules/albums/albums.queries"
 import { useArtists } from "@/modules/artists/artists.queries"
-import {
-  getFavorites,
-  type FavoriteEntry,
-} from "@/modules/favorites/favorites.api"
+import { useFavorites } from "@/modules/favorites/favorites.queries"
 import { useFolderBrowser } from "@/modules/library/hooks/use-folder-browser"
 import {
   $sortConfig,
@@ -21,9 +17,8 @@ import {
   sortGeneric,
   type SortField,
 } from "@/modules/library/library-sort.store"
-import { getAllTracks } from "@/modules/player/player.api"
-import { playTrack, type Track } from "@/modules/player/player.store"
-import { usePlaylists } from "@/modules/playlist/playlist.queries"
+import { $tracks, playTrack, type Track } from "@/modules/player/player.store"
+import { usePlaylistsWithOptions } from "@/modules/playlist/playlist.queries"
 import type { Playlist } from "@/components/blocks/playlist-list"
 
 export const LIBRARY_TABS = [
@@ -50,32 +45,55 @@ export const LIBRARY_TAB_SORT_OPTIONS: Record<LibraryTab, LibrarySortOption[]> =
     Favorites: [],
   }
 
-const LIBRARY_FAVORITES_QUERY_KEY = ["library", "favorites"] as const
-const LIBRARY_TRACKS_QUERY_KEY = ["library", "tracks"] as const
-
 export function useLibraryScreen() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<LibraryTab>("Tracks")
   const [sortModalVisible, setSortModalVisible] = useState(false)
 
   const allSortConfigs = useStore($sortConfig)
+  const tracks = useStore($tracks)
   const sortConfig = allSortConfigs[activeTab]
-  const { data: tracks = [] } = useQuery<Track[]>({
-    queryKey: LIBRARY_TRACKS_QUERY_KEY,
-    queryFn: getAllTracks,
+  const shouldLoadFavorites = activeTab === "Favorites"
+  const shouldLoadAlbums = activeTab === "Albums"
+  const shouldLoadArtists = activeTab === "Artists"
+  const shouldLoadPlaylists = activeTab === "Playlists"
+
+  const { data: favorites = [] } = useFavorites(undefined, {
+    enabled: shouldLoadFavorites,
   })
 
-  const { data: favorites = [] } = useQuery<FavoriteEntry[]>({
-    queryKey: LIBRARY_FAVORITES_QUERY_KEY,
-    queryFn: () => getFavorites(),
-  })
+  const albumOrderByField =
+    allSortConfigs.Albums.field === "artist"
+      ? "artist"
+      : allSortConfigs.Albums.field === "year"
+        ? "year"
+        : allSortConfigs.Albums.field === "trackCount"
+          ? "trackCount"
+          : allSortConfigs.Albums.field === "dateAdded"
+            ? "dateAdded"
+            : "title"
+  const artistOrderByField =
+    allSortConfigs.Artists.field === "trackCount"
+      ? "trackCount"
+      : allSortConfigs.Artists.field === "dateAdded"
+        ? "dateAdded"
+        : "name"
 
-  const { data: albumsData } = useAlbums()
-  const { data: artistsData } = useArtists()
-  const { data: playlistsData } = usePlaylists()
+  const { data: albumsData = [] } = useAlbums(
+    albumOrderByField,
+    allSortConfigs.Albums.order,
+    { enabled: shouldLoadAlbums }
+  )
+  const { data: artistsData = [] } = useArtists(
+    artistOrderByField,
+    allSortConfigs.Artists.order,
+    { enabled: shouldLoadArtists }
+  )
+  const { data: playlistsData = [] } =
+    usePlaylistsWithOptions(shouldLoadPlaylists)
 
   const playlists: Playlist[] = sortGeneric(
-    playlistsData || [],
+    playlistsData,
     allSortConfigs.Playlists
   )
 
@@ -174,9 +192,9 @@ export function useLibraryScreen() {
       case "Tracks":
         return tracks.length
       case "Albums":
-        return albumsData?.length || 0
+        return albumsData.length
       case "Artists":
-        return artistsData?.length || 0
+        return artistsData.length
       case "Favorites":
         return favorites.length
       case "Playlists":

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { and, eq, like, sql } from "drizzle-orm"
+import { and, asc, desc, eq, like, sql } from "drizzle-orm"
 
 import { db } from "@/db/client"
 import { playHistory, tracks } from "@/db/schema"
@@ -19,7 +19,24 @@ export interface TrackFilter {
 export function useTracks(filters?: TrackFilter) {
   return useQuery({
     queryKey: [TRACKS_KEY, filters],
+    placeholderData: (previousData) => previousData,
     queryFn: async () => {
+      const sortField = filters?.sortBy || "title"
+      const sortOrder = filters?.sortOrder || "asc"
+      const multiplier = sortOrder === "asc" ? 1 : -1
+      const orderByDirection = sortOrder === "asc" ? asc : desc
+
+      const dbOrderBy =
+        sortField === "title"
+          ? [orderByDirection(tracks.title)]
+          : sortField === "dateAdded"
+            ? [orderByDirection(tracks.dateAdded)]
+            : sortField === "playCount"
+              ? [orderByDirection(tracks.playCount)]
+              : sortField === "rating"
+                ? [orderByDirection(tracks.rating)]
+                : []
+
       const results = await db.query.tracks.findMany({
         where: and(
           eq(tracks.isDeleted, 0),
@@ -33,17 +50,13 @@ export function useTracks(filters?: TrackFilter) {
         with: {
           artist: true,
           album: true,
-          genres: {
-            with: {
-              genre: true,
-            },
-          },
         },
+        orderBy: dbOrderBy.length > 0 ? dbOrderBy : undefined,
       })
 
-      const sortField = filters?.sortBy || "title"
-      const sortOrder = filters?.sortOrder || "asc"
-      const multiplier = sortOrder === "asc" ? 1 : -1
+      if (dbOrderBy.length > 0) {
+        return results
+      }
 
       return results.sort((a, b) => {
         let aVal: string | number | null = null

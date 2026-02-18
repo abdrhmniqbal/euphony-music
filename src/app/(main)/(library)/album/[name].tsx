@@ -21,7 +21,7 @@ import {
 } from '@/hooks/scroll-bars.store'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useAlbumDetailsScreen } from '@/modules/albums/hooks/use-album-details-screen'
-import { toggleFavoriteItem } from '@/modules/favorites/favorites.store'
+import { useToggleFavorite } from '@/modules/favorites/favorites.queries'
 import {
   type SortField,
   TRACK_SORT_OPTIONS,
@@ -32,6 +32,7 @@ const HEADER_COLLAPSE_THRESHOLD = 120
 export default function AlbumDetailsScreen() {
   const theme = useThemeColors()
   const router = useRouter()
+  const toggleFavoriteMutation = useToggleFavorite()
   const { from, query } = useLocalSearchParams<{
     from?: string
     query?: string
@@ -107,14 +108,20 @@ export default function AlbumDetailsScreen() {
               albumId && (
                 <Button
                   onPress={() => {
-                    toggleFavoriteItem(
-                      albumId,
-                      'album',
-                      albumInfo.title,
-                      albumInfo.artist,
-                      albumInfo.image,
-                    )
+                    if (!albumId) {
+                      return
+                    }
+
+                    void toggleFavoriteMutation.mutateAsync({
+                      type: 'album',
+                      itemId: albumId,
+                      isCurrentlyFavorite: isAlbumFavorite,
+                      name: albumInfo.title,
+                      subtitle: albumInfo.artist,
+                      image: albumInfo.image,
+                    })
                   }}
+                  isDisabled={toggleFavoriteMutation.isPending}
                   variant="ghost"
                   className="-mr-2"
                   isIconOnly

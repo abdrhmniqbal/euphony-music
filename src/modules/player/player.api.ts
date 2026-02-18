@@ -11,11 +11,6 @@ export async function getAllTracks(): Promise<Track[]> {
     with: {
       artist: true,
       album: true,
-      genres: {
-        with: {
-          genre: true,
-        },
-      },
     },
   })
 

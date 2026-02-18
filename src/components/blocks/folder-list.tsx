@@ -166,6 +166,7 @@ export const FolderList: React.FC<FolderListProps> = ({
     <LegendList
       data={listData}
       keyExtractor={(item) => item.id}
+      getItemType={(item) => item.type}
       renderItem={({ item }: LegendListRenderItemProps<FolderListItem>) =>
         item.type === "folder"
           ? renderFolderItem(item.folder)

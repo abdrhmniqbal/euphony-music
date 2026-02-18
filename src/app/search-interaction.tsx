@@ -1,13 +1,11 @@
 import * as React from "react"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { useStore } from "@nanostores/react"
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router"
 import { Input, PressableFeedback } from "heroui-native"
 import { ScrollView, View, type TextInput } from "react-native"
 
 import { useThemeColors } from "@/hooks/use-theme-colors"
-import { $tracks } from "@/modules/player/player.store"
-import { usePlaylists } from "@/modules/playlist/playlist.queries"
+import { useSearch } from "@/modules/library/library.queries"
 import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import {
@@ -106,15 +104,24 @@ export default function SearchInteractionScreen() {
   const navigation = useNavigation()
   const router = useRouter()
   const { query: initialQuery } = useLocalSearchParams<{ query?: string }>()
-  const tracks = useStore($tracks)
-  const { data: playlists = [] } = usePlaylists()
 
   const initialValue = initialQuery || ""
   const [searchQuery, setSearchQuery] = useState(initialValue)
   const [headerInputKey, setHeaderInputKey] = useState(0)
   const [recentSearches, setRecentSearches] = useState<RecentSearchItem[]>([])
+  const searchQueryRef = useRef(searchQuery)
+
+  const { data: searchResults } = useSearch(searchQuery)
+  const tracks = searchResults?.tracks ?? []
+  const artists = searchResults?.artists ?? []
+  const albums = searchResults?.albums ?? []
+  const playlists = searchResults?.playlists ?? []
 
   const isSearching = searchQuery.trim().length > 0
+
+  useEffect(() => {
+    searchQueryRef.current = searchQuery
+  }, [searchQuery])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -132,7 +139,7 @@ export default function SearchInteractionScreen() {
         <HeaderSearchInput
           key={headerInputKey}
           theme={theme}
-          initialValue={searchQuery}
+          initialValue={searchQueryRef.current}
           onChangeText={setSearchQuery}
           onBack={() => router.back()}
         />
@@ -144,7 +151,7 @@ export default function SearchInteractionScreen() {
       },
       headerShadowVisible: false,
     })
-  }, [navigation, theme, router, searchQuery, headerInputKey])
+  }, [navigation, theme, router, headerInputKey])
 
   function handleClearRecentSearches() {
     setRecentSearches([])
@@ -164,6 +171,8 @@ export default function SearchInteractionScreen() {
       {isSearching ? (
         <SearchResults
           tracks={tracks}
+          artists={artists}
+          albums={albums}
           playlists={playlists}
           query={searchQuery}
           onArtistPress={(artist) =>

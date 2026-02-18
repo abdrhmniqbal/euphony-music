@@ -12,7 +12,6 @@ export function useSearchScreen() {
   const { data, refetch } = useQuery({
     queryKey: SEARCH_GENRES_QUERY_KEY,
     queryFn: fetchGenres,
-    refetchOnMount: "always",
   })
   const genreList = data ?? []
 

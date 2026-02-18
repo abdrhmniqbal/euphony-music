@@ -1,8 +1,7 @@
 import { useStore } from "@nanostores/react"
-import { useQuery } from "@tanstack/react-query"
 import { useLocalSearchParams } from "expo-router"
 
-import { useIsFavorite } from "@/modules/favorites/favorites.store"
+import { useIsFavorite } from "@/modules/favorites/favorites.queries"
 import {
   $sortConfig,
   TRACK_SORT_OPTIONS,
@@ -10,8 +9,8 @@ import {
   sortTracks,
   type SortField,
 } from "@/modules/library/library-sort.store"
-import { getAllTracks } from "@/modules/player/player.api"
-import { playTrack, type Track } from "@/modules/player/player.store"
+import { useTracksByAlbumName } from "@/modules/library/library.queries"
+import { $tracks, playTrack, type Track } from "@/modules/player/player.store"
 
 import {
   formatAlbumDuration,
@@ -19,25 +18,34 @@ import {
   sortTracksByDiscAndTrack,
 } from "../albums.utils"
 
-const LIBRARY_TRACKS_QUERY_KEY = ["library", "tracks"] as const
-
 function getRandomIndex(max: number) {
   return Math.floor(Math.random() * max)
 }
 
+function getSafeRouteName(value: string | string[] | undefined) {
+  const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
+  try {
+    return decodeURIComponent(raw)
+  } catch {
+    return raw
+  }
+}
+
 export function useAlbumDetailsScreen() {
   const { name } = useLocalSearchParams<{ name: string }>()
-  const { data: tracks = [] } = useQuery<Track[]>({
-    queryKey: LIBRARY_TRACKS_QUERY_KEY,
-    queryFn: getAllTracks,
-  })
   const allSortConfigs = useStore($sortConfig)
+  const allTracks = useStore($tracks)
 
-  const albumName = decodeURIComponent(name || "")
-
-  const albumTracks = tracks.filter(
-    (track) => track.album?.toLowerCase() === albumName.toLowerCase()
-  )
+  const albumName = getSafeRouteName(name)
+  const normalizedAlbumName = albumName.trim().toLowerCase()
+  const { data: albumTracksFromQuery = [] } = useTracksByAlbumName(albumName)
+  const albumTracks =
+    albumTracksFromQuery.length > 0
+      ? albumTracksFromQuery
+      : allTracks.filter(
+          (track) =>
+            (track.album || "").trim().toLowerCase() === normalizedAlbumName
+        )
 
   const albumInfo = (() => {
     if (albumTracks.length === 0) {
@@ -69,7 +77,7 @@ export function useAlbumDetailsScreen() {
 
   const tracksByDisc = groupTracksByDisc(sortedTracks)
   const albumId = albumTracks[0]?.albumId
-  const isAlbumFavorite = useIsFavorite(albumId || "", "album")
+  const { data: isAlbumFavorite = false } = useIsFavorite("album", albumId || "")
 
   function playSelectedTrack(track: Track) {
     playTrack(track, sortedTracks)

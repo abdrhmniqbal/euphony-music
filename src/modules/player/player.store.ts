@@ -1,6 +1,7 @@
 import { atom } from "nanostores"
 
-import { toggleFavoriteDB } from "@/modules/favorites/favorites.store"
+import { queryClient } from "@/lib/tanstack-query"
+import { toggleFavoriteDB } from "@/modules/favorites/favorites.api"
 import {
   addTrackToHistory,
   incrementTrackPlayCount,
@@ -28,8 +29,6 @@ export const $repeatMode = atom<RepeatModeType>("off")
 
 let isPlayerReady = false
 let currentTrackIndex = -1
-
-// Note: loadFavorites() is now called after database initialization in DatabaseProvider
 
 export async function setupPlayer() {
   try {
@@ -156,9 +155,6 @@ export async function playTrack(track: Track, playlistTracks?: Track[]) {
     )
 
     $currentTrack.set(track)
-
-    addTrackToHistory(track.id)
-    incrementTrackPlayCount(track.id)
 
     await TrackPlayer.play()
     $isPlaying.set(true)
@@ -299,7 +295,14 @@ export function toggleFavorite(trackId: string) {
     $currentTrack.set({ ...current, isFavorite: newStatus })
   }
 
-  toggleFavoriteDB(trackId, newStatus)
+  void toggleFavoriteDB(trackId, newStatus).then(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["favorites"] }),
+      queryClient.invalidateQueries({ queryKey: ["library", "favorites"] }),
+      queryClient.invalidateQueries({ queryKey: ["tracks"] }),
+      queryClient.invalidateQueries({ queryKey: ["library", "tracks"] }),
+    ])
+  })
 }
 
 export async function setQueue(tracks: Track[]) {

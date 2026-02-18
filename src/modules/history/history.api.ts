@@ -145,16 +145,15 @@ export async function addTrackToHistory(trackId: string): Promise<void> {
       completed: 0,
     })
 
-    const allHistory = await db.query.playHistory.findMany({
-      orderBy: [desc(playHistory.playedAt)],
-    })
-
-    if (allHistory.length > 50) {
-      const toDelete = allHistory.slice(50)
-      for (const entry of toDelete) {
-        await db.delete(playHistory).where(eq(playHistory.id, entry.id))
-      }
-    }
+    await db.run(sql`
+      DELETE FROM ${playHistory}
+      WHERE ${playHistory.id} IN (
+        SELECT ${playHistory.id}
+        FROM ${playHistory}
+        ORDER BY ${playHistory.playedAt} DESC
+        LIMIT -1 OFFSET 50
+      )
+    `)
   } catch {
     // no-op
   }
@@ -169,8 +168,6 @@ export async function incrementTrackPlayCount(trackId: string): Promise<void> {
         lastPlayedAt: Date.now(),
       })
       .where(eq(tracks.id, trackId))
-
-    await addTrackToHistory(trackId)
   } catch {
     // no-op
   }

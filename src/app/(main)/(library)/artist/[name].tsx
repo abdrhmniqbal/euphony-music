@@ -24,7 +24,7 @@ import {
 } from "@/hooks/scroll-bars.store"
 import { useThemeColors } from "@/hooks/use-theme-colors"
 import { useArtistDetailsScreen } from "@/modules/artists/hooks/use-artist-details-screen"
-import { toggleFavoriteItem } from "@/modules/favorites/favorites.store"
+import { useToggleFavorite } from "@/modules/favorites/favorites.queries"
 import {
   ALBUM_SORT_OPTIONS,
   TRACK_SORT_OPTIONS,
@@ -49,6 +49,7 @@ const HEADER_COLLAPSE_THRESHOLD = SCREEN_WIDTH - 120
 export default function ArtistDetailsScreen() {
   const theme = useThemeColors()
   const router = useRouter()
+  const toggleFavoriteMutation = useToggleFavorite()
   const { from, query } = useLocalSearchParams<{
     from?: string
     query?: string
@@ -171,14 +172,20 @@ export default function ArtistDetailsScreen() {
               artistId ? (
                 <Button
                   onPress={() => {
-                    toggleFavoriteItem(
-                      artistId,
-                      "artist",
-                      artistName,
-                      `${artistTracks.length} tracks`,
-                      artistImage
-                    )
+                    if (!artistId) {
+                      return
+                    }
+
+                    void toggleFavoriteMutation.mutateAsync({
+                      type: "artist",
+                      itemId: artistId,
+                      isCurrentlyFavorite: isArtistFavorite,
+                      name: artistName,
+                      subtitle: `${artistTracks.length} tracks`,
+                      image: artistImage,
+                    })
                   }}
+                  isDisabled={toggleFavoriteMutation.isPending}
                   variant="ghost"
                   className={cn("-ml-2", !isHeaderSolid && "bg-overlay/30")}
                   isIconOnly

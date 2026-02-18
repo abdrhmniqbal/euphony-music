@@ -25,6 +25,10 @@ export interface Playlist {
   images?: string[]
 }
 
+type PlaylistListRow =
+  | { id: string; rowType: "create" }
+  | (Playlist & { rowType: "playlist" })
+
 interface PlaylistListProps {
   data: Playlist[]
   onPlaylistPress?: (playlist: Playlist) => void
@@ -100,9 +104,10 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   if (data.length === 0) {
     return (
       <LegendList
-        data={[{ id: "create", isCreateButton: true }]}
+        data={[{ id: "create", rowType: "create" }]}
         renderItem={() => renderCreateButton()}
         keyExtractor={(item) => item.id}
+        getItemType={(item) => item.rowType}
         scrollEnabled={scrollEnabled}
         contentContainerStyle={[{ gap: 8 }, contentContainerStyle]}
         recycleItems={true}
@@ -128,18 +133,22 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     )
   }
 
-  const listData = [{ id: "create", isCreateButton: true }, ...data]
+  const listData: PlaylistListRow[] = [
+    { id: "create", rowType: "create" },
+    ...data.map((playlist) => ({ ...playlist, rowType: "playlist" as const })),
+  ]
 
   return (
     <LegendList
       data={listData}
-      renderItem={({ item }: LegendListRenderItemProps<any>) => {
-        if (item.isCreateButton) {
+      renderItem={({ item }: LegendListRenderItemProps<PlaylistListRow>) => {
+        if (item.rowType === "create") {
           return renderCreateButton()
         }
         return renderPlaylistItem(item)
       }}
       keyExtractor={(item) => item.id}
+      getItemType={(item) => item.rowType}
       scrollEnabled={scrollEnabled}
       contentContainerStyle={[{ gap: 8 }, contentContainerStyle]}
       recycleItems={true}
