@@ -1,7 +1,8 @@
 import * as React from "react"
 import { useState } from "react"
+import { Image } from "expo-image"
 import { BottomSheet, Button } from "heroui-native"
-import { Image, Text, View } from "react-native"
+import { Text, View } from "react-native"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/hooks/use-theme-colors"
@@ -93,8 +94,8 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               {track.image ? (
                 <Image
                   source={{ uri: track.image }}
-                  className="h-full w-full"
-                  resizeMode="cover"
+                  style={{ width: "100%", height: "100%" }}
+                  contentFit="cover"
                 />
               ) : (
                 <View className="h-full w-full items-center justify-center">

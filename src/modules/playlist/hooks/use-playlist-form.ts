@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useDebouncedValue } from "@tanstack/react-pacer"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
@@ -70,6 +70,7 @@ export function usePlaylistFormScreen(
   const { data: allTracks = [] } = useQuery<Track[]>({
     queryKey: LIBRARY_TRACKS_QUERY_KEY,
     queryFn: getAllTracks,
+    staleTime: 5 * 60 * 1000,
   })
   const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
     wait: SEARCH_DEBOUNCE_MS,
@@ -186,19 +187,27 @@ export function usePlaylistFormScreen(
   }
 
   const normalizedQuery = debouncedSearchQuery.trim().toLowerCase()
-  const filteredTracks =
-    normalizedQuery.length === 0
-      ? allTracks
-      : allTracks.filter((track) => {
-          const title = track.title.toLowerCase()
-          const artist = (track.artist || "").toLowerCase()
-          const album = (track.album || "").toLowerCase()
-          return (
-            title.includes(normalizedQuery) ||
-            artist.includes(normalizedQuery) ||
-            album.includes(normalizedQuery)
-          )
-        })
+  const filteredTracks = useMemo(() => {
+    if (normalizedQuery.length === 0) {
+      return allTracks
+    }
+
+    return allTracks.filter((track) => {
+      const title = track.title.toLowerCase()
+      const artist = (track.artist || "").toLowerCase()
+      const album = (track.album || "").toLowerCase()
+      return (
+        title.includes(normalizedQuery) ||
+        artist.includes(normalizedQuery) ||
+        album.includes(normalizedQuery)
+      )
+    })
+  }, [allTracks, normalizedQuery])
+
+  const selectedTracksList = useMemo(
+    () => allTracks.filter((track) => selectedTracks.has(track.id)),
+    [allTracks, selectedTracks]
+  )
 
   return {
     name,
@@ -214,9 +223,7 @@ export function usePlaylistFormScreen(
       name.trim().length > 0 &&
       !savePlaylistMutation.isPending &&
       (!isEditMode || Boolean(playlistToEdit)),
-    selectedTracksList: allTracks.filter((track) =>
-      selectedTracks.has(track.id)
-    ),
+    selectedTracksList,
     setName: updateName,
     setDescription: updateDescription,
     setSearchQuery,

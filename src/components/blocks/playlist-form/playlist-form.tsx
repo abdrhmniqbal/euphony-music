@@ -1,5 +1,6 @@
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
 import { Button, Input, TextArea } from "heroui-native"
-import { ScrollView, Text, View } from "react-native"
+import { Text, View } from "react-native"
 
 import { useThemeColors } from "@/hooks/use-theme-colors"
 import {
@@ -23,15 +24,8 @@ export function PlaylistForm({
   openTrackSheet,
 }: PlaylistFormProps) {
   const theme = useThemeColors()
-
-  return (
-    <ScrollView
-      className="flex-1"
-      contentContainerStyle={{ padding: 16, paddingBottom: 200, gap: 16 }}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      contentInsetAdjustmentBehavior="automatic"
-    >
+  const header = (
+    <View className="gap-4 pb-3">
       <View className="gap-2">
         <View className="flex-row items-center justify-between">
           <Text className="text-sm font-medium text-foreground">
@@ -85,19 +79,24 @@ export function PlaylistForm({
           </View>
         </Button>
       </View>
+    </View>
+  )
 
-      {selectedTracksList.length > 0 ? (
-        <View style={{ gap: 8 }}>
-          {selectedTracksList.map((track) => (
-            <PlaylistTrackRow
-              key={track.id}
-              track={track}
-              isSelected
-              onPress={() => toggleTrack(track.id)}
-            />
-          ))}
+  return (
+    <LegendList
+      data={selectedTracksList}
+      renderItem={({ item }: LegendListRenderItemProps<(typeof selectedTracksList)[number]>) => (
+        <View className="mb-2">
+          <PlaylistTrackRow
+            track={item}
+            isSelected
+            onPress={() => toggleTrack(item.id)}
+          />
         </View>
-      ) : (
+      )}
+      keyExtractor={(item) => item.id}
+      ListHeaderComponent={header}
+      ListEmptyComponent={() => (
         <EmptyState
           icon={
             <LocalMusicNoteSolidIcon
@@ -112,6 +111,15 @@ export function PlaylistForm({
           className="py-8"
         />
       )}
-    </ScrollView>
+      style={{ flex: 1, minHeight: 1 }}
+      contentContainerStyle={{ padding: 16, paddingBottom: 200 }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      contentInsetAdjustmentBehavior="automatic"
+      recycleItems={true}
+      initialContainerPoolRatio={3}
+      estimatedItemSize={68}
+      drawDistance={180}
+    />
   )
 }

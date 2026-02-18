@@ -2,7 +2,12 @@ import * as React from "react"
 import { useState } from "react"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
 import { PressableFeedback } from "heroui-native"
-import { View } from "react-native"
+import type {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleProp,
+  ViewStyle,
+} from "react-native"
 
 import { useThemeColors } from "@/hooks/use-theme-colors"
 import { playTrack, type Track } from "@/modules/player/player.store"
@@ -20,6 +25,18 @@ interface TrackListProps {
   hideArtist?: boolean
   getNumber?: (track: Track, index: number) => number | string
   scrollEnabled?: boolean
+  listHeader?: React.ReactElement | null
+  listFooter?: React.ReactElement | null
+  contentContainerStyle?: StyleProp<ViewStyle>
+  showsVerticalScrollIndicator?: boolean
+  scrollEventThrottle?: number
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  onMomentumScrollEnd?: (
+    event: NativeSyntheticEvent<NativeScrollEvent>
+  ) => void
+  refreshControl?: React.ReactElement | null
 }
 
 export const TrackList: React.FC<TrackListProps> = ({
@@ -29,11 +46,22 @@ export const TrackList: React.FC<TrackListProps> = ({
   hideCover = false,
   hideArtist = false,
   getNumber,
-  scrollEnabled = false,
+  scrollEnabled = true,
+  listHeader = null,
+  listFooter = null,
+  contentContainerStyle,
+  showsVerticalScrollIndicator = false,
+  scrollEventThrottle = 16,
+  onScroll,
+  onScrollBeginDrag,
+  onScrollEndDrag,
+  onMomentumScrollEnd,
+  refreshControl,
 }) => {
   const theme = useThemeColors()
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const isCompactNumberedList = hideCover && showNumbers
 
   const handlePress = (track: Track) => {
     if (onTrackPress) {
@@ -98,22 +126,6 @@ export const TrackList: React.FC<TrackListProps> = ({
     )
   }
 
-  if (!scrollEnabled) {
-    return (
-      <>
-        <View style={{ gap: 8 }}>
-          {data.map((item, index) => renderTrackItem(item, index))}
-        </View>
-        <TrackActionSheet
-          track={selectedTrack}
-          isOpen={isSheetOpen}
-          onClose={() => setIsSheetOpen(false)}
-          tracks={data}
-        />
-      </>
-    )
-  }
-
   return (
     <>
       <LegendList
@@ -122,11 +134,25 @@ export const TrackList: React.FC<TrackListProps> = ({
           renderTrackItem(item, index)
         }
         keyExtractor={(item) => item.id}
-        style={{ flex: 1 }}
-        contentContainerStyle={{ gap: 8 }}
+        style={{ flex: 1, minHeight: 1 }}
+        scrollEnabled={scrollEnabled}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+        ListHeaderComponent={listHeader}
+        ListFooterComponent={listFooter}
+        contentContainerStyle={[
+          { gap: isCompactNumberedList ? 0 : 8 },
+          contentContainerStyle,
+        ]}
+        onScroll={onScroll}
+        onScrollBeginDrag={onScrollBeginDrag}
+        onScrollEndDrag={onScrollEndDrag}
+        onMomentumScrollEnd={onMomentumScrollEnd}
+        scrollEventThrottle={scrollEventThrottle}
+        refreshControl={refreshControl}
         recycleItems={true}
-        estimatedItemSize={72}
-        drawDistance={250}
+        initialContainerPoolRatio={3}
+        estimatedItemSize={68}
+        drawDistance={180}
       />
       <TrackActionSheet
         track={selectedTrack}

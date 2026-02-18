@@ -161,56 +161,56 @@ export default function SearchInteractionScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 160 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        {isSearching ? (
-          <SearchResults
-            tracks={tracks}
-            playlists={playlists}
-            query={searchQuery}
-            onArtistPress={(artist) =>
-              router.push({
-                pathname: "/(main)/(library)/artist/[name]",
-                params: {
-                  name: artist.name,
-                  from: "search",
-                  query: searchQuery,
-                },
-              })
-            }
-            onAlbumPress={(album) =>
-              router.push({
-                pathname: "/(main)/(library)/album/[name]",
-                params: {
-                  name: album.title,
-                  from: "search",
-                  query: searchQuery,
-                },
-              })
-            }
-            onPlaylistPress={(playlist) =>
-              router.push({
-                pathname: "/(main)/(library)/playlist/[id]",
-                params: {
-                  id: playlist.id,
-                  from: "search",
-                  query: searchQuery,
-                },
-              })
-            }
-          />
-        ) : (
+      {isSearching ? (
+        <SearchResults
+          tracks={tracks}
+          playlists={playlists}
+          query={searchQuery}
+          onArtistPress={(artist) =>
+            router.push({
+              pathname: "/(main)/(library)/artist/[name]",
+              params: {
+                name: artist.name,
+                from: "search",
+                query: searchQuery,
+              },
+            })
+          }
+          onAlbumPress={(album) =>
+            router.push({
+              pathname: "/(main)/(library)/album/[name]",
+              params: {
+                name: album.title,
+                from: "search",
+                query: searchQuery,
+              },
+            })
+          }
+          onPlaylistPress={(playlist) =>
+            router.push({
+              pathname: "/(main)/(library)/playlist/[id]",
+              params: {
+                id: playlist.id,
+                from: "search",
+                query: searchQuery,
+              },
+            })
+          }
+        />
+      ) : (
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 160 }}
+          keyboardShouldPersistTaps="handled"
+        >
           <RecentSearches
             searches={recentSearches}
             onClear={handleClearRecentSearches}
             onItemPress={handleRecentItemPress}
             onRemoveItem={handleRemoveRecentItem}
           />
-        )}
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   )
 }

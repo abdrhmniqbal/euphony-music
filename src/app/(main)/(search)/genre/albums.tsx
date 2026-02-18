@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useStore } from "@nanostores/react"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
-import { RefreshControl, ScrollView, Text, View } from "react-native"
+import { RefreshControl, Text, View } from "react-native"
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated"
 
 import {
@@ -81,61 +81,58 @@ export default function GenreAlbumsScreen() {
           }}
         />
 
-        <ScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: 200,
-          }}
-          onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-          onScrollBeginDrag={handleScrollStart}
-          onMomentumScrollEnd={handleScrollStop}
-          onScrollEndDrag={handleScrollStop}
-          scrollEventThrottle={16}
-          refreshControl={
-            <RefreshControl
-              refreshing={indexerState.isIndexing || isLoading}
-              onRefresh={refresh}
-              tintColor={theme.accent}
-            />
-          }
-        >
+        {sortedAlbumData.length === 0 ? (
           <Animated.View
             entering={FadeInRight.duration(300)}
             exiting={FadeOutLeft.duration(300)}
             className="px-6 py-4"
           >
-            {sortedAlbumData.length === 0 ? (
-              <EmptyState
-                icon={
-                  <LocalVynilSolidIcon
-                    fill="none"
-                    width={48}
-                    height={48}
-                    color={theme.muted}
-                  />
-                }
-                title="No albums found"
-                message={`No albums available in ${genreName}`}
-                className="mt-12"
+            <EmptyState
+              icon={
+                <LocalVynilSolidIcon
+                  fill="none"
+                  width={48}
+                  height={48}
+                  color={theme.muted}
+                />
+              }
+              title="No albums found"
+              message={`No albums available in ${genreName}`}
+              className="mt-12"
+            />
+          </Animated.View>
+        ) : (
+          <AlbumGrid
+            data={sortedAlbumData}
+            onAlbumPress={handleAlbumPress}
+            contentContainerStyle={{ paddingBottom: 200 }}
+            onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
+            onScrollBeginDrag={handleScrollStart}
+            onMomentumScrollEnd={handleScrollStop}
+            onScrollEndDrag={handleScrollStop}
+            refreshControl={
+              <RefreshControl
+                refreshing={indexerState.isIndexing || isLoading}
+                onRefresh={refresh}
+                tintColor={theme.accent}
               />
-            ) : (
-              <>
+            }
+            listHeader={
+              <Animated.View
+                entering={FadeInRight.duration(300)}
+                exiting={FadeOutLeft.duration(300)}
+                className="px-6 py-4"
+              >
                 <View className="mb-4 flex-row items-center justify-between">
                   <Text className="text-lg font-bold text-foreground">
                     {sortedAlbumData.length} Albums
                   </Text>
                   <SortSheet.Trigger label={getSortLabel()} iconSize={14} />
                 </View>
-                <AlbumGrid
-                  data={sortedAlbumData}
-                  onAlbumPress={handleAlbumPress}
-                  scrollEnabled={false}
-                />
-              </>
-            )}
-          </Animated.View>
-        </ScrollView>
+              </Animated.View>
+            }
+          />
+        )}
 
         <SortSheet.Content options={ALBUM_SORT_OPTIONS} />
       </View>

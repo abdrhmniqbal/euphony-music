@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
+import { Image } from "expo-image"
 import { PressableFeedback } from "heroui-native"
-import { Image, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import { cn } from "tailwind-variants"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
@@ -40,8 +41,8 @@ export function MusicCard({
         {image ? (
           <Image
             source={{ uri: image }}
-            className="h-full w-full"
-            resizeMode="cover"
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
           />
         ) : (
           <View className="h-full w-full items-center justify-center bg-surface">

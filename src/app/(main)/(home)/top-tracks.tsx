@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useStore } from "@nanostores/react"
 import { Tabs } from "heroui-native"
-import { RefreshControl, ScrollView, View } from "react-native"
+import { RefreshControl, View } from "react-native"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -60,51 +60,49 @@ export default function TopTracksScreen() {
         </Tabs.List>
       </Tabs>
 
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 200 }}
-        onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-        onScrollBeginDrag={handleScrollStart}
-        onMomentumScrollEnd={handleScrollStop}
-        onScrollEndDrag={handleScrollStop}
-        scrollEventThrottle={16}
-        refreshControl={
-          <RefreshControl
-            refreshing={indexerState.isIndexing}
-            onRefresh={refresh}
-            tintColor={theme.accent}
-          />
-        }
-      >
-        {currentTracks.length > 0 && (
-          <PlaybackActionsRow
-            onPlay={playAll}
-            onShuffle={shuffle}
-            className="px-4 py-4"
-          />
-        )}
-
+      {currentTracks.length === 0 ? (
         <Animated.View className="px-4" style={contentAnimatedStyle}>
-          {currentTracks.length === 0 ? (
-            <EmptyState
-              icon={
-                <LocalMusicNoteSolidIcon
-                  fill="none"
-                  width={48}
-                  height={48}
-                  color={theme.muted}
-                />
-              }
-              title="No top tracks yet"
-              message="Play some music to see your most played tracks here!"
-              className="mt-12"
-            />
-          ) : (
-            <TrackList data={currentTracks} showNumbers />
-          )}
+          <EmptyState
+            icon={
+              <LocalMusicNoteSolidIcon
+                fill="none"
+                width={48}
+                height={48}
+                color={theme.muted}
+              />
+            }
+            title="No top tracks yet"
+            message="Play some music to see your most played tracks here!"
+            className="mt-12"
+          />
         </Animated.View>
-      </ScrollView>
+      ) : (
+        <TrackList
+          data={currentTracks}
+          showNumbers
+          contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
+          onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
+          onScrollBeginDrag={handleScrollStart}
+          onMomentumScrollEnd={handleScrollStop}
+          onScrollEndDrag={handleScrollStop}
+          refreshControl={
+            <RefreshControl
+              refreshing={indexerState.isIndexing}
+              onRefresh={refresh}
+              tintColor={theme.accent}
+            />
+          }
+          listHeader={
+            <Animated.View style={contentAnimatedStyle}>
+              <PlaybackActionsRow
+                onPlay={playAll}
+                onShuffle={shuffle}
+                className="px-0 py-4"
+              />
+            </Animated.View>
+          }
+        />
+      )}
     </View>
   )
 }

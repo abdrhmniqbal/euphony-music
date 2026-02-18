@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Image, View } from "react-native"
+import { Image } from "expo-image"
+import { View } from "react-native"
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated"
 
 import { useThemeColors } from "@/hooks/use-theme-colors"
@@ -24,8 +25,8 @@ export const AlbumArtView: React.FC<AlbumArtViewProps> = ({ currentTrack }) => {
         {currentTrack.image ? (
           <Image
             source={{ uri: currentTrack.image }}
-            className="h-full w-full"
-            resizeMode="cover"
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
           />
         ) : (
           <View className="h-full w-full items-center justify-center bg-surface">

@@ -37,11 +37,16 @@ export function TrackRow({
   descriptionClassName,
 }: TrackRowProps) {
   const theme = useThemeColors()
+  const isCompactNoCoverRow = !showCover && rank !== undefined && rank !== null
   const fallbackIconSize =
     variant === "grid" ? ICON_SIZES.gridFallback : ICON_SIZES.listFallback
 
   return (
-    <MediaItem variant={variant} onPress={onPress} className={className}>
+    <MediaItem
+      variant={variant}
+      onPress={onPress}
+      className={`${isCompactNoCoverRow ? "gap-1 py-0" : ""} ${className || ""}`}
+    >
       {leftAction ? <View className="py-2 pr-1">{leftAction}</View> : null}
       {showCover ? (
         <MediaItem.Image
@@ -58,7 +63,11 @@ export function TrackRow({
         />
       ) : null}
       {rank !== undefined && rank !== null ? (
-        <MediaItem.Rank>{rank}</MediaItem.Rank>
+        <MediaItem.Rank
+          className={isCompactNoCoverRow ? "w-6 text-left text-base" : ""}
+        >
+          {rank}
+        </MediaItem.Rank>
       ) : null}
       <MediaItem.Content>
         <MediaItem.Title className={titleClassName}>
@@ -70,7 +79,11 @@ export function TrackRow({
           </MediaItem.Description>
         ) : null}
       </MediaItem.Content>
-      {rightAction ? <View className="p-2">{rightAction}</View> : null}
+      {rightAction ? (
+        <View className={isCompactNoCoverRow ? "p-0.5" : "p-2"}>
+          {rightAction}
+        </View>
+      ) : null}
     </MediaItem>
   )
 }

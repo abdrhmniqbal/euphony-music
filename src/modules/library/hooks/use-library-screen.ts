@@ -11,7 +11,6 @@ import {
   getFavorites,
   type FavoriteEntry,
 } from "@/modules/favorites/favorites.api"
-import { $indexerState, startIndexing } from "@/modules/indexer"
 import { useFolderBrowser } from "@/modules/library/hooks/use-folder-browser"
 import {
   $sortConfig,
@@ -61,24 +60,21 @@ export function useLibraryScreen() {
   const [activeTab, setActiveTab] = useState<LibraryTab>("Tracks")
   const [sortModalVisible, setSortModalVisible] = useState(false)
 
-  const indexerState = useStore($indexerState)
   const allSortConfigs = useStore($sortConfig)
   const sortConfig = allSortConfigs[activeTab]
-  const { data: tracks = [], refetch: refetchTracks } = useQuery<Track[]>({
+  const { data: tracks = [] } = useQuery<Track[]>({
     queryKey: LIBRARY_TRACKS_QUERY_KEY,
     queryFn: getAllTracks,
   })
 
-  const { data: favorites = [], refetch: refetchFavorites } = useQuery<
-    FavoriteEntry[]
-  >({
+  const { data: favorites = [] } = useQuery<FavoriteEntry[]>({
     queryKey: LIBRARY_FAVORITES_QUERY_KEY,
     queryFn: () => getFavorites(),
   })
 
-  const { data: albumsData, refetch: refetchAlbums } = useAlbums()
-  const { data: artistsData, refetch: refetchArtists } = useArtists()
-  const { data: playlistsData, refetch: refetchPlaylists } = usePlaylists()
+  const { data: albumsData } = useAlbums()
+  const { data: artistsData } = useArtists()
+  const { data: playlistsData } = usePlaylists()
 
   const playlists: Playlist[] = sortGeneric(
     playlistsData || [],
@@ -123,17 +119,6 @@ export function useLibraryScreen() {
         }
       }
     })
-
-  async function refresh() {
-    await startIndexing(true)
-    await Promise.all([
-      refetchTracks(),
-      refetchAlbums(),
-      refetchArtists(),
-      refetchPlaylists(),
-      refetchFavorites(),
-    ])
-  }
 
   function openArtist(name: string) {
     router.push(`./artist/${encodeURIComponent(name)}`)
@@ -238,7 +223,6 @@ export function useLibraryScreen() {
     setSortModalVisible,
     closeSortModal,
     swipeGesture,
-    indexerState,
     sortConfig,
     tracks,
     favorites,
@@ -246,7 +230,6 @@ export function useLibraryScreen() {
     folders,
     folderTracks,
     folderBreadcrumbs,
-    refresh,
     openArtist,
     openAlbum,
     openPlaylist,

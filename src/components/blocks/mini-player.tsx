@@ -1,7 +1,8 @@
 import * as React from "react"
 import { useStore } from "@nanostores/react"
+import { Image } from "expo-image"
 import { PressableFeedback } from "heroui-native"
-import { Image, View } from "react-native"
+import { View } from "react-native"
 import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated"
 
 import { $isPlayerExpanded, $showPlayerQueue } from "@/hooks/scroll-bars.store"
@@ -69,7 +70,8 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
             {currentTrack.image ? (
               <Image
                 source={{ uri: currentTrack.image }}
-                className="h-full w-full"
+                style={{ width: "100%", height: "100%" }}
+                contentFit="cover"
               />
             ) : (
               <LocalMusicNoteSolidIcon

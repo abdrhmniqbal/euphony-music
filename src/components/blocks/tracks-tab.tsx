@@ -62,10 +62,6 @@ export const TracksTab: React.FC<TracksTabProps> = ({
   }
 
   return (
-    <TrackList
-      data={tracks}
-      onTrackPress={handleTrackPress}
-      scrollEnabled={false}
-    />
+    <TrackList data={tracks} onTrackPress={handleTrackPress} />
   )
 }

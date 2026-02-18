@@ -66,10 +66,6 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
   }
 
   return (
-    <AlbumGrid
-      data={albums}
-      onAlbumPress={handleAlbumPress}
-      scrollEnabled={false}
-    />
+    <AlbumGrid data={albums} onAlbumPress={handleAlbumPress} />
   )
 }

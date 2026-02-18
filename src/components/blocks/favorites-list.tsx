@@ -1,9 +1,10 @@
 import * as React from "react"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
 import { useStore } from "@nanostores/react"
+import { Image } from "expo-image"
 import { useRouter } from "expo-router"
 import { Chip, PressableFeedback } from "heroui-native"
-import { Image as RNImage, View } from "react-native"
+import { View } from "react-native"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/hooks/use-theme-colors"
@@ -43,10 +44,10 @@ const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({
       return (
         <ItemImage className="overflow-hidden rounded-full">
           {favorite.image ? (
-            <RNImage
+            <Image
               source={{ uri: favorite.image }}
-              className="h-full w-full"
-              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
+              contentFit="cover"
             />
           ) : (
             <View className="h-full w-full items-center justify-center rounded-full bg-surface">
@@ -211,10 +212,6 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
     </Item>
   )
 
-  if (!scrollEnabled) {
-    return <View style={{ gap: 8 }}>{data.map(renderFavoriteItem)}</View>
-  }
-
   return (
     <View style={{ flex: 1, minHeight: 1 }}>
       <LegendList
@@ -223,10 +220,12 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
           renderFavoriteItem(item)
         }
         keyExtractor={(item) => item.id}
+        scrollEnabled={scrollEnabled}
         contentContainerStyle={{ gap: 8 }}
         recycleItems={true}
-        estimatedItemSize={72}
-        drawDistance={250}
+        initialContainerPoolRatio={3}
+        estimatedItemSize={68}
+        drawDistance={180}
         style={{ flex: 1, minHeight: 1 }}
       />
     </View>

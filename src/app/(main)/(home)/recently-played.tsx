@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react"
-import { RefreshControl, ScrollView, View } from "react-native"
+import { RefreshControl, View } from "react-native"
 
 import {
   handleScroll,
@@ -21,51 +21,44 @@ export default function RecentlyPlayedScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 200 }}
-        onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-        onScrollBeginDrag={handleScrollStart}
-        onMomentumScrollEnd={handleScrollStop}
-        onScrollEndDrag={handleScrollStop}
-        scrollEventThrottle={16}
-        refreshControl={
-          <RefreshControl
-            refreshing={indexerState.isIndexing}
-            onRefresh={refresh}
-            tintColor={theme.accent}
-          />
-        }
-      >
-        {history.length > 0 && (
-          <PlaybackActionsRow
-            onPlay={playFirst}
-            onShuffle={shuffle}
-            className="px-4 py-4"
-          />
-        )}
-
-        <View className="px-4">
-          {history.length === 0 ? (
-            <EmptyState
-              icon={
-                <LocalClockSolidIcon
-                  fill="none"
-                  width={48}
-                  height={48}
-                  color={theme.muted}
-                />
-              }
-              title="No recently played"
-              message="Your listening history will appear here once you start playing music."
-              className="mt-12"
+      {history.length === 0 ? (
+        <EmptyState
+          icon={
+            <LocalClockSolidIcon
+              fill="none"
+              width={48}
+              height={48}
+              color={theme.muted}
             />
-          ) : (
-            <TrackList data={history} />
-          )}
-        </View>
-      </ScrollView>
+          }
+          title="No recently played"
+          message="Your listening history will appear here once you start playing music."
+          className="mt-12 px-4"
+        />
+      ) : (
+        <TrackList
+          data={history}
+          contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
+          onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
+          onScrollBeginDrag={handleScrollStart}
+          onMomentumScrollEnd={handleScrollStop}
+          onScrollEndDrag={handleScrollStop}
+          refreshControl={
+            <RefreshControl
+              refreshing={indexerState.isIndexing}
+              onRefresh={refresh}
+              tintColor={theme.accent}
+            />
+          }
+          listHeader={
+            <PlaybackActionsRow
+              onPlay={playFirst}
+              onShuffle={shuffle}
+              className="px-0 py-4"
+            />
+          }
+        />
+      )}
     </View>
   )
 }

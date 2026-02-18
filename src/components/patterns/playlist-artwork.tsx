@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
-import { Image, View } from "react-native"
+import { Image } from "expo-image"
+import { View } from "react-native"
 import { cn } from "tailwind-variants"
 
 import { ICON_SIZES } from "@/constants/icon-sizes"
@@ -96,8 +97,8 @@ export function PlaylistArtwork({
           <Image
             key={`${image}-${nextCount}`}
             source={{ uri: image }}
-            className="h-1/2 w-1/2"
-            resizeMode="cover"
+            style={{ width: "50%", height: "50%" }}
+            contentFit="cover"
           />
         )
       })}

@@ -2,7 +2,7 @@ import * as React from "react"
 import { useState } from "react"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { Button } from "heroui-native"
-import { ScrollView, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import Animated, { FadeIn } from "react-native-reanimated"
 
 import {
@@ -147,10 +147,13 @@ export default function PlaylistDetailsScreen() {
         }}
       />
 
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 200 }}
+      <TrackList
+        data={tracks}
+        showNumbers={false}
+        hideCover={false}
+        hideArtist={false}
+        onTrackPress={(track) => playFromPlaylist(track.id)}
+        contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
         onScroll={(e) => {
           const y = e.nativeEvent.contentOffset.y
           handleScroll(y)
@@ -162,58 +165,50 @@ export default function PlaylistDetailsScreen() {
         onScrollBeginDrag={handleScrollStart}
         onMomentumScrollEnd={handleScrollStop}
         onScrollEndDrag={handleScrollStop}
-        scrollEventThrottle={16}
-      >
-        <View className="px-4 pb-6">
-          <View className="flex-row gap-4 pt-6">
-            <View className="h-36 w-36 overflow-hidden rounded-lg bg-surface-secondary">
-              <PlaylistArtwork
-                images={playlistImages}
-                fallback={
-                  <LocalPlaylistSolidIcon
-                    fill="none"
-                    width={48}
-                    height={48}
-                    color={theme.muted}
+        listHeader={
+          <>
+            <View className="pb-6">
+              <View className="flex-row gap-4 pt-6">
+                <View className="h-36 w-36 overflow-hidden rounded-lg bg-surface-secondary">
+                  <PlaylistArtwork
+                    images={playlistImages}
+                    fallback={
+                      <LocalPlaylistSolidIcon
+                        fill="none"
+                        width={48}
+                        height={48}
+                        color={theme.muted}
+                      />
+                    }
+                    className="bg-surface-secondary"
                   />
-                }
-                className="bg-surface-secondary"
-              />
+                </View>
+
+                <View className="flex-1 justify-center">
+                  <Text
+                    className="text-xl font-bold text-foreground"
+                    numberOfLines={2}
+                  >
+                    {playlist.name}
+                  </Text>
+                  {playlist.description ? (
+                    <Text className="mt-1 text-base text-muted" numberOfLines={2}>
+                      {playlist.description}
+                    </Text>
+                  ) : null}
+                  <Text className="mt-2 text-sm text-muted">
+                    {tracks.length} tracks ·{formatDuration(totalDuration)}
+                  </Text>
+                </View>
+              </View>
             </View>
 
-            <View className="flex-1 justify-center">
-              <Text
-                className="text-xl font-bold text-foreground"
-                numberOfLines={2}
-              >
-                {playlist.name}
-              </Text>
-              {playlist.description ? (
-                <Text className="mt-1 text-base text-muted" numberOfLines={2}>
-                  {playlist.description}
-                </Text>
-              ) : null}
-              <Text className="mt-2 text-sm text-muted">
-                {tracks.length} tracks ·{formatDuration(totalDuration)}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <Animated.View entering={FadeIn.duration(300)} className="px-4">
-          <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} />
-        </Animated.View>
-
-        <View className="px-2">
-          <TrackList
-            data={tracks}
-            showNumbers={false}
-            hideCover={false}
-            hideArtist={false}
-            onTrackPress={(track) => playFromPlaylist(track.id)}
-          />
-        </View>
-      </ScrollView>
+            <Animated.View entering={FadeIn.duration(300)}>
+              <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} />
+            </Animated.View>
+          </>
+        }
+      />
 
       <PlaylistActionsSheet
         visible={showActionSheet}

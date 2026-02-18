@@ -1,30 +1,31 @@
-import * as React from "react"
-import { useState } from "react"
-import { Stack, useLocalSearchParams, useRouter } from "expo-router"
-import { Button } from "heroui-native"
-import { Image, ScrollView, Text, View } from "react-native"
-import Animated, { FadeIn } from "react-native-reanimated"
+import { Image } from 'expo-image'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Button } from 'heroui-native'
+import * as React from 'react'
+import { useState } from 'react'
+import { Text, View } from 'react-native'
+import Animated, { FadeIn } from 'react-native-reanimated'
 
+import { PlaybackActionsRow } from '@/components/blocks'
+import { SortSheet } from '@/components/blocks/sort-sheet'
+import { TrackList } from '@/components/blocks/track-list'
+import LocalFavouriteIcon from '@/components/icons/local/favourite'
+import LocalFavouriteSolidIcon from '@/components/icons/local/favourite-solid'
+import LocalVynilSolidIcon from '@/components/icons/local/vynil-solid'
+import { BackButton } from '@/components/patterns'
+import { EmptyState } from '@/components/ui'
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/hooks/scroll-bars.store"
-import { useThemeColors } from "@/hooks/use-theme-colors"
-import { useAlbumDetailsScreen } from "@/modules/albums/hooks/use-album-details-screen"
-import { toggleFavoriteItem } from "@/modules/favorites/favorites.store"
+} from '@/hooks/scroll-bars.store'
+import { useThemeColors } from '@/hooks/use-theme-colors'
+import { useAlbumDetailsScreen } from '@/modules/albums/hooks/use-album-details-screen'
+import { toggleFavoriteItem } from '@/modules/favorites/favorites.store'
 import {
-  TRACK_SORT_OPTIONS,
   type SortField,
-} from "@/modules/library/library-sort.store"
-import LocalFavouriteIcon from "@/components/icons/local/favourite"
-import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
-import { PlaybackActionsRow } from "@/components/blocks"
-import { SortSheet } from "@/components/blocks/sort-sheet"
-import { TrackList } from "@/components/blocks/track-list"
-import { BackButton } from "@/components/patterns"
-import { EmptyState } from "@/components/ui"
+  TRACK_SORT_OPTIONS,
+} from '@/modules/library/library-sort.store'
 
 const HEADER_COLLAPSE_THRESHOLD = 120
 
@@ -42,7 +43,6 @@ export default function AlbumDetailsScreen() {
     albumInfo,
     albumId,
     isAlbumFavorite,
-    tracksByDisc,
     sortedTracks,
     sortConfig,
     totalDurationLabel,
@@ -53,14 +53,14 @@ export default function AlbumDetailsScreen() {
     getSortLabel,
   } = useAlbumDetailsScreen()
 
-  function handleSortSelect(field: SortField, order?: "asc" | "desc") {
+  function handleSortSelect(field: SortField, order?: 'asc' | 'desc') {
     selectSort(field, order)
   }
 
   function handleBack() {
-    if (from === "search") {
+    if (from === 'search') {
       router.replace({
-        pathname: "/search-interaction",
+        pathname: '/search-interaction',
         params: query ? { query } : {},
       })
       return
@@ -72,14 +72,14 @@ export default function AlbumDetailsScreen() {
   if (!albumInfo) {
     return (
       <EmptyState
-        icon={
+        icon={(
           <LocalVynilSolidIcon
             fill="none"
             width={48}
             height={48}
             color={theme.muted}
           />
-        }
+        )}
         title="No albums found"
         message="No albums found"
         className="mt-12"
@@ -98,7 +98,7 @@ export default function AlbumDetailsScreen() {
       <View className="flex-1 bg-background">
         <Stack.Screen
           options={{
-            title: showHeaderTitle ? albumInfo.title : "",
+            title: showHeaderTitle ? albumInfo.title : '',
             headerBackVisible: false,
             headerLeft: () => (
               <BackButton className="-ml-2" onPress={handleBack} />
@@ -109,39 +109,45 @@ export default function AlbumDetailsScreen() {
                   onPress={() => {
                     toggleFavoriteItem(
                       albumId,
-                      "album",
+                      'album',
                       albumInfo.title,
                       albumInfo.artist,
-                      albumInfo.image
+                      albumInfo.image,
                     )
                   }}
                   variant="ghost"
                   className="-mr-2"
                   isIconOnly
                 >
-                  {isAlbumFavorite ? (
-                    <LocalFavouriteSolidIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color="#ef4444"
-                    />
-                  ) : (
-                    <LocalFavouriteIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.foreground}
-                    />
-                  )}
+                  {isAlbumFavorite
+                    ? (
+                        <LocalFavouriteSolidIcon
+                          fill="none"
+                          width={24}
+                          height={24}
+                          color="#ef4444"
+                        />
+                      )
+                    : (
+                        <LocalFavouriteIcon
+                          fill="none"
+                          width={24}
+                          height={24}
+                          color={theme.foreground}
+                        />
+                      )}
                 </Button>
               ),
           }}
         />
-        <ScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 200 }}
+        <TrackList
+          data={sortedTracks}
+          showNumbers
+          hideCover
+          hideArtist
+          getNumber={(track, index) => track.trackNumber || index + 1}
+          onTrackPress={playSelectedTrack}
+          contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
           onScroll={(event) => {
             const y = event.nativeEvent.contentOffset.y
             handleScroll(y)
@@ -153,83 +159,70 @@ export default function AlbumDetailsScreen() {
           onScrollBeginDrag={handleScrollStart}
           onMomentumScrollEnd={handleScrollStop}
           onScrollEndDrag={handleScrollStop}
-          scrollEventThrottle={16}
-        >
-          <View className="px-4 pb-6">
-            <View className="flex-row gap-4 pt-6">
-              <View className="h-36 w-36 overflow-hidden rounded-lg bg-surface-secondary">
-                {albumInfo.image ? (
-                  <Image
-                    source={{ uri: albumInfo.image }}
-                    className="h-full w-full"
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View className="h-full w-full items-center justify-center">
-                    <LocalVynilSolidIcon
-                      fill="none"
-                      width={48}
-                      height={48}
-                      color={theme.muted}
-                    />
+          listHeader={(
+            <>
+              <View className="pb-6">
+                <View className="flex-row gap-4 pt-6">
+                  <View className="h-36 w-36 overflow-hidden rounded-lg bg-surface-secondary">
+                    {albumInfo.image
+                      ? (
+                          <Image
+                            source={{ uri: albumInfo.image }}
+                            style={{ width: '100%', height: '100%' }}
+                            contentFit="cover"
+                          />
+                        )
+                      : (
+                          <View className="h-full w-full items-center justify-center">
+                            <LocalVynilSolidIcon
+                              fill="none"
+                              width={48}
+                              height={48}
+                              color={theme.muted}
+                            />
+                          </View>
+                        )}
                   </View>
-                )}
-              </View>
 
-              <View className="flex-1 justify-center">
-                <Text
-                  className="text-xl font-bold text-foreground"
-                  numberOfLines={1}
-                >
-                  {albumInfo.title}
-                </Text>
-                <Text className="mt-1 text-sm text-muted" numberOfLines={1}>
-                  {albumInfo.artist}
-                </Text>
-                <Text className="mt-2 text-sm text-muted">
-                  {albumInfo.year ? `${albumInfo.year}` : ""} ·{" "}
-                  {totalDurationLabel}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <Animated.View entering={FadeIn.duration(300)} className="px-4">
-            <PlaybackActionsRow
-              onPlay={playAllTracks}
-              onShuffle={shuffleTracks}
-            />
-          </Animated.View>
-
-          <View className="mb-4 flex-row items-center justify-between px-4">
-            <Text className="text-lg font-bold text-foreground">
-              {sortedTracks.length} Tracks
-            </Text>
-            <SortSheet.Trigger label={getSortLabel()} iconSize={16} />
-          </View>
-
-          <View className="px-2">
-            {Array.from(tracksByDisc.entries()).map(
-              ([discNumber, discTracks]) => (
-                <View key={discNumber}>
-                  <View className="mb-2 px-2 py-3">
-                    <Text className="text-sm font-semibold tracking-wide text-muted uppercase">
-                      Disc {discNumber}
+                  <View className="flex-1 justify-center">
+                    <Text
+                      className="text-xl font-bold text-foreground"
+                      numberOfLines={1}
+                    >
+                      {albumInfo.title}
+                    </Text>
+                    <Text className="mt-1 text-sm text-muted" numberOfLines={1}>
+                      {albumInfo.artist}
+                    </Text>
+                    <Text className="mt-2 text-sm text-muted">
+                      {albumInfo.year ? `${albumInfo.year}` : ''}
+                      {' '}
+                      ·
+                      {' '}
+                      {totalDurationLabel}
                     </Text>
                   </View>
-                  <TrackList
-                    data={discTracks}
-                    showNumbers
-                    hideCover
-                    hideArtist
-                    getNumber={(track, index) => track.trackNumber || index + 1}
-                    onTrackPress={playSelectedTrack}
-                  />
                 </View>
-              )
-            )}
-          </View>
-        </ScrollView>
+              </View>
+
+              <Animated.View entering={FadeIn.duration(300)}>
+                <PlaybackActionsRow
+                  onPlay={playAllTracks}
+                  onShuffle={shuffleTracks}
+                />
+              </Animated.View>
+
+              <View className="mb-4 flex-row items-center justify-between">
+                <Text className="text-lg font-bold text-foreground">
+                  {sortedTracks.length}
+                  {' '}
+                  Tracks
+                </Text>
+                <SortSheet.Trigger label={getSortLabel()} iconSize={16} />
+              </View>
+            </>
+          )}
+        />
 
         <SortSheet.Content options={TRACK_SORT_OPTIONS} />
       </View>

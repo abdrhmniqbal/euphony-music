@@ -62,10 +62,6 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
   }
 
   return (
-    <ArtistGrid
-      data={artists}
-      onArtistPress={handleArtistPress}
-      scrollEnabled={false}
-    />
+    <ArtistGrid data={artists} onArtistPress={handleArtistPress} />
   )
 }

@@ -1,6 +1,5 @@
 import * as React from "react"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
-import { View } from "react-native"
 
 import { useThemeColors } from "@/hooks/use-theme-colors"
 import LocalAddIcon from "@/components/icons/local/add"
@@ -95,23 +94,16 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     </Item>
   )
 
-  if (!scrollEnabled) {
-    return (
-      <View style={{ gap: 8 }}>
-        {renderCreateButton()}
-        {data.map(renderPlaylistItem)}
-      </View>
-    )
-  }
-
   if (data.length === 0) {
     return (
       <LegendList
         data={[{ id: "create", isCreateButton: true }]}
         renderItem={() => renderCreateButton()}
         keyExtractor={(item) => item.id}
+        scrollEnabled={scrollEnabled}
         contentContainerStyle={{ gap: 8 }}
         recycleItems={true}
+        initialContainerPoolRatio={3}
         ListEmptyComponent={
           <EmptyState
             icon={
@@ -126,9 +118,9 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
             message="Create your first playlist to organize your music."
           />
         }
-        estimatedItemSize={72}
-        drawDistance={250}
-        style={{ flex: 1 }}
+        estimatedItemSize={68}
+        drawDistance={180}
+        style={{ flex: 1, minHeight: 1 }}
       />
     )
   }
@@ -145,11 +137,13 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         return renderPlaylistItem(item)
       }}
       keyExtractor={(item) => item.id}
+      scrollEnabled={scrollEnabled}
       contentContainerStyle={{ gap: 8 }}
       recycleItems={true}
-      estimatedItemSize={72}
-      drawDistance={250}
-      style={{ flex: 1 }}
+      initialContainerPoolRatio={3}
+      estimatedItemSize={68}
+      drawDistance={180}
+      style={{ flex: 1, minHeight: 1 }}
     />
   )
 }

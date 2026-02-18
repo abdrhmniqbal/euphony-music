@@ -1,7 +1,8 @@
 import * as React from "react"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
 import { useStore } from "@nanostores/react"
 import { PressableFeedback } from "heroui-native"
-import { ScrollView, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated"
 import { cn } from "tailwind-variants"
 
@@ -80,24 +81,27 @@ export const QueueView: React.FC<QueueViewProps> = ({ currentTrack }) => {
           Up Next • {upNext.length} {upNext.length === 1 ? "track" : "tracks"}
         </Text>
       </View>
-      <View className="h-0 flex-1">
-        <ScrollView
+      <View className="flex-1">
+        <LegendList
+          data={queue}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          renderItem={({ item, index }: LegendListRenderItemProps<Track>) => (
+            <QueueItem
+              track={item}
+              isCurrentTrack={item.id === currentTrack.id}
+              isPlayedTrack={currentIndex >= 0 && index < currentIndex}
+              onPress={() => playTrack(item, queue)}
+              onRemove={() => handleRemove(item.id)}
+            />
+          )}
+          style={{ flex: 1, minHeight: 1 }}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        >
-          <View className="gap-1">
-            {queue.map((track, index) => (
-              <QueueItem
-                key={track.id}
-                track={track}
-                isCurrentTrack={track.id === currentTrack.id}
-                isPlayedTrack={currentIndex >= 0 && index < currentIndex}
-                onPress={() => playTrack(track, queue)}
-                onRemove={() => handleRemove(track.id)}
-              />
-            ))}
-          </View>
-        </ScrollView>
+          contentContainerStyle={{ gap: 4, paddingBottom: 20 }}
+          recycleItems={true}
+          initialContainerPoolRatio={2.5}
+          estimatedItemSize={72}
+          drawDistance={180}
+        />
       </View>
     </Animated.View>
   )

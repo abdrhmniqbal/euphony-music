@@ -1,16 +1,16 @@
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
-import { LinearGradient } from "expo-linear-gradient"
-import { BottomSheet, ScrollShadow, useThemeColor } from "heroui-native"
+import type { TrackPickerSheetContentProps } from './types'
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { LegendList, type LegendListRenderItemProps } from '@legendapp/list'
 
-import { useThemeColors } from "@/hooks/use-theme-colors"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
-import { EmptyState } from "@/components/ui"
+import { BottomSheet } from 'heroui-native'
+import LocalMusicNoteSolidIcon from '@/components/icons/local/music-note-solid'
+import { EmptyState } from '@/components/ui'
 
-import { PlaylistTrackRow } from "./playlist-track-row"
-import { SheetSearchInput } from "./sheet-search-input"
-import type { TrackPickerSheetContentProps } from "./types"
+import { useThemeColors } from '@/hooks/use-theme-colors'
+import { PlaylistTrackRow } from './playlist-track-row'
+import { SheetSearchInput } from './sheet-search-input'
 
-const TRACK_PICKER_SNAP_POINTS = ["55%", "90%"]
+const TRACK_PICKER_SNAP_POINTS = ['55%', '90%']
 
 export function TrackPickerSheetContent({
   inputKey,
@@ -20,7 +20,6 @@ export function TrackPickerSheetContent({
   selectedTracks,
   onToggleTrack,
 }: TrackPickerSheetContentProps) {
-  const overlayColor = useThemeColor("overlay")
   const theme = useThemeColors()
 
   return (
@@ -37,42 +36,47 @@ export function TrackPickerSheetContent({
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
-
-      <ScrollShadow
-        LinearGradientComponent={LinearGradient}
-        color={overlayColor}
-      >
-        <BottomSheetScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 24, paddingTop: 4 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          {filteredTracks.length > 0 ? (
-            filteredTracks.map((track) => (
-              <PlaylistTrackRow
-                key={track.id}
-                track={track}
-                isSelected={selectedTracks.has(track.id)}
-                onPress={() => onToggleTrack(track.id)}
+      <LegendList
+        data={filteredTracks}
+        renderItem={({ item }: LegendListRenderItemProps<(typeof filteredTracks)[number]>) => (
+          <PlaylistTrackRow
+            track={item}
+            isSelected={selectedTracks.has(item.id)}
+            onPress={() => onToggleTrack(item.id)}
+          />
+        )}
+        keyExtractor={item => item.id}
+        style={{ flex: 1, minHeight: 1, width: '100%' }}
+        contentContainerStyle={{
+          paddingTop: 6,
+          paddingBottom: 24,
+          paddingHorizontal: 4,
+        }}
+        renderScrollComponent={props => <BottomSheetScrollView {...props} />}
+        nestedScrollEnabled={true}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        extraData={selectedTracks}
+        ListEmptyComponent={() => (
+          <EmptyState
+            icon={(
+              <LocalMusicNoteSolidIcon
+                fill="none"
+                width={48}
+                height={48}
+                color={theme.muted}
               />
-            ))
-          ) : (
-            <EmptyState
-              icon={
-                <LocalMusicNoteSolidIcon
-                  fill="none"
-                  width={48}
-                  height={48}
-                  color={theme.muted}
-                />
-              }
-              title="No tracks found"
-              message="Try a different keyword."
-              className="py-10"
-            />
-          )}
-        </BottomSheetScrollView>
-      </ScrollShadow>
+            )}
+            title="No tracks found"
+            message="Try a different keyword."
+            className="py-10"
+          />
+        )}
+        recycleItems={true}
+        initialContainerPoolRatio={3}
+        estimatedItemSize={68}
+        drawDistance={180}
+      />
     </BottomSheet.Content>
   )
 }

@@ -1,11 +1,11 @@
 import * as React from "react"
 import { useState } from "react"
+import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import { Button } from "heroui-native"
 import {
   Dimensions,
-  Image,
   Pressable,
   ScrollView,
   Text,
@@ -40,6 +40,7 @@ import { PlaybackActionsRow } from "@/components/blocks"
 import { AlbumGrid, type Album } from "@/components/blocks/album-grid"
 import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
+import { TrackRow } from "@/components/patterns"
 import { SectionTitle } from "@/components/ui"
 
 const SCREEN_WIDTH = Dimensions.get("window").width
@@ -94,6 +95,44 @@ export default function ArtistDetailsScreen() {
   function handleSortSelect(field: SortField, order?: "asc" | "desc") {
     selectSort(field, order)
   }
+
+  const renderHeroSection = () => (
+    <View style={{ height: SCREEN_WIDTH }} className="relative">
+      {artistImage ? (
+        <Image
+          source={{ uri: artistImage }}
+          style={{ width: "100%", height: "100%" }}
+          contentFit="cover"
+        />
+      ) : (
+        <View className="h-full w-full items-center justify-center bg-surface-secondary">
+          <LocalUserSolidIcon
+            fill="none"
+            width={120}
+            height={120}
+            color={theme.muted}
+          />
+        </View>
+      )}
+
+      <LinearGradient
+        colors={["transparent", "rgba(0,0,0,0.7)", theme.background]}
+        locations={[0.3, 0.7, 1]}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: "60%",
+        }}
+      />
+
+      <View className="absolute right-6 bottom-8 left-6">
+        <Text className="mb-2 text-4xl font-bold text-white">{artistName}</Text>
+        <Text className="text-base text-white/70">{artistTracks.length} tracks</Text>
+      </View>
+    </View>
+  )
 
   return (
     <SortSheet
@@ -164,165 +203,162 @@ export default function ArtistDetailsScreen() {
           }}
         />
 
-        <ScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 200 }}
-          onScroll={(e) => {
-            const y = e.nativeEvent.contentOffset.y
-            handleScroll(y)
-            const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
-            if (nextHeaderSolid !== isHeaderSolid) {
-              setIsHeaderSolid(nextHeaderSolid)
-            }
-          }}
-          onScrollBeginDrag={handleScrollStart}
-          onMomentumScrollEnd={handleScrollStop}
-          onScrollEndDrag={handleScrollStop}
-          scrollEventThrottle={16}
-        >
-          <View style={{ height: SCREEN_WIDTH }} className="relative">
-            {artistImage ? (
-              <Image
-                source={{ uri: artistImage }}
-                style={{ width: "100%", height: "100%" }}
-                resizeMode="cover"
-              />
-            ) : (
-              <View className="h-full w-full items-center justify-center bg-surface-secondary">
-                <LocalUserSolidIcon
-                  fill="none"
-                  width={120}
-                  height={120}
-                  color={theme.muted}
-                />
-              </View>
-            )}
+        {activeView === "overview" ? (
+          <ScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 200 }}
+            onScroll={(e) => {
+              const y = e.nativeEvent.contentOffset.y
+              handleScroll(y)
+              const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
+              if (nextHeaderSolid !== isHeaderSolid) {
+                setIsHeaderSolid(nextHeaderSolid)
+              }
+            }}
+            onScrollBeginDrag={handleScrollStart}
+            onMomentumScrollEnd={handleScrollStop}
+            onScrollEndDrag={handleScrollStop}
+            scrollEventThrottle={16}
+          >
+            {renderHeroSection()}
 
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.7)", theme.background]}
-              locations={[0.3, 0.7, 1]}
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: "60%",
-              }}
-            />
-
-            <View className="absolute right-6 bottom-8 left-6">
-              <Text className="mb-2 text-4xl font-bold text-white">
-                {artistName}
-              </Text>
-              <Text className="text-base text-white/70">
-                {artistTracks.length} tracks
-              </Text>
-            </View>
-          </View>
-
-          <Animated.View
-            key={activeView}
-            entering={
-              activeView === "overview"
-                ? navDirection === "back"
+            <Animated.View
+              key={activeView}
+              entering={
+                navDirection === "back"
                   ? SlideInLeft.duration(200)
                   : FadeIn.duration(200)
-                : SlideInRight.duration(200)
-            }
-            className={activeView === "overview" ? "pt-4" : "px-6 pt-4"}
-          >
-            {activeView === "overview" ? (
-              <>
-                <View className="px-6">
+              }
+              className="pt-4"
+            >
+              <View className="px-6">
+                <SectionTitle
+                  title="Tracks"
+                  onViewMore={() => navigateTo("tracks")}
+                />
+                <View style={{ gap: 8 }}>
+                  {popularTracks.map((track) => (
+                    <TrackRow
+                      key={track.id}
+                      track={track}
+                      onPress={() => playArtistTrack(track)}
+                    />
+                  ))}
+                </View>
+              </View>
+
+              {albums.length > 0 && (
+                <View className="mt-8 px-6">
                   <SectionTitle
-                    title="Tracks"
-                    onViewMore={() => navigateTo("tracks")}
+                    title="Albums"
+                    onViewMore={() => navigateTo("albums")}
                   />
-                  <TrackList
-                    data={popularTracks}
-                    onTrackPress={playArtistTrack}
+                  <AlbumGrid
+                    horizontal
+                    data={albums.map(
+                      (album) => ({ ...album, id: album.title }) as Album
+                    )}
+                    onAlbumPress={openAlbum}
                   />
                 </View>
-
-                {albums.length > 0 && (
-                  <View className="mt-8 px-6">
-                    <SectionTitle
-                      title="Albums"
-                      onViewMore={() => navigateTo("albums")}
-                    />
-                    <AlbumGrid
-                      horizontal
-                      data={albums.map(
-                        (album) => ({ ...album, id: album.title }) as Album
-                      )}
-                      onAlbumPress={openAlbum}
-                    />
-                  </View>
-                )}
-              </>
-            ) : activeView === "tracks" ? (
+              )}
+            </Animated.View>
+          </ScrollView>
+        ) : activeView === "tracks" ? (
+          <TrackList
+            data={sortedArtistTracks}
+            onTrackPress={playArtistTrack}
+            contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 24 }}
+            onScroll={(e) => {
+              const y = e.nativeEvent.contentOffset.y
+              handleScroll(y)
+              const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
+              if (nextHeaderSolid !== isHeaderSolid) {
+                setIsHeaderSolid(nextHeaderSolid)
+              }
+            }}
+            onScrollBeginDrag={handleScrollStart}
+            onMomentumScrollEnd={handleScrollStop}
+            onScrollEndDrag={handleScrollStop}
+            listHeader={
               <>
-                <View className="mb-6 flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-3">
-                    <Pressable
-                      onPress={() => navigateTo("overview")}
-                      className="mr-2 active:opacity-50"
-                    >
-                      <LocalChevronLeftIcon
-                        fill="none"
-                        width={20}
-                        height={20}
-                        color={theme.muted}
-                      />
-                    </Pressable>
-                    <Text className="text-lg font-bold text-foreground">
-                      All Tracks
-                    </Text>
+                {renderHeroSection()}
+                <Animated.View entering={SlideInRight.duration(200)} className="pt-4">
+                  <View className="mb-6 flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-3">
+                      <Pressable
+                        onPress={() => navigateTo("overview")}
+                        className="mr-2 active:opacity-50"
+                      >
+                        <LocalChevronLeftIcon
+                          fill="none"
+                          width={20}
+                          height={20}
+                          color={theme.muted}
+                        />
+                      </Pressable>
+                      <Text className="text-lg font-bold text-foreground">
+                        All Tracks
+                      </Text>
+                    </View>
+                    <SortSheet.Trigger label={getSortLabel()} iconSize={14} />
                   </View>
-
-                  <SortSheet.Trigger label={getSortLabel()} iconSize={14} />
-                </View>
-
-                <PlaybackActionsRow
-                  onPlay={playAllTracks}
-                  onShuffle={shuffleTracks}
-                />
-
-                <TrackList data={sortedArtistTracks} />
+                  <PlaybackActionsRow
+                    onPlay={playAllTracks}
+                    onShuffle={shuffleTracks}
+                  />
+                </Animated.View>
               </>
-            ) : (
+            }
+          />
+        ) : (
+          <AlbumGrid
+            data={sortedAlbums}
+            onAlbumPress={openAlbum}
+            contentContainerStyle={{
+              paddingBottom: 200,
+              paddingHorizontal: 16,
+            }}
+            onScroll={(e) => {
+              const y = e.nativeEvent.contentOffset.y
+              handleScroll(y)
+              const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
+              if (nextHeaderSolid !== isHeaderSolid) {
+                setIsHeaderSolid(nextHeaderSolid)
+              }
+            }}
+            onScrollBeginDrag={handleScrollStart}
+            onMomentumScrollEnd={handleScrollStop}
+            onScrollEndDrag={handleScrollStop}
+            listHeader={
               <>
-                <View className="mb-6 flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-3">
-                    <Pressable
-                      onPress={() => navigateTo("overview")}
-                      className="mr-2 active:opacity-50"
-                    >
-                      <LocalChevronLeftIcon
-                        fill="none"
-                        width={20}
-                        height={20}
-                        color={theme.muted}
-                      />
-                    </Pressable>
-                    <Text className="text-lg font-bold text-foreground">
-                      All Albums
-                    </Text>
+                {renderHeroSection()}
+                <Animated.View entering={SlideInRight.duration(200)} className="px-2 pt-4">
+                  <View className="mb-6 flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-3">
+                      <Pressable
+                        onPress={() => navigateTo("overview")}
+                        className="mr-2 active:opacity-50"
+                      >
+                        <LocalChevronLeftIcon
+                          fill="none"
+                          width={20}
+                          height={20}
+                          color={theme.muted}
+                        />
+                      </Pressable>
+                      <Text className="text-lg font-bold text-foreground">
+                        All Albums
+                      </Text>
+                    </View>
+                    <SortSheet.Trigger label={getSortLabel()} iconSize={14} />
                   </View>
-
-                  <SortSheet.Trigger label={getSortLabel()} iconSize={14} />
-                </View>
-
-                <AlbumGrid
-                  data={sortedAlbums}
-                  onAlbumPress={openAlbum}
-                  scrollEnabled={false}
-                />
+                </Animated.View>
               </>
-            )}
-          </Animated.View>
-        </ScrollView>
+            }
+          />
+        )}
 
         <SortSheet.Content
           options={

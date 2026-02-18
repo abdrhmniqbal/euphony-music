@@ -1,8 +1,8 @@
-import { Checkbox } from "heroui-native"
+import type { PlaylistTrackRowProps } from './types'
 
-import { TrackRow } from "@/components/patterns"
+import { Checkbox } from 'heroui-native'
 
-import type { PlaylistTrackRowProps } from "./types"
+import { TrackRow } from '@/components/patterns'
 
 export function PlaylistTrackRow({
   track,
@@ -13,8 +13,8 @@ export function PlaylistTrackRow({
     <TrackRow
       track={track}
       onPress={onPress}
-      className="py-2"
-      leftAction={
+      className="w-full py-2"
+      leftAction={(
         <Checkbox
           variant="secondary"
           isSelected={isSelected}
@@ -22,7 +22,7 @@ export function PlaylistTrackRow({
           accessibilityLabel={`Select ${track.title}`}
           className="mt-0.5"
         />
-      }
+      )}
     />
   )
 }
