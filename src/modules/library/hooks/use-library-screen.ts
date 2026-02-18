@@ -2,8 +2,6 @@ import { useState } from "react"
 import { useStore } from "@nanostores/react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "expo-router"
-import { Gesture } from "react-native-gesture-handler"
-import { runOnJS } from "react-native-reanimated"
 
 import { useAlbums } from "@/modules/albums/albums.queries"
 import { useArtists } from "@/modules/artists/artists.queries"
@@ -93,32 +91,6 @@ export function useLibraryScreen() {
   function closeSortModal() {
     setSortModalVisible(false)
   }
-
-  function navigateTab(direction: "left" | "right") {
-    const currentIndex = LIBRARY_TABS.indexOf(activeTab)
-
-    if (direction === "left" && currentIndex < LIBRARY_TABS.length - 1) {
-      setActiveTab(LIBRARY_TABS[currentIndex + 1])
-    } else if (direction === "right" && currentIndex > 0) {
-      setActiveTab(LIBRARY_TABS[currentIndex - 1])
-    }
-  }
-
-  const swipeGesture = Gesture.Pan()
-    .activeOffsetX([-20, 20])
-    .onEnd((event) => {
-      if (Math.abs(event.translationX) > Math.abs(event.translationY)) {
-        const currentIndex = LIBRARY_TABS.indexOf(activeTab)
-        if (event.translationX > 50 && currentIndex > 0) {
-          runOnJS(navigateTab)("right")
-        } else if (
-          event.translationX < -50 &&
-          currentIndex < LIBRARY_TABS.length - 1
-        ) {
-          runOnJS(navigateTab)("left")
-        }
-      }
-    })
 
   function openArtist(name: string) {
     router.push(`./artist/${encodeURIComponent(name)}`)
@@ -222,7 +194,6 @@ export function useLibraryScreen() {
     sortModalVisible,
     setSortModalVisible,
     closeSortModal,
-    swipeGesture,
     sortConfig,
     tracks,
     favorites,

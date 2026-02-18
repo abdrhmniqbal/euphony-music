@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Tabs } from "heroui-native"
 import { Text, View } from "react-native"
-import { GestureDetector } from "react-native-gesture-handler"
 import { cn } from "tailwind-variants"
 
 import {
@@ -26,7 +25,6 @@ export default function LibraryScreen() {
     sortModalVisible,
     setSortModalVisible,
     closeSortModal,
-    swipeGesture,
     sortConfig,
     favorites,
     playlists,
@@ -109,60 +107,58 @@ export default function LibraryScreen() {
       currentOrder={sortConfig.order}
       onSelect={handleSortSelect}
     >
-      <GestureDetector gesture={swipeGesture}>
-        <View className="flex-1 bg-background">
-          <Tabs
-            value={activeTab}
-            onValueChange={(value) => setActiveTab(value as LibraryTab)}
-            variant="secondary"
-            className="gap-1.5 px-4 py-4"
-          >
-            <Tabs.List className="w-full">
-              <Tabs.ScrollView
-                scrollAlign="start"
-                showsHorizontalScrollIndicator={false}
-                contentContainerClassName="px-1 gap-4"
-              >
-                <Tabs.Indicator />
-                {LIBRARY_TABS.map((tab) => (
-                  <Tabs.Trigger key={tab} value={tab} className="py-2">
-                    {({ isSelected }) => (
-                      <Tabs.Label
-                        className={cn(
-                          "text-lg font-semibold",
-                          isSelected ? "text-foreground" : "text-muted"
-                        )}
-                      >
-                        {tab}
-                      </Tabs.Label>
-                    )}
-                  </Tabs.Trigger>
-                ))}
-              </Tabs.ScrollView>
-            </Tabs.List>
-          </Tabs>
+      <View className="flex-1 bg-background">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as LibraryTab)}
+          variant="secondary"
+          className="gap-1.5 px-4 py-4"
+        >
+          <Tabs.List className="w-full">
+            <Tabs.ScrollView
+              scrollAlign="start"
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="px-1 gap-4"
+            >
+              <Tabs.Indicator />
+              {LIBRARY_TABS.map((tab) => (
+                <Tabs.Trigger key={tab} value={tab} className="py-2">
+                  {({ isSelected }) => (
+                    <Tabs.Label
+                      className={cn(
+                        "text-lg font-semibold",
+                        isSelected ? "text-foreground" : "text-muted"
+                      )}
+                    >
+                      {tab}
+                    </Tabs.Label>
+                  )}
+                </Tabs.Trigger>
+              ))}
+            </Tabs.ScrollView>
+          </Tabs.List>
+        </Tabs>
 
-          <View className="flex-row items-center justify-between px-4 pb-4">
-            <Text className="text-lg font-bold text-foreground">
-              {activeTab === "Folders"
-                ? `${getItemCount()} Items`
-                : `${getItemCount()} ${activeTab}`}
-            </Text>
-            {currentSortOptions.length > 0 && (
-              <SortSheet.Trigger label={getSortLabel()} iconSize={16} />
-            )}
-          </View>
-
-          <View className="flex-1 px-4 pb-40">
-            {showPlayButtons && (
-              <View className="mb-4">
-                <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} />
-              </View>
-            )}
-            {renderTabContent()}
-          </View>
+        <View className="flex-row items-center justify-between px-4 pb-4">
+          <Text className="text-lg font-bold text-foreground">
+            {activeTab === "Folders"
+              ? `${getItemCount()} Items`
+              : `${getItemCount()} ${activeTab}`}
+          </Text>
+          {currentSortOptions.length > 0 && (
+            <SortSheet.Trigger label={getSortLabel()} iconSize={16} />
+          )}
         </View>
-      </GestureDetector>
+
+        <View className="flex-1 px-4 pb-40">
+          {showPlayButtons && (
+            <View className="mb-4">
+              <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} />
+            </View>
+          )}
+          {renderTabContent()}
+        </View>
+      </View>
 
       <SortSheet.Content options={currentSortOptions} />
     </SortSheet>
