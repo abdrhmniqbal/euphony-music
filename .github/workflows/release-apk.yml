@@ -157,13 +157,35 @@ jobs:
           name: release-apk
           path: android/app/build/outputs/apk/release/*.apk
 
+      - name: Collect release APK files
+        id: collect_apk
+        run: |
+          shopt -s nullglob
+          apks=(android/app/build/outputs/apk/release/*.apk)
+
+          if [ "${#apks[@]}" -eq 0 ]; then
+            echo "No APK files found in android/app/build/outputs/apk/release/"
+            exit 1
+          fi
+
+          echo "Found APK files:"
+          printf '%s\n' "${apks[@]}"
+
+          {
+            echo 'apk_files<<EOF'
+            printf '%s\n' "${apks[@]}"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release draft with APK
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ env.RELEASE_TAG }}
           tag_name: ${{ env.RELEASE_TAG }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: android/app/build/outputs/apk/release/*.apk
+          files: ${{ steps.collect_apk.outputs.apk_files }}
+          fail_on_unmatched_files: true
+          overwrite_files: true
           draft: true
           prerelease: ${{ contains(env.RELEASE_TAG, '-rc.') }}
           generate_release_notes: true
