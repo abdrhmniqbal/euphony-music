@@ -12,9 +12,13 @@ import {
   View,
 } from "react-native"
 import Animated, {
+  Extrapolation,
   FadeIn,
   SlideInLeft,
   SlideInRight,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
 } from "react-native-reanimated"
 
 import {
@@ -56,6 +60,7 @@ export default function ArtistDetailsScreen() {
     query?: string
   }>()
   const [isHeaderSolid, setIsHeaderSolid] = useState(false)
+  const scrollY = useSharedValue(0)
   const {
     name,
     isLoading,
@@ -83,6 +88,25 @@ export default function ArtistDetailsScreen() {
 
   const artistName = name || "Unknown Artist"
 
+  const heroArtworkStyle = useAnimatedStyle(() => {
+    const y = scrollY.value
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            y,
+            [-160, 0, 280],
+            [-36, 0, 88],
+            Extrapolation.CLAMP
+          ),
+        },
+        {
+          scale: interpolate(y, [-160, 0], [1.18, 1], Extrapolation.CLAMP),
+        },
+      ],
+    }
+  })
+
   if (isLoading) {
     return (
       <View className="flex-1 bg-background">
@@ -108,23 +132,30 @@ export default function ArtistDetailsScreen() {
   }
 
   const renderHeroSection = () => (
-    <View style={{ height: SCREEN_WIDTH }} className="relative">
-      {artistImage ? (
-        <Image
-          source={{ uri: artistImage }}
-          style={{ width: "100%", height: "100%" }}
-          contentFit="cover"
-        />
-      ) : (
-        <View className="h-full w-full items-center justify-center bg-surface-secondary">
-          <LocalUserSolidIcon
-            fill="none"
-            width={120}
-            height={120}
-            color={theme.muted}
+    <View style={{ height: SCREEN_WIDTH }} className="relative overflow-hidden">
+      <Animated.View
+        style={[
+          { position: "absolute", top: 0, right: 0, bottom: 0, left: 0 },
+          heroArtworkStyle,
+        ]}
+      >
+        {artistImage ? (
+          <Image
+            source={{ uri: artistImage }}
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
           />
-        </View>
-      )}
+        ) : (
+          <View className="h-full w-full items-center justify-center bg-surface-secondary">
+            <LocalUserSolidIcon
+              fill="none"
+              width={120}
+              height={120}
+              color={theme.muted}
+            />
+          </View>
+        )}
+      </Animated.View>
 
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.7)", theme.background]}
@@ -227,6 +258,7 @@ export default function ArtistDetailsScreen() {
             contentContainerStyle={{ paddingBottom: 200 }}
             onScroll={(e) => {
               const y = e.nativeEvent.contentOffset.y
+              scrollY.value = y
               handleScroll(y)
               const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
               if (nextHeaderSolid !== isHeaderSolid) {
@@ -290,6 +322,7 @@ export default function ArtistDetailsScreen() {
             contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 24 }}
             onScroll={(e) => {
               const y = e.nativeEvent.contentOffset.y
+              scrollY.value = y
               handleScroll(y)
               const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
               if (nextHeaderSolid !== isHeaderSolid) {
@@ -341,6 +374,7 @@ export default function ArtistDetailsScreen() {
             }}
             onScroll={(e) => {
               const y = e.nativeEvent.contentOffset.y
+              scrollY.value = y
               handleScroll(y)
               const nextHeaderSolid = y > HEADER_COLLAPSE_THRESHOLD
               if (nextHeaderSolid !== isHeaderSolid) {
