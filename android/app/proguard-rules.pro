@@ -1,31 +1,9 @@
-# ========== STANDARD OPTIMIZATIONS ==========
--optimizationpasses 3
--allowaccessmodification
--dontusemixedcaseclassnames
--dontpreverify
-
-# Keep crash reporting info
+# Keep useful crash stack metadata.
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 -keepattributes Signature,*Annotation*
 
-# Remove debug/info logs in production
--assumenosideeffects class android.util.Log {
-    public static *** d(...);
-    public static *** v(...);
-    public static *** i(...);
-    public static *** w(...);
-}
-
-# ========== REACT NATIVE CORE ==========
--keep class com.facebook.hermes.** { *; }
--keep class com.facebook.hermes.unicode.** { *; }
--keep class com.facebook.react.** { *; }
--keep class com.facebook.jni.** { *; }
--keep class com.facebook.soloader.** { *; }
-
-# Bridge & Native Modules
--keep public class * extends com.facebook.react.bridge.NativeModule { *; }
+# React Native bridge / native modules.
 -keep class com.facebook.react.bridge.** { *; }
 -keepclassmembers class * {
     @com.facebook.react.bridge.ReactMethod <methods>;
@@ -33,31 +11,30 @@
 -keepclassmembers class * {
     @com.facebook.proguard.annotations.DoNotStrip *;
 }
+-keep class com.facebook.hermes.** { *; }
+-keep class com.facebook.hermes.unicode.** { *; }
+-keep class com.facebook.jni.** { *; }
+-keep class com.facebook.soloader.** { *; }
 
-# UI Manager & View System
--keep @com.facebook.react.uimanager.annotations.ReactProp class * { *; }
--keep @com.facebook.react.uimanager.annotations.ReactPropGroup class * { *; }
--keep class * extends com.facebook.react.uimanager.ViewManager { *; }
--keep class com.facebook.react.uimanager.** { *; }
+# Expo modules (reflection-heavy registration path).
+-keep class expo.modules.** { *; }
+-dontwarn expo.modules.**
 
-# TurboModules (New Architecture)
+# New architecture / UI manager.
 -keep class com.facebook.react.turbomodule.** { *; }
+-keep class com.facebook.react.uimanager.** { *; }
 -keep class com.facebook.react.animated.** { *; }
 -keep class com.facebook.react.common.** { *; }
 
-# ========== COMMON LIBRARIES ==========
-# Reanimated
+# Common React Native native dependencies.
 -keep class com.swmansion.reanimated.** { *; }
--keep class com.swmansion.** { *; }
+-keep class com.swmansion.worklets.** { *; }
 -dontwarn com.swmansion.**
-
-# SVG
--keep public class com.horcrux.svg.** { *; }
-
-# Track Player
+-keep class com.horcrux.svg.** { *; }
 -keep class com.doublesymmetry.trackplayer.** { *; }
 -dontwarn com.doublesymmetry.trackplayer.**
+-keep class com.shopify.reactnative.skia.** { *; }
 
-# OkHttp / Okio
+# Network stack warnings.
 -dontwarn okhttp3.**
 -dontwarn okio.**

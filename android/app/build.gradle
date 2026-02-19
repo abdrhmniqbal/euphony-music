@@ -75,6 +75,7 @@ react {
  * this variant is about 6MiB larger per architecture than default.
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
+def enableMinifyInReleaseBuilds = (findProperty('android.enableMinifyInReleaseBuilds') ?: 'true').toBoolean()
 def hasReleaseSigning = findProperty('RELEASE_KEYSTORE_PASSWORD')
     && findProperty('RELEASE_KEY_ALIAS')
     && findProperty('RELEASE_KEY_PASSWORD')
@@ -125,8 +126,8 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
             debuggable false
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled enableMinifyInReleaseBuilds
+            shrinkResources enableMinifyInReleaseBuilds
             crunchPngs true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
