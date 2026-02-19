@@ -126,6 +126,10 @@ export async function startIndexing(
   }
 }
 
+export async function forceReindexLibrary(showProgress = true) {
+  await startIndexing(true, showProgress)
+}
+
 export function stopIndexing() {
   runToken += 1
 

@@ -34,7 +34,7 @@ export function useRecentlyPlayedScreen() {
   }, [isFocused, refetchHistory])
 
   async function refresh() {
-    startIndexing(true)
+    startIndexing(false)
     await refetchHistory()
   }
 

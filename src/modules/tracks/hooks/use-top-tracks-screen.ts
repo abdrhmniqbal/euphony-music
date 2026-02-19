@@ -50,7 +50,7 @@ export function useTopTracksScreen() {
   }, [isFocused, period, refetch])
 
   async function refresh() {
-    startIndexing(true)
+    startIndexing(false)
     await refetch()
   }
 

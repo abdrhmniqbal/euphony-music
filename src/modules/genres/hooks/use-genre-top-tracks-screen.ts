@@ -16,7 +16,7 @@ export function useGenreTopTracksScreen(genreName: string) {
   const tracks = data ?? []
 
   async function refresh() {
-    await startIndexing(true)
+    await startIndexing(false)
     await refetch()
   }
 

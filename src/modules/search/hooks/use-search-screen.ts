@@ -16,7 +16,7 @@ export function useSearchScreen() {
   const genreList = data ?? []
 
   async function refresh() {
-    await startIndexing(true)
+    await startIndexing(false)
     await refetch()
   }
 

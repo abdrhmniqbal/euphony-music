@@ -68,7 +68,7 @@ export function useHomeScreen() {
   }, [isFocused, refetchRecentlyPlayedTracks, refetchTopTracks])
 
   async function refresh() {
-    startIndexing(true)
+    startIndexing(false)
 
     await Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()])
   }

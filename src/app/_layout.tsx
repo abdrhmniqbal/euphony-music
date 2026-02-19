@@ -5,7 +5,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native"
-import { Stack } from "expo-router"
+import { Stack, useSegments } from "expo-router"
 import { HeroUINativeProvider } from "heroui-native"
 import { View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
@@ -64,16 +64,20 @@ function ToastAnimatedWrapper({
 export default function Layout() {
   const { theme: currentTheme } = useUniwind()
   const theme = useThemeColors()
+  const segments = useSegments()
   const insets = useSafeAreaInsets()
   const barsVisible = useStore($barsVisible)
   const currentTrack = useStore($currentTrack)
   useAppBootstrap()
   const tabBarHeight = getTabBarHeight(insets.bottom)
   const hasMiniPlayer = currentTrack !== null
-  const toastExtraBottomOffset = barsVisible
-    ? tabBarHeight +
-      (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) +
-      TOAST_VISIBLE_BOTTOM_GAP
+  const isMainTabsRoute = segments[0] === "(main)"
+  const toastExtraBottomOffset = isMainTabsRoute
+    ? barsVisible
+      ? tabBarHeight +
+        (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) +
+        TOAST_VISIBLE_BOTTOM_GAP
+      : TOAST_HIDDEN_BOTTOM_GAP
     : TOAST_HIDDEN_BOTTOM_GAP
 
   const toastContentWrapper = useCallback(

@@ -17,7 +17,7 @@ export function useGenreDetailsScreen(genreName: string) {
   const albums = data?.albums ?? []
 
   async function refresh() {
-    await startIndexing(true)
+    await startIndexing(false)
     await refetch()
   }
 

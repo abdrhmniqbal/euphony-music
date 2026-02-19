@@ -17,7 +17,7 @@ export function useGenreAlbumsScreen(genreName: string) {
   })
 
   async function refresh() {
-    await startIndexing(true)
+    await startIndexing(false)
     await refetch()
   }
 

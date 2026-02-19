@@ -2,6 +2,7 @@
 export { scanMediaLibrary } from "./indexer.api"
 export {
   $indexerState,
+  forceReindexLibrary,
   type IndexerState,
   pauseIndexing,
   resumeIndexing,
