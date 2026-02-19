@@ -1,11 +1,11 @@
-import { Stack, useRouter } from "expo-router"
-import { Button } from "heroui-native"
-import { View } from "react-native"
+import { Stack, useRouter } from 'expo-router'
+import { Button } from 'heroui-native'
+import { View } from 'react-native'
 
-import { useThemeColors } from "@/hooks/use-theme-colors"
-import LocalSearchIcon from "@/components/icons/local/search"
-import LocalSettingsIcon from "@/components/icons/local/settings"
-import { BackButton } from "@/components/patterns"
+import LocalSearchIcon from '@/components/icons/local/search'
+import LocalSettingsIcon from '@/components/icons/local/settings'
+import { BackButton } from '@/components/patterns'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 
 export default function HomeLayout() {
   const theme = useThemeColors()
@@ -19,21 +19,21 @@ export default function HomeLayout() {
         },
         headerTintColor: theme.foreground,
         headerShadowVisible: false,
-        headerTitleAlign: "center",
+        headerTitleAlign: 'center',
         contentStyle: { backgroundColor: theme.background },
-        animation: "default",
+        animation: 'default',
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          title: "EMP",
+          title: 'Home',
           headerLargeTitle: true,
-          headerTitleAlign: "left",
+          headerTitleAlign: 'left',
           headerRight: () => (
             <View className="-mr-2 flex-row gap-4">
               <Button
-                onPress={() => router.push("/search-interaction")}
+                onPress={() => router.push('/search-interaction')}
                 variant="ghost"
                 isIconOnly
               >
@@ -45,7 +45,7 @@ export default function HomeLayout() {
                 />
               </Button>
               <Button
-                onPress={() => router.push("/settings")}
+                onPress={() => router.push('/settings')}
                 variant="ghost"
                 isIconOnly
               >
@@ -63,7 +63,7 @@ export default function HomeLayout() {
       <Stack.Screen
         name="recently-played"
         options={{
-          title: "Recently Played",
+          title: 'Recently Played',
           headerBackButtonMenuEnabled: false,
           headerBackVisible: false,
           headerLeft: () => <BackButton className="-ml-2" />,
@@ -72,7 +72,7 @@ export default function HomeLayout() {
       <Stack.Screen
         name="top-tracks"
         options={{
-          title: "Top Tracks",
+          title: 'Top Tracks',
           headerBackButtonMenuEnabled: false,
           headerBackVisible: false,
           headerLeft: () => <BackButton className="-ml-2" />,

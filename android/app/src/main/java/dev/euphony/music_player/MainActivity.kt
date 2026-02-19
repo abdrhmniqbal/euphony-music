@@ -1,4 +1,4 @@
-package id.euphony.music.player
+package id.euphony.music
 
 import android.os.Build
 import android.os.Bundle

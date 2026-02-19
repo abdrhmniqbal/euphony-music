@@ -1,4 +1,4 @@
-package id.euphony.music.player
+package id.euphony.music
 
 import android.app.Application
 import android.content.res.Configuration

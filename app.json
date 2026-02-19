@@ -7,8 +7,8 @@
     "web": {
       "output": "static"
     },
-    "name": "Music Player",
-    "slug": "emp",
+    "name": "Euphony Music",
+    "slug": "euphony-music",
     "splash": {
       "image": "./android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png",
       "resizeMode": "contain",
@@ -29,13 +29,13 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "id.euphony.music.player",
+      "bundleIdentifier": "id.euphony.music",
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
       }
     },
     "android": {
-      "package": "id.euphony.music.player",
+      "package": "id.euphony.music",
       "permissions": [
         "WAKE_LOCK",
         "FOREGROUND_SERVICE",
