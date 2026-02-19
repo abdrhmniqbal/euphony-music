@@ -12,6 +12,10 @@ import {
   ensureFolderFilterConfigLoaded,
   isAssetAllowedByFolderFilters,
 } from "@/modules/indexer/folder-filters"
+import {
+  ensureTrackDurationFilterConfigLoaded,
+  isAssetAllowedByTrackDuration,
+} from "@/modules/indexer/track-duration-filter"
 
 import type { IndexerScanProgress } from "./indexer.types"
 import { extractMetadata, saveArtworkToCache } from "./metadata.api"
@@ -47,8 +51,10 @@ export async function scanMediaLibrary(
   }
 
   const folderFilterConfig = await ensureFolderFilterConfigLoaded()
+  const durationFilterConfig = await ensureTrackDurationFilterConfigLoaded()
   const scopedAssets = assets.filter((asset) =>
-    isAssetAllowedByFolderFilters(asset.uri, folderFilterConfig)
+    isAssetAllowedByFolderFilters(asset.uri, folderFilterConfig) &&
+    isAssetAllowedByTrackDuration(asset.duration, durationFilterConfig)
   )
 
   onProgress?.({

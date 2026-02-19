@@ -6,6 +6,16 @@ export {
   setAutoScanEnabled,
 } from "./auto-scan"
 export {
+  $trackDurationFilterConfig,
+  ensureTrackDurationFilterConfigLoaded,
+  getTrackDurationFilterLabel,
+  getTrackDurationMinimumSeconds,
+  isAssetAllowedByTrackDuration,
+  setTrackDurationFilterConfig,
+  type TrackDurationFilterConfig,
+  type TrackDurationFilterMode,
+} from "./track-duration-filter"
+export {
   $folderFilterConfig,
   clearFolderFilters,
   ensureFolderFilterConfigLoaded,

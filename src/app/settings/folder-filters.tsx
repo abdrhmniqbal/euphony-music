@@ -249,23 +249,22 @@ export default function FolderFiltersScreen() {
             </Button>
           </View>
 
-          <View className="py-3">
-            <Button
-              onPress={() => {
-                void pickFolder()
-              }}
-              variant="secondary"
-              isDisabled={indexerState.isIndexing}
-            >
-              <LocalAddIcon
-                fill="none"
-                width={24}
-                height={24}
-                color={theme.accent}
-              />
-              <Button.Label>Add New Folder</Button.Label>
-            </Button>
-          </View>
+          <Button
+            onPress={() => {
+              void pickFolder()
+            }}
+            variant="secondary"
+            isDisabled={indexerState.isIndexing}
+            className="my-3"
+          >
+            <LocalAddIcon
+              fill="none"
+              width={24}
+              height={24}
+              color={theme.accent}
+            />
+            <Button.Label>Add New Folder</Button.Label>
+          </Button>
         </View>
 
         <View className="mb-2 flex-row items-center justify-between">

@@ -1,13 +1,11 @@
 import { atom } from "nanostores"
-import * as FileSystem from "expo-file-system/legacy"
+import { File, Paths } from "expo-file-system"
 
 interface AutoScanConfig {
   enabled: boolean
 }
 
-const SETTINGS_DIRECTORY =
-  FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? ""
-const AUTO_SCAN_FILE = `${SETTINGS_DIRECTORY}indexer-auto-scan.json`
+const AUTO_SCAN_FILE = new File(Paths.document, "indexer-auto-scan.json")
 const DEFAULT_AUTO_SCAN_ENABLED = true
 
 export const $autoScanEnabled = atom<boolean>(DEFAULT_AUTO_SCAN_ENABLED)
@@ -16,12 +14,15 @@ let loadPromise: Promise<boolean> | null = null
 let hasLoadedConfig = false
 
 async function persistAutoScanConfig(config: AutoScanConfig): Promise<void> {
-  if (!SETTINGS_DIRECTORY) {
-    return
+  if (!AUTO_SCAN_FILE.exists) {
+    AUTO_SCAN_FILE.create({
+      intermediates: true,
+      overwrite: true,
+    })
   }
 
-  await FileSystem.writeAsStringAsync(AUTO_SCAN_FILE, JSON.stringify(config), {
-    encoding: FileSystem.EncodingType.UTF8,
+  AUTO_SCAN_FILE.write(JSON.stringify(config), {
+    encoding: "utf8",
   })
 }
 
@@ -30,25 +31,19 @@ export async function ensureAutoScanConfigLoaded(): Promise<boolean> {
     return $autoScanEnabled.get()
   }
 
-  if (!SETTINGS_DIRECTORY) {
-    $autoScanEnabled.set(DEFAULT_AUTO_SCAN_ENABLED)
-    hasLoadedConfig = true
-    return DEFAULT_AUTO_SCAN_ENABLED
-  }
-
   if (loadPromise) {
     return loadPromise
   }
 
   loadPromise = (async () => {
     try {
-      const fileInfo = await FileSystem.getInfoAsync(AUTO_SCAN_FILE)
-      if (!fileInfo.exists) {
+      if (!AUTO_SCAN_FILE.exists) {
         $autoScanEnabled.set(DEFAULT_AUTO_SCAN_ENABLED)
+        hasLoadedConfig = true
         return DEFAULT_AUTO_SCAN_ENABLED
       }
 
-      const raw = await FileSystem.readAsStringAsync(AUTO_SCAN_FILE)
+      const raw = await AUTO_SCAN_FILE.text()
       const parsed = JSON.parse(raw) as Partial<AutoScanConfig>
       const enabled =
         typeof parsed.enabled === "boolean"

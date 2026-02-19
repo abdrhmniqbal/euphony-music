@@ -1,5 +1,5 @@
 import { atom } from "nanostores"
-import * as FileSystem from "expo-file-system/legacy"
+import { File, Paths } from "expo-file-system"
 
 export type FolderFilterMode = "whitelist" | "blacklist"
 
@@ -8,9 +8,7 @@ export interface FolderFilterConfig {
   blacklist: string[]
 }
 
-const SETTINGS_DIRECTORY =
-  FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? ""
-const FOLDER_FILTERS_FILE = `${SETTINGS_DIRECTORY}folder-filters.json`
+const FOLDER_FILTERS_FILE = new File(Paths.document, "folder-filters.json")
 const EMPTY_FILTER_CONFIG: FolderFilterConfig = {
   whitelist: [],
   blacklist: [],
@@ -96,38 +94,31 @@ function sanitizeConfig(config: FolderFilterConfig): FolderFilterConfig {
 }
 
 async function persistConfig(config: FolderFilterConfig): Promise<void> {
-  if (!SETTINGS_DIRECTORY) {
-    return
+  if (!FOLDER_FILTERS_FILE.exists) {
+    FOLDER_FILTERS_FILE.create({
+      intermediates: true,
+      overwrite: true,
+    })
   }
 
-  await FileSystem.writeAsStringAsync(
-    FOLDER_FILTERS_FILE,
-    JSON.stringify(config),
-    {
-      encoding: FileSystem.EncodingType.UTF8,
-    }
-  )
+  FOLDER_FILTERS_FILE.write(JSON.stringify(config), {
+    encoding: "utf8",
+  })
 }
 
 export async function ensureFolderFilterConfigLoaded(): Promise<FolderFilterConfig> {
-  if (!SETTINGS_DIRECTORY) {
-    $folderFilterConfig.set(EMPTY_FILTER_CONFIG)
-    return EMPTY_FILTER_CONFIG
-  }
-
   if (loadPromise) {
     return loadPromise
   }
 
   loadPromise = (async () => {
     try {
-      const fileInfo = await FileSystem.getInfoAsync(FOLDER_FILTERS_FILE)
-      if (!fileInfo.exists) {
+      if (!FOLDER_FILTERS_FILE.exists) {
         $folderFilterConfig.set(EMPTY_FILTER_CONFIG)
         return EMPTY_FILTER_CONFIG
       }
 
-      const raw = await FileSystem.readAsStringAsync(FOLDER_FILTERS_FILE)
+      const raw = await FOLDER_FILTERS_FILE.text()
       const parsed = JSON.parse(raw) as Partial<FolderFilterConfig>
       const next = sanitizeConfig({
         whitelist: parsed.whitelist ?? [],

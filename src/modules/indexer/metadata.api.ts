@@ -3,7 +3,7 @@ import {
   getMetadata,
 } from "@missingcore/react-native-metadata-retriever"
 import { eq } from "drizzle-orm"
-import * as FileSystem from "expo-file-system/legacy"
+import { Directory, File, Paths } from "expo-file-system"
 
 import { db } from "@/db/client"
 import { artworkCache } from "@/db/schema"
@@ -100,20 +100,22 @@ export async function saveArtworkToCache(
     })
 
     if (existing) {
-      const fileInfo = await FileSystem.getInfoAsync(existing.path)
-      if (fileInfo.exists) {
+      const existingFile = new File(existing.path)
+      if (existingFile.exists) {
         return existing.path
       }
     }
 
     // Save to cache directory
-    const cacheDir = `${FileSystem.cacheDirectory}${ARTWORK_DIR_NAME}`
-    const dirInfo = await FileSystem.getInfoAsync(cacheDir)
-    if (!dirInfo.exists) {
-      await FileSystem.makeDirectoryAsync(cacheDir, { intermediates: true })
+    const cacheDir = new Directory(Paths.cache, ARTWORK_DIR_NAME)
+    if (!cacheDir.exists) {
+      cacheDir.create({ intermediates: true, idempotent: true })
     }
 
-    const artworkPath = `${cacheDir}/${hash}.jpg`
+    const artworkFile = new File(cacheDir, `${hash}.jpg`)
+    if (!artworkFile.exists) {
+      artworkFile.create({ intermediates: true, overwrite: true })
+    }
 
     // Remove data URI prefix if present
     let base64Data = artworkData
@@ -123,20 +125,20 @@ export async function saveArtworkToCache(
 
     if (!base64Data) return undefined
 
-    await FileSystem.writeAsStringAsync(artworkPath, base64Data, {
-      encoding: FileSystem.EncodingType.Base64,
+    artworkFile.write(base64Data, {
+      encoding: "base64",
     })
 
     // Save to database
     await db.insert(artworkCache).values({
       hash,
-      path: artworkPath,
+      path: artworkFile.uri,
       mimeType: "image/jpeg",
       source: "embedded",
       createdAt: Date.now(),
     })
 
-    return artworkPath
+    return artworkFile.uri
   } catch {
     return undefined
   }
