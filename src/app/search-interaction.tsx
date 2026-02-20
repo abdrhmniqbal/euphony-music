@@ -12,7 +12,7 @@ import {
   RecentSearches,
   type RecentSearchItem,
 } from "@/components/blocks/recent-searches"
-import { SearchResults } from "@/components/blocks/search-results"
+import { SearchResults, type SearchTab } from "@/components/blocks/search-results"
 
 interface HeaderSearchInputProps {
   theme: ReturnType<typeof useThemeColors>
@@ -107,6 +107,7 @@ export default function SearchInteractionScreen() {
 
   const initialValue = initialQuery || ""
   const [searchQuery, setSearchQuery] = useState(initialValue)
+  const [activeSearchTab, setActiveSearchTab] = useState<SearchTab>("All")
   const [headerInputKey, setHeaderInputKey] = useState(0)
   const [recentSearches, setRecentSearches] = useState<RecentSearchItem[]>([])
   const searchQueryRef = useRef(searchQuery)
@@ -176,6 +177,8 @@ export default function SearchInteractionScreen() {
           playlists={playlists}
           query={searchQuery}
           isLoading={isLoading || isFetching}
+          activeTab={activeSearchTab}
+          onActiveTabChange={setActiveSearchTab}
           onArtistPress={(artist) =>
             router.push({
               pathname: "/(main)/(library)/artist/[name]",

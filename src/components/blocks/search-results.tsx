@@ -29,7 +29,7 @@ import {
 } from "@/components/ui"
 
 const SEARCH_TABS = ["All", "Track", "Album", "Artist", "Playlist"] as const
-type SearchTab = (typeof SEARCH_TABS)[number]
+export type SearchTab = (typeof SEARCH_TABS)[number]
 
 interface SearchResultsProps {
   tracks: Track[]
@@ -38,6 +38,8 @@ interface SearchResultsProps {
   playlists: SearchPlaylistResult[]
   query: string
   isLoading?: boolean
+  activeTab?: SearchTab
+  onActiveTabChange?: (tab: SearchTab) => void
   onArtistPress?: (artist: SearchArtistResult) => void
   onAlbumPress?: (album: SearchAlbumResult) => void
   onPlaylistPress?: (playlist: SearchPlaylistResult) => void
@@ -59,13 +61,25 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   playlists,
   query,
   isLoading = false,
+  activeTab: activeTabProp,
+  onActiveTabChange,
   onArtistPress,
   onAlbumPress,
   onPlaylistPress,
   onSeeMoreTracks,
 }) => {
   const theme = useThemeColors()
-  const [activeTab, setActiveTab] = useState<SearchTab>("All")
+  const [internalActiveTab, setInternalActiveTab] = useState<SearchTab>("All")
+  const activeTab = activeTabProp ?? internalActiveTab
+
+  function setActiveTab(tab: SearchTab) {
+    if (onActiveTabChange) {
+      onActiveTabChange(tab)
+      return
+    }
+
+    setInternalActiveTab(tab)
+  }
 
   const showArtists = activeTab === "All" || activeTab === "Artist"
   const showAlbums = activeTab === "All" || activeTab === "Album"
