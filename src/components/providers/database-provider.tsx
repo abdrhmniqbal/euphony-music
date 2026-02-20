@@ -8,7 +8,7 @@ import migrations from "@/db/migrations/migrations"
 import { loadTracks } from "@/modules/player/player.store"
 
 export function DatabaseProvider({ children }: { children: React.ReactNode }) {
-  const [ready, setReady] = useState(false)
+  const [hasLoadedTracks, setHasLoadedTracks] = useState(false)
   const [loadError, setLoadError] = useState<Error | null>(null)
   const { success, error } = useMigrations(db, migrations)
 
@@ -20,7 +20,7 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
     const loadData = async () => {
       try {
         await loadTracks()
-        setReady(true)
+        setHasLoadedTracks(true)
       } catch (dataError) {
         console.error("Database data loading failed", dataError)
         setLoadError(dataError as Error)
@@ -49,14 +49,22 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
     )
   }
 
-  if (!success || !ready) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <Skeleton className="mb-4 h-10 w-10 rounded-full" />
-        <Text className="text-foreground">Initializing database...</Text>
-      </View>
-    )
-  }
+  const isInitializing = !success || !hasLoadedTracks
 
-  return <>{children}</>
+  return (
+    <View className="flex-1 bg-background">
+      {children}
+      {isInitializing ? (
+        <View
+          pointerEvents="none"
+          className="absolute top-4 right-4 left-4 items-center"
+        >
+          <View className="w-full flex-row items-center justify-center gap-2 rounded-full border border-border/60 bg-background/95 px-4 py-2">
+            <Skeleton className="h-4 w-4 rounded-full" />
+            <Text className="text-xs text-muted">Initializing database...</Text>
+          </View>
+        </View>
+      ) : null}
+    </View>
+  )
 }
