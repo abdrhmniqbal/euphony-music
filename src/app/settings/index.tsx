@@ -1,8 +1,9 @@
 import { useStore } from '@nanostores/react'
+import Constants from 'expo-constants'
 import { useRouter } from 'expo-router'
 import { Button, Dialog, PressableFeedback, Switch } from 'heroui-native'
 import * as React from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Linking, Platform, ScrollView, Text, View } from 'react-native'
 import { useUniwind } from 'uniwind'
 
 import LocalChevronRightIcon from '@/components/icons/local/chevron-right'
@@ -86,7 +87,7 @@ interface SettingSection {
     title: string
     description?: string
     route?: string
-    action?: 'forceReindex'
+    action?: 'forceReindex' | 'openBatteryOptimizationSettings'
     showChevron?: boolean
   }[]
 }
@@ -127,6 +128,11 @@ const SETTINGS_SECTIONS: SettingSection[] = [
         action: 'forceReindex',
         showChevron: false,
       },
+      {
+        id: 'battery-optimization',
+        title: 'Disable Battery Optimization',
+        action: 'openBatteryOptimizationSettings',
+      },
     ],
   },
 ]
@@ -156,9 +162,51 @@ export default function SettingsScreen() {
       return
     }
 
+    if (item.action === 'openBatteryOptimizationSettings') {
+      void openBatteryOptimizationSettings()
+      return
+    }
+
     if (item.route) {
       router.push(item.route as never)
     }
+  }
+
+  async function openBatteryOptimizationSettings() {
+    const appPackage = Constants.expoConfig?.android?.package
+
+    try {
+      if (Platform.OS !== 'android') {
+        await Linking.openSettings()
+        return
+      }
+
+      if (appPackage) {
+        try {
+          await Linking.sendIntent(
+            'android.settings.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS',
+            [
+              {
+                key: 'android.provider.extra.APP_PACKAGE',
+                value: appPackage,
+              },
+            ],
+          )
+          return
+        }
+        catch {
+          // Fall through to settings list.
+        }
+      }
+
+      await Linking.sendIntent('android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS')
+      return
+    }
+    catch {
+      // Fallback to app settings.
+    }
+
+    await Linking.openSettings()
   }
 
   function getItemDescription(itemId: string): string | undefined {
@@ -177,6 +225,10 @@ export default function SettingsScreen() {
         return autoScanEnabled
           ? 'Re-scan on app launch and when files change.'
           : 'Scan manually when needed.'
+      case 'battery-optimization':
+        return Platform.OS === 'android'
+          ? 'Prevent background restrictions so indexing and playback stay reliable.'
+          : 'Open system settings.'
       default:
         return undefined
     }
