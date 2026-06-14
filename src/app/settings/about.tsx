@@ -6,7 +6,7 @@
  * Side Effects: Opens external links, fetches GitHub releases for manual update checks, and navigates to detail screens.
  */
 
-import Constants from "expo-constants"
+import * as Application from "expo-application"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { ListGroup, Separator, Toast, useToast } from "heroui-native"
@@ -27,7 +27,7 @@ export default function AboutSettingsScreen() {
   const { t } = useTranslation()
   const { toast } = useToast()
   const [isCheckingForUpdates, setIsCheckingForUpdates] = useState(false)
-  const appName = Constants.expoConfig?.name || "Startune Music"
+  const appName = Application.applicationName || "Startune Music"
   const version = getCurrentAppVersion()
   const repositoryUrl = "https://github.com/abdrhmniqbal/startune-music"
   const crowdinUrl = "https://crowdin.com/project/startune-music/"

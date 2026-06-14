@@ -7,7 +7,7 @@ Offline-first local music player built with Expo + React Native.
 [![Release](https://img.shields.io/github/v/release/abdrhmniqbal/startune-music?label=stable)](https://github.com/abdrhmniqbal/startune-music/releases/latest)
 [![Pre-release](https://img.shields.io/github/v/release/abdrhmniqbal/startune-music?include_prereleases&label=pre-release)](https://github.com/abdrhmniqbal/startune-music/releases)
 [![Downloads](https://img.shields.io/github/downloads/abdrhmniqbal/startune-music/total)](https://github.com/abdrhmniqbal/startune-music/releases)
-[![Expo SDK](https://img.shields.io/badge/Expo-SDK%2054-000020?logo=expo)](https://docs.expo.dev)
+[![Expo SDK](https://img.shields.io/badge/Expo-SDK%2056-000020?logo=expo)](https://docs.expo.dev)
 
 ## Overview
 
@@ -70,8 +70,8 @@ bun run format
 
 ## Tech Stack
 
-- Expo SDK 54
-- React Native 0.81
+- Expo SDK 56
+- React Native 0.85
 - Expo Router
 - Zustand
 - TanStack Query

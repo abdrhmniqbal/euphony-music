@@ -1,4 +1,12 @@
-import type { ParamListBase, StackNavigationState } from "@react-navigation/native"
+/**
+ * Purpose: Exposes Expo Router stack layout backed by native screen transitions.
+ * Caller: Route layout files that need stack navigation with shared screen options.
+ * Dependencies: expo-router layout context, expo-router React Navigation types, react-native-screen-transitions.
+ * Main Functions: Stack
+ * Side Effects: None.
+ */
+
+import type { ParamListBase, StackNavigationState } from "expo-router/react-navigation"
 import "react-native-reanimated"
 import { withLayoutContext } from "expo-router"
 import type { ComponentProps } from "react"

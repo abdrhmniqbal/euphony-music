@@ -61,7 +61,7 @@ Never run `bun run build` unless the project policy changes explicitly.
 
 | Area | Location / Tooling | Notes |
 |---|---|---|
-| App runtime | Expo SDK 54, React Native 0.81, Expo Router | Entry is `expo-router/entry`; native app config lives in `app.json`. |
+| App runtime | Expo SDK 56, React Native 0.85, Expo Router | Entry is `expo-router/entry`; native app config lives in `app.json`. |
 | UI | HeroUI Native, Uniwind, Tailwind CSS, React Native primitives | Keep screens mobile-first and responsive to theme/safe-area behavior. |
 | State | Zustand, TanStack Query | Use store state for local UI/player state; use query patterns for async/cacheable data. |
 | Database | SQLite via Expo SQLite, Drizzle ORM | Schema and relations live in `src/db/schema.ts`; migrations output to `src/db/migrations`. |

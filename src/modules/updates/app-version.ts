@@ -1,23 +1,17 @@
 /**
  * Purpose: Resolves the installed app version and preview-release status.
  * Caller: App update settings, update checker service, and update-related screens.
- * Dependencies: Expo Application and Constants metadata.
+ * Dependencies: Expo Application metadata.
  * Main Functions: getCurrentAppVersion(), isPreviewReleaseVersion()
  * Side Effects: None.
  */
 
 import * as Application from "expo-application"
-import Constants from "expo-constants"
 
 const PREVIEW_VERSION_PATTERN = /(?:^|[-.])(alpha|beta|rc|preview)(?:$|[-.\d])/i
 
 export function getCurrentAppVersion() {
-  return (
-    Application.nativeApplicationVersion ||
-    Constants.nativeAppVersion ||
-    Constants.expoConfig?.version ||
-    ""
-  )
+  return Application.nativeApplicationVersion || ""
 }
 
 export function isPreviewReleaseVersion(version: string) {

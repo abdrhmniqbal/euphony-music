@@ -1,6 +1,5 @@
 {
   "expo": {
-    "newArchEnabled": true,
     "scheme": "startune-music",
     "userInterfaceStyle": "automatic",
     "orientation": "default",
@@ -87,7 +86,8 @@
       ],
       "react-native-google-cast",
       "expo-localization",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-sqlite"
     ]
   }
 }

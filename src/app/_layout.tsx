@@ -10,7 +10,7 @@ import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
-} from "@react-navigation/native"
+} from "expo-router/react-navigation"
 import { useSegments } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import * as SplashScreen from "expo-splash-screen"

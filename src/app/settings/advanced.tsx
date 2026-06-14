@@ -7,7 +7,6 @@
  */
 
 import * as Application from "expo-application"
-import Constants from "expo-constants"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import {
   Button,
@@ -93,8 +92,7 @@ export default function AdvancedSettingsScreen() {
   }
 
   async function openBatteryOptimizationSettings() {
-    const appPackage =
-      Application.applicationId || Constants.expoConfig?.android?.package
+    const appPackage = Application.applicationId || "com.startune.music"
     const BATTERY_SETTINGS_ACTION =
       "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS"
 

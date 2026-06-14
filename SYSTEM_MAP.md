@@ -6,7 +6,7 @@
 Startune Music is an offline-first local music player for Android/iOS built with Expo + React Native. It indexes audio stored locally on the device, enables fast library browsing, and supports rich playback flows without depending on remote accounts or streaming backends.
 
 **Tech Stack (Core):**
-- **Runtime:** Expo SDK 54, React Native 0.81, React 19.1
+- **Runtime:** Expo SDK 56, React Native 0.85, React 19.2
 - **Language:** TypeScript 5+
 - **Package Manager:** Bun
 - **Database:** SQLite (expo-sqlite, driver: expo) at `emp_music_v2.db`

@@ -9,7 +9,7 @@
 import {
   BottomTabBar,
   type BottomTabBarProps,
-} from "@react-navigation/bottom-tabs"
+} from "expo-router/js-tabs"
 import { Tabs } from "expo-router"
 import { useTranslation } from "react-i18next"
 import Animated, {
