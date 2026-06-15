@@ -1,14 +1,12 @@
 /**
- * Purpose: Sets up native audio playback, plays indexed tracks, indexes external intent files on demand, and stores queue source context when playback starts.
+ * Purpose: Sets up AudioBrowser playback, plays indexed tracks, indexes external intent files on demand, and stores queue source context when playback starts.
  * Caller: track rows, player controls, queue recovery flows, bootstrap playback setup, external audio intent handler.
- * Dependencies: TrackPlayer native module, notification icon asset, player store, playback session service, player activity service, crossfade transition service, metadata/artwork helpers, file URI utilities, logging service.
+ * Dependencies: AudioBrowser playback core, player store, playback session service, player activity service, crossfade transition service, metadata/artwork helpers, file URI utilities, logging service.
  * Main Functions: setupPlayer(), playTrack(), playExternalFileUri()
- * Side Effects: Initializes native playback, reads external file metadata/artwork, writes newly opened external files to the library database, updates notification options, resets native queue/context and volume transitions, starts playback, persists session state.
+ * Side Effects: Initializes native playback, reads external file metadata/artwork, writes newly opened external files to the library database, resets playback context and volume transitions, starts playback, persists session state.
  */
 
-import { processColor } from "react-native"
 import { and, eq, inArray, or, sql, type SQL } from "drizzle-orm"
-import notificationIcon from "@/assets/notification-icon.png"
 import { db } from "@/db/client"
 import {
   albums,
@@ -25,16 +23,11 @@ import {
 import { logError, logInfo, logWarn } from "@/modules/logging/logging.service"
 import { handleTrackActivated } from "@/modules/player/player-activity.service"
 import {
-  mapRepeatMode,
-  mapTrackToTrackPlayerInput,
-} from "@/modules/player/player-adapter"
-import {
   EXTERNAL_TRACK_ID_PREFIX,
   type PlayerQueueContext,
   type Track,
 } from "@/modules/player/player.types"
 import { resetCrossfadeVolume } from "@/modules/player/player-crossfade.service"
-import { setActiveTrack, setPlaybackProgress } from "@/modules/player/player-runtime-state"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import {
   beginPlayerQueueReplacement,
@@ -46,26 +39,14 @@ import { generateId } from "@/utils/common"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
 import {
-  AndroidAudioContentType,
-  AppKilledPlaybackBehavior,
-  Capability,
-  IOSCategory,
-  TrackPlayer,
-} from "@/modules/player/player.utils"
+  playFromTracks,
+  setupPlaybackCore,
+} from "@/modules/player/playback-core"
 
 import {
   getIsShuffledState,
-  getRepeatModeState,
   getTracksState,
   setTracksState,
-  setImmediateQueueTrackIdsState,
-  setIsPlayingState,
-  setIsShuffledState,
-  setOriginalQueueState,
-  setOriginalQueueTrackIdsState,
-  setQueueContextState,
-  setQueueState,
-  setQueueTrackIdsState,
 } from "./player.store"
 
 let isPlayerReady = false
@@ -618,53 +599,19 @@ export async function setupPlayer() {
       return
     }
 
-    logInfo("Setting up track player")
-    await TrackPlayer.setupPlayer({
-      autoHandleInterruptions: true,
-      androidAudioContentType: AndroidAudioContentType.Music,
-      iosCategory: IOSCategory.Playback,
-    })
-
-    await TrackPlayer.updateOptions({
-      android: {
-        appKilledPlaybackBehavior: AppKilledPlaybackBehavior.ContinuePlayback,
-        stopForegroundGracePeriod: 30,
-      },
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.SeekTo,
-      ],
-      notificationCapabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.SeekTo,
-      ],
-      compactCapabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-      ],
-      progressUpdateEventInterval: 0.5,
-      icon: notificationIcon,
-      color: processColor("#FFFFFF") as number,
-    })
+    logInfo("Setting up audio-browser playback core")
+    await setupPlaybackCore()
 
     isPlayerReady = true
-    logInfo("Track player setup completed")
+    logInfo("Playback core setup completed")
   } catch (error: unknown) {
     if (error instanceof Error && error.message.includes("already been initialized")) {
       isPlayerReady = true
-      logInfo("Track player already initialized")
+      logInfo("AudioBrowser playback core already initialized")
       return
     }
 
-    logError("Track player setup failed", error)
+    logError("AudioBrowser playback core setup failed", error)
   }
 }
 
@@ -691,40 +638,18 @@ export async function playTrack(
     const wasShuffled = track.isExternal ? false : getIsShuffledState()
     const tracks = playlistTracks || getTracksState()
     const resolvedQueueContext = inferQueueContext(track, tracks, queueContext)
-    const { queue: linearQueue, queueTrackIds: linearQueueTrackIds } =
-      buildPlaybackQueue(tracks, track.id)
+    const { queue: linearQueue } = buildPlaybackQueue(tracks, track.id)
 
-    let effectiveQueue = linearQueue
-    let effectiveQueueTrackIds = linearQueueTrackIds
-
-    if (wasShuffled && linearQueue.length > 1) {
-      const [head, ...rest] = linearQueue
-      for (let i = rest.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[rest[i], rest[j]] = [rest[j], rest[i]]
-      }
-      effectiveQueue = head ? [head, ...rest] : rest
-      effectiveQueueTrackIds = effectiveQueue.map((t) => t.id)
-    }
-
-    setQueueState(effectiveQueue)
-    setOriginalQueueState(linearQueue)
-    setQueueTrackIdsState(effectiveQueueTrackIds)
-    setOriginalQueueTrackIdsState(linearQueueTrackIds)
-    setImmediateQueueTrackIdsState([])
-    setQueueContextState(resolvedQueueContext)
-    setIsShuffledState(wasShuffled)
-    setActiveTrack(track)
-    setIsPlayingState(true)
-    setPlaybackProgress(0, track.duration || 0)
-
-    await TrackPlayer.reset()
     await resetCrossfadeVolume()
-
-    await TrackPlayer.add(effectiveQueue.map(mapTrackToTrackPlayerInput))
-    await TrackPlayer.setRepeatMode(mapRepeatMode(getRepeatModeState()))
-
-    await TrackPlayer.play()
+    const started = await playFromTracks({
+      track,
+      tracks: linearQueue,
+      context: resolvedQueueContext,
+      shuffle: wasShuffled,
+    })
+    if (!started) {
+      return false
+    }
     if (!track.isExternal) {
       await handleTrackActivated(track)
       await persistPlaybackSession({ force: true })

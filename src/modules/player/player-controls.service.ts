@@ -1,7 +1,7 @@
 /**
  * Purpose: Provides playback control commands for pause, resume, seeking, queue navigation, and repeat mode.
  * Caller: playback UI controls, notification/remote events, bootstrap resume behavior, and lifecycle listeners.
- * Dependencies: TrackPlayer native module, player session service, player store, audio playback settings, crossfade volume helpers, logging service.
+ * Dependencies: AudioBrowser playback core, player session service, player store, audio playback settings, crossfade volume helpers, logging service.
  * Main Functions: pauseTrack(), resumeTrack(), togglePlayback(), playNext(), playPrevious(), seekTo(), setRepeatMode()
  * Side Effects: Mutates native playback state, updates player store, persists playback cursor/session state, and may change native volume.
  */
@@ -13,24 +13,26 @@ import {
   logInfo,
   logWarn,
 } from "@/modules/logging/logging.service"
-import { mapRepeatMode } from "@/modules/player/player-adapter"
 import {
   fadePlaybackVolumeIn,
   fadePlaybackVolumeOut,
   restorePlaybackVolume,
 } from "@/modules/player/player-crossfade.service"
 import { setPlaybackProgress } from "@/modules/player/player-runtime-state"
-import {
-  ensureNativePlaybackQueue,
-  persistPlaybackSession,
-  syncCurrentTrackFromPlayer,
-} from "@/modules/player/player-session.service"
-import { State, TrackPlayer } from "@/modules/player/player.utils"
+import { persistPlaybackSession } from "@/modules/player/player-session.service"
 import { ensureAudioPlaybackConfigLoaded } from "@/modules/settings/audio-playback"
-
-import { playTrack } from "./player.service"
 import {
-  getQueueState,
+  nextTrack,
+  pausePlayback,
+  playQueueIndex,
+  previousTrack,
+  resumePlayback,
+  seekPlayback,
+  setPlaybackRepeatMode,
+  togglePlaybackCore,
+} from "@/modules/player/playback-core"
+
+import {
   getRepeatModeState,
   setIsPlayingState,
   setRepeatModeState,
@@ -44,7 +46,7 @@ export async function pauseTrack() {
     if (audioPlaybackConfig.fadePlayPauseStop) {
       await fadePlaybackVolumeOut()
     }
-    await TrackPlayer.pause()
+    await pausePlayback()
     setIsPlayingState(false)
     await persistPlaybackSession({
       force: true,
@@ -62,14 +64,8 @@ export async function pauseTrack() {
 export async function resumeTrack() {
   try {
     const audioPlaybackConfig = await ensureAudioPlaybackConfigLoaded()
-    const hasNativeQueue = await ensureNativePlaybackQueue({ autoPlay: false })
-    if (!hasNativeQueue) {
-      logWarn("Skipped resume because no playback queue is available")
-      return
-    }
-
     logInfo("Resuming playback")
-    await TrackPlayer.play()
+    await resumePlayback()
     if (audioPlaybackConfig.fadePlayPauseStop) {
       await fadePlaybackVolumeIn()
     } else {
@@ -91,17 +87,8 @@ export async function resumeTrack() {
 
 export async function togglePlayback() {
   try {
-    const state = await TrackPlayer.getState()
-    logInfo("Toggling playback", {
-      currentState: state,
-    })
-
-    if (state === State.Playing) {
-      await pauseTrack()
-      return
-    }
-
-    await resumeTrack()
+    logInfo("Toggling playback")
+    await togglePlaybackCore()
   } catch (error) {
     logError("Failed to toggle playback", error)
   }
@@ -109,49 +96,8 @@ export async function togglePlayback() {
 
 export async function playNext() {
   try {
-    const hasNativeQueue = await ensureNativePlaybackQueue()
-    if (!hasNativeQueue) {
-      logWarn("Skipped next track because no playback queue is available")
-      return
-    }
-
-    const [activeIndex, nativeQueue] = await Promise.all([
-      TrackPlayer.getCurrentTrack(),
-      TrackPlayer.getQueue(),
-    ])
-
-    if (
-      activeIndex === null ||
-      activeIndex < 0 ||
-      nativeQueue.length === 0
-    ) {
-      logWarn("Skipped next track because no active queue item is available")
-      return
-    }
-
-    if (activeIndex >= nativeQueue.length - 1) {
-      if (getRepeatModeState() === "queue" && nativeQueue.length > 0) {
-        logInfo("Wrapping to first track in queue")
-        await TrackPlayer.skip(0)
-        await syncCurrentTrackFromPlayer({ skipQueueRefresh: true })
-        await persistPlaybackSession({
-          force: true,
-          cursorOnly: true,
-          consumeImmediateQueue: true,
-        })
-        logInfo("Wrapped to first track in queue")
-      } else {
-        logInfo("Ignored next track because queue is already at the end", {
-          activeIndex,
-          queueLength: nativeQueue.length,
-        })
-      }
-      return
-    }
-
     logInfo("Skipping to next track")
-    await TrackPlayer.skipToNext()
-    await syncCurrentTrackFromPlayer({ skipQueueRefresh: true })
+    await nextTrack()
     await persistPlaybackSession({
       force: true,
       cursorOnly: true,
@@ -162,29 +108,14 @@ export async function playNext() {
     logWarn("Failed to skip to next track, falling back to queue restart", {
       error: error instanceof Error ? error.message : String(error),
     })
-    const queue = getQueueState()
-    if (queue.length > 0) {
-      try {
-        await playTrack(queue[0], queue)
-        logInfo("Recovered playback by restarting queue from first track")
-      } catch (fallbackError) {
-        logError("Failed queue restart fallback after next-track error", fallbackError)
-      }
-    }
+    logError("Failed next-track command", error)
   }
 }
 
 export async function skipToQueueItem(index: number) {
   try {
-    const hasNativeQueue = await ensureNativePlaybackQueue()
-    if (!hasNativeQueue) {
-      logWarn("Skipped jumping to track because no playback queue is available")
-      return
-    }
-
     logInfo("Skipping to specific track in queue", { index })
-    await TrackPlayer.skip(index)
-    await syncCurrentTrackFromPlayer({ skipQueueRefresh: true })
+    await playQueueIndex(index)
     await persistPlaybackSession({
       force: true,
       cursorOnly: true,
@@ -198,29 +129,14 @@ export async function skipToQueueItem(index: number) {
 
 export async function playPrevious() {
   try {
-    const hasNativeQueue = await ensureNativePlaybackQueue()
-    if (!hasNativeQueue) {
-      logWarn("Skipped previous track because no playback queue is available")
-      return
-    }
-
     logInfo("Playing previous track")
-    const position = await TrackPlayer.getPosition()
-    if (position > 3) {
-      logInfo("Restarting current track from beginning")
-      await TrackPlayer.seekTo(0)
-      logInfo("Restarted current track from beginning")
-    } else {
-      logInfo("Skipping to previous track")
-      await TrackPlayer.skipToPrevious()
-      await syncCurrentTrackFromPlayer({ skipQueueRefresh: true })
-      await persistPlaybackSession({
-        force: true,
-        cursorOnly: true,
-        consumeImmediateQueue: true,
-      })
-      logInfo("Skipped to previous track")
-    }
+    await previousTrack()
+    await persistPlaybackSession({
+      force: true,
+      cursorOnly: true,
+      consumeImmediateQueue: true,
+    })
+    logInfo("Played previous track")
   } catch (error) {
     logError("Failed to play previous track", error)
   }
@@ -229,23 +145,15 @@ export async function playPrevious() {
 export async function seekTo(seconds: number) {
   try {
     const audioPlaybackConfig = await ensureAudioPlaybackConfigLoaded()
-    const hasNativeQueue = await ensureNativePlaybackQueue()
-    if (!hasNativeQueue) {
-      logWarn("Skipped seek because no playback queue is available", { seconds })
-      return
-    }
-
     if (isExtraLoggingEnabled()) {
       logInfo("Seeking playback", { seconds })
     }
-    const playbackState = await TrackPlayer.getState()
-    const shouldFadeSeek =
-      audioPlaybackConfig.fadeOnSeek && playbackState === State.Playing
+    const shouldFadeSeek = audioPlaybackConfig.fadeOnSeek
 
     if (shouldFadeSeek) {
       await fadePlaybackVolumeOut()
     }
-    await TrackPlayer.seekTo(seconds)
+    await seekPlayback(seconds)
     if (shouldFadeSeek) {
       await fadePlaybackVolumeIn()
     }
@@ -268,7 +176,7 @@ export async function seekTo(seconds: number) {
 export async function setRepeatMode(mode: RepeatModeType) {
   try {
     logInfo("Updating repeat mode", { mode })
-    await TrackPlayer.setRepeatMode(mapRepeatMode(mode))
+    await setPlaybackRepeatMode(mode)
     setRepeatModeState(mode)
     await persistPlaybackSession({
       force: true,

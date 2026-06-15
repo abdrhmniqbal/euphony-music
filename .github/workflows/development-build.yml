@@ -1,0 +1,76 @@
+# Purpose: Manually creates EAS development builds.
+# Caller: GitHub Actions workflow_dispatch.
+# Dependencies: actions/checkout, setup-node, pnpm/action-setup, expo/expo-github-action, EXPO_TOKEN secret, EAS project configuration.
+# Main Functions: Install dependencies with pnpm, trigger EAS development build for selected platform.
+# Side Effects: Creates an EAS cloud development build.
+
+name: Development Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform to build"
+        required: true
+        default: android
+        type: choice
+        options:
+          - android
+          - ios
+          - all
+      message:
+        description: "Optional build message"
+        required: false
+        type: string
+
+jobs:
+  development-build:
+    name: Create Development Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.1
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create EAS development build
+        env:
+          BUILD_MESSAGE: ${{ inputs.message }}
+        run: |
+          set -euo pipefail
+
+          args=(
+            --profile development
+            --platform "${{ inputs.platform }}"
+            --non-interactive
+            --no-wait
+          )
+
+          if [ -n "${BUILD_MESSAGE}" ]; then
+            args+=(--message "${BUILD_MESSAGE}")
+          fi
+
+          eas build "${args[@]}"

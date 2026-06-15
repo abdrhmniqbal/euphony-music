@@ -148,7 +148,8 @@ android {
             signingConfig hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
             debuggable false
             minifyEnabled enableMinifyInReleaseBuilds
-            shrinkResources enableMinifyInReleaseBuilds
+            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
+            shrinkResources enableShrinkResources.toBoolean()
             crunchPngs true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
