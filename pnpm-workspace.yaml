@@ -1,0 +1,8 @@
+minimumReleaseAge: 1440
+
+nodeLinker: "hoisted"
+
+allowBuilds:
+  "@missingcore/react-native-metadata-retriever": true
+  esbuild: false
+  "react-native-audio-browser": true

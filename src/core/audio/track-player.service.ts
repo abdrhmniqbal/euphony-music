@@ -1,9 +1,13 @@
-import {
-  setupPlayer,
-} from "@/modules/player/player.service"
-import { logError, logInfo, logWarn } from "@/modules/logging/logging.service"
-import { PlaybackService } from "@/modules/player/player-events.service"
-import { TrackPlayer } from "@/modules/player/player.utils"
+/**
+ * Purpose: Initializes the AudioBrowser playback core during app bootstrap.
+ * Caller: Bootstrap startup utilities.
+ * Dependencies: player service and logging service.
+ * Main Functions: registerPlaybackService(), initializeTrackPlayer()
+ * Side Effects: Starts native audio playback service listeners.
+ */
+
+import { setupPlayer } from "@/modules/player/player.service"
+import { logError, logInfo } from "@/modules/logging/logging.service"
 
 let isPlaybackServiceRegistered = false
 
@@ -13,25 +17,17 @@ export function registerPlaybackService(): void {
     return
   }
 
-  logInfo("Registering TrackPlayer playback service")
-  try {
-    TrackPlayer.registerPlaybackService(() => PlaybackService)
-    isPlaybackServiceRegistered = true
-    logInfo("TrackPlayer playback service registered")
-  } catch {
-    // TrackPlayer throws when service is already registered.
-    isPlaybackServiceRegistered = true
-    logWarn("TrackPlayer playback service registration reported existing registration")
-  }
+  logInfo("AudioBrowser playback service uses in-process event registration")
+  isPlaybackServiceRegistered = true
 }
 
 export async function initializeTrackPlayer(): Promise<void> {
   try {
-    logInfo("Starting TrackPlayer setup")
+    logInfo("Starting AudioBrowser setup")
     await setupPlayer()
-    logInfo("TrackPlayer setup completed")
+    logInfo("AudioBrowser setup completed")
   } catch (error) {
-    logError("TrackPlayer setup failed", error)
+    logError("AudioBrowser setup failed", error)
     throw error
   }
 }
