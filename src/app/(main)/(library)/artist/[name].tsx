@@ -76,10 +76,7 @@ import {
   useArtistByName,
   useTracksByArtistName,
 } from "@/modules/library/queries"
-import {
-  useCurrentTrack,
-  usePlayerTracks,
-} from "@/modules/player/selectors"
+import { useCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
 import {
   type SplitMultipleValueConfig,
   splitArtistsValue,
@@ -174,7 +171,10 @@ export default function ArtistDetailsScreen() {
     (state) => state.splitMultipleValueConfig
   )
   const allSortConfigs = useLibrarySortStore((state) => state.sortConfig)
-  const parsedArtistRouteName = React.useMemo(() => getSafeRouteName(name), [name])
+  const parsedArtistRouteName = React.useMemo(
+    () => getSafeRouteName(name),
+    [name]
+  )
   const artistName =
     parsedArtistRouteName.value.trim() || t("library.unknownArtist")
 
@@ -274,16 +274,18 @@ export default function ArtistDetailsScreen() {
     artistAlbums: ReturnType<typeof buildArtistAlbums>,
     unknownArtist: string
   ): Album[] {
-    return artistAlbums.map((album): Album => ({
-      id: album.title,
-      title: album.title,
-      artist: album.albumArtist || album.artist || unknownArtist,
-      albumArtist: album.albumArtist,
-      image: album.image,
-      trackCount: album.trackCount,
-      year: album.year || 0,
-      dateAdded: 0,
-    }))
+    return artistAlbums.map(
+      (album): Album => ({
+        id: album.title,
+        title: album.title,
+        artist: album.albumArtist || album.artist || unknownArtist,
+        albumArtist: album.albumArtist,
+        image: album.image,
+        trackCount: album.trackCount,
+        year: album.year || 0,
+        dateAdded: 0,
+      })
+    )
   }
 
   const smoothScrollY = useDerivedValue(() =>
@@ -566,6 +568,11 @@ export default function ArtistDetailsScreen() {
                   title={t("library.tracks")}
                   onViewMore={() => navigateTo("tracks")}
                 />
+                <PlaybackActionsRow
+                  onPlay={playAllTracks}
+                  onShuffle={shuffleTracks}
+                  className="mb-4"
+                />
                 <View style={{ gap: 8 }}>
                   {popularTracks.map((track) => (
                     <TrackRow
@@ -645,7 +652,7 @@ export default function ArtistDetailsScreen() {
                     <View className="flex-row items-center gap-3">
                       <PressableFeedback
                         onPress={() => navigateTo("overview")}
-                        className="mr-2 active:opacity-50"
+                        className="h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-default/55 active:opacity-50"
                       >
                         <LocalChevronLeftIcon
                           fill="none"
@@ -654,7 +661,7 @@ export default function ArtistDetailsScreen() {
                           color={theme.muted}
                         />
                       </PressableFeedback>
-                      <Text className="text-lg font-bold text-foreground">
+                      <Text className="text-[22px] font-semibold tracking-[-0.6px] text-foreground">
                         {t("library.allTracks")}
                       </Text>
                     </View>
@@ -699,7 +706,7 @@ export default function ArtistDetailsScreen() {
                     <View className="flex-row items-center gap-3">
                       <PressableFeedback
                         onPress={() => navigateTo("overview")}
-                        className="mr-2 active:opacity-50"
+                        className="h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-default/55 active:opacity-50"
                       >
                         <LocalChevronLeftIcon
                           fill="none"
@@ -708,7 +715,7 @@ export default function ArtistDetailsScreen() {
                           color={theme.muted}
                         />
                       </PressableFeedback>
-                      <Text className="text-lg font-bold text-foreground">
+                      <Text className="text-[22px] font-semibold tracking-[-0.6px] text-foreground">
                         {displayedAlbumTitle}
                       </Text>
                     </View>
