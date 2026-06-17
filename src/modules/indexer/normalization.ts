@@ -6,6 +6,8 @@
  * Side Effects: None.
  */
 
+import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
+
 interface NormalizableMetadata {
   title?: string | null
   artist?: string | null
@@ -103,6 +105,10 @@ export function normalizeMetadata<T extends NormalizableMetadata>(
     rawGenre: normalizeText(metadata.rawGenre),
     composer: normalizeText(metadata.composer),
     comment: normalizeText(metadata.comment),
-    lyrics: normalizeText(metadata.lyrics),
+    lyrics: normalizeText(
+      metadata.lyrics
+        ? stripMalformedUtf16LyricsPrefix(metadata.lyrics)
+        : undefined
+    ),
   } as T
 }

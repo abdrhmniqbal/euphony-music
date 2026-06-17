@@ -69,6 +69,45 @@ const KARAOKE_PROGRESS_TICK_SECONDS = 0.5
 const KARAOKE_PROGRESS_ANIMATION_MS = 520
 const FONT_SCALE_VALUES = [1, 1.2, 1.4] as const
 
+function stripMalformedUtf16LyricsPrefix(value: string) {
+  const normalized = value.replace(/\r\n?/g, "\n")
+  const lines = normalized.split("\n")
+  const firstContentLineIndex = lines.findIndex((line) => {
+    const trimmed = line.trim()
+    return (
+      trimmed.length > 0 &&
+      !/^\[(id|ti|ar|al|au|lr|length|by|offset|re|tool|re\/tool|ve)\s*:[^\]\r\n]*\]$/i.test(
+        trimmed
+      )
+    )
+  })
+
+  if (firstContentLineIndex < 0) {
+    return normalized
+  }
+
+  const line = lines[firstContentLineIndex] ?? ""
+  const trimmed = line.trimStart()
+
+  if (trimmed.startsWith("攁杮")) {
+    lines[firstContentLineIndex] = trimmed.slice(2).replace(/^\uFEFF+/, "")
+    return lines.join("\n")
+  }
+
+  const bomIndex = trimmed.indexOf("\uFEFF")
+  if (bomIndex > 0 && bomIndex <= 4) {
+    const trailingPrefix = trimmed.slice(bomIndex).match(/^\uFEFF+/)
+    if (trailingPrefix) {
+      const realText = trimmed.slice(bomIndex + trailingPrefix[0].length)
+      if (realText) {
+        lines[firstContentLineIndex] = realText
+      }
+    }
+  }
+
+  return lines.join("\n")
+}
+
 function findActiveIndexByTime<T>(
   lines: T[],
   time: number,
@@ -174,10 +213,7 @@ function getInterpolatedPlaybackTimeTarget({
   return targetTime
 }
 
-function findSyncedLineIndex(
-  lines: Array<{ time: number }>,
-  time: number
-) {
+function findSyncedLineIndex(lines: Array<{ time: number }>, time: number) {
   return findActiveIndexByTime(lines, time, (line) => line.time)
 }
 
@@ -298,17 +334,18 @@ const TimedMarkupLineRow: React.FC<{
   onLayoutLine,
   currentTimeSv,
 }) => {
-  const handlePress = React.useCallback(
-    () => onSeek(line.begin),
-    [line.begin, onSeek]
-  )
-  const handleLayout = React.useCallback(
-    (event: LayoutChangeEvent) => onLayoutLine(line.id, event.nativeEvent.layout.y),
-    [line.id, onLayoutLine]
-  )
   const lineText = React.useMemo(
     () => getTimedMarkupLineText(line).trim(),
     [line]
+  )
+  const handlePress = React.useCallback(
+    () => onSeek(line.begin, lineText),
+    [line.begin, lineText, onSeek]
+  )
+  const handleLayout = React.useCallback(
+    (event: LayoutChangeEvent) =>
+      onLayoutLine(line.id, event.nativeEvent.layout.y),
+    [line.id, onLayoutLine]
   )
   const wordGroups = React.useMemo(() => getTimedMarkupWordGroups(line), [line])
   const canRenderWordProgress = isActive && hasWordLevelTiming(line)
@@ -377,9 +414,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { height } = useWindowDimensions()
-  const karaokeEnabled = useUIStore(
-    (state) => state.playerLyricsKaraokeEnabled
-  )
+  const karaokeEnabled = useUIStore((state) => state.playerLyricsKaraokeEnabled)
   const fontScale = useUIStore((state) => state.playerLyricsFontScale)
   const { data: resolvedLyrics = null } = useQuery(
     {
@@ -406,15 +441,16 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
             if (dbTrack?.lyrics) {
               sourceTrack = { ...sourceTrack, lyrics: dbTrack.lyrics }
             }
-          } catch {
-          }
+          } catch {}
         }
 
         const source = await resolveTrackLyricsSource(sourceTrack)
         return source ?? null
       },
       placeholderData: () => {
-        const metadataLyrics = track?.lyrics?.trim()
+        const metadataLyrics = track?.lyrics
+          ? stripMalformedUtf16LyricsPrefix(track.lyrics).trim()
+          : ""
         return metadataLyrics ? metadataLyrics : null
       },
     },
@@ -486,12 +522,9 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
     return `×${level}`
   }, [fontScale])
 
-  const handleSeek = React.useCallback(
-    (time: number) => {
-      void seekTo(time)
-    },
-    []
-  )
+  const handleSeek = React.useCallback((time: number) => {
+    void seekTo(time)
+  }, [])
 
   const activeSyncedLineIndex = React.useMemo(() => {
     if (effectiveMode === "timedMarkup") {
@@ -619,7 +652,10 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
   const timedMarkupStaticLines = hasTimedMarkupLyrics
     ? timedMarkupLines.map((line) => ({
         id: line.id,
-        text: line.words.map((w) => w.text).join("").trim(),
+        text: line.words
+          .map((w) => w.text)
+          .join("")
+          .trim(),
         isSpacer: false,
       }))
     : []
@@ -681,7 +717,10 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
                 }
 
                 return (
-                  <View key={line.id} className="py-1">
+                  <PressableFeedback
+                    key={line.id}
+                    className="py-1 active:opacity-85"
+                  >
                     <Text
                       selectable={false}
                       style={{
@@ -694,7 +733,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
                     >
                       {line.text}
                     </Text>
-                  </View>
+                  </PressableFeedback>
                 )
               })
             : syncedLines.map((line, index) => {

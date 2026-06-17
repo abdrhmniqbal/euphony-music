@@ -6,6 +6,8 @@
  * Side Effects: None.
  */
 
+import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
+
 interface LyricsLine {
   id: string
   text: string
@@ -103,9 +105,7 @@ export function normalizeLyricsText(raw: string | null | undefined) {
       : null
   const source = maybeJson ?? trimmed
 
-  const normalized = source
-    .replace(/^[\uFEFF\u2020\u990A\u67FF]+/, "")
-    .replace(/\r\n?/g, "\n")
+  const normalized = stripMalformedUtf16LyricsPrefix(source)
     .replace(LRC_METADATA_HEADER_LINE_REGEX, "")
     .replace(LRC_COMMENT_LINE_REGEX, "")
     .replace(/\[\d{1,2}:\d{2}(?:\.\d{1,3})?\]/g, "")
@@ -116,9 +116,7 @@ export function normalizeLyricsText(raw: string | null | undefined) {
 }
 
 function stripLyricsMetadataHeaders(raw: string) {
-  return raw
-    .replace(/^[\uFEFF\u2020\u990A\u67FF]+/, "")
-    .replace(/\r\n?/g, "\n")
+  return stripMalformedUtf16LyricsPrefix(raw)
     .replace(LRC_METADATA_HEADER_LINE_REGEX, "")
     .replace(LRC_COMMENT_LINE_REGEX, "")
     .trim()

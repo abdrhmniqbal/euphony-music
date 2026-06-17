@@ -8,6 +8,7 @@
 
 import { File } from "expo-file-system"
 import { extractEmbeddedLyrics } from "@/modules/indexer/metadata"
+import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
 import { measurePerfTrace } from "@/modules/logging/perf-trace"
 
 interface TrackLyricsSourceInput {
@@ -85,10 +86,7 @@ function normalizeLyricsText(raw: string | undefined): string | undefined {
     return undefined
   }
 
-  const normalized = raw
-    .replace(/^[\uFEFF\u2020\u990A\u67FF]+/, "")
-    .replace(/\r\n?/g, "\n")
-    .trim()
+  const normalized = stripMalformedUtf16LyricsPrefix(raw).trim()
 
   return normalized.length > 0 ? normalized : undefined
 }

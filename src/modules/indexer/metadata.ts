@@ -16,6 +16,7 @@ import { Directory, File, Paths } from "expo-file-system"
 
 import { db } from "@/db/client"
 import { artworkCache } from "@/db/schema"
+import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
 import type { SplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
 import {
   splitArtistsValue,
@@ -259,9 +260,9 @@ function extractId3Lyrics(bytes: Uint8Array) {
           ? descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2)
           : 0
       const lyricsBytes = descriptorAndLyrics.slice(lyricsStart)
-      const lyrics = decodeTextValue(lyricsBytes, encoding)
-        .replace(/^[\uFEFF\u2020\u990A\u67FF]+/, "")
-        .trim()
+      const lyrics = stripMalformedUtf16LyricsPrefix(
+        decodeTextValue(lyricsBytes, encoding)
+      ).trim()
       if (lyrics) {
         return lyrics
       }
@@ -342,10 +343,9 @@ function extractMp4Lyrics(bytes: Uint8Array) {
     const childEnd = Math.min(lyricAtom.length, offset + childSize)
     if (childType === "data") {
       const payload = lyricAtom.slice(offset + 16, childEnd)
-      const lyrics = new TextDecoder("utf-8")
-        .decode(payload)
-        .replace(/^[\uFEFF\u2020\u990A\u67FF]+/, "")
-        .trim()
+      const lyrics = stripMalformedUtf16LyricsPrefix(
+        new TextDecoder("utf-8").decode(payload)
+      ).trim()
       if (lyrics) {
         return lyrics
       }
@@ -372,8 +372,8 @@ export async function extractEmbeddedLyrics(uri: string) {
 
   const nativeLyrics = await getLyric(uri).catch(() => null)
   const sanitizedNativeLyrics = nativeLyrics
-    ?.replace(/^[\uFEFF\u2020\u990A\u67FF]+/, "")
-    .trim()
+    ? stripMalformedUtf16LyricsPrefix(nativeLyrics).trim()
+    : undefined
   if (sanitizedNativeLyrics) {
     return sanitizedNativeLyrics
   }
