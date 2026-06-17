@@ -22,9 +22,7 @@ const rainbowColors = [
  * @param exclude An array of color class names to exclude (e.g., ["bg-rainbow-yellow"]).
  */
 export function getRandomRainbowColor(exclude: string[] = []) {
-  const availableColors = rainbowColors.filter(
-    (color) => !exclude.includes(color)
-  )
+  const availableColors = rainbowColors.filter((color) => !exclude.includes(color))
   const randomIndex = Math.floor(Math.random() * availableColors.length)
   return availableColors[randomIndex]
 }

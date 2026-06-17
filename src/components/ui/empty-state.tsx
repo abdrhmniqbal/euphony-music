@@ -17,12 +17,7 @@ interface EmptyStateProps {
   className?: string
 }
 
-export function EmptyState({
-  icon,
-  title,
-  message,
-  className,
-}: EmptyStateProps) {
+export function EmptyState({ icon, title, message, className }: EmptyStateProps) {
   return (
     <View className={cn("items-center justify-center px-6 py-12", className)}>
       {icon ? (
@@ -34,9 +29,7 @@ export function EmptyState({
         <Text className="mb-2 text-center text-[22px] font-semibold tracking-[-0.4px] text-foreground">
           {title}
         </Text>
-        <Text className="text-center text-sm leading-6 text-muted">
-          {message}
-        </Text>
+        <Text className="text-center text-sm leading-6 text-muted">{message}</Text>
       </View>
     </View>
   )

@@ -7,10 +7,7 @@
  */
 
 import type { Playlist } from "@/components/blocks/playlist-list"
-import type {
-  FavoriteEntry,
-  FavoriteType,
-} from "@/modules/favorites/types"
+import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types"
 import type { GenreCategory } from "@/modules/genres/types"
 import type { SortField } from "@/modules/library/sort.types"
 import type { Track } from "@/modules/player/store"
@@ -49,10 +46,7 @@ import {
 import { useFavorites } from "@/modules/favorites/queries"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
-import {
-  buildFolderBrowserState,
-  getParentFolderPath,
-} from "@/modules/library/folder-browser"
+import { buildFolderBrowserState, getParentFolderPath } from "@/modules/library/folder-browser"
 import {
   ALBUM_SORT_OPTIONS,
   ARTIST_SORT_OPTIONS,
@@ -62,30 +56,17 @@ import {
   PLAYLIST_SORT_OPTIONS,
   TRACK_SORT_OPTIONS,
 } from "@/modules/library/sort.constants"
-import {
-  setSortConfig,
-  useLibrarySortStore,
-} from "@/modules/library/sort.store"
-import {
-  sortGeneric,
-  sortTracks,
-} from "@/modules/library/sort.utils"
+import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort.store"
+import { sortGeneric, sortTracks } from "@/modules/library/sort.utils"
 import { useAlbums, useArtists } from "@/modules/library/queries"
-import {
-  useHasCurrentTrack,
-  usePlayerTracks,
-} from "@/modules/player/selectors"
+import { useHasCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { usePlaylistsWithOptions } from "@/modules/playlist/queries"
 import { getPlaylistTrackIdsByPlaylistIds } from "@/modules/playlist/repository"
 import { useGenres } from "@/modules/genres/queries"
 import { mapGenresToCategories } from "@/modules/genres/utils"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 const LIBRARY_TABS = [
   "Tracks",
@@ -125,9 +106,7 @@ function getAlbumOrderByField(
   return "title"
 }
 
-function getArtistOrderByField(
-  field: SortField
-): "name" | "trackCount" | "dateAdded" {
+function getArtistOrderByField(field: SortField): "name" | "trackCount" | "dateAdded" {
   if (field === "trackCount") {
     return "trackCount"
   }
@@ -158,12 +137,9 @@ export default function LibraryScreen() {
   const tracks = usePlayerTracks()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const tabBarHeight = getTabBarHeight(insets.bottom)
-  const libraryListBottomPadding =
-    tabBarHeight + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) + 200
+  const libraryListBottomPadding = tabBarHeight + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) + 200
   const [activeTab, setActiveTab] = React.useState<LibraryTab>("Tracks")
-  const [favoriteTypeFilters, setFavoriteTypeFilters] = React.useState<
-    FavoriteType[]
-  >([])
+  const [favoriteTypeFilters, setFavoriteTypeFilters] = React.useState<FavoriteType[]>([])
   const [currentFolderPath, setCurrentFolderPath] = React.useState("")
   const [sortModalVisible, setSortModalVisible] = React.useState(false)
   const [isPullRefreshing, setIsPullRefreshing] = React.useState(false)
@@ -178,63 +154,39 @@ export default function LibraryScreen() {
     enabled: shouldLoadFavorites,
   })
   const availableFavoriteTypes = React.useMemo<FavoriteType[]>(
-    () => [
-      ...new Set(
-        favorites.map((favorite) => favorite.type)
-      ),
-    ],
+    () => [...new Set(favorites.map((favorite) => favorite.type))],
     [favorites]
   )
   const activeFavoriteTypeFilters = React.useMemo(
-    () =>
-      favoriteTypeFilters.filter((type) =>
-        availableFavoriteTypes.includes(type)
-      ),
+    () => favoriteTypeFilters.filter((type) => availableFavoriteTypes.includes(type)),
     [availableFavoriteTypes, favoriteTypeFilters]
   )
   const handleFavoriteTypeFiltersChange = React.useCallback(
     (types: FavoriteType[]) => {
-      setFavoriteTypeFilters(
-        types.filter((type) => availableFavoriteTypes.includes(type))
-      )
+      setFavoriteTypeFilters(types.filter((type) => availableFavoriteTypes.includes(type)))
     },
     [availableFavoriteTypes]
   )
-  const filteredFavorites = React.useMemo(
-    () => {
-      const visibleFavorites =
-        activeFavoriteTypeFilters.length === 0
-          ? favorites
-          : favorites.filter((favorite) =>
-              activeFavoriteTypeFilters.includes(favorite.type)
-            )
+  const filteredFavorites = React.useMemo(() => {
+    const visibleFavorites =
+      activeFavoriteTypeFilters.length === 0
+        ? favorites
+        : favorites.filter((favorite) => activeFavoriteTypeFilters.includes(favorite.type))
 
-      return sortGeneric(visibleFavorites, allSortConfigs.Favorites)
-    },
-    [activeFavoriteTypeFilters, allSortConfigs.Favorites, favorites]
-  )
+    return sortGeneric(visibleFavorites, allSortConfigs.Favorites)
+  }, [activeFavoriteTypeFilters, allSortConfigs.Favorites, favorites])
 
   const albumOrderByField = getAlbumOrderByField(allSortConfigs.Albums.field)
-  const artistOrderByField = getArtistOrderByField(
-    allSortConfigs.Artists.field
-  )
+  const artistOrderByField = getArtistOrderByField(allSortConfigs.Artists.field)
 
-  const { data: albumsData = [] } = useAlbums(
-    albumOrderByField,
-    allSortConfigs.Albums.order,
-    { enabled: shouldLoadAlbums }
-  )
-  const { data: artistsData = [] } = useArtists(
-    artistOrderByField,
-    allSortConfigs.Artists.order,
-    { enabled: shouldLoadArtists }
-  )
-  const { data: playlistsData = [] } =
-    usePlaylistsWithOptions(shouldLoadPlaylists)
-  const {
-    data: genresData = [],
-    refetch: refetchGenres,
-  } = useGenres()
+  const { data: albumsData = [] } = useAlbums(albumOrderByField, allSortConfigs.Albums.order, {
+    enabled: shouldLoadAlbums,
+  })
+  const { data: artistsData = [] } = useArtists(artistOrderByField, allSortConfigs.Artists.order, {
+    enabled: shouldLoadArtists,
+  })
+  const { data: playlistsData = [] } = usePlaylistsWithOptions(shouldLoadPlaylists)
+  const { data: genresData = [], refetch: refetchGenres } = useGenres()
 
   const genres = React.useMemo<GenreCategory[]>(
     () => mapGenresToCategories(genresData),
@@ -250,9 +202,7 @@ export default function LibraryScreen() {
         const rightCount = b.trackCount ?? 0
 
         if (leftCount !== rightCount) {
-          return order === "asc"
-            ? leftCount - rightCount
-            : rightCount - leftCount
+          return order === "asc" ? leftCount - rightCount : rightCount - leftCount
         }
 
         return a.title.localeCompare(b.title, undefined, {
@@ -280,16 +230,14 @@ export default function LibraryScreen() {
     [allSortConfigs.Playlists, playlistsData]
   )
 
-  const { folders, tracks: folderTracks, breadcrumbs: folderBreadcrumbs } =
-    React.useMemo(
-      () =>
-        buildFolderBrowserState(
-          tracks,
-          currentFolderPath,
-          allSortConfigs.Folders
-        ),
-      [allSortConfigs.Folders, currentFolderPath, tracks]
-    )
+  const {
+    folders,
+    tracks: folderTracks,
+    breadcrumbs: folderBreadcrumbs,
+  } = React.useMemo(
+    () => buildFolderBrowserState(tracks, currentFolderPath, allSortConfigs.Folders),
+    [allSortConfigs.Folders, currentFolderPath, tracks]
+  )
 
   const showPlayButtons = activeTab === "Tracks" || activeTab === "Favorites"
 
@@ -388,9 +336,7 @@ export default function LibraryScreen() {
   function playFolderTrack(track: Track) {
     playTrack(track, folderTracks, {
       type: "folder",
-      title:
-        currentFolderPath.split("/").filter(Boolean).at(-1) ||
-        t("library.folders"),
+      title: currentFolderPath.split("/").filter(Boolean).at(-1) || t("library.folders"),
     })
   }
 
@@ -415,11 +361,7 @@ export default function LibraryScreen() {
     playTrack(track)
   }
 
-  function appendUniqueTrack(
-    queue: Track[],
-    seenTrackIds: Set<string>,
-    track: Track | undefined
-  ) {
+  function appendUniqueTrack(queue: Track[], seenTrackIds: Set<string>, track: Track | undefined) {
     if (!track || seenTrackIds.has(track.id)) {
       return
     }
@@ -428,15 +370,11 @@ export default function LibraryScreen() {
     queue.push(track)
   }
 
-  async function buildFavoritesPlaybackQueue(
-    favoriteEntries: FavoriteEntry[]
-  ): Promise<Track[]> {
+  async function buildFavoritesPlaybackQueue(favoriteEntries: FavoriteEntry[]): Promise<Track[]> {
     const queue: Track[] = []
     const seenTrackIds = new Set<string>()
     const trackById = new Map(tracks.map((track) => [track.id, track]))
-    const playlistFavorites = favoriteEntries.filter(
-      (favorite) => favorite.type === "playlist"
-    )
+    const playlistFavorites = favoriteEntries.filter((favorite) => favorite.type === "playlist")
     const playlistRows = await getPlaylistTrackIdsByPlaylistIds(
       playlistFavorites.map((favorite) => favorite.id)
     )
@@ -571,9 +509,7 @@ export default function LibraryScreen() {
   }
 
   const sortLabel = React.useMemo(() => {
-    const selected = currentSortOptions.find(
-      (option) => option.field === sortConfig.field
-    )
+    const selected = currentSortOptions.find((option) => option.field === sortConfig.field)
     return selected ? t(selected.label) : t("library.sort")
   }, [currentSortOptions, sortConfig.field, t])
 
@@ -690,12 +626,7 @@ export default function LibraryScreen() {
             ) : (
               <EmptyState
                 icon={
-                  <LocalMusicNoteSolidIcon
-                    fill="none"
-                    width={48}
-                    height={48}
-                    color={theme.muted}
-                  />
+                  <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
                 }
                 title={t("library.empty.genresFoundTitle")}
                 message={t("home.empty.recentlyPlayedMessage")}
@@ -760,9 +691,7 @@ export default function LibraryScreen() {
   return (
     <SortSheet
       visible={sortModalVisible}
-      onOpenChange={(open) =>
-        open ? setSortModalVisible(true) : closeSortModal()
-      }
+      onOpenChange={(open) => (open ? setSortModalVisible(true) : closeSortModal())}
       currentField={sortConfig.field}
       currentOrder={sortConfig.order}
       onSelect={handleSortSelect}
@@ -805,19 +734,13 @@ export default function LibraryScreen() {
               ? t("library.items", { count: itemCount })
               : `${itemCount} ${getLibraryTabLabel(activeTab)}`}
           </Text>
-          {currentSortOptions.length > 0 && (
-            <SortSheet.Trigger label={sortLabel} iconSize={16} />
-          )}
+          {currentSortOptions.length > 0 && <SortSheet.Trigger label={sortLabel} iconSize={16} />}
         </View>
 
         <View className="flex-1 px-4">
           {showPlayButtons && (
             <View className="mb-4">
-              <PlaybackActionsRow
-                onPlay={playAll}
-                onShuffle={shuffle}
-                className="mb-0"
-              />
+              <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} className="mb-0" />
             </View>
           )}
           <View className="flex-1">{renderTabContent()}</View>

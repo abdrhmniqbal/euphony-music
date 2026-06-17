@@ -33,10 +33,7 @@ export function useRecentlyPlayedTracks(limit = 8) {
   )
 }
 
-export function useTopTracksByPeriod(
-  period: HistoryTopTracksPeriod = "all",
-  limit = 25
-) {
+export function useTopTracksByPeriod(period: HistoryTopTracksPeriod = "all", limit = 25) {
   return useQuery<Track[]>(
     {
       queryKey: historyKeys.topTracks(period, limit),

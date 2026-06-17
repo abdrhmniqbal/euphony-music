@@ -20,11 +20,7 @@ interface SectionHeaderProps {
   onViewMore?: () => void
 }
 
-export function SectionHeader({
-  title,
-  className,
-  onViewMore,
-}: SectionHeaderProps) {
+export function SectionHeader({ title, className, onViewMore }: SectionHeaderProps) {
   const theme = useThemeColors()
 
   return (
@@ -41,12 +37,7 @@ export function SectionHeader({
             className="h-9 w-9 rounded-full border border-border/70 bg-default/55"
             isIconOnly
           >
-            <LocalChevronRightIcon
-              fill="none"
-              width={20}
-              height={20}
-              color={theme.muted}
-            />
+            <LocalChevronRightIcon fill="none" width={20} height={20} color={theme.muted} />
           </Button>
         ) : null}
       </View>

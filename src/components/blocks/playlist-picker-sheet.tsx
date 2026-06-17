@@ -1,13 +1,6 @@
 import { useBottomSheetInternal } from "@gorhom/bottom-sheet"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
-import {
-  BottomSheet,
-  Button,
-  Checkbox,
-  Input,
-  PressableFeedback,
-  TextField,
-} from "heroui-native"
+import { BottomSheet, Button, Checkbox, Input, PressableFeedback, TextField } from "heroui-native"
 import { useCallback, useRef, useState } from "react"
 import {
   type BlurEvent,
@@ -80,11 +73,9 @@ function PlaylistPickerSearchInput({
       const currentFocusedInput = findNodeHandle(
         TextInput.State.currentlyFocusedInput() as TextInput | null
       )
-      const shouldRemoveCurrentTarget =
-        keyboardState.target === e.nativeEvent.target
+      const shouldRemoveCurrentTarget = keyboardState.target === e.nativeEvent.target
       const shouldIgnoreBlurEvent =
-        currentFocusedInput &&
-        textInputNodesRef.current.has(currentFocusedInput)
+        currentFocusedInput && textInputNodesRef.current.has(currentFocusedInput)
 
       if (shouldRemoveCurrentTarget && !shouldIgnoreBlurEvent) {
         animatedKeyboardState.set((state) => ({
@@ -112,12 +103,7 @@ function PlaylistPickerSearchInput({
           onBlur={handleOnBlur}
         />
         <View className="absolute left-3.5" pointerEvents="none">
-          <LocalSearchIcon
-            fill="none"
-            width={20}
-            height={20}
-            color={theme.muted}
-          />
+          <LocalSearchIcon fill="none" width={20} height={20} color={theme.muted} />
         </View>
         {searchQuery.length > 0 ? (
           <PressableFeedback
@@ -128,12 +114,7 @@ function PlaylistPickerSearchInput({
             }}
             hitSlop={12}
           >
-            <LocalCancelCircleSolidIcon
-              fill="none"
-              width={18}
-              height={18}
-              color={theme.muted}
-            />
+            <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={theme.muted} />
           </PressableFeedback>
         ) : null}
       </View>
@@ -172,9 +153,7 @@ export function PlaylistPickerSheet({
   const normalizedQuery = searchQuery.trim().toLowerCase()
   const filteredPlaylists =
     normalizedQuery.length > 0
-      ? playlists.filter((playlist) =>
-          playlist.name.toLowerCase().includes(normalizedQuery)
-        )
+      ? playlists.filter((playlist) => playlist.name.toLowerCase().includes(normalizedQuery))
       : playlists
 
   return (
@@ -212,9 +191,7 @@ export function PlaylistPickerSheet({
             {...LEGEND_LIST_PICKER_CONFIG}
             renderItem={({
               item,
-            }: LegendListRenderItemProps<
-              (typeof filteredPlaylists)[number]
-            >) => {
+            }: LegendListRenderItemProps<(typeof filteredPlaylists)[number]>) => {
               const hasTrack = Boolean(item.hasTrack)
               const handleSelect = () => {
                 if (isSelecting) {
@@ -244,10 +221,7 @@ export function PlaylistPickerSheet({
 
                   <ItemImage className="items-center justify-center overflow-hidden bg-default">
                     <PlaylistArtwork
-                      images={resolvePlaylistArtworkImages(
-                        item.images,
-                        item.image
-                      )}
+                      images={resolvePlaylistArtworkImages(item.images, item.image)}
                     />
                   </ItemImage>
 
@@ -265,14 +239,7 @@ export function PlaylistPickerSheet({
             ListEmptyComponent={() => (
               <View className="pt-6">
                 <EmptyState
-                  icon={
-                    <LocalSearchIcon
-                      fill="none"
-                      width={40}
-                      height={40}
-                      color={theme.muted}
-                    />
-                  }
+                  icon={<LocalSearchIcon fill="none" width={40} height={40} color={theme.muted} />}
                   title={t("library.empty.playlistsFoundTitle")}
                   message={
                     normalizedQuery.length > 0
@@ -286,18 +253,9 @@ export function PlaylistPickerSheet({
           />
 
           <View className="border-t border-border/60 px-4 pt-3 pb-3">
-            <Button
-              variant="secondary"
-              onPress={onCreatePlaylist}
-              isDisabled={isSelecting}
-            >
+            <Button variant="secondary" onPress={onCreatePlaylist} isDisabled={isSelecting}>
               <View className="flex-row items-center gap-2">
-                <LocalAddIcon
-                  fill="none"
-                  width={18}
-                  height={18}
-                  color={theme.foreground}
-                />
+                <LocalAddIcon fill="none" width={18} height={18} color={theme.foreground} />
                 <Text className="font-semibold text-foreground">
                   {t("playlist.createNewPlaylist")}
                 </Text>

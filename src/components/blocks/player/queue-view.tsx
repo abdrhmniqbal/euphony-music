@@ -12,9 +12,7 @@ import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 import { type FlatList, Text, View } from "react-native"
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated"
-import ReorderableList, {
-  useReorderableDrag,
-} from "react-native-reorderable-list"
+import ReorderableList, { useReorderableDrag } from "react-native-reorderable-list"
 import { cn } from "tailwind-variants"
 
 import LocalCancelIcon from "@/components/icons/local/cancel"
@@ -24,14 +22,8 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { skipToQueueItem } from "@/modules/player/controls"
 import { moveInQueue, removeFromQueue } from "@/modules/player/queue"
-import {
-  useCurrentTrack,
-  usePlayerQueueInfo,
-} from "@/modules/player/selectors"
-import {
-  type Track,
-  usePlayerStore,
-} from "@/modules/player/store"
+import { useCurrentTrack, usePlayerQueueInfo } from "@/modules/player/selectors"
+import { type Track, usePlayerStore } from "@/modules/player/store"
 
 interface QueueItemProps {
   track: Track
@@ -46,9 +38,7 @@ export const QueueItem: React.FC<QueueItemProps> = ({
   onPress,
   onRemove,
 }) => {
-  const isCurrentTrack = usePlayerStore(
-    (state) => state.currentTrack?.id === track.id
-  )
+  const isCurrentTrack = usePlayerStore((state) => state.currentTrack?.id === track.id)
   const drag = useReorderableDrag()
   const handleDragPress = useCallback(
     (event: { stopPropagation: () => void }) => {
@@ -70,16 +60,8 @@ export const QueueItem: React.FC<QueueItemProps> = ({
       track={track}
       onPress={onPress}
       leftAction={
-        <PressableFeedback
-          onPressIn={handleDragPress}
-          className="p-2 opacity-60"
-        >
-          <LocalDragDropVerticalIcon
-            fill="none"
-            width={24}
-            height={24}
-            color="white"
-          />
+        <PressableFeedback onPressIn={handleDragPress} className="p-2 opacity-60">
+          <LocalDragDropVerticalIcon fill="none" width={24} height={24} color="white" />
         </PressableFeedback>
       }
       className={cn(
@@ -94,16 +76,8 @@ export const QueueItem: React.FC<QueueItemProps> = ({
       rightAction={
         <View className="flex-row items-center">
           {!isCurrentTrack ? (
-            <PressableFeedback
-              onPress={handleRemovePress}
-              className="p-2 opacity-60"
-            >
-              <LocalCancelIcon
-                fill="none"
-                width={24}
-                height={24}
-                color="white"
-              />
+            <PressableFeedback onPress={handleRemovePress} className="p-2 opacity-60">
+              <LocalCancelIcon fill="none" width={24} height={24} color="white" />
             </PressableFeedback>
           ) : null}
         </View>

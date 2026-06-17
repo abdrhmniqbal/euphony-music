@@ -47,10 +47,7 @@ export const SUPPORTED_LANGUAGE_CODES: LanguageCode[] = [
 ]
 
 export function isSupportedLanguageCode(value: unknown): value is LanguageCode {
-  return (
-    typeof value === "string" &&
-    SUPPORTED_LANGUAGE_CODES.includes(value as LanguageCode)
-  )
+  return typeof value === "string" && SUPPORTED_LANGUAGE_CODES.includes(value as LanguageCode)
 }
 
 export function getDeviceLanguageCode(): LanguageCode {
@@ -61,21 +58,16 @@ export function getDeviceLanguageCode(): LanguageCode {
     const localeWithScript = locale as typeof locale & { scriptCode?: string }
     const regionCode = locale.regionCode?.toUpperCase()
     const scriptCode = localeWithScript.scriptCode?.toLowerCase()
-    return scriptCode === "hant" ||
-      ["HK", "MO", "TW"].includes(regionCode ?? "")
+    return scriptCode === "hant" || ["HK", "MO", "TW"].includes(regionCode ?? "")
       ? "zh-Hant"
       : "zh-Hans"
   }
 
   if (languageCode === "pt") {
-    return locale.regionCode?.toUpperCase() === "BR"
-      ? "pt-BR"
-      : DEFAULT_LANGUAGE_CODE
+    return locale.regionCode?.toUpperCase() === "BR" ? "pt-BR" : DEFAULT_LANGUAGE_CODE
   }
 
-  return isSupportedLanguageCode(languageCode)
-    ? languageCode
-    : DEFAULT_LANGUAGE_CODE
+  return isSupportedLanguageCode(languageCode) ? languageCode : DEFAULT_LANGUAGE_CODE
 }
 
 export const i18nReady = i18n.isInitialized

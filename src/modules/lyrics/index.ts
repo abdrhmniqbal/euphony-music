@@ -38,9 +38,7 @@ export type TTMLLine = TimedMarkupLine
 
 function hasMoreThanOneDistinctTime(values: number[]) {
   const distinctValues = new Set(
-    values
-      .filter((value) => Number.isFinite(value))
-      .map((value) => Math.round(value * 1000))
+    values.filter((value) => Number.isFinite(value)).map((value) => Math.round(value * 1000))
   )
   return distinctValues.size > 1
 }
@@ -100,9 +98,7 @@ export function normalizeLyricsText(raw: string | null | undefined) {
   }
 
   const maybeJson =
-    trimmed.startsWith("[") || trimmed.startsWith("{")
-      ? normalizeJsonLyrics(trimmed)
-      : null
+    trimmed.startsWith("[") || trimmed.startsWith("{") ? normalizeJsonLyrics(trimmed) : null
   const source = maybeJson ?? trimmed
 
   const normalized = stripMalformedUtf16LyricsPrefix(source)
@@ -136,8 +132,7 @@ function parseJsonSyncedLyrics(raw: string): SyncedLyricsLine[] {
         }
 
         const candidate = entry as JsonTimedLyricEntry
-        const text =
-          typeof candidate.text === "string" ? candidate.text.trim() : ""
+        const text = typeof candidate.text === "string" ? candidate.text.trim() : ""
         const timeValue =
           typeof candidate.time === "number"
             ? candidate.time
@@ -181,9 +176,7 @@ export function splitLyricsLines(raw: string | null | undefined): LyricsLine[] {
   })
 }
 
-export function parseSyncedLyricsLines(
-  raw: string | null | undefined
-): SyncedLyricsLine[] {
+export function parseSyncedLyricsLines(raw: string | null | undefined): SyncedLyricsLine[] {
   if (!raw) {
     return []
   }
@@ -209,16 +202,12 @@ export function parseSyncedLyricsLines(
   const parsed: SyncedLyricsLine[] = []
 
   for (const [index, line] of lines.entries()) {
-    const timestampMatches = [
-      ...line.matchAll(/\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g),
-    ]
+    const timestampMatches = [...line.matchAll(/\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g)]
     if (timestampMatches.length === 0) {
       continue
     }
 
-    const text = line
-      .replace(/\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g, "")
-      .trim()
+    const text = line.replace(/\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g, "").trim()
     if (!text) {
       continue
     }
@@ -227,8 +216,7 @@ export function parseSyncedLyricsLines(
       const minutes = Number(match[1] || 0)
       const seconds = Number(match[2] || 0)
       const fractionText = match[3] || "0"
-      const fractionScale =
-        fractionText.length === 3 ? 1000 : fractionText.length === 2 ? 100 : 10
+      const fractionScale = fractionText.length === 3 ? 1000 : fractionText.length === 2 ? 100 : 10
       const fraction = Number(fractionText) / fractionScale
       const time = minutes * 60 + seconds + fraction
 
@@ -308,14 +296,9 @@ function parseTimedMarkupTimestamp(raw: string): number {
   return Number.parseFloat(raw) || 0
 }
 
-function readTimedMarkupAttribute(
-  tag: string,
-  name: string
-): string | undefined {
+function readTimedMarkupAttribute(tag: string, name: string): string | undefined {
   const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  const match = tag.match(
-    new RegExp(`(?:^|\\s|:)${escapedName}\\s*=\\s*(['"])(.*?)\\1`, "i")
-  )
+  const match = tag.match(new RegExp(`(?:^|\\s|:)${escapedName}\\s*=\\s*(['"])(.*?)\\1`, "i"))
   return match?.[2]
 }
 
@@ -333,10 +316,7 @@ function readTimedMarkupEnd(tag: string, begin: number): number {
   return begin
 }
 
-function normalizeTimedMarkupWords(
-  words: TimedMarkupWord[],
-  fallbackLineEnd: number
-) {
+function normalizeTimedMarkupWords(words: TimedMarkupWord[], fallbackLineEnd: number) {
   return words.map((word, index) => {
     if (word.end > word.begin) {
       return word
@@ -375,8 +355,7 @@ function normalizeTimedMarkupWordSequence(words: TimedMarkupWord[]) {
     }
 
     const shouldPrefixSpace =
-      normalizedWords.length > 0 &&
-      (hadLeadingWhitespace || previousHadTrailingWhitespace)
+      normalizedWords.length > 0 && (hadLeadingWhitespace || previousHadTrailingWhitespace)
 
     normalizedWords.push({
       ...word,
@@ -464,9 +443,7 @@ export function isTTML(raw: string): boolean {
   return isTimedMarkupLyrics(raw)
 }
 
-export function parseTimedMarkupLines(
-  raw: string | null | undefined
-): TimedMarkupLine[] {
+export function parseTimedMarkupLines(raw: string | null | undefined): TimedMarkupLine[] {
   if (!raw) {
     return []
   }
@@ -488,9 +465,7 @@ export function parseTimedMarkupLines(
   let lineIndex = 0
   while ((pMatch = pRegex.exec(trimmed)) !== null) {
     const pAttributes = pMatch[1] || ""
-    const pBegin = parseTimedMarkupTimestamp(
-      readTimedMarkupAttribute(pAttributes, "begin") || "0"
-    )
+    const pBegin = parseTimedMarkupTimestamp(readTimedMarkupAttribute(pAttributes, "begin") || "0")
     const pEnd = readTimedMarkupEnd(pAttributes, pBegin)
     const innerContent = pMatch[2] || ""
 
@@ -514,9 +489,7 @@ export function parseTimedMarkupLines(
     const normalizedWords = normalizeTimedMarkupWordSequence(words)
 
     if (normalizedWords.length === 0) {
-      const plainText = normalizeTimedMarkupWordText(
-        decodeMarkupText(innerContent)
-      )
+      const plainText = normalizeTimedMarkupWordText(decodeMarkupText(innerContent))
 
       if (plainText) {
         normalizedWords.push({ text: plainText, begin: pBegin, end: pEnd })
@@ -528,9 +501,7 @@ export function parseTimedMarkupLines(
       const firstBegin = Math.min(...finalizedWords.map((word) => word.begin))
       const lastEnd = Math.max(...finalizedWords.map((word) => word.end))
       const lineBegin =
-        pBegin === 0 && Number.isFinite(firstBegin) && firstBegin > 0
-          ? firstBegin
-          : pBegin
+        pBegin === 0 && Number.isFinite(firstBegin) && firstBegin > 0 ? firstBegin : pBegin
       const lineEnd = pEnd > lineBegin && Number.isFinite(pEnd) ? pEnd : lastEnd
       lines.push({
         id: `timed-markup-${lineIndex}`,
@@ -595,18 +566,12 @@ export function hasMeaningfulTimedMarkupTiming(lines: TimedMarkupLine[]) {
   }
 
   const words = lines.flatMap((line) => line.words)
-  if (
-    words.some(
-      (word) => word.end > word.begin || word.begin > 0 || word.end > 0
-    )
-  ) {
+  if (words.some((word) => word.end > word.begin || word.begin > 0 || word.end > 0)) {
     return true
   }
 
   return (
-    hasMoreThanOneDistinctTime(
-      lines.flatMap((line) => [line.begin, line.end])
-    ) ||
+    hasMoreThanOneDistinctTime(lines.flatMap((line) => [line.begin, line.end])) ||
     hasMoreThanOneDistinctTime(words.flatMap((word) => [word.begin, word.end]))
   )
 }

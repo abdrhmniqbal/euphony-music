@@ -10,8 +10,7 @@ import { File } from "expo-file-system"
 import type * as MediaLibrary from "expo-media-library/legacy"
 
 export function generateAssetHash(asset: MediaLibrary.Asset): string {
-  const shouldReadFileInfo =
-    asset.modificationTime === undefined || asset.modificationTime === null
+  const shouldReadFileInfo = asset.modificationTime === undefined || asset.modificationTime === null
   const info = shouldReadFileInfo ? getFileInfo(asset.uri) : null
   const modificationTime =
     info?.modificationTime ?? asset.modificationTime ?? asset.creationTime ?? 0
@@ -19,9 +18,7 @@ export function generateAssetHash(asset: MediaLibrary.Asset): string {
   return generateFileHash(asset.uri, modificationTime)
 }
 
-function getFileInfo(
-  uri: string
-): { size?: number; modificationTime?: number | null } | null {
+function getFileInfo(uri: string): { size?: number; modificationTime?: number | null } | null {
   try {
     const file = new File(uri)
     return file.info()

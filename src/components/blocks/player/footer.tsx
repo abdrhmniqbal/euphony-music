@@ -13,10 +13,7 @@ import { cn } from "tailwind-variants"
 
 import LocalMicIcon from "@/components/icons/local/mic"
 import LocalQueueIcon from "@/components/icons/local/queue"
-import {
-  togglePlayerExpandedView,
-  useUIStore,
-} from "@/modules/ui/store"
+import { togglePlayerExpandedView, useUIStore } from "@/modules/ui/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export const PlayerFooter: React.FC = () => {

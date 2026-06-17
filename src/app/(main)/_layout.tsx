@@ -6,17 +6,10 @@
  * Side Effects: Animates tab visibility based on shared UI chrome state.
  */
 
-import {
-  BottomTabBar,
-  type BottomTabBarProps,
-} from "expo-router/js-tabs"
+import { BottomTabBar, type BottomTabBarProps } from "expo-router/js-tabs"
 import { Tabs } from "expo-router"
 import { useTranslation } from "react-i18next"
-import Animated, {
-  useDerivedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated"
+import Animated, { useDerivedValue, useAnimatedStyle, withTiming } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { MiniPlayer } from "@/components/blocks/mini-player"
@@ -26,11 +19,7 @@ import LocalLibraryIcon from "@/components/icons/local/library"
 import LocalLibrarySolidIcon from "@/components/icons/local/library-solid"
 import LocalSearchIcon from "@/components/icons/local/search"
 import LocalSearchSolidIcon from "@/components/icons/local/search-solid"
-import {
-  getTabBarBottomPadding,
-  getTabBarHeight,
-  MINI_PLAYER_HEIGHT,
-} from "@/constants/layout"
+import { getTabBarBottomPadding, getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/constants/layout"
 import { useUIStore } from "@/modules/ui/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -111,19 +100,9 @@ export default function MainLayout() {
           title: t("navigation.tabs.home"),
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalHomeSolidIcon
-                fill="none"
-                color={color}
-                width={size}
-                height={size}
-              />
+              <LocalHomeSolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalHomeIcon
-                fill="none"
-                color={color}
-                width={size}
-                height={size}
-              />
+              <LocalHomeIcon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />
@@ -133,19 +112,9 @@ export default function MainLayout() {
           title: t("navigation.tabs.search"),
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalSearchSolidIcon
-                fill="none"
-                color={color}
-                width={size}
-                height={size}
-              />
+              <LocalSearchSolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalSearchIcon
-                fill="none"
-                color={color}
-                width={size}
-                height={size}
-              />
+              <LocalSearchIcon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />
@@ -156,19 +125,9 @@ export default function MainLayout() {
           popToTopOnBlur: true,
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalLibrarySolidIcon
-                fill="none"
-                color={color}
-                width={size}
-                height={size}
-              />
+              <LocalLibrarySolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalLibraryIcon
-                fill="none"
-                color={color}
-                width={size}
-                height={size}
-              />
+              <LocalLibraryIcon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />

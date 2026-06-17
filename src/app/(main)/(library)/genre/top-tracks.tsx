@@ -17,10 +17,7 @@ import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
-import {
-  screenEnterTransition,
-  screenExitTransition,
-} from "@/constants/animations"
+import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
 import { Stack } from "@/layouts/stack"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
@@ -28,11 +25,7 @@ import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime
 import { playTrack } from "@/modules/player/service"
 import { useGenreTopTracks } from "@/modules/search/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
@@ -77,8 +70,7 @@ export default function GenreTopTracksScreen() {
     enabled: parsedGenreRouteName.decodeFailed,
   })
 
-  const { data, isLoading, isFetching, refetch } =
-    useGenreTopTracks(normalizedGenreName)
+  const { data, isLoading, isFetching, refetch } = useGenreTopTracks(normalizedGenreName)
   const tracks = data ?? []
 
   async function refresh() {
@@ -131,12 +123,7 @@ export default function GenreTopTracksScreen() {
         >
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon
-                fill="none"
-                width={48}
-                height={48}
-                color={theme.muted}
-              />
+              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("home.empty.topTracksYetTitle")}
             message={t("library.genreTopTracksLongMessage", {
@@ -162,11 +149,7 @@ export default function GenreTopTracksScreen() {
             />
           }
           listHeader={
-            <PlaybackActionsRow
-              onPlay={playAll}
-              onShuffle={shuffle}
-              className="mb-2 px-0 py-0"
-            />
+            <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} className="mb-2 px-0 py-0" />
           }
         />
       )}

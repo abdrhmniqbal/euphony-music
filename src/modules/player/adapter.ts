@@ -6,11 +6,7 @@
  * Side Effects: None.
  */
 
-import {
-  EXTERNAL_TRACK_ID_PREFIX,
-  type RepeatModeType,
-  type Track,
-} from "@/modules/player/types"
+import { EXTERNAL_TRACK_ID_PREFIX, type RepeatModeType, type Track } from "@/modules/player/types"
 import { RepeatMode } from "@/modules/player/utils"
 
 interface TrackPlayerTrackLike {
@@ -23,14 +19,10 @@ interface TrackPlayerTrackLike {
   artwork?: string | null
 }
 
-export function mapTrackPlayerTrackToTrack(
-  track: TrackPlayerTrackLike,
-  allTracks: Track[]
-): Track {
+export function mapTrackPlayerTrackToTrack(track: TrackPlayerTrackLike, allTracks: Track[]): Track {
   const rawTrackId = track.id
   const trackId = rawTrackId !== undefined ? String(rawTrackId) : null
-  const matchedTrack =
-    trackId ? allTracks.find((item) => item.id === trackId) : undefined
+  const matchedTrack = trackId ? allTracks.find((item) => item.id === trackId) : undefined
 
   return {
     ...matchedTrack,
@@ -38,18 +30,14 @@ export function mapTrackPlayerTrackToTrack(
     title:
       typeof track.title === "string" && track.title.length > 0
         ? track.title
-        : matchedTrack?.title ?? "Unknown Track",
-    artist:
-      typeof track.artist === "string" ? track.artist : matchedTrack?.artist,
+        : (matchedTrack?.title ?? "Unknown Track"),
+    artist: typeof track.artist === "string" ? track.artist : matchedTrack?.artist,
     album: typeof track.album === "string" ? track.album : matchedTrack?.album,
-    duration:
-      typeof track.duration === "number" ? track.duration : matchedTrack?.duration ?? 0,
-    uri: typeof track.url === "string" ? track.url : matchedTrack?.uri ?? "",
-    image:
-      typeof track.artwork === "string" ? track.artwork : matchedTrack?.image,
+    duration: typeof track.duration === "number" ? track.duration : (matchedTrack?.duration ?? 0),
+    uri: typeof track.url === "string" ? track.url : (matchedTrack?.uri ?? ""),
+    image: typeof track.artwork === "string" ? track.artwork : matchedTrack?.image,
     isExternal:
-      matchedTrack?.isExternal === true ||
-      trackId?.startsWith(EXTERNAL_TRACK_ID_PREFIX) === true,
+      matchedTrack?.isExternal === true || trackId?.startsWith(EXTERNAL_TRACK_ID_PREFIX) === true,
   }
 }
 

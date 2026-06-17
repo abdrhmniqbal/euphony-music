@@ -1,7 +1,4 @@
-import {
-  LegendList,
-  type LegendListRenderItemProps,
-} from "@legendapp/list/react-native"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useMemo } from "react"
 import {
@@ -45,9 +42,7 @@ export interface Playlist {
   images?: string[]
 }
 
-type PlaylistListRow =
-  | { id: string; rowType: "create" }
-  | (Playlist & { rowType: "playlist" })
+type PlaylistListRow = { id: string; rowType: "create" } | (Playlist & { rowType: "playlist" })
 
 interface PlaylistListProps {
   data: Playlist[]
@@ -79,10 +74,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const listContentContainerStyle = StyleSheet.flatten([
-    { gap: 8 },
-    contentContainerStyle,
-  ])
+  const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
 
   const handlePress = useCallback(
     (playlist: Playlist) => {
@@ -95,21 +87,13 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     onCreatePlaylist?.()
   }, [onCreatePlaylist])
 
-  const formatTrackCount = useCallback(
-    (count: number) => t("library.count.track", { count }),
-    [t]
-  )
+  const formatTrackCount = useCallback((count: number) => t("library.count.track", { count }), [t])
 
   const renderCreateButton = useCallback(
     () => (
       <Item key="create" onPress={handleCreate}>
         <ItemImage className="items-center justify-center bg-surface">
-          <LocalAddIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.foreground}
-          />
+          <LocalAddIcon fill="none" width={24} height={24} color={theme.foreground} />
         </ItemImage>
         <ItemContent>
           <ItemTitle>{t("playlist.newPlaylist")}</ItemTitle>
@@ -131,9 +115,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
       >
         <Transition.Boundary.Target>
           <ItemImage className="items-center justify-center overflow-hidden bg-default">
-            <PlaylistArtwork
-              images={resolvePlaylistArtworkImages(item.images, item.image)}
-            />
+            <PlaylistArtwork images={resolvePlaylistArtworkImages(item.images, item.image)} />
           </ItemImage>
         </Transition.Boundary.Target>
         <ItemContent>
@@ -141,12 +123,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
           <ItemDescription>{formatTrackCount(item.trackCount)}</ItemDescription>
         </ItemContent>
         <ItemAction>
-          <LocalChevronRightIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.muted}
-          />
+          <LocalChevronRightIcon fill="none" width={24} height={24} color={theme.muted} />
         </ItemAction>
       </Item>
     ),
@@ -178,14 +155,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     () =>
       data.length === 0 ? (
         <EmptyState
-          icon={
-            <LocalPlaylistSolidIcon
-              fill="none"
-              width={48}
-              height={48}
-              color={theme.muted}
-            />
-          }
+          icon={<LocalPlaylistSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
           title={t("library.empty.playlistsTitle")}
           message={t("library.empty.playlistsMessage")}
         />

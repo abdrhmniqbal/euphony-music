@@ -23,10 +23,7 @@ import type { SharedValue } from "react-native-reanimated"
 
 import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
 
-const PLAYER_QUEUE_CONTEXT_LABEL_KEYS: Record<
-  PlayerQueueContext["type"],
-  string
-> = {
+const PLAYER_QUEUE_CONTEXT_LABEL_KEYS: Record<PlayerQueueContext["type"], string> = {
   album: "player.playingFrom.album",
   artist: "player.playingFrom.artist",
   playlist: "player.playingFrom.playlist",
@@ -38,9 +35,7 @@ const PLAYER_QUEUE_CONTEXT_LABEL_KEYS: Record<
   external: "player.playingFrom.external",
 }
 
-const PLAYER_QUEUE_CONTEXT_TITLE_KEYS: Partial<
-  Record<PlayerQueueContext["type"], string>
-> = {
+const PLAYER_QUEUE_CONTEXT_TITLE_KEYS: Partial<Record<PlayerQueueContext["type"], string>> = {
   favorites: "library.favorites",
   folder: "library.folders",
   genre: "library.genre",
@@ -70,20 +65,16 @@ export const PlayerHeader: React.FC<PlayerHeaderProps> = ({
   const queueContextLabel = queueContext
     ? t(PLAYER_QUEUE_CONTEXT_LABEL_KEYS[queueContext.type])
     : ""
-  const labelSuffix = queueContextLabel.replace(
-    t("player.playingFrom.default"),
-    ""
-  )
+  const labelSuffix = queueContextLabel.replace(t("player.playingFrom.default"), "")
   const repeatedTitleKey = queueContext
     ? PLAYER_QUEUE_CONTEXT_TITLE_KEYS[queueContext.type]
     : undefined
   const repeatedLocalizedTitle = repeatedTitleKey ? t(repeatedTitleKey) : ""
   const shouldUseDefaultLabel = Boolean(
     queueContext &&
-      (normalizeQueueContextText(labelSuffix) ===
-        normalizeQueueContextText(queueContext.title) ||
-        normalizeQueueContextText(repeatedLocalizedTitle) ===
-          normalizeQueueContextText(queueContext.title))
+    (normalizeQueueContextText(labelSuffix) === normalizeQueueContextText(queueContext.title) ||
+      normalizeQueueContextText(repeatedLocalizedTitle) ===
+        normalizeQueueContextText(queueContext.title))
   )
 
   const handleStyle = useAnimatedStyle(() => {
@@ -121,25 +112,14 @@ export const PlayerHeader: React.FC<PlayerHeaderProps> = ({
       </View>
 
       <GestureDetector gesture={handleGesture}>
-        <Animated.View
-          className="absolute -top-4 z-10 self-center px-6 py-4"
-          style={handleStyle}
-        >
+        <Animated.View className="absolute -top-4 z-10 self-center px-6 py-4" style={handleStyle}>
           <View className="h-1.5 w-12 rounded-full bg-white/40" />
         </Animated.View>
       </GestureDetector>
 
       {onOpenMore ? (
-        <PressableFeedback
-          onPress={onOpenMore}
-          className="absolute right-0 z-20 p-1"
-        >
-          <LocalMoreHorizontalCircleSolidIcon
-            fill="none"
-            width={24}
-            height={24}
-            color="white"
-          />
+        <PressableFeedback onPress={onOpenMore} className="absolute right-0 z-20 p-1">
+          <LocalMoreHorizontalCircleSolidIcon fill="none" width={24} height={24} color="white" />
         </PressableFeedback>
       ) : null}
 
@@ -149,14 +129,9 @@ export const PlayerHeader: React.FC<PlayerHeaderProps> = ({
             className="text-center text-[10px] font-semibold uppercase text-white/65"
             numberOfLines={1}
           >
-            {shouldUseDefaultLabel
-              ? t("player.playingFrom.default")
-              : queueContextLabel}
+            {shouldUseDefaultLabel ? t("player.playingFrom.default") : queueContextLabel}
           </Text>
-          <Text
-            className="mt-0.5 text-center text-sm font-semibold text-white"
-            numberOfLines={1}
-          >
+          <Text className="mt-0.5 text-center text-sm font-semibold text-white" numberOfLines={1}>
             {queueContext.title}
           </Text>
         </View>

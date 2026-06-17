@@ -14,10 +14,7 @@ interface PlaylistArtworkProps {
   fallback?: ReactNode
 }
 
-export function resolvePlaylistArtworkImages(
-  images?: string[],
-  image?: string
-) {
+export function resolvePlaylistArtworkImages(images?: string[], image?: string) {
   if (images && images.length > 0) {
     return images
   }
@@ -65,23 +62,14 @@ function buildGridImages(images: string[]): string[] {
   return gridImages
 }
 
-export function PlaylistArtwork({
-  images,
-  className,
-  fallback,
-}: PlaylistArtworkProps) {
+export function PlaylistArtwork({ images, className, fallback }: PlaylistArtworkProps) {
   const theme = useThemeColors()
   const gridImages = buildGridImages(normalizeImages(images))
   const imageKeyCounter = new Map<string, number>()
 
   if (gridImages.length === 0) {
     return (
-      <View
-        className={cn(
-          "h-full w-full items-center justify-center bg-surface",
-          className
-        )}
-      >
+      <View className={cn("h-full w-full items-center justify-center bg-surface", className)}>
         {fallback || (
           <LocalPlaylistSolidIcon
             fill="none"
@@ -95,12 +83,7 @@ export function PlaylistArtwork({
   }
 
   return (
-    <View
-      className={cn(
-        "h-full w-full flex-row flex-wrap overflow-hidden",
-        className
-      )}
-    >
+    <View className={cn("h-full w-full flex-row flex-wrap overflow-hidden", className)}>
       {gridImages.map((image) => {
         const nextCount = (imageKeyCounter.get(image) || 0) + 1
         imageKeyCounter.set(image, nextCount)

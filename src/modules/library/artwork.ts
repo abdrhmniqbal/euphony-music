@@ -44,8 +44,7 @@ export function selectDominantArtwork(
   for (const [artwork, stats] of artworkStats.entries()) {
     if (
       stats.count > dominantCount ||
-      (stats.count === dominantCount &&
-        stats.latestDateAdded > dominantLatestDateAdded)
+      (stats.count === dominantCount && stats.latestDateAdded > dominantLatestDateAdded)
     ) {
       dominantArtwork = artwork
       dominantCount = stats.count

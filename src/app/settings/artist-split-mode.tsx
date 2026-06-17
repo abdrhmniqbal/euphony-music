@@ -43,10 +43,7 @@ export default function ArtistSplitModeScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
+    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
         <ListGroup>
           {SPLIT_MODE_OPTIONS.map((option, index) => (
@@ -59,18 +56,11 @@ export default function ArtistSplitModeScreen() {
               >
                 <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>{t(option.titleKey)}</ListGroup.ItemTitle>
-                  <ListGroup.ItemDescription>
-                    {t(option.descriptionKey)}
-                  </ListGroup.ItemDescription>
+                  <ListGroup.ItemDescription>{t(option.descriptionKey)}</ListGroup.ItemDescription>
                 </ListGroup.ItemContent>
                 {config.artistSplitMode === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.accent}
-                    />
+                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

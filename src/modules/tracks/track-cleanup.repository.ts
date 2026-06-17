@@ -16,10 +16,7 @@ async function updatePlaylistStats(playlistId: string) {
   })
 
   const trackCount = entries.length
-  const duration = entries.reduce(
-    (sum, entry) => sum + (entry.track?.duration || 0),
-    0
-  )
+  const duration = entries.reduce((sum, entry) => sum + (entry.track?.duration || 0), 0)
 
   await db
     .update(playlists)
@@ -31,9 +28,7 @@ async function updatePlaylistStats(playlistId: string) {
     .where(eq(playlists.id, playlistId))
 }
 
-export async function removeTracksFromFavoritesAndPlaylists(
-  rawTrackIds: string[]
-): Promise<void> {
+export async function removeTracksFromFavoritesAndPlaylists(rawTrackIds: string[]): Promise<void> {
   const trackIds = uniqueTrackIds(rawTrackIds)
   if (trackIds.length === 0) {
     return
@@ -60,17 +55,11 @@ export async function removeTracksFromFavoritesAndPlaylists(
     return
   }
 
-  await db
-    .delete(playlistTracks)
-    .where(inArray(playlistTracks.trackId, trackIds))
+  await db.delete(playlistTracks).where(inArray(playlistTracks.trackId, trackIds))
 
-  const affectedPlaylistIds = [
-    ...new Set(affectedPlaylistRows.map((row) => row.playlistId)),
-  ]
+  const affectedPlaylistIds = [...new Set(affectedPlaylistRows.map((row) => row.playlistId))]
 
-  await Promise.all(
-    affectedPlaylistIds.map((playlistId) => updatePlaylistStats(playlistId))
-  )
+  await Promise.all(affectedPlaylistIds.map((playlistId) => updatePlaylistStats(playlistId)))
 }
 
 export async function hardDeleteTrack(trackId: string): Promise<void> {

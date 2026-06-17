@@ -82,9 +82,7 @@ export async function getTopTracksByPeriod(
     }
 
     const timeThreshold =
-      period === "day"
-        ? Date.now() - 24 * 60 * 60 * 1000
-        : Date.now() - 7 * 24 * 60 * 60 * 1000
+      period === "day" ? Date.now() - 24 * 60 * 60 * 1000 : Date.now() - 7 * 24 * 60 * 60 * 1000
 
     const history = await db.query.playHistory.findMany({
       where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
@@ -173,12 +171,10 @@ export async function resetListeningHistory(): Promise<void> {
 
   await db.transaction(async (tx) => {
     await tx.delete(playHistory)
-    await tx
-      .update(tracks)
-      .set({
-        playCount: 0,
-        lastPlayedAt: null,
-        updatedAt: now,
-      })
+    await tx.update(tracks).set({
+      playCount: 0,
+      lastPlayedAt: null,
+      updatedAt: now,
+    })
   })
 }

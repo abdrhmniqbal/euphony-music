@@ -38,17 +38,25 @@ export async function getAlbumDetails(id: string): Promise<AlbumDetail> {
 }
 
 export async function getAlbumsSummary() {
-  const rows = await db.query.albums.findMany({ with: { artist: true }, orderBy: asc(sql`lower(coalesce(${albums.title}, ''))`) })
+  const rows = await db.query.albums.findMany({
+    with: { artist: true },
+    orderBy: asc(sql`lower(coalesce(${albums.title}, ''))`),
+  })
   return rows.map(toAlbum)
 }
 
 export async function getAlbumTracks<TOnlyIds extends boolean | undefined = false>(
   albumId: string,
-  onlyIds?: TOnlyIds,
+  onlyIds?: TOnlyIds
 ) {
-  const rows = await db.query.tracks.findMany({ where: eq(tracks.albumId, albumId), orderBy: asc(tracks.trackNumber) })
+  const rows = await db.query.tracks.findMany({
+    where: eq(tracks.albumId, albumId),
+    orderBy: asc(tracks.trackNumber),
+  })
   if (onlyIds) {
-    return rows.map((r) => ({ id: r.id })) as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
+    return rows.map((r) => ({ id: r.id })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : typeof rows
   }
   return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
 }

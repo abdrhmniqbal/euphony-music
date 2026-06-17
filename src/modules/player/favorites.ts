@@ -3,11 +3,7 @@ import { invalidateFavoriteQueries } from "@/modules/favorites/keys"
 import { setTrackFavoriteFlag } from "@/modules/favorites/repository"
 
 import { setActiveTrack } from "./runtime-state"
-import {
-  getCurrentTrackState,
-  getTracksState,
-  setTracksState,
-} from "./store"
+import { getCurrentTrackState, getTracksState, setTracksState } from "./store"
 
 export function toggleFavorite(trackId: string) {
   const tracks = getTracksState()

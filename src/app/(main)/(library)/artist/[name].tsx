@@ -48,14 +48,8 @@ import { BackButton } from "@/components/patterns/back-button"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { SectionTitle } from "@/components/ui/section-header"
-import {
-  screenEnterTransition,
-  screenExitTransition,
-} from "@/constants/animations"
-import {
-  SCREEN_SECTION_HEADING_GAP,
-  SCREEN_SECTION_TOP_SPACING,
-} from "@/constants/layout"
+import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
+import { SCREEN_SECTION_HEADING_GAP, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
 import {
   resolveAlbumTransitionId,
   resolveArtistTransitionId,
@@ -63,19 +57,10 @@ import {
 import { buildArtistAlbums } from "@/modules/artists/utils"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useIsFavorite } from "@/modules/favorites/queries"
-import {
-  ALBUM_SORT_OPTIONS,
-  TRACK_SORT_OPTIONS,
-} from "@/modules/library/sort.constants"
-import {
-  setSortConfig,
-  useLibrarySortStore,
-} from "@/modules/library/sort.store"
+import { ALBUM_SORT_OPTIONS, TRACK_SORT_OPTIONS } from "@/modules/library/sort.constants"
+import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort.store"
 import { sortAlbums, sortTracks } from "@/modules/library/sort.utils"
-import {
-  useArtistByName,
-  useTracksByArtistName,
-} from "@/modules/library/queries"
+import { useArtistByName, useTracksByArtistName } from "@/modules/library/queries"
 import { useCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
 import {
   type SplitMultipleValueConfig,
@@ -83,11 +68,7 @@ import {
 } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
 import { cn } from "@/utils/common"
@@ -160,23 +141,17 @@ export default function ArtistDetailsScreen() {
   const lastSyncedScrollYRef = React.useRef(0)
 
   const [isHeaderSolid, setIsHeaderSolid] = useState(false)
-  const [activeView, setActiveView] = useState<
-    "overview" | "tracks" | "albums" | "featuredOn"
-  >("overview")
+  const [activeView, setActiveView] = useState<"overview" | "tracks" | "albums" | "featuredOn">(
+    "overview"
+  )
   const [sortModalVisible, setSortModalVisible] = useState(false)
   const scrollY = useSharedValue(0)
   const currentTrack = useCurrentTrack()
   const allTracks = usePlayerTracks()
-  const splitMultipleValueConfig = useSettingsStore(
-    (state) => state.splitMultipleValueConfig
-  )
+  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
   const allSortConfigs = useLibrarySortStore((state) => state.sortConfig)
-  const parsedArtistRouteName = React.useMemo(
-    () => getSafeRouteName(name),
-    [name]
-  )
-  const artistName =
-    parsedArtistRouteName.value.trim() || t("library.unknownArtist")
+  const parsedArtistRouteName = React.useMemo(() => getSafeRouteName(name), [name])
+  const artistName = parsedArtistRouteName.value.trim() || t("library.unknownArtist")
 
   scheduleRouteWarning({
     key: "artist-details:missing-name",
@@ -201,16 +176,9 @@ export default function ArtistDetailsScreen() {
     isFetching: isArtistTracksFetching,
   } = useTracksByArtistName(artistName)
   const fallbackArtistTracks = allTracks.filter((track) =>
-    trackMatchesArtistName(
-      track,
-      normalizedArtistName,
-      splitMultipleValueConfig
-    )
+    trackMatchesArtistName(track, normalizedArtistName, splitMultipleValueConfig)
   )
-  const artistTracks = mergeArtistTracks(
-    artistTracksFromQuery,
-    fallbackArtistTracks
-  )
+  const artistTracks = mergeArtistTracks(artistTracksFromQuery, fallbackArtistTracks)
   const { data: artistRecord } = useArtistByName(artistName)
   const artistId = artistRecord?.id
   const artistImage = artistRecord?.artwork || undefined
@@ -219,13 +187,8 @@ export default function ArtistDetailsScreen() {
     id: artistId,
     name: artistName,
   })
-  const { data: isArtistFavorite = false } = useIsFavorite(
-    "artist",
-    artistId || ""
-  )
-  const isLoading =
-    (isArtistTracksLoading || isArtistTracksFetching) &&
-    artistTracks.length === 0
+  const { data: isArtistFavorite = false } = useIsFavorite("artist", artistId || "")
+  const isLoading = (isArtistTracksLoading || isArtistTracksFetching) && artistTracks.length === 0
   const albumArtistTracks = artistTracks.filter((track) =>
     trackMatchesArtistName(
       { ...track, artist: track.albumArtist },
@@ -243,10 +206,7 @@ export default function ArtistDetailsScreen() {
   )
   const albums = buildArtistAlbums(albumArtistTracks)
   const featuredOnAlbums = buildArtistAlbums(featuredOnTracks)
-  const sortedArtistTracks = sortTracks(
-    artistTracks,
-    allSortConfigs.ArtistTracks
-  )
+  const sortedArtistTracks = sortTracks(artistTracks, allSortConfigs.ArtistTracks)
   const popularTracks = sortedArtistTracks.slice(0, 5)
   const sortedAlbums = sortAlbums(
     buildAlbumGridItems(albums, t("library.unknownArtist")),
@@ -256,12 +216,10 @@ export default function ArtistDetailsScreen() {
     buildAlbumGridItems(featuredOnAlbums, t("library.unknownArtist")),
     allSortConfigs.ArtistAlbums
   )
-  const displayedAlbums =
-    activeView === "featuredOn" ? sortedFeaturedOnAlbums : sortedAlbums
+  const displayedAlbums = activeView === "featuredOn" ? sortedFeaturedOnAlbums : sortedAlbums
   const displayedAlbumTitle =
     activeView === "featuredOn" ? t("library.featuredOn") : t("library.albums")
-  const hasAlbumSections =
-    sortedAlbums.length > 0 || sortedFeaturedOnAlbums.length > 0
+  const hasAlbumSections = sortedAlbums.length > 0 || sortedFeaturedOnAlbums.length > 0
   const currentTab =
     activeView === "tracks"
       ? "ArtistTracks"
@@ -288,9 +246,7 @@ export default function ArtistDetailsScreen() {
     )
   }
 
-  const smoothScrollY = useDerivedValue(() =>
-    withTiming(scrollY.value, { duration: 90 })
-  )
+  const smoothScrollY = useDerivedValue(() => withTiming(scrollY.value, { duration: 90 }))
 
   const onScreenScroll = React.useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -304,9 +260,7 @@ export default function ArtistDetailsScreen() {
       }
 
       const nextHeaderSolid = y > headerCollapseThreshold
-      setIsHeaderSolid((previous) =>
-        previous === nextHeaderSolid ? previous : nextHeaderSolid
-      )
+      setIsHeaderSolid((previous) => (previous === nextHeaderSolid ? previous : nextHeaderSolid))
     },
     [headerCollapseThreshold, scrollY]
   )
@@ -316,20 +270,10 @@ export default function ArtistDetailsScreen() {
     return {
       transform: [
         {
-          translateY: interpolate(
-            y,
-            [-220, 0, 220],
-            [-52, 0, 0],
-            Extrapolation.CLAMP
-          ),
+          translateY: interpolate(y, [-220, 0, 220], [-52, 0, 0], Extrapolation.CLAMP),
         },
         {
-          scale: interpolate(
-            y,
-            [-220, 0, 220],
-            [1.22, 1.08, 1],
-            Extrapolation.CLAMP
-          ),
+          scale: interpolate(y, [-220, 0, 220], [1.22, 1.08, 1], Extrapolation.CLAMP),
         },
       ],
     }
@@ -412,11 +356,8 @@ export default function ArtistDetailsScreen() {
   }
 
   function getSortLabel() {
-    const options =
-      activeView === "tracks" ? TRACK_SORT_OPTIONS : ALBUM_SORT_OPTIONS
-    const selectedOption = options.find(
-      (option) => option.field === sortConfig.field
-    )
+    const options = activeView === "tracks" ? TRACK_SORT_OPTIONS : ALBUM_SORT_OPTIONS
+    const selectedOption = options.find((option) => option.field === sortConfig.field)
     return selectedOption ? t(selectedOption.label) : t("library.sort")
   }
 
@@ -427,10 +368,7 @@ export default function ArtistDetailsScreen() {
         style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
       >
         <Animated.View
-          style={[
-            { position: "absolute", top: 0, right: 0, bottom: 0, left: 0 },
-            heroArtworkStyle,
-          ]}
+          style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, heroArtworkStyle]}
         >
           {artistImage ? (
             <Image
@@ -440,12 +378,7 @@ export default function ArtistDetailsScreen() {
             />
           ) : (
             <View className="h-full w-full items-center justify-center bg-surface-secondary">
-              <LocalUserSolidIcon
-                fill="none"
-                width={120}
-                height={120}
-                color={theme.muted}
-              />
+              <LocalUserSolidIcon fill="none" width={120} height={120} color={theme.muted} />
             </View>
           )}
         </Animated.View>
@@ -503,14 +436,8 @@ export default function ArtistDetailsScreen() {
             onPress={handleBack}
           />
           {isHeaderSolid ? (
-            <View
-              pointerEvents="none"
-              className="absolute right-16 bottom-4 left-16 items-center"
-            >
-              <Text
-                className="text-base font-semibold text-foreground"
-                numberOfLines={1}
-              >
+            <View pointerEvents="none" className="absolute right-16 bottom-4 left-16 items-center">
+              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
                 {artistName}
               </Text>
             </View>
@@ -524,12 +451,7 @@ export default function ArtistDetailsScreen() {
               isIconOnly
             >
               {isArtistFavorite ? (
-                <LocalFavouriteSolidIcon
-                  fill="none"
-                  width={24}
-                  height={24}
-                  color="#ef4444"
-                />
+                <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
               ) : (
                 <LocalFavouriteIcon
                   fill="none"
@@ -564,10 +486,7 @@ export default function ArtistDetailsScreen() {
               style={{ paddingTop: SCREEN_SECTION_TOP_SPACING }}
             >
               <View className="px-6">
-                <SectionTitle
-                  title={t("library.tracks")}
-                  onViewMore={() => navigateTo("tracks")}
-                />
+                <SectionTitle title={t("library.tracks")} onViewMore={() => navigateTo("tracks")} />
                 <PlaybackActionsRow
                   onPlay={playAllTracks}
                   onShuffle={shuffleTracks}
@@ -579,15 +498,9 @@ export default function ArtistDetailsScreen() {
                       key={track.id}
                       track={track}
                       onPress={() => playArtistTrack(track)}
-                      titleClassName={
-                        currentTrack?.id === track.id
-                          ? "text-accent"
-                          : undefined
-                      }
+                      titleClassName={currentTrack?.id === track.id ? "text-accent" : undefined}
                       imageOverlay={
-                        currentTrack?.id === track.id ? (
-                          <ScaleLoader size={16} />
-                        ) : undefined
+                        currentTrack?.id === track.id ? <ScaleLoader size={16} /> : undefined
                       }
                     />
                   ))}
@@ -600,11 +513,7 @@ export default function ArtistDetailsScreen() {
                     title={t("library.albums")}
                     onViewMore={() => navigateTo("albums")}
                   />
-                  <AlbumGrid
-                    horizontal
-                    data={sortedAlbums}
-                    onAlbumPress={openAlbum}
-                  />
+                  <AlbumGrid horizontal data={sortedAlbums} onAlbumPress={openAlbum} />
                 </View>
               )}
 
@@ -614,11 +523,7 @@ export default function ArtistDetailsScreen() {
                     title={t("library.featuredOn")}
                     onViewMore={() => navigateTo("featuredOn")}
                   />
-                  <AlbumGrid
-                    horizontal
-                    data={sortedFeaturedOnAlbums}
-                    onAlbumPress={openAlbum}
-                  />
+                  <AlbumGrid horizontal data={sortedFeaturedOnAlbums} onAlbumPress={openAlbum} />
                 </View>
               )}
             </Animated.View>
@@ -638,9 +543,7 @@ export default function ArtistDetailsScreen() {
             onScrollEndDrag={handleScrollStop}
             listHeader={
               <>
-                <View style={{ marginHorizontal: -24 }}>
-                  {renderHeroSection()}
-                </View>
+                <View style={{ marginHorizontal: -24 }}>{renderHeroSection()}</View>
                 <Animated.View
                   entering={screenEnterTransition()}
                   style={{ paddingTop: SCREEN_SECTION_TOP_SPACING }}
@@ -691,9 +594,7 @@ export default function ArtistDetailsScreen() {
             onScrollEndDrag={handleScrollStop}
             listHeader={
               <>
-                <View style={{ marginHorizontal: -16 }}>
-                  {renderHeroSection()}
-                </View>
+                <View style={{ marginHorizontal: -16 }}>{renderHeroSection()}</View>
                 <Animated.View
                   entering={screenEnterTransition()}
                   className="px-2"

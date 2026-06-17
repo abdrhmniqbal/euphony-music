@@ -16,10 +16,7 @@ export const SCREEN_SECTION_HEADING_GAP = 20
 export const DETAIL_HEADER_BOTTOM_SPACING = 24
 
 export function getTabBarBottomPadding(insetBottom: number): number {
-  return (
-    Math.max(insetBottom, TAB_BAR_MIN_BOTTOM_PADDING) *
-    TAB_BAR_BOTTOM_PADDING_MULTIPLIER
-  )
+  return Math.max(insetBottom, TAB_BAR_MIN_BOTTOM_PADDING) * TAB_BAR_BOTTOM_PADDING_MULTIPLIER
 }
 
 export function getTabBarHeight(insetBottom: number): number {

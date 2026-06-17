@@ -7,7 +7,9 @@ import { findAndSaveAudio } from "../helpers/audio"
 import { appCleanUp } from "../helpers/cleanup"
 
 export function useScanning(canStart: boolean) {
-  const [permissionResponse, requestPermission] = useMediaLibraryPermissions({ granularPermissions: ["audio"] })
+  const [permissionResponse, requestPermission] = useMediaLibraryPermissions({
+    granularPermissions: ["audio"],
+  })
   const [status, setStatus] = useState<"in-progress" | "complete" | undefined>()
   const [error, setError] = useState<Error>()
 

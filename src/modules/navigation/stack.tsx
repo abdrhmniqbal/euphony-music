@@ -21,8 +21,7 @@ type ScreenStyleInterpolatorArgs = Parameters<
 >[0]
 
 const isNavigationMaskAvailable =
-  Platform.OS === "web" ||
-  Boolean(UIManager.getViewManagerConfig?.("RNCMaskedView"))
+  Platform.OS === "web" || Boolean(UIManager.getViewManagerConfig?.("RNCMaskedView"))
 
 function getHeaderSafeSlideRightOptions(): NativeStackNavigationOptions {
   return {
@@ -46,9 +45,11 @@ export const HIDDEN_STACK_SCREEN_OPTIONS = {
   headerShown: false,
 } as const
 
-type TransitionParams = {
-  transitionId?: string
-} | undefined
+type TransitionParams =
+  | {
+      transitionId?: string
+    }
+  | undefined
 
 function getTransitionId(params: TransitionParams) {
   return typeof params?.transitionId === "string" && params.transitionId.length > 0
@@ -200,10 +201,7 @@ export function getCenteredRootScreenOptions(options: {
   }
 }
 
-export function getBackButtonScreenOptions(
-  title: string,
-  headerLeft: () => ReactNode
-) {
+export function getBackButtonScreenOptions(title: string, headerLeft: () => ReactNode) {
   return {
     title,
     headerBackButtonMenuEnabled: false,
@@ -215,10 +213,7 @@ export function getBackButtonScreenOptions(
   }
 }
 
-export function getDrillDownScreenOptions(
-  title: string,
-  headerLeft: () => ReactNode
-) {
+export function getDrillDownScreenOptions(title: string, headerLeft: () => ReactNode) {
   return {
     ...getBackButtonScreenOptions(title, headerLeft),
     ...getHeaderSafeSlideRightOptions(),

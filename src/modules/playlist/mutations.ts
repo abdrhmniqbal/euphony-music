@@ -37,18 +37,12 @@ type ReorderPlaylistTracksVariables = {
 }
 
 type AddTrackToPlaylistResult = Awaited<ReturnType<typeof addTrackToPlaylist>>
-type RemoveTrackFromPlaylistResult = Awaited<
-  ReturnType<typeof removeTrackFromPlaylist>
->
+type RemoveTrackFromPlaylistResult = Awaited<ReturnType<typeof removeTrackFromPlaylist>>
 
 export function useCreatePlaylist() {
   return useMutation<void, unknown, CreatePlaylistVariables>(
     {
-      mutationFn: async ({
-        name,
-        description,
-        trackIds,
-      }: CreatePlaylistVariables) => {
+      mutationFn: async ({ name, description, trackIds }: CreatePlaylistVariables) => {
         logInfo("Creating playlist", {
           name,
           trackCount: trackIds.length,
@@ -76,11 +70,7 @@ export function useCreatePlaylist() {
 export function useUpdatePlaylist() {
   return useMutation<void, unknown, UpdatePlaylistVariables>(
     {
-      mutationFn: async ({
-        id,
-        name,
-        description,
-      }: UpdatePlaylistVariables) => {
+      mutationFn: async ({ id, name, description }: UpdatePlaylistVariables) => {
         logInfo("Updating playlist metadata", {
           playlistId: id,
           hasName: typeof name === "string",
@@ -133,11 +123,7 @@ export function useDeletePlaylist() {
 }
 
 export function useAddTrackToPlaylist() {
-  return useMutation<
-    AddTrackToPlaylistResult,
-    unknown,
-    PlaylistTrackVariables
-  >(
+  return useMutation<AddTrackToPlaylistResult, unknown, PlaylistTrackVariables>(
     {
       mutationFn: async (variables: PlaylistTrackVariables) => {
         logInfo("Adding track to playlist", variables)
@@ -159,11 +145,7 @@ export function useAddTrackToPlaylist() {
 }
 
 export function useRemoveTrackFromPlaylist() {
-  return useMutation<
-    RemoveTrackFromPlaylistResult,
-    unknown,
-    PlaylistTrackVariables
-  >(
+  return useMutation<RemoveTrackFromPlaylistResult, unknown, PlaylistTrackVariables>(
     {
       mutationFn: async (variables: PlaylistTrackVariables) => {
         logInfo("Removing track from playlist", variables)

@@ -47,8 +47,7 @@ function collectPlaylistImages(playlist: {
   }
 
   for (const playlistTrack of playlist.tracks) {
-    const artwork =
-      playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork
+    const artwork = playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork
 
     if (!artwork) {
       continue
@@ -86,10 +85,7 @@ async function updatePlaylistStats(playlistId: string) {
   })
 
   const trackCount = trackEntries.length
-  const duration = trackEntries.reduce(
-    (sum, entry) => sum + (entry.track?.duration || 0),
-    0
-  )
+  const duration = trackEntries.reduce((sum, entry) => sum + (entry.track?.duration || 0), 0)
 
   await db
     .update(playlists)
@@ -168,9 +164,7 @@ export async function listPlaylistsForTrack(trackId: string | null) {
       : Promise.resolve([]),
   ])
 
-  const playlistIdsWithTrack = new Set(
-    membershipRows.map((row) => row.playlistId)
-  )
+  const playlistIdsWithTrack = new Set(membershipRows.map((row) => row.playlistId))
 
   return results.map((playlist) => ({
     ...playlist,
@@ -324,9 +318,7 @@ export async function updatePlaylistMetadata({
     .update(playlists)
     .set({
       ...(name !== undefined ? { name } : {}),
-      ...(description !== undefined
-        ? { description: normalizeDescription(description) }
-        : {}),
+      ...(description !== undefined ? { description: normalizeDescription(description) } : {}),
       updatedAt: Date.now(),
     })
     .where(eq(playlists.id, id))
@@ -344,10 +336,7 @@ export async function addTrackToPlaylist({
   trackId: string
 }) {
   const existingEntry = await db.query.playlistTracks.findFirst({
-    where: and(
-      eq(playlistTracks.playlistId, playlistId),
-      eq(playlistTracks.trackId, trackId)
-    ),
+    where: and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)),
   })
 
   if (existingEntry) {
@@ -360,8 +349,7 @@ export async function addTrackToPlaylist({
     limit: 1,
   })
 
-  const nextPosition =
-    existingTracks.length > 0 ? (existingTracks[0].position || 0) + 1 : 0
+  const nextPosition = existingTracks.length > 0 ? (existingTracks[0].position || 0) + 1 : 0
 
   await db.insert(playlistTracks).values({
     id: generateId(),
@@ -385,12 +373,7 @@ export async function removeTrackFromPlaylist({
 }) {
   await db
     .delete(playlistTracks)
-    .where(
-      and(
-        eq(playlistTracks.playlistId, playlistId),
-        eq(playlistTracks.trackId, trackId)
-      )
-    )
+    .where(and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)))
 
   await resequencePlaylistTracks(playlistId)
   await updatePlaylistStats(playlistId)
@@ -410,12 +393,7 @@ export async function reorderPlaylistTracks({
       db
         .update(playlistTracks)
         .set({ position: index })
-        .where(
-          and(
-            eq(playlistTracks.playlistId, playlistId),
-            eq(playlistTracks.trackId, trackId)
-          )
-        )
+        .where(and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)))
     )
   )
 }

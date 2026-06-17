@@ -21,11 +21,7 @@ import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import type { DBTrack } from "@/types/database"
 
@@ -36,16 +32,19 @@ export default function RecentlyAddedScreen() {
   const { t } = useTranslation()
   const currentTrackId = useCurrentTrackId()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
-  const { data: tracksData = [], isLoading, isFetching, refetch } = useTracks({
+  const {
+    data: tracksData = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useTracks({
     sortBy: "dateAdded",
     sortOrder: "desc",
   })
 
   const tracks = useMemo(
     () =>
-      (tracksData as DBTrack[])
-        .map(transformDBTrackToTrack)
-        .slice(0, RECENTLY_ADDED_SCREEN_LIMIT),
+      (tracksData as DBTrack[]).map(transformDBTrackToTrack).slice(0, RECENTLY_ADDED_SCREEN_LIMIT),
     [tracksData]
   )
 
@@ -88,14 +87,7 @@ export default function RecentlyAddedScreen() {
     <View className="flex-1 bg-background">
       {tracks.length === 0 ? (
         <EmptyState
-          icon={
-            <LocalClockSolidIcon
-              fill="none"
-              width={48}
-              height={48}
-              color={theme.muted}
-            />
-          }
+          icon={<LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
           title={t("search.empty.recentlyAddedTitle")}
           message={t("search.empty.recentlyAddedMessage")}
           className="mt-12 px-4"
@@ -117,11 +109,7 @@ export default function RecentlyAddedScreen() {
             />
           }
           listHeader={
-            <PlaybackActionsRow
-              onPlay={playFirst}
-              onShuffle={shuffle}
-              className="mb-2 px-0 py-0"
-            />
+            <PlaybackActionsRow onPlay={playFirst} onShuffle={shuffle} className="mb-2 px-0 py-0" />
           }
         />
       )}

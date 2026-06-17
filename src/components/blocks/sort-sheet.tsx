@@ -49,16 +49,12 @@ interface SortSheetContentProps<T extends string> {
   className?: string
 }
 
-const SortSheetContext = createContext<SortSheetContextValue<string> | null>(
-  null
-)
+const SortSheetContext = createContext<SortSheetContextValue<string> | null>(null)
 
 function useSortSheetContext<T extends string>() {
   const context = use(SortSheetContext)
   if (!context) {
-    throw new Error(
-      "SortSheet compound components must be used inside SortSheet."
-    )
+    throw new Error("SortSheet compound components must be used inside SortSheet.")
   }
   return context as unknown as SortSheetContextValue<T>
 }
@@ -100,9 +96,7 @@ function SortSheetTrigger({
   const { onOpenChange, currentOrder } = useSortSheetContext<string>()
 
   function handlePress(
-    event: Parameters<
-      NonNullable<React.ComponentProps<typeof PressableFeedback>["onPress"]>
-    >[0]
+    event: Parameters<NonNullable<React.ComponentProps<typeof PressableFeedback>["onPress"]>>[0]
   ) {
     onPress?.(event)
     onOpenChange(true)
@@ -114,23 +108,11 @@ function SortSheetTrigger({
       onPress={handlePress}
       {...props}
     >
-      <Text className={cn("text-sm font-medium text-muted", textClassName)}>
-        {label}
-      </Text>
+      <Text className={cn("text-sm font-medium text-muted", textClassName)}>{label}</Text>
       {currentOrder === "asc" ? (
-        <LocalArrowUpIcon
-          fill="none"
-          width={iconSize}
-          height={iconSize}
-          color={theme.muted}
-        />
+        <LocalArrowUpIcon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
       ) : (
-        <LocalArrowDownIcon
-          fill="none"
-          width={iconSize}
-          height={iconSize}
-          color={theme.muted}
-        />
+        <LocalArrowDownIcon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
       )}
     </PressableFeedback>
   )
@@ -143,8 +125,7 @@ function SortSheetContent<T extends string>({
 }: SortSheetContentProps<T>) {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const { visible, onOpenChange, currentField, currentOrder, onSelect } =
-    useSortSheetContext<T>()
+  const { visible, onOpenChange, currentField, currentOrder, onSelect } = useSortSheetContext<T>()
 
   const handleSelect = (field: T) => {
     if (currentField === field) {
@@ -160,10 +141,7 @@ function SortSheetContent<T extends string>({
     <BottomSheet isOpen={visible} onOpenChange={onOpenChange}>
       <BottomSheet.Portal>
         <BottomSheet.Overlay />
-        <BottomSheet.Content
-          backgroundClassName="bg-surface"
-          className={cn("gap-1", className)}
-        >
+        <BottomSheet.Content backgroundClassName="bg-surface" className={cn("gap-1", className)}>
           <BottomSheet.Title className="mb-2 text-xl">
             {title ?? t("library.sortBy")}
           </BottomSheet.Title>
@@ -187,19 +165,9 @@ function SortSheetContent<T extends string>({
               {currentField === option.field && (
                 <Button variant="ghost" isIconOnly>
                   {currentOrder === "asc" ? (
-                    <LocalArrowUpIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.accent}
-                    />
+                    <LocalArrowUpIcon fill="none" width={24} height={24} color={theme.accent} />
                   ) : (
-                    <LocalArrowDownIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.accent}
-                    />
+                    <LocalArrowDownIcon fill="none" width={24} height={24} color={theme.accent} />
                   )}
                 </Button>
               )}

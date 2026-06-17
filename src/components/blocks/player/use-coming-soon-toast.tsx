@@ -15,13 +15,9 @@ export function useComingSoonToast() {
             placement="top"
             style={{ zIndex: 2200, elevation: 2200 }}
           >
-            <Toast.Title className="text-sm font-semibold">
-              Coming soon
-            </Toast.Title>
+            <Toast.Title className="text-sm font-semibold">Coming soon</Toast.Title>
             {featureLabel ? (
-              <Toast.Description className="text-xs text-muted">
-                {featureLabel}
-              </Toast.Description>
+              <Toast.Description className="text-xs text-muted">{featureLabel}</Toast.Description>
             ) : null}
           </Toast>
         ),

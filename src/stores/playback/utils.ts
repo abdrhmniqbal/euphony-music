@@ -6,17 +6,13 @@ import { getSortedFolderTracks } from "@/data/folder/api"
 import { getSortedGenreTracks } from "@/data/genre/api"
 import { getPlaylistTracks } from "@/data/playlist/api"
 import { getSortedTracks } from "@/data/track/api"
-import {
-  FavoritesPlaylistKey,
-  ReservedNames,
-  ReservedPlaylists,
-} from "@/modules/media/constants"
+import { FavoritesPlaylistKey, ReservedNames, ReservedPlaylists } from "@/modules/media/constants"
 import { i18n } from "@/modules/localization/i18n"
 import { shuffleArray } from "@/utils/object"
 
 export function arePlaybackSourceEqual(
   source1: PlayFromSource | undefined,
-  source2: PlayFromSource,
+  source2: PlayFromSource
 ) {
   if (!source1) return false
   const keys = Object.keys(source1) as Array<keyof PlayFromSource>
@@ -50,10 +46,8 @@ export async function getTrackIdsList({ type, id }: PlayFromSource) {
 
   try {
     if (type === "album") trackIds = await getAlbumTracks(id, true)
-    else if (type === "artist")
-      trackIds = await getSortedArtistTracks(id, true)
-    else if (type === "folder")
-      trackIds = await getSortedFolderTracks(id, true)
+    else if (type === "artist") trackIds = await getSortedArtistTracks(id, true)
+    else if (type === "folder") trackIds = await getSortedFolderTracks(id, true)
     else if (type === "genre") trackIds = await getSortedGenreTracks(id, true)
     else if (ReservedNames.has(id)) trackIds = await getSortedTracks(true)
     else trackIds = await getPlaylistTracks(id, true)
@@ -62,17 +56,11 @@ export async function getTrackIdsList({ type, id }: PlayFromSource) {
   return trackIds.map((t) => t.id)
 }
 
-export function getUpdatedLists(
-  newPlayingList: string[],
-  shuffle: boolean,
-  startTrackId?: string,
-) {
+export function getUpdatedLists(newPlayingList: string[], shuffle: boolean, startTrackId?: string) {
   const usedList = shuffle ? shuffleArray(newPlayingList) : newPlayingList
 
   const newLocation =
-    startTrackId !== undefined
-      ? usedList.findIndex((tId) => startTrackId === tId)
-      : -1
+    startTrackId !== undefined ? usedList.findIndex((tId) => startTrackId === tId) : -1
 
   return {
     orderSnapshot: newPlayingList,

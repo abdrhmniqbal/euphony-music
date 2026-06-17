@@ -8,10 +8,7 @@
 
 import { count } from "drizzle-orm"
 
-import {
-  initializeTrackPlayer,
-  registerPlaybackService,
-} from "@/core/audio/track-player.service"
+import { initializeTrackPlayer, registerPlaybackService } from "@/core/audio/track-player.service"
 import {
   getMediaLibraryPermission,
   requestMediaLibraryPermission,
@@ -25,10 +22,7 @@ import { ensureLoggingConfigLoaded } from "@/modules/logging/store"
 import { resumeTrack } from "@/modules/player/controls"
 import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-subscriber"
 import { restorePlaybackSession } from "@/modules/player/session.service"
-import {
-  getCurrentTrackState,
-  getIsPlayingState,
-} from "@/modules/player/store"
+import { getCurrentTrackState, getIsPlayingState } from "@/modules/player/store"
 import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
 import { ensureCrossfadeConfigLoaded } from "@/modules/settings/audio-crossfade"
 import { ensureAudioPlaybackConfigLoaded } from "@/modules/settings/audio-playback"
@@ -80,11 +74,7 @@ export async function bootstrapApp(): Promise<void> {
     logInfo("Playback session restored")
 
     const audioPlaybackConfig = await ensureAudioPlaybackConfigLoaded()
-    if (
-      audioPlaybackConfig.resumeOnStart &&
-      getCurrentTrackState() &&
-      !getIsPlayingState()
-    ) {
+    if (audioPlaybackConfig.resumeOnStart && getCurrentTrackState() && !getIsPlayingState()) {
       await resumeTrack()
     }
 

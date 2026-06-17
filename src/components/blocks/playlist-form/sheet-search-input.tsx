@@ -5,23 +5,13 @@ import * as React from "react"
 import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
-import {
-  type BlurEvent,
-  findNodeHandle,
-  type FocusEvent,
-  TextInput,
-  View,
-} from "react-native"
+import { type BlurEvent, findNodeHandle, type FocusEvent, TextInput, View } from "react-native"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import LocalSearchIcon from "@/components/icons/local/search"
 
 import { useThemeColors } from "@/modules/ui/theme"
 
-export function SheetSearchInput({
-  inputKey,
-  searchQuery,
-  setSearchQuery,
-}: SheetSearchInputProps) {
+export function SheetSearchInput({ inputKey, searchQuery, setSearchQuery }: SheetSearchInputProps) {
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { animatedKeyboardState, textInputNodesRef } = useBottomSheetInternal()
@@ -43,11 +33,9 @@ export function SheetSearchInput({
       const currentFocusedInput = findNodeHandle(
         TextInput.State.currentlyFocusedInput() as TextInput | null
       )
-      const shouldRemoveCurrentTarget =
-        keyboardState.target === e.nativeEvent.target
+      const shouldRemoveCurrentTarget = keyboardState.target === e.nativeEvent.target
       const shouldIgnoreBlurEvent =
-        currentFocusedInput &&
-        textInputNodesRef.current.has(currentFocusedInput)
+        currentFocusedInput && textInputNodesRef.current.has(currentFocusedInput)
 
       if (shouldRemoveCurrentTarget && !shouldIgnoreBlurEvent) {
         animatedKeyboardState.set((state) => ({
@@ -75,12 +63,7 @@ export function SheetSearchInput({
           onBlur={handleOnBlur}
         />
         <View className="absolute left-3.5" pointerEvents="none">
-          <LocalSearchIcon
-            fill="none"
-            width={20}
-            height={20}
-            color={theme.muted}
-          />
+          <LocalSearchIcon fill="none" width={20} height={20} color={theme.muted} />
         </View>
         {searchQuery.length > 0 ? (
           <PressableFeedback
@@ -91,12 +74,7 @@ export function SheetSearchInput({
             }}
             hitSlop={12}
           >
-            <LocalCancelCircleSolidIcon
-              fill="none"
-              width={18}
-              height={18}
-              color={theme.muted}
-            />
+            <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={theme.muted} />
           </PressableFeedback>
         ) : null}
       </View>

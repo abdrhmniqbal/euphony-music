@@ -13,9 +13,7 @@ interface IndexerNotificationsConfig {
   enabled: boolean
 }
 
-const INDEXER_NOTIFICATIONS_FILE = createSettingsConfigFile(
-  "indexer-notifications.json"
-)
+const INDEXER_NOTIFICATIONS_FILE = createSettingsConfigFile("indexer-notifications.json")
 
 let loadPromise: Promise<boolean> | null = null
 let hasLoadedConfig = false
@@ -57,15 +55,10 @@ export async function ensureIndexerNotificationsConfigLoaded(): Promise<boolean>
   return result
 }
 
-export async function setIndexerNotificationsEnabled(
-  enabled: boolean
-): Promise<boolean> {
+export async function setIndexerNotificationsEnabled(enabled: boolean): Promise<boolean> {
   await ensureIndexerNotificationsConfigLoaded()
   updateSettingsState({ indexerNotificationsEnabled: enabled })
   hasLoadedConfig = true
-  await saveSettingsConfig<IndexerNotificationsConfig>(
-    INDEXER_NOTIFICATIONS_FILE,
-    { enabled }
-  )
+  await saveSettingsConfig<IndexerNotificationsConfig>(INDEXER_NOTIFICATIONS_FILE, { enabled })
   return enabled
 }

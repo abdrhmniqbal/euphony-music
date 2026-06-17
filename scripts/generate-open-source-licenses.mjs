@@ -12,12 +12,7 @@ import path from "node:path"
 const PROJECT_ROOT = process.cwd()
 const NODE_MODULES_DIR = path.join(PROJECT_ROOT, "node_modules")
 const ROOT_PACKAGE_JSON_PATH = path.join(PROJECT_ROOT, "package.json")
-const OUTPUT_PATH = path.join(
-  PROJECT_ROOT,
-  "src",
-  "assets",
-  "open-source-licenses.json"
-)
+const OUTPUT_PATH = path.join(PROJECT_ROOT, "src", "assets", "open-source-licenses.json")
 
 const LICENSE_FILE_CANDIDATES = [
   "LICENSE",
@@ -62,11 +57,7 @@ function normalizeLicenses(packageJson) {
   if (Array.isArray(packageJson.licenses)) {
     return packageJson.licenses
       .map((entry) =>
-        typeof entry === "string"
-          ? entry
-          : typeof entry?.type === "string"
-            ? entry.type
-            : ""
+        typeof entry === "string" ? entry : typeof entry?.type === "string" ? entry.type : ""
       )
       .filter(Boolean)
       .join(", ")
@@ -93,8 +84,7 @@ async function readLicenseText(packageDir) {
       }
 
       return await fs.readFile(filePath, "utf8")
-    } catch {
-    }
+    } catch {}
   }
 
   return ""
@@ -159,8 +149,7 @@ async function generateOpenSourceLicenses() {
         licenses: normalizeLicenses(packageJson),
         licenseText,
       })
-    } catch {
-    }
+    } catch {}
   }
 
   const sorted = [...packages.values()].sort((left, right) => {

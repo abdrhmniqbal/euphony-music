@@ -14,16 +14,13 @@ interface LegendListBehaviorProps {
   dataVersion: string | undefined
 }
 
-export function useLegendListBehavior(
-  resetScrollKey?: string,
-  dataVersionKey?: string
-) {
+export function useLegendListBehavior(resetScrollKey?: string, dataVersionKey?: string) {
   const listRef = useRef<LegendListRef | null>(null)
 
   const dataVersion =
     resetScrollKey && dataVersionKey
       ? `${resetScrollKey}:${dataVersionKey}`
-      : resetScrollKey ?? dataVersionKey
+      : (resetScrollKey ?? dataVersionKey)
 
   const listBehaviorProps = useMemo<LegendListBehaviorProps>(
     () => ({

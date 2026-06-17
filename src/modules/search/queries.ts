@@ -3,12 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/tanstack-query"
 
 import { searchKeys } from "./keys"
-import {
-  getGenreAlbums,
-  getGenreDetails,
-  getGenres,
-  getGenreTopTracks,
-} from "./repository"
+import { getGenreAlbums, getGenreDetails, getGenres, getGenreTopTracks } from "./repository"
 import type { GenreAlbumInfo, GenreDetailsResult } from "./types"
 
 export function useGenres() {

@@ -49,9 +49,7 @@ function RankedTrackChunk({
           rank={chunkIndex * chunkSize + index + 1}
           onPress={() => onTrackPress(track)}
           titleClassName={currentTrackId === track.id ? "text-accent" : undefined}
-          imageOverlay={
-            currentTrackId === track.id ? <ScaleLoader size={16} /> : undefined
-          }
+          imageOverlay={currentTrackId === track.id ? <ScaleLoader size={16} /> : undefined}
         />
       ))}
     </View>
@@ -68,19 +66,19 @@ export function RankedTrackCarousel({
   className,
 }: RankedTrackCarouselProps) {
   const currentTrackId = useCurrentTrackId()
-  const chunks = React.useMemo(
-    () => chunkArray(data, chunkSize),
-    [data, chunkSize]
+  const chunks = React.useMemo(() => chunkArray(data, chunkSize), [data, chunkSize])
+
+  const handlePress = React.useCallback(
+    (track: Track) => {
+      if (onItemPress) {
+        onItemPress(track)
+        return
+      }
+
+      playTrack(track, data)
+    },
+    [data, onItemPress]
   )
-
-  const handlePress = React.useCallback((track: Track) => {
-    if (onItemPress) {
-      onItemPress(track)
-      return
-    }
-
-    playTrack(track, data)
-  }, [data, onItemPress])
 
   return (
     <MediaCarousel

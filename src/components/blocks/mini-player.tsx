@@ -12,16 +12,10 @@ import LocalPauseSolidIcon from "@/components/icons/local/pause-solid"
 import LocalPlaySolidIcon from "@/components/icons/local/play-solid"
 import { MarqueeText } from "@/components/ui/marquee-text"
 import { playNext, togglePlayback } from "@/modules/player/controls"
-import {
-  useCurrentTrack,
-  useIsPlaying,
-  usePlaybackProgressState,
-} from "@/modules/player/selectors"
+import { useCurrentTrack, useIsPlaying, usePlaybackProgressState } from "@/modules/player/selectors"
 import { resolvePlayerTransitionId } from "@/modules/player/transition"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  setPlayerExpandedView,
-} from "@/modules/ui/store"
+import { setPlayerExpandedView } from "@/modules/ui/store"
 
 import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid"
 import LocalQueueIcon from "../icons/local/queue"
@@ -47,12 +41,7 @@ function MiniPlayerArtwork({ image, mutedColor }: MiniPlayerArtworkProps) {
           contentFit="cover"
         />
       ) : (
-        <LocalMusicNoteSolidIcon
-          fill="none"
-          width={20}
-          height={20}
-          color={mutedColor}
-        />
+        <LocalMusicNoteSolidIcon fill="none" width={20} height={20} color={mutedColor} />
       )}
     </View>
   )
@@ -68,11 +57,7 @@ function MiniPlayerMeta({ title, artist }: MiniPlayerMetaProps) {
 
   return (
     <View className="flex-1 overflow-hidden">
-      <MarqueeText
-        text={title}
-        className="text-[15px] font-bold text-foreground"
-        speed={0.6}
-      />
+      <MarqueeText text={title} className="text-[15px] font-bold text-foreground" speed={0.6} />
       <MarqueeText
         text={artist || t("library.unknownArtist")}
         className="text-[13px] text-muted"
@@ -88,56 +73,27 @@ interface MiniPlayerControlsProps {
   onOpenQueue: () => void
 }
 
-function MiniPlayerControls({
-  isPlaying,
-  foregroundColor,
-  onOpenQueue,
-}: MiniPlayerControlsProps) {
+function MiniPlayerControls({ isPlaying, foregroundColor, onOpenQueue }: MiniPlayerControlsProps) {
   return (
     <View className="flex-row items-center gap-3">
       <PressableFeedback onPress={togglePlayback} className="p-2 active:opacity-60">
         {isPlaying ? (
-          <LocalPauseSolidIcon
-            fill="none"
-            width={28}
-            height={28}
-            color={foregroundColor}
-          />
+          <LocalPauseSolidIcon fill="none" width={28} height={28} color={foregroundColor} />
         ) : (
-          <LocalPlaySolidIcon
-            fill="none"
-            width={28}
-            height={28}
-            color={foregroundColor}
-          />
+          <LocalPlaySolidIcon fill="none" width={28} height={28} color={foregroundColor} />
         )}
       </PressableFeedback>
       <PressableFeedback onPress={playNext} className="p-2 active:opacity-60">
-        <LocalNextSolidIcon
-          fill="none"
-          width={24}
-          height={24}
-          color={foregroundColor}
-        />
+        <LocalNextSolidIcon fill="none" width={24} height={24} color={foregroundColor} />
       </PressableFeedback>
-      <PressableFeedback
-        onPress={onOpenQueue}
-        className="p-2 active:opacity-60"
-      >
-        <LocalQueueIcon
-          fill="none"
-          width={22}
-          height={22}
-          color={foregroundColor}
-        />
+      <PressableFeedback onPress={onOpenQueue} className="p-2 active:opacity-60">
+        <LocalQueueIcon fill="none" width={22} height={22} color={foregroundColor} />
       </PressableFeedback>
     </View>
   )
 }
 
-export const MiniPlayer: React.FC<MiniPlayerProps> = ({
-  bottomOffset = 90,
-}) => {
+export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => {
   const router = useRouter()
   const currentTrack = useCurrentTrack()
   const isPlaying = useIsPlaying()

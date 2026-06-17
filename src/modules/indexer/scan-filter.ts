@@ -8,15 +8,7 @@
 
 import type * as MediaLibrary from "expo-media-library/legacy"
 
-const SUPPORTED_EXTENSIONS = new Set([
-  "mp3",
-  "flac",
-  "aac",
-  "ogg",
-  "m4a",
-  "opus",
-  "wav",
-])
+const SUPPORTED_EXTENSIONS = new Set(["mp3", "flac", "aac", "ogg", "m4a", "opus", "wav"])
 const EXCLUDED_URI_SEGMENTS = ["/android/", "/android/data/", "/android/obb/"]
 
 export function isSupportedAssetByExtension(asset: MediaLibrary.Asset): boolean {
@@ -32,9 +24,7 @@ export function isSupportedAssetByExtension(asset: MediaLibrary.Asset): boolean 
 export function isAllowedAssetUri(uri: string): boolean {
   const normalizedUri = uri.toLowerCase()
 
-  if (
-    EXCLUDED_URI_SEGMENTS.some((segment) => normalizedUri.includes(segment))
-  ) {
+  if (EXCLUDED_URI_SEGMENTS.some((segment) => normalizedUri.includes(segment))) {
     return false
   }
 

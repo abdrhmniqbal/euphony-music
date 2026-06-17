@@ -27,10 +27,7 @@ export default function WhatsNewSettingsScreen() {
   const releaseNotes = releaseNotesQuery.data ?? []
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
+    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-4 px-4 py-4">
         <Text className="text-sm leading-5 text-muted">
           {t("settings.about.whatsNewCurrentVersion", {
@@ -39,15 +36,11 @@ export default function WhatsNewSettingsScreen() {
         </Text>
 
         {releaseNotesQuery.isPending ? (
-          <Text className="text-sm text-muted">
-            {t("settings.about.whatsNewLoading")}
-          </Text>
+          <Text className="text-sm text-muted">{t("settings.about.whatsNewLoading")}</Text>
         ) : null}
 
         {!releaseNotesQuery.isPending && releaseNotes.length === 0 ? (
-          <Text className="text-sm text-muted">
-            {t("settings.about.whatsNewEmpty")}
-          </Text>
+          <Text className="text-sm text-muted">{t("settings.about.whatsNewEmpty")}</Text>
         ) : null}
 
         {releaseNotes.map((release) => (
@@ -57,9 +50,7 @@ export default function WhatsNewSettingsScreen() {
               {release.prerelease ? ` · ${t("updates.previewRelease")}` : ""}
             </Text>
             <View className="mt-3">
-              <ReleaseNotesMarkdown
-                markdown={release.body.trim() || t("updates.noReleaseNotes")}
-              />
+              <ReleaseNotesMarkdown markdown={release.body.trim() || t("updates.noReleaseNotes")} />
             </View>
           </View>
         ))}

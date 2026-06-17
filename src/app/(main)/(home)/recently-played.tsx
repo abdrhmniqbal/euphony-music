@@ -20,11 +20,7 @@ import { useIndexerStore } from "@/modules/indexer/store"
 import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 const RECENTLY_PLAYED_SCREEN_LIMIT = 50
 
@@ -33,8 +29,12 @@ export default function RecentlyPlayedScreen() {
   const { t } = useTranslation()
   const currentTrackId = useCurrentTrackId()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
-  const { data: historyData, isLoading, isFetching, refetch } =
-    useRecentlyPlayedTracks(RECENTLY_PLAYED_SCREEN_LIMIT)
+  const {
+    data: historyData,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useRecentlyPlayedTracks(RECENTLY_PLAYED_SCREEN_LIMIT)
 
   const history = historyData ?? []
 
@@ -77,14 +77,7 @@ export default function RecentlyPlayedScreen() {
     <View className="flex-1 bg-background">
       {history.length === 0 ? (
         <EmptyState
-          icon={
-            <LocalClockSolidIcon
-              fill="none"
-              width={48}
-              height={48}
-              color={theme.muted}
-            />
-          }
+          icon={<LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
           title={t("home.empty.recentlyPlayedTitle")}
           message={t("home.empty.recentlyPlayedLongMessage")}
           className="mt-12 px-4"
@@ -106,11 +99,7 @@ export default function RecentlyPlayedScreen() {
             />
           }
           listHeader={
-            <PlaybackActionsRow
-              onPlay={playFirst}
-              onShuffle={shuffle}
-              className="mb-2 px-0 py-0"
-            />
+            <PlaybackActionsRow onPlay={playFirst} onShuffle={shuffle} className="mb-2 px-0 py-0" />
           }
         />
       )}

@@ -87,9 +87,7 @@ export function buildArtistAlbums(artistTracks: Track[]): ArtistAlbum[] {
     title: album.title,
     artist: album.artist,
     albumArtist: album.albumArtist,
-    image:
-      selectDominantArtwork(album.albumArtworks) ||
-      selectDominantArtwork(album.trackArtworks),
+    image: selectDominantArtwork(album.albumArtworks) || selectDominantArtwork(album.trackArtworks),
     year: album.year,
     trackCount: album.trackCount,
   }))

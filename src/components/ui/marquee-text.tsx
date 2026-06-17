@@ -1,13 +1,7 @@
 import { Marquee } from "@animatereactnative/marquee"
 import * as React from "react"
 import { useState } from "react"
-import {
-  type LayoutChangeEvent,
-  type StyleProp,
-  Text,
-  type TextStyle,
-  View,
-} from "react-native"
+import { type LayoutChangeEvent, type StyleProp, Text, type TextStyle, View } from "react-native"
 
 interface MarqueeTextProps {
   text: string
@@ -35,16 +29,12 @@ export function MarqueeText({
     setContainerWidth(e.nativeEvent.layout.width)
   }
 
-  const shouldAnimate =
-    textWidth > 0 && containerWidth > 0 && textWidth > containerWidth
+  const shouldAnimate = textWidth > 0 && containerWidth > 0 && textWidth > containerWidth
 
   if (!text) return null
 
   return (
-    <View
-      onLayout={onContainerLayout}
-      style={{ width: "100%", overflow: "hidden" }}
-    >
+    <View onLayout={onContainerLayout} style={{ width: "100%", overflow: "hidden" }}>
       <View
         style={{
           position: "absolute",
@@ -54,12 +44,7 @@ export function MarqueeText({
         }}
       >
         <View style={{ width: 9999, flexDirection: "row" }}>
-          <Text
-            className={className}
-            style={style}
-            numberOfLines={1}
-            onLayout={onTextLayout}
-          >
+          <Text className={className} style={style} numberOfLines={1} onLayout={onTextLayout}>
             {text}
           </Text>
         </View>

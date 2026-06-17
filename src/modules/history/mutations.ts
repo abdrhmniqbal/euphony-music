@@ -13,11 +13,7 @@ import { queryClient } from "@/lib/tanstack-query"
 import { trackKeys } from "@/modules/tracks/keys"
 
 import { historyKeys } from "./keys"
-import {
-  addTrackToHistory,
-  incrementTrackPlayCount,
-  resetListeningHistory,
-} from "./repository"
+import { addTrackToHistory, incrementTrackPlayCount, resetListeningHistory } from "./repository"
 
 export function useAddToHistory() {
   return useMutation(
@@ -45,10 +41,7 @@ export function useIncrementPlayCount() {
         return trackId
       },
       onSuccess: async () => {
-        await invalidateQueryKeys(queryClient, [
-          trackKeys.all(),
-          historyKeys.tracks(),
-        ])
+        await invalidateQueryKeys(queryClient, [trackKeys.all(), historyKeys.tracks()])
       },
     },
     queryClient

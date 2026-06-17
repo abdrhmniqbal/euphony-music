@@ -8,12 +8,7 @@ export type TrackSortField =
   | "playCount"
 
 export type AlbumTrackSortField = TrackSortField | "trackNumber"
-export type AlbumSortField =
-  | "title"
-  | "artist"
-  | "year"
-  | "dateAdded"
-  | "trackCount"
+export type AlbumSortField = "title" | "artist" | "year" | "dateAdded" | "trackCount"
 export type ArtistSortField = "name" | "dateAdded" | "trackCount"
 export type PlaylistSortField = "name" | "dateAdded" | "trackCount"
 export type FolderSortField = "name" | "dateAdded" | "trackCount"

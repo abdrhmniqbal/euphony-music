@@ -32,13 +32,9 @@ let queueSyncVersion = 0
 async function refreshQueueTracks(trackKeys: string[], signature: string) {
   const version = ++queueSyncVersion
   const { getTrack } = playbackStore.getState()
-  const nextQueue = (
-    await Promise.all(trackKeys.map((trackKey) => getTrack(trackKey)))
-  )
+  const nextQueue = (await Promise.all(trackKeys.map((trackKey) => getTrack(trackKey))))
     .map(toPlayerTrack)
-    .filter((track): track is NonNullable<ReturnType<typeof toPlayerTrack>> =>
-      track !== null
-    )
+    .filter((track): track is NonNullable<ReturnType<typeof toPlayerTrack>> => track !== null)
 
   if (version !== queueSyncVersion || signature !== queueSignature) {
     return
@@ -63,9 +59,8 @@ function syncPlayerStoreFromPlayback() {
     isPlaying: state.isPlaying,
     currentTime: state.lastPosition,
     duration: state.activeTrack?.duration ?? 0,
-    repeatMode: state.repeat === "no-repeat" ? "off"
-      : state.repeat === "repeat" ? "queue"
-      : "track",
+    repeatMode:
+      state.repeat === "no-repeat" ? "off" : state.repeat === "repeat" ? "queue" : "track",
     isShuffled: state.shuffle,
     queue: queueTracks,
     queueTrackIds: state.queue.map(extractTrackId),

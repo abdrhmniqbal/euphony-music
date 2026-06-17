@@ -45,9 +45,7 @@ export async function listTracks(filters?: TrackFilter) {
         : undefined,
       filters?.albumId ? eq(tracks.albumId, filters.albumId) : undefined,
       filters?.isFavorite ? eq(tracks.isFavorite, 1) : undefined,
-      filters?.searchQuery
-        ? like(tracks.title, `%${filters.searchQuery}%`)
-        : undefined
+      filters?.searchQuery ? like(tracks.title, `%${filters.searchQuery}%`) : undefined
     ),
     with: {
       artist: true,

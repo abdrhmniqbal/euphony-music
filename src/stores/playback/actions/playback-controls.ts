@@ -25,10 +25,7 @@ export async function loadCurrentTrack() {
 
   if (!_hasRestoredPosition) {
     playbackStore.setState({ _hasRestoredPosition: true })
-    if (
-      _restoredTrackKey !== undefined &&
-      extractTrackId(_restoredTrackKey) === activeTrack.id
-    ) {
+    if (_restoredTrackKey !== undefined && extractTrackId(_restoredTrackKey) === activeTrack.id) {
       await seekTo(lastPosition ?? 0)
     }
   }
@@ -73,8 +70,7 @@ export async function playToggle(opts?: PlayPauseOptions) {
 }
 
 export async function prev() {
-  const { getTrack, reset, lastPosition, queue, queuePosition } =
-    playbackStore.getState()
+  const { getTrack, reset, lastPosition, queue, queuePosition } = playbackStore.getState()
 
   const prevIndex = queuePosition === 0 ? queue.length - 1 : queuePosition - 1
   const prevTrackKey = queue[prevIndex]
@@ -123,8 +119,7 @@ export async function seekTo(position: number) {
 }
 
 export async function playAtIndex(index: number) {
-  const { getTrack, reset, queue, queuePosition, numQueuedNext } =
-    playbackStore.getState()
+  const { getTrack, reset, queue, queuePosition, numQueuedNext } = playbackStore.getState()
 
   const nextTrackKey = queue[index]
   if (!nextTrackKey) return await reset()
@@ -136,10 +131,7 @@ export async function playAtIndex(index: number) {
     activeKey: nextTrackKey,
     activeTrack: nextTrack,
     queuePosition: index,
-    numQueuedNext:
-      index < queuePosition
-        ? 0
-        : Math.max(0, numQueuedNext - (index - queuePosition)),
+    numQueuedNext: index < queuePosition ? 0 : Math.max(0, numQueuedNext - (index - queuePosition)),
     ...getNewRepeatState(),
   })
 
@@ -154,8 +146,7 @@ export async function playFromList({
   source: PlayFromSource
   trackId?: string
 }) {
-  const { getTrack, shuffle, playingFrom, queue, activeTrack } =
-    playbackStore.getState()
+  const { getTrack, shuffle, playingFrom, queue, activeTrack } = playbackStore.getState()
 
   const isSameSource = arePlaybackSourceEqual(playingFrom, source)
   let isDiffTrack = activeTrack === undefined || activeTrack.id !== trackId
@@ -163,9 +154,7 @@ export async function playFromList({
   if (isSameSource) {
     handleSameSource: {
       if (!!trackId && isDiffTrack) {
-        const listIndex = queue.findIndex(
-          (id) => extractTrackId(id) === trackId
-        )
+        const listIndex = queue.findIndex((id) => extractTrackId(id) === trackId)
         if (listIndex === -1) break handleSameSource
         playbackStore.setState({
           lastPosition: 0,
@@ -182,11 +171,7 @@ export async function playFromList({
 
   const newPlayingList = await getTrackIdsList(source)
   if (newPlayingList.length === 0) return
-  const newListInfo = getUpdatedLists(
-    newPlayingList,
-    shuffle,
-    trackId ?? activeTrack?.id
-  )
+  const newListInfo = getUpdatedLists(newPlayingList, shuffle, trackId ?? activeTrack?.id)
 
   const newTrackId = newListInfo.queue[newListInfo.queuePosition]!
   isDiffTrack = activeTrack?.id !== newTrackId
@@ -220,8 +205,7 @@ function getNewRepeatState() {
 }
 
 export async function getNextTrack() {
-  const { getTrack, reset, queue, queuePosition, numQueuedNext } =
-    playbackStore.getState()
+  const { getTrack, reset, queue, queuePosition, numQueuedNext } = playbackStore.getState()
 
   const nextIndex = queuePosition === queue.length - 1 ? 0 : queuePosition + 1
   const nextTrackKey = queue[nextIndex]

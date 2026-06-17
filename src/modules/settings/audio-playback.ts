@@ -25,19 +25,13 @@ const AUDIO_PLAYBACK_FILE = createSettingsConfigFile("audio-playback.json")
 let loadPromise: Promise<AudioPlaybackConfig> | null = null
 let hasLoadedConfig = false
 
-function sanitizeBoolean(
-  source: Record<string, unknown>,
-  key: keyof AudioPlaybackConfig
-) {
+function sanitizeBoolean(source: Record<string, unknown>, key: keyof AudioPlaybackConfig) {
   const value = source[key]
   return typeof value === "boolean" ? value : getDefaultAudioPlaybackConfig()[key]
 }
 
 function sanitizeConfig(config: unknown): AudioPlaybackConfig {
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   return {
     fadePlayPauseStop: sanitizeBoolean(source, "fadePlayPauseStop"),
@@ -49,10 +43,7 @@ function sanitizeConfig(config: unknown): AudioPlaybackConfig {
     pauseInCall: sanitizeBoolean(source, "pauseInCall"),
     resumeOnFocusGain: sanitizeBoolean(source, "resumeOnFocusGain"),
     duckVolume: sanitizeBoolean(source, "duckVolume"),
-    permanentAudioFocusChange: sanitizeBoolean(
-      source,
-      "permanentAudioFocusChange"
-    ),
+    permanentAudioFocusChange: sanitizeBoolean(source, "permanentAudioFocusChange"),
   }
 }
 

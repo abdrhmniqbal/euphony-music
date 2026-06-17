@@ -18,10 +18,7 @@ const usePlaylistFormDraftStore = create<PlaylistFormDraftState>(() => ({
   trackIds: [],
 }))
 
-export function setPlaylistFormDraft(
-  trackIds: string[],
-  source: "queue" | null = null
-) {
+export function setPlaylistFormDraft(trackIds: string[], source: "queue" | null = null) {
   usePlaylistFormDraftStore.setState({ source, trackIds })
 }
 

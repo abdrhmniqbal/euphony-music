@@ -1,7 +1,4 @@
-import type {
-  FolderFilterConfig,
-  FolderFilterMode,
-} from "@/modules/settings/types"
+import type { FolderFilterConfig, FolderFilterMode } from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
@@ -47,10 +44,7 @@ function convertContentUriToFilePath(uri: string): string | null {
 
   const volume = documentId.slice(0, separatorIndex)
   const relativePath = documentId.slice(separatorIndex + 1).replace(/^\/+/, "")
-  const basePath =
-    volume.toLowerCase() === "primary"
-      ? "/storage/emulated/0"
-      : `/storage/${volume}`
+  const basePath = volume.toLowerCase() === "primary" ? "/storage/emulated/0" : `/storage/${volume}`
 
   return relativePath ? `${basePath}/${relativePath}` : basePath
 }
@@ -85,9 +79,7 @@ export function normalizeFolderPath(path: string): string {
 }
 
 function sanitizeConfig(config: FolderFilterConfig): FolderFilterConfig {
-  const whitelist = Array.from(
-    new Set(config.whitelist.map(normalizePath).filter(Boolean))
-  )
+  const whitelist = Array.from(new Set(config.whitelist.map(normalizePath).filter(Boolean)))
   const blacklist = Array.from(
     new Set(
       config.blacklist
@@ -109,29 +101,22 @@ export async function ensureFolderFilterConfigLoaded(): Promise<FolderFilterConf
   }
 
   loadPromise = (async () => {
-    const next = await loadSettingsConfig(
-      FOLDER_FILTERS_FILE,
-      EMPTY_FILTER_CONFIG,
-      (parsed) =>
-        sanitizeConfig((() => {
+    const next = await loadSettingsConfig(FOLDER_FILTERS_FILE, EMPTY_FILTER_CONFIG, (parsed) =>
+      sanitizeConfig(
+        (() => {
           const source =
-            parsed && typeof parsed === "object"
-              ? (parsed as Record<string, unknown>)
-              : {}
+            parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : {}
 
           return {
             whitelist: Array.isArray(source.whitelist)
-              ? source.whitelist.filter(
-                  (item): item is string => typeof item === "string"
-                )
+              ? source.whitelist.filter((item): item is string => typeof item === "string")
               : [],
             blacklist: Array.isArray(source.blacklist)
-              ? source.blacklist.filter(
-                  (item): item is string => typeof item === "string"
-                )
+              ? source.blacklist.filter((item): item is string => typeof item === "string")
               : [],
           }
-        })())
+        })()
+      )
     )
     updateSettingsState({ folderFilterConfig: next })
     return next
@@ -174,22 +159,16 @@ export async function clearFolderFilters(): Promise<void> {
   await persistConfig(EMPTY_FILTER_CONFIG)
 }
 
-export async function commitFolderFilterConfig(
-  config: FolderFilterConfig
-): Promise<void> {
+export async function commitFolderFilterConfig(config: FolderFilterConfig): Promise<void> {
   const sanitized = sanitizeConfig(config)
   updateSettingsState({ folderFilterConfig: sanitized })
   await persistConfig(sanitized)
 }
 
-export async function setAllFolderFiltersMode(
-  mode: FolderFilterMode
-): Promise<FolderFilterConfig> {
+export async function setAllFolderFiltersMode(mode: FolderFilterMode): Promise<FolderFilterConfig> {
   await ensureFolderFilterConfigLoaded()
   const current = getSettingsState().folderFilterConfig
-  const folders = Array.from(
-    new Set([...current.whitelist, ...current.blacklist])
-  )
+  const folders = Array.from(new Set([...current.whitelist, ...current.blacklist]))
 
   const next =
     mode === "whitelist"

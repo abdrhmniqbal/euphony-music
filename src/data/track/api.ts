@@ -51,11 +51,14 @@ export async function getSortedTracks<TOnlyIds extends boolean | undefined = fal
   onlyIds?: TOnlyIds,
   sortOptions?: TracksSortOptions
 ) {
-  const orderBy = sortOptions?.order === "dateAdded"
-    ? sortOptions.isAsc ? asc(tracks.dateAdded) : desc(tracks.dateAdded)
-    : sortOptions?.isAsc === false
-      ? desc(sql`lower(coalesce(${tracks.title}, ''))`)
-      : asc(sql`lower(coalesce(${tracks.title}, ''))`)
+  const orderBy =
+    sortOptions?.order === "dateAdded"
+      ? sortOptions.isAsc
+        ? asc(tracks.dateAdded)
+        : desc(tracks.dateAdded)
+      : sortOptions?.isAsc === false
+        ? desc(sql`lower(coalesce(${tracks.title}, ''))`)
+        : asc(sql`lower(coalesce(${tracks.title}, ''))`)
 
   const rows = await db.query.tracks.findMany({
     where: eq(tracks.isDeleted, 0),
@@ -69,7 +72,9 @@ export async function getSortedTracks<TOnlyIds extends boolean | undefined = fal
   })
 
   if (onlyIds) {
-    return rows.map((row) => ({ id: row.id })) as TOnlyIds extends true ? Array<{ id: string }> : SortedTrack[]
+    return rows.map((row) => ({ id: row.id })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : SortedTrack[]
   }
 
   return rows.map(toDataTrack) as TOnlyIds extends true ? Array<{ id: string }> : SortedTrack[]
@@ -111,30 +116,33 @@ export function toggleTrackInPlaylist(entry: typeof playlistTracks.$inferInsert)
 }
 
 export function upsertTracks(entries: Array<typeof tracks.$inferInsert>) {
-  return db.insert(tracks).values(entries).onConflictDoUpdate({
-    target: tracks.id,
-    set: {
-      title: sql`excluded.title`,
-      artistId: sql`excluded.artist_id`,
-      albumId: sql`excluded.album_id`,
-      duration: sql`excluded.duration`,
-      uri: sql`excluded.uri`,
-      filename: sql`excluded.filename`,
-      dateAdded: sql`excluded.date_added`,
-      scanTime: sql`excluded.scan_time`,
-      artwork: sql`excluded.artwork`,
-      updatedAt: Date.now(),
-    },
-  })
+  return db
+    .insert(tracks)
+    .values(entries)
+    .onConflictDoUpdate({
+      target: tracks.id,
+      set: {
+        title: sql`excluded.title`,
+        artistId: sql`excluded.artist_id`,
+        albumId: sql`excluded.album_id`,
+        duration: sql`excluded.duration`,
+        uri: sql`excluded.uri`,
+        filename: sql`excluded.filename`,
+        dateAdded: sql`excluded.date_added`,
+        scanTime: sql`excluded.scan_time`,
+        artwork: sql`excluded.artwork`,
+        updatedAt: Date.now(),
+      },
+    })
 }
 
-export async function deleteTracks(entries: Array<{ id: string; errorInfo?: { errorName: string; errorMessage: string } }>) {
+export async function deleteTracks(
+  entries: Array<{ id: string; errorInfo?: { errorName: string; errorMessage: string } }>
+) {
   return db.transaction(async (tx) => {
     const removedIds = entries.map(({ id }) => id)
     await Promise.all(
-      trackRelationTables.map((table) =>
-        tx.delete(table).where(inArray(table.trackId, removedIds))
-      )
+      trackRelationTables.map((table) => tx.delete(table).where(inArray(table.trackId, removedIds)))
     )
     await tx.delete(tracks).where(inArray(tracks.id, removedIds))
   })
@@ -147,9 +155,12 @@ export async function addPlayedTrack(trackUri: string) {
   }
 
   const now = Date.now()
-  await db.update(tracks).set({
-    playCount: sql`${tracks.playCount} + 1`,
-    lastPlayedAt: now,
-  }).where(eq(tracks.id, row.id))
+  await db
+    .update(tracks)
+    .set({
+      playCount: sql`${tracks.playCount} + 1`,
+      lastPlayedAt: now,
+    })
+    .where(eq(tracks.id, row.id))
   await db.insert(playHistory).values({ id: `${row.id}-${now}`, trackId: row.id, playedAt: now })
 }

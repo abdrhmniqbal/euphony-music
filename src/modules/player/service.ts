@@ -26,19 +26,13 @@ import {
 } from "@/modules/player/types"
 import { resetCrossfadeVolume } from "@/modules/player/crossfade"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
-import {
-  beginPlayerQueueReplacement,
-  endPlayerQueueReplacement,
-} from "@/modules/player/runtime"
+import { beginPlayerQueueReplacement, endPlayerQueueReplacement } from "@/modules/player/runtime"
 import { persistPlaybackSession } from "@/modules/player/session.service"
 import { resolvePlayableFileUri } from "@/utils/file-path"
 import { generateId } from "@/utils/common"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
-import {
-  playFromTracks,
-  setupPlaybackCore,
-} from "@/modules/player/playback-core"
+import { playFromTracks, setupPlaybackCore } from "@/modules/player/playback-core"
 import { playbackStore } from "@/stores/playback/store"
 import { preferenceStore } from "@/stores/preference/store"
 
@@ -88,9 +82,7 @@ function normalizeUriForComparison(uri: string) {
 function extractExternalUriTrackIds(uri: string) {
   const decodedUri = decodeUriRecursively(uri)
   const candidates = new Set<string>()
-  const documentIdMatch = decodedUri.match(
-    /(?:document|tree)\/audio:([^/?#]+)/i
-  )
+  const documentIdMatch = decodedUri.match(/(?:document|tree)\/audio:([^/?#]+)/i)
   const mediaStoreIdMatch = decodedUri.match(/\/audio\/media\/([^/?#]+)/i)
   const genericMediaIdMatch = decodedUri.match(/\/media\/([^/?#]+)/i)
 
@@ -245,10 +237,7 @@ async function updateExternalLibraryCounts() {
   `)
 }
 
-async function buildExternalTrack(
-  uri: string,
-  resolvedUri: string
-): Promise<Track> {
+async function buildExternalTrack(uri: string, resolvedUri: string): Promise<Track> {
   const fallbackTitle = getExternalTrackTitle(uri)
   const playableUri = resolvedUri || uri
   const fallbackTrack: Track = {
@@ -261,12 +250,7 @@ async function buildExternalTrack(
 
   try {
     const splitConfig = await ensureSplitMultipleValueConfigLoaded()
-    const metadata = await extractMetadata(
-      playableUri,
-      getExternalFilename(uri),
-      0,
-      splitConfig
-    )
+    const metadata = await extractMetadata(playableUri, getExternalFilename(uri), 0, splitConfig)
     const artworkPath = await saveArtworkToCache(metadata.artwork)
 
     return {
@@ -312,16 +296,9 @@ async function indexExternalFileTrack(uri: string, resolvedUri: string) {
   }
 
   const splitConfig = await ensureSplitMultipleValueConfigLoaded()
-  const metadata = await extractMetadata(
-    playableUri,
-    getExternalFilename(uri),
-    0,
-    splitConfig
-  )
+  const metadata = await extractMetadata(playableUri, getExternalFilename(uri), 0, splitConfig)
   const artworkPath = await saveArtworkToCache(metadata.artwork)
-  const artistId = metadata.artist
-    ? await getOrCreateExternalArtist(metadata.artist)
-    : null
+  const artistId = metadata.artist ? await getOrCreateExternalArtist(metadata.artist) : null
   const relationArtistNames = metadata.artists.length
     ? metadata.artists
     : metadata.artist
@@ -342,17 +319,10 @@ async function indexExternalFileTrack(uri: string, resolvedUri: string) {
       : artistId
   const albumId =
     metadata.album && albumArtistId
-      ? await getOrCreateExternalAlbum(
-          metadata.album,
-          albumArtistId,
-          artworkPath,
-          metadata.year
-        )
+      ? await getOrCreateExternalAlbum(metadata.album, albumArtistId, artworkPath, metadata.year)
       : null
   const genreNames = metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
-  const genreIds = await Promise.all(
-    genreNames.map((genre) => getOrCreateExternalGenre(genre))
-  )
+  const genreIds = await Promise.all(genreNames.map((genre) => getOrCreateExternalGenre(genre)))
   const now = Date.now()
 
   await db
@@ -451,10 +421,7 @@ async function indexExternalFileTrack(uri: string, resolvedUri: string) {
   return indexedTrack
 }
 
-async function findIndexedTrackForExternalUri(
-  uri: string,
-  resolvedUri: string
-) {
+async function findIndexedTrackForExternalUri(uri: string, resolvedUri: string) {
   const uriCandidates = new Set([
     normalizeUriForComparison(uri),
     normalizeUriForComparison(resolvedUri),
@@ -469,10 +436,7 @@ async function findIndexedTrackForExternalUri(
       return false
     }
 
-    return (
-      idCandidates.has(track.id) ||
-      uriCandidates.has(normalizeUriForComparison(track.uri))
-    )
+    return idCandidates.has(track.id) || uriCandidates.has(normalizeUriForComparison(track.uri))
   })
 
   if (cachedTrack) {
@@ -480,9 +444,7 @@ async function findIndexedTrackForExternalUri(
   }
 
   const candidateIds = Array.from(idCandidates).filter(Boolean)
-  const candidateUris = Array.from(
-    new Set([uri, resolvedUri, ...uriCandidates].filter(Boolean))
-  )
+  const candidateUris = Array.from(new Set([uri, resolvedUri, ...uriCandidates].filter(Boolean)))
   const conditions: SQL[] = []
   if (candidateIds.length > 0) {
     conditions.push(inArray(tracksTable.id, candidateIds))
@@ -495,8 +457,7 @@ async function findIndexedTrackForExternalUri(
     return undefined
   }
 
-  const trackMatchCondition =
-    conditions.length === 1 ? conditions[0]! : or(...conditions)
+  const trackMatchCondition = conditions.length === 1 ? conditions[0]! : or(...conditions)
 
   const track = await db.query.tracks.findFirst({
     where: and(eq(tracksTable.isDeleted, 0), trackMatchCondition),
@@ -524,13 +485,9 @@ async function findIndexedTrackForExternalUri(
 }
 
 function buildPlaybackQueue(tracks: Track[], selectedTrackId: string) {
-  const selectedTrackIndex = tracks.findIndex(
-    (track) => track.id === selectedTrackId
-  )
+  const selectedTrackIndex = tracks.findIndex((track) => track.id === selectedTrackId)
   const currentTrackIndex = selectedTrackIndex >= 0 ? selectedTrackIndex : 0
-  const queue = tracks
-    .slice(currentTrackIndex)
-    .concat(tracks.slice(0, currentTrackIndex))
+  const queue = tracks.slice(currentTrackIndex).concat(tracks.slice(0, currentTrackIndex))
 
   return {
     queue,
@@ -538,10 +495,7 @@ function buildPlaybackQueue(tracks: Track[], selectedTrackId: string) {
   }
 }
 
-function allTracksShareValue(
-  tracks: Track[],
-  getValue: (track: Track) => string | undefined
-) {
+function allTracksShareValue(tracks: Track[], getValue: (track: Track) => string | undefined) {
   const values = tracks
     .map((track) => getValue(track)?.trim())
     .filter((value): value is string => Boolean(value))
@@ -555,9 +509,7 @@ function allTracksShareValue(
     return false
   }
 
-  return values.every(
-    (value) => value.toLowerCase() === firstValue.toLowerCase()
-  )
+  return values.every((value) => value.toLowerCase() === firstValue.toLowerCase())
 }
 
 function inferQueueContext(
@@ -620,10 +572,7 @@ export async function setupPlayer() {
     isPlayerReady = true
     logInfo("Playback core setup completed")
   } catch (error: unknown) {
-    if (
-      error instanceof Error &&
-      error.message.includes("already been initialized")
-    ) {
+    if (error instanceof Error && error.message.includes("already been initialized")) {
       isPlayerReady = true
       logInfo("AudioBrowser playback core already initialized")
       return
@@ -699,10 +648,7 @@ export async function playExternalFileUri(uri: string) {
   }
 
   const resolvedUri = await resolvePlayableFileUri(externalUri)
-  const indexedTrack = await findIndexedTrackForExternalUri(
-    externalUri,
-    resolvedUri
-  )
+  const indexedTrack = await findIndexedTrackForExternalUri(externalUri, resolvedUri)
 
   if (indexedTrack) {
     logInfo("Playing indexed track matched from external file intent", {
@@ -715,10 +661,7 @@ export async function playExternalFileUri(uri: string) {
   }
 
   try {
-    const indexedExternalTrack = await indexExternalFileTrack(
-      externalUri,
-      resolvedUri
-    )
+    const indexedExternalTrack = await indexExternalFileTrack(externalUri, resolvedUri)
     const currentTracks = getTracksState()
     if (!currentTracks.some((track) => track.id === indexedExternalTrack.id)) {
       setTracksState([...currentTracks, indexedExternalTrack])

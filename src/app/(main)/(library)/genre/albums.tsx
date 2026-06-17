@@ -6,10 +6,7 @@
  * Side Effects: Starts indexing on refresh and updates local sort state.
  */
 
-import type {
-  AlbumSortField,
-  SortOrder,
-} from "@/modules/library/sort.types"
+import type { AlbumSortField, SortOrder } from "@/modules/library/sort.types"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { useMemo, useState } from "react"
@@ -22,10 +19,7 @@ import { SortSheet } from "@/components/blocks/sort-sheet"
 import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
-import {
-  screenEnterTransition,
-  screenExitTransition,
-} from "@/constants/animations"
+import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
 import { Stack } from "@/layouts/stack"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { startIndexing } from "@/modules/indexer/service"
@@ -34,15 +28,9 @@ import { ALBUM_SORT_OPTIONS } from "@/modules/library/sort.constants"
 import { sortAlbums } from "@/modules/library/sort.utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { useGenreAlbums } from "@/modules/search/queries"
-import {
-  mapAlbumsToGridData,
-} from "@/modules/search/utils"
+import { mapAlbumsToGridData } from "@/modules/search/utils"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
@@ -96,8 +84,7 @@ export default function GenreAlbumsScreen() {
     enabled: parsedGenreRouteName.decodeFailed,
   })
 
-  const { data, isLoading, isFetching, refetch } =
-    useGenreAlbums(normalizedGenreName)
+  const { data, isLoading, isFetching, refetch } = useGenreAlbums(normalizedGenreName)
   const albumData = mapAlbumsToGridData(data ?? [])
   const sortedAlbumData = sortAlbums(albumData, sortConfig)
 
@@ -122,21 +109,14 @@ export default function GenreAlbumsScreen() {
   function handleSortSelect(field: AlbumSortField, order?: SortOrder) {
     setSortConfig((current) => {
       const nextOrder =
-        order ||
-        (current.field === field
-          ? current.order === "asc"
-            ? "desc"
-            : "asc"
-          : "asc")
+        order || (current.field === field ? (current.order === "asc" ? "desc" : "asc") : "asc")
       return { field, order: nextOrder }
     })
     setSortModalVisible(false)
   }
 
   function getSortLabel() {
-    const selected = ALBUM_SORT_OPTIONS.find(
-      (option) => option.field === sortConfig.field
-    )
+    const selected = ALBUM_SORT_OPTIONS.find((option) => option.field === sortConfig.field)
     return selected ? t(selected.label) : t("library.sort")
   }
 
@@ -164,14 +144,7 @@ export default function GenreAlbumsScreen() {
             className="px-6 py-4"
           >
             <EmptyState
-              icon={
-                <LocalVynilSolidIcon
-                  fill="none"
-                  width={48}
-                  height={48}
-                  color={theme.muted}
-                />
-              }
+              icon={<LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
               title={t("library.empty.albumsFoundTitle")}
               message={t("library.genreAlbumsUnavailable", {
                 genre: genreName,

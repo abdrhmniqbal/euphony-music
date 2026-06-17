@@ -27,7 +27,5 @@ type CardVariants = VariantProps<typeof cardStyles>
 type CardProps = ViewProps & CardVariants
 
 export function Card({ tone, padding, className, ...props }: CardProps) {
-  return (
-    <View className={cn(cardStyles({ tone, padding }), className)} {...props} />
-  )
+  return <View className={cn(cardStyles({ tone, padding }), className)} {...props} />
 }

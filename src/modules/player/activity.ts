@@ -7,10 +7,7 @@
  */
 
 import { queryClient } from "@/lib/tanstack-query"
-import {
-  EXTERNAL_TRACK_ID_PREFIX,
-  type Track,
-} from "@/modules/player/types"
+import { EXTERNAL_TRACK_ID_PREFIX, type Track } from "@/modules/player/types"
 import {
   invalidateHistoryAfterPlayback,
   optimisticallyUpdateRecentlyPlayedHistory,
@@ -37,10 +34,7 @@ function isExternalTrack(track: Track) {
 
 async function recordQualifiedTrackPlayback(track: Track) {
   optimisticallyUpdateRecentlyPlayedHistory(queryClient, track)
-  await Promise.allSettled([
-    addTrackToHistory(track.id),
-    incrementTrackPlayCount(track.id),
-  ])
+  await Promise.allSettled([addTrackToHistory(track.id), incrementTrackPlayCount(track.id)])
   bumpPlaybackRefreshVersion()
   void invalidateHistoryAfterPlayback(queryClient)
 }
@@ -70,8 +64,7 @@ export function handleTrackProgress(positionSeconds: number, durationSeconds: nu
     return
   }
 
-  const minimumPlayedRatio =
-    getSettingsState().countAsPlayedConfig.minimumPlayedPercent / 100
+  const minimumPlayedRatio = getSettingsState().countAsPlayedConfig.minimumPlayedPercent / 100
   const minimumPlayedSeconds = resolvedDuration * minimumPlayedRatio
   if (positionSeconds < minimumPlayedSeconds) {
     return

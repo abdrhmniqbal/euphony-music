@@ -32,17 +32,11 @@ function clampDurationSeconds(value: number): number {
     return getDefaultCrossfadeConfig().durationSeconds
   }
 
-  return Math.max(
-    MIN_CROSSFADE_SECONDS,
-    Math.min(MAX_CROSSFADE_SECONDS, Math.round(value))
-  )
+  return Math.max(MIN_CROSSFADE_SECONDS, Math.min(MAX_CROSSFADE_SECONDS, Math.round(value)))
 }
 
 function sanitizeConfig(config: unknown): CrossfadeConfig {
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   return {
     isEnabled:
@@ -50,9 +44,8 @@ function sanitizeConfig(config: unknown): CrossfadeConfig {
         ? source.isEnabled
         : getDefaultCrossfadeConfig().isEnabled,
     durationSeconds: clampDurationSeconds(
-      (typeof source.durationSeconds === "number"
-        ? source.durationSeconds
-        : undefined) ?? getDefaultCrossfadeConfig().durationSeconds
+      (typeof source.durationSeconds === "number" ? source.durationSeconds : undefined) ??
+        getDefaultCrossfadeConfig().durationSeconds
     ),
   }
 }

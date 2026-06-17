@@ -15,7 +15,7 @@ export async function getGenresSummary() {
 
 export async function getSortedGenreTracks<TOnlyIds extends boolean | undefined = false>(
   id: string,
-  onlyIds?: TOnlyIds,
+  onlyIds?: TOnlyIds
 ) {
   const rels = await db
     .select({ trackId: trackGenres.trackId })
@@ -27,7 +27,9 @@ export async function getSortedGenreTracks<TOnlyIds extends boolean | undefined 
   if (trackIds.length === 0) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]
 
   if (onlyIds) {
-    return trackIds.map((tid) => ({ id: tid })) as TOnlyIds extends true ? Array<{ id: string }> : never[]
+    return trackIds.map((tid) => ({ id: tid })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : never[]
   }
 
   const rows = await db.query.tracks.findMany({

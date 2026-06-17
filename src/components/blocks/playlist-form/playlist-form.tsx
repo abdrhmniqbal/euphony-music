@@ -4,9 +4,7 @@ import { Button, Input, PressableFeedback, TextArea } from "heroui-native"
 
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import ReorderableList, {
-  useReorderableDrag,
-} from "react-native-reorderable-list"
+import ReorderableList, { useReorderableDrag } from "react-native-reorderable-list"
 import LocalAddIcon from "@/components/icons/local/add"
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
@@ -15,20 +13,14 @@ import { TrackRow } from "@/components/patterns/track-row"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useThemeColors } from "@/modules/ui/theme"
 
-import {
-  MAX_PLAYLIST_DESCRIPTION_LENGTH,
-  MAX_PLAYLIST_NAME_LENGTH,
-} from "@/modules/playlist/utils"
+import { MAX_PLAYLIST_DESCRIPTION_LENGTH, MAX_PLAYLIST_NAME_LENGTH } from "@/modules/playlist/utils"
 
 interface ReorderableSelectedTrackRowProps {
   track: Track
   onToggle: (trackId: string) => void
 }
 
-function ReorderableSelectedTrackRow({
-  track,
-  onToggle,
-}: ReorderableSelectedTrackRowProps) {
+function ReorderableSelectedTrackRow({ track, onToggle }: ReorderableSelectedTrackRowProps) {
   const drag = useReorderableDrag()
   const theme = useThemeColors()
 
@@ -44,12 +36,7 @@ function ReorderableSelectedTrackRow({
           }}
           className="p-2 opacity-60"
         >
-          <LocalDragDropVerticalIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.foreground}
-          />
+          <LocalDragDropVerticalIcon fill="none" width={24} height={24} color={theme.foreground} />
         </PressableFeedback>
       }
       rightAction={
@@ -60,12 +47,7 @@ function ReorderableSelectedTrackRow({
           }}
           className="p-2 opacity-60"
         >
-          <LocalCancelIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.muted}
-          />
+          <LocalCancelIcon fill="none" width={24} height={24} color={theme.muted} />
         </PressableFeedback>
       }
     />
@@ -88,9 +70,7 @@ export function PlaylistForm({
     <View className="gap-4 pb-3">
       <View className="gap-2">
         <View className="flex-row items-center justify-between">
-          <Text className="text-sm font-medium text-foreground">
-            {t("playlist.name")}
-          </Text>
+          <Text className="text-sm font-medium text-foreground">{t("playlist.name")}</Text>
           <Text className="text-xs text-muted">
             {name.length}/{MAX_PLAYLIST_NAME_LENGTH}
           </Text>
@@ -106,9 +86,7 @@ export function PlaylistForm({
 
       <View className="gap-2">
         <View className="flex-row items-center justify-between">
-          <Text className="text-sm font-medium text-foreground">
-            {t("playlist.description")}
-          </Text>
+          <Text className="text-sm font-medium text-foreground">{t("playlist.description")}</Text>
           <Text className="text-xs text-muted">
             {description.length}/{MAX_PLAYLIST_DESCRIPTION_LENGTH}
           </Text>
@@ -129,15 +107,8 @@ export function PlaylistForm({
         </Text>
         <Button variant="ghost" onPress={openTrackSheet}>
           <View className="flex-row items-center gap-2">
-            <LocalAddIcon
-              fill="none"
-              width={18}
-              height={18}
-              color={theme.foreground}
-            />
-            <Text className="font-semibold text-foreground">
-              {t("playlist.addTracks")}
-            </Text>
+            <LocalAddIcon fill="none" width={18} height={18} color={theme.foreground} />
+            <Text className="font-semibold text-foreground">{t("playlist.addTracks")}</Text>
           </View>
         </Button>
       </View>
@@ -157,14 +128,7 @@ export function PlaylistForm({
       ListHeaderComponent={header}
       ListEmptyComponent={() => (
         <EmptyState
-          icon={
-            <LocalMusicNoteSolidIcon
-              fill="none"
-              width={48}
-              height={48}
-              color={theme.muted}
-            />
-          }
+          icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
           title={t("library.empty.tracksSelectedTitle")}
           message={t("library.empty.selectedTracksMessage")}
           className="py-8"

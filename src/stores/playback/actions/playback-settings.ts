@@ -14,9 +14,7 @@ export async function cycleRepeat() {
   else if (repeat === RepeatModes.REPEAT_ONE) newMode = RepeatModes.NO_REPEAT
   playbackStore.setState({ repeat: newMode })
 
-  AudioBrowser.setRepeatMode(
-    newMode === RepeatModes.REPEAT_ONE ? "track" : "off",
-  )
+  AudioBrowser.setRepeatMode(newMode === RepeatModes.REPEAT_ONE ? "track" : "off")
 }
 
 export async function toggleShuffle() {
@@ -38,7 +36,7 @@ export async function toggleShuffle() {
         else map[tId] = 1
         return map
       },
-      {} as Record<string, number>,
+      {} as Record<string, number>
     )
     const canSwitch = queue.every((tKey) => {
       const tId = extractTrackId(tKey)

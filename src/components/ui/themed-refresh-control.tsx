@@ -6,10 +6,7 @@
  * Side Effects: None.
  */
 
-import {
-  RefreshControl,
-  type RefreshControlProps,
-} from "react-native"
+import { RefreshControl, type RefreshControlProps } from "react-native"
 
 import { useThemeColors } from "@/modules/ui/theme"
 

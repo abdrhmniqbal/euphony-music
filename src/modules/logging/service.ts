@@ -10,10 +10,7 @@
 import { File, Paths } from "expo-file-system"
 import { Share } from "react-native"
 
-import {
-  ensureLoggingConfigLoaded,
-  getLoggingConfigState,
-} from "./store"
+import { ensureLoggingConfigLoaded, getLoggingConfigState } from "./store"
 
 type LogSeverity = "debug" | "info" | "warn" | "error" | "critical"
 
@@ -34,12 +31,8 @@ let isConsoleBridgeInstalled = false
 let isGlobalErrorHandlerInstalled = false
 
 interface ErrorUtilsLike {
-  getGlobalHandler?: () =>
-    | ((error: unknown, isFatal?: boolean) => void)
-    | undefined
-  setGlobalHandler?: (
-    handler: (error: unknown, isFatal?: boolean) => void
-  ) => void
+  getGlobalHandler?: () => ((error: unknown, isFatal?: boolean) => void) | undefined
+  setGlobalHandler?: (handler: (error: unknown, isFatal?: boolean) => void) => void
 }
 
 function shouldPersistLog(severity: LogSeverity): boolean {
@@ -54,11 +47,7 @@ function shouldEmitLog(severity: LogSeverity): boolean {
   return severity === "error" || severity === "critical"
 }
 
-function writeConsoleLog(
-  severity: LogSeverity,
-  message: string,
-  context?: unknown
-): void {
+function writeConsoleLog(severity: LogSeverity, message: string, context?: unknown): void {
   if (!shouldEmitLog(severity)) {
     return
   }
@@ -123,14 +112,9 @@ function stringifyLogPayload(payload: unknown): string {
   }
 }
 
-function formatLogEntry(
-  severity: LogSeverity,
-  message: string,
-  context?: unknown
-): string {
+function formatLogEntry(severity: LogSeverity, message: string, context?: unknown): string {
   const timestamp = new Date().toISOString()
-  const contextText =
-    context === undefined ? "" : `\ncontext: ${stringifyLogPayload(context)}`
+  const contextText = context === undefined ? "" : `\ncontext: ${stringifyLogPayload(context)}`
   return `[${timestamp}] [${severity.toUpperCase()}] ${message}${contextText}\n`
 }
 
@@ -165,11 +149,7 @@ async function appendToLogFile(content: string): Promise<void> {
   CRASH_LOG_FILE.write(next, { encoding: "utf8" })
 }
 
-function enqueueFileLog(
-  severity: LogSeverity,
-  message: string,
-  context?: unknown
-): void {
+function enqueueFileLog(severity: LogSeverity, message: string, context?: unknown): void {
   if (!shouldPersistLog(severity)) {
     return
   }
@@ -230,12 +210,8 @@ function installGlobalErrorHandler() {
     return
   }
 
-  const maybeErrorUtils = (globalThis as { ErrorUtils?: ErrorUtilsLike })
-    ?.ErrorUtils
-  if (
-    !maybeErrorUtils?.getGlobalHandler ||
-    !maybeErrorUtils?.setGlobalHandler
-  ) {
+  const maybeErrorUtils = (globalThis as { ErrorUtils?: ErrorUtilsLike })?.ErrorUtils
+  if (!maybeErrorUtils?.getGlobalHandler || !maybeErrorUtils?.setGlobalHandler) {
     return
   }
 
@@ -267,11 +243,7 @@ export function logWarn(message: string, context?: unknown): void {
   enqueueFileLog("warn", message, context)
 }
 
-export function logError(
-  message: string,
-  error?: unknown,
-  context?: unknown
-): void {
+export function logError(message: string, error?: unknown, context?: unknown): void {
   if (shouldEmitLog("error")) {
     if (error === undefined && context === undefined) {
       originalConsole.error(message)
@@ -283,17 +255,11 @@ export function logError(
   }
   const fullMessage = normalizeErrorMessage(message, error)
   const mergedContext =
-    context === undefined
-      ? error
-      : { error: stringifyLogPayload(error), context }
+    context === undefined ? error : { error: stringifyLogPayload(error), context }
   enqueueFileLog("error", fullMessage, mergedContext)
 }
 
-export function logCritical(
-  message: string,
-  error?: unknown,
-  context?: unknown
-): void {
+export function logCritical(message: string, error?: unknown, context?: unknown): void {
   if (shouldEmitLog("critical")) {
     if (error === undefined && context === undefined) {
       originalConsole.error(message)
@@ -305,9 +271,7 @@ export function logCritical(
   }
   const fullMessage = normalizeErrorMessage(message, error)
   const mergedContext =
-    context === undefined
-      ? error
-      : { error: stringifyLogPayload(error), context }
+    context === undefined ? error : { error: stringifyLogPayload(error), context }
   enqueueFileLog("critical", fullMessage, mergedContext)
 }
 

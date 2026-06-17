@@ -30,9 +30,7 @@ export function DeleteTrackDialog({
         <Toast {...props} variant="accent" placement="bottom">
           <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
           {description ? (
-            <Toast.Description className="text-xs text-muted">
-              {description}
-            </Toast.Description>
+            <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
           ) : null}
         </Toast>
       ),
@@ -51,10 +49,7 @@ export function DeleteTrackDialog({
       })
 
       if (result.status === "permission-denied") {
-        showToast(
-          t("track.permissionRequiredTitle"),
-          t("track.permissionRequiredDescription")
-        )
+        showToast(t("track.permissionRequiredTitle"), t("track.permissionRequiredDescription"))
         return
       }
 
@@ -85,11 +80,7 @@ export function DeleteTrackDialog({
             </Dialog.Description>
           </View>
           <View className="flex-row justify-end gap-3">
-            <Button
-              variant="ghost"
-              onPress={() => onOpenChange(false)}
-              isDisabled={isDeleting}
-            >
+            <Button variant="ghost" onPress={() => onOpenChange(false)} isDisabled={isDeleting}>
               {t("common.cancel")}
             </Button>
             <Button

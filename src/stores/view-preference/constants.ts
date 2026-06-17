@@ -23,7 +23,8 @@ export const sortOptions = {
   track: ["name", "artistName", "albumName", "duration", "discoverTime", "modificationTime"],
 } as const satisfies Record<MutableViewOrder, SortOption[]>
 
-export type ScreenSortOptions<TScreen extends MutableViewOrder> = (typeof sortOptions)[TScreen][number]
+export type ScreenSortOptions<TScreen extends MutableViewOrder> =
+  (typeof sortOptions)[TScreen][number]
 
 export interface ViewPreferenceStore {
   _hasHydrated: boolean
@@ -50,4 +51,6 @@ export interface ViewPreferenceStore {
   trackOrder: ScreenSortOptions<"track">
 }
 
-export const omittedFields: string[] = ["_hasHydrated", "_init"] satisfies Array<keyof ViewPreferenceStore>
+export const omittedFields: string[] = ["_hasHydrated", "_init"] satisfies Array<
+  keyof ViewPreferenceStore
+>

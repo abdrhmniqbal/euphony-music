@@ -22,13 +22,15 @@ export async function getArtist(id: string) {
 }
 
 export async function getArtistsSummary() {
-  const rows = await db.query.artists.findMany({ orderBy: asc(sql`lower(coalesce(${artists.name}, ''))`) })
+  const rows = await db.query.artists.findMany({
+    orderBy: asc(sql`lower(coalesce(${artists.name}, ''))`),
+  })
   return rows.map(toArtist)
 }
 
 export async function getSortedArtistTracks<TOnlyIds extends boolean | undefined = false>(
   id: string,
-  onlyIds?: TOnlyIds,
+  onlyIds?: TOnlyIds
 ) {
   const rels = await db
     .select({ trackId: trackArtists.trackId })
@@ -40,7 +42,9 @@ export async function getSortedArtistTracks<TOnlyIds extends boolean | undefined
   if (trackIds.length === 0) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]
 
   if (onlyIds) {
-    return trackIds.map((tid) => ({ id: tid })) as TOnlyIds extends true ? Array<{ id: string }> : never[]
+    return trackIds.map((tid) => ({ id: tid })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : never[]
   }
 
   const rows = await db.query.tracks.findMany({

@@ -34,15 +34,11 @@ let currentIndexerRunStartedAt: number | null = null
 let latestNotificationRequestVersion = 0
 
 function isIndexerNotification(notification: Notifications.Notification) {
-  const payload = notification.request.content.data as
-    | { source?: unknown }
-    | undefined
+  const payload = notification.request.content.data as { source?: unknown } | undefined
   return payload?.source === "indexer-progress"
 }
 
-async function dismissPresentedIndexerNotifications(
-  options?: { keepId?: string | null }
-) {
+async function dismissPresentedIndexerNotifications(options?: { keepId?: string | null }) {
   const keepId = options?.keepId ?? null
   try {
     const presented = await Notifications.getPresentedNotificationsAsync()
@@ -87,10 +83,7 @@ function formatProgressBody(progress: IndexerScanProgress) {
     return `${getElapsedLabel()} • ${fileName}`
   }
 
-  const percent = Math.min(
-    100,
-    Math.max(0, Math.round((progress.current / progress.total) * 100))
-  )
+  const percent = Math.min(100, Math.max(0, Math.round((progress.current / progress.total) * 100)))
   return `${progress.current}/${progress.total} • ${percent}% • ${getElapsedLabel()} • ${fileName}`
 }
 
@@ -109,52 +102,43 @@ async function configureNotifications() {
   })
 
   if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync(
-      INDEXER_NOTIFICATION_CHANNEL_ID,
-      {
-        name: i18n.t("indexing.notification.channelName"),
-        description: i18n.t("indexing.notification.channelDescription"),
-        importance: Notifications.AndroidImportance.LOW,
-        vibrationPattern: [0],
-        enableVibrate: false,
-        sound: null,
-      }
-    )
+    await Notifications.setNotificationChannelAsync(INDEXER_NOTIFICATION_CHANNEL_ID, {
+      name: i18n.t("indexing.notification.channelName"),
+      description: i18n.t("indexing.notification.channelDescription"),
+      importance: Notifications.AndroidImportance.LOW,
+      vibrationPattern: [0],
+      enableVibrate: false,
+      sound: null,
+    })
   }
 
-  await Notifications.setNotificationCategoryAsync(
-    INDEXER_NOTIFICATION_ACTIVE_CATEGORY_ID,
-    [
-      {
-        identifier: INDEXER_NOTIFICATION_ACTION_PAUSE,
-        buttonTitle: i18n.t("indexing.notification.pause"),
+  await Notifications.setNotificationCategoryAsync(INDEXER_NOTIFICATION_ACTIVE_CATEGORY_ID, [
+    {
+      identifier: INDEXER_NOTIFICATION_ACTION_PAUSE,
+      buttonTitle: i18n.t("indexing.notification.pause"),
+    },
+    {
+      identifier: INDEXER_NOTIFICATION_ACTION_CANCEL,
+      buttonTitle: i18n.t("indexing.notification.cancel"),
+      options: {
+        isDestructive: true,
       },
-      {
-        identifier: INDEXER_NOTIFICATION_ACTION_CANCEL,
-        buttonTitle: i18n.t("indexing.notification.cancel"),
-        options: {
-          isDestructive: true,
-        },
-      },
-    ]
-  )
+    },
+  ])
 
-  await Notifications.setNotificationCategoryAsync(
-    INDEXER_NOTIFICATION_PAUSED_CATEGORY_ID,
-    [
-      {
-        identifier: INDEXER_NOTIFICATION_ACTION_RESUME,
-        buttonTitle: i18n.t("indexing.notification.resume"),
+  await Notifications.setNotificationCategoryAsync(INDEXER_NOTIFICATION_PAUSED_CATEGORY_ID, [
+    {
+      identifier: INDEXER_NOTIFICATION_ACTION_RESUME,
+      buttonTitle: i18n.t("indexing.notification.resume"),
+    },
+    {
+      identifier: INDEXER_NOTIFICATION_ACTION_CANCEL,
+      buttonTitle: i18n.t("indexing.notification.cancel"),
+      options: {
+        isDestructive: true,
       },
-      {
-        identifier: INDEXER_NOTIFICATION_ACTION_CANCEL,
-        buttonTitle: i18n.t("indexing.notification.cancel"),
-        options: {
-          isDestructive: true,
-        },
-      },
-    ]
-  )
+    },
+  ])
 
   notificationsConfigured = true
 }
@@ -270,10 +254,7 @@ async function replaceIndexerNotification(
           paused,
         },
       },
-      trigger:
-        Platform.OS === "android"
-          ? { channelId: INDEXER_NOTIFICATION_CHANNEL_ID }
-          : null,
+      trigger: Platform.OS === "android" ? { channelId: INDEXER_NOTIFICATION_CHANNEL_ID } : null,
     })
     activeNotificationId = INDEXER_NOTIFICATION_ID
     lastNotificationSignature = signature
@@ -292,9 +273,7 @@ export async function beginIndexerProgressNotification() {
   )
 }
 
-export async function updateIndexerProgressNotification(
-  progress: IndexerScanProgress
-) {
+export async function updateIndexerProgressNotification(progress: IndexerScanProgress) {
   const requestVersion = ++latestNotificationRequestVersion
   const title =
     progress.phase === "scanning"
@@ -307,9 +286,7 @@ export async function updateIndexerProgressNotification(
   })
 }
 
-export async function completeIndexerProgressNotification(
-  totalFiles: number
-) {
+export async function completeIndexerProgressNotification(totalFiles: number) {
   const requestVersion = ++latestNotificationRequestVersion
   await replaceIndexerNotification(
     i18n.t("indexing.notification.complete"),
@@ -345,9 +322,7 @@ export async function pauseIndexerProgressNotification(progress: {
   })
 }
 
-export async function resumeIndexerProgressNotification(
-  progress: IndexerScanProgress
-) {
+export async function resumeIndexerProgressNotification(progress: IndexerScanProgress) {
   const requestVersion = ++latestNotificationRequestVersion
   await replaceIndexerNotification(
     progress.phase === "scanning"

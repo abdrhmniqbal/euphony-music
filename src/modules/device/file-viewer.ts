@@ -9,10 +9,7 @@ interface OpenDeviceFileOptions {
   trackId?: string
 }
 
-export async function openDeviceFile({
-  uri,
-  trackId,
-}: OpenDeviceFileOptions): Promise<boolean> {
+export async function openDeviceFile({ uri, trackId }: OpenDeviceFileOptions): Promise<boolean> {
   const resolvedUri = await resolvePlayableFileUri(uri)
 
   logInfo("Opening device file", {

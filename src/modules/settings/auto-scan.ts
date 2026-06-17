@@ -34,17 +34,11 @@ function parseBoolean(
 }
 
 function sanitizeConfig(config: unknown): IndexerScanConfig {
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   return {
     autoScanEnabled: parseBoolean(source, "autoScanEnabled", "enabled"),
-    rescanImmediatelyEnabled: parseBoolean(
-      source,
-      "rescanImmediatelyEnabled"
-    ),
+    rescanImmediatelyEnabled: parseBoolean(source, "rescanImmediatelyEnabled"),
     initialScanEnabled: parseBoolean(source, "initialScanEnabled"),
   }
 }

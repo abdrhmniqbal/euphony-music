@@ -122,12 +122,8 @@ function SearchResultRow({
           />
         </Transition.Boundary.Target>
         <ItemContent>
-          <ItemTitle>
-            {item.album.title || t("library.unknownAlbum")}
-          </ItemTitle>
-          <ItemDescription>
-            {item.album.artist || t("library.unknownArtist")}
-          </ItemDescription>
+          <ItemTitle>{item.album.title || t("library.unknownAlbum")}</ItemTitle>
+          <ItemDescription>{item.album.artist || t("library.unknownArtist")}</ItemDescription>
         </ItemContent>
         {item.album.isVerified && (
           <ItemAction>
@@ -155,10 +151,7 @@ function SearchResultRow({
         <Transition.Boundary.Target>
           <ItemImage className="items-center justify-center overflow-hidden bg-default">
             <PlaylistArtwork
-              images={resolvePlaylistArtworkImages(
-                item.playlist.images,
-                item.playlist.image
-              )}
+              images={resolvePlaylistArtworkImages(item.playlist.images, item.playlist.image)}
             />
           </ItemImage>
         </Transition.Boundary.Target>
@@ -194,9 +187,7 @@ function SearchResultRow({
       />
       <ItemContent>
         <ItemTitle>{item.track.title}</ItemTitle>
-        <ItemDescription>
-          {item.track.artist || t("library.unknownArtist")}
-        </ItemDescription>
+        <ItemDescription>{item.track.artist || t("library.unknownArtist")}</ItemDescription>
       </ItemContent>
     </Item>
   )

@@ -6,10 +6,7 @@
  * Side Effects: Navigates to favorite media routes, starts favorite track playback, and toggles favorite flags.
  */
 
-import type {
-  FavoriteEntry,
-  FavoriteType,
-} from "@/modules/favorites/types"
+import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -79,9 +76,7 @@ interface FavoriteRowProps {
   onRemove: (favorite: FavoriteEntry) => void
 }
 
-const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({
-  favorite,
-}) => {
+const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({ favorite }) => {
   const theme = useThemeColors()
 
   switch (favorite.type) {
@@ -110,9 +105,7 @@ const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({
     case "playlist":
       return (
         <ItemImage className="items-center justify-center overflow-hidden bg-default">
-          <PlaylistArtwork
-            images={resolvePlaylistArtworkImages(favorite.images, favorite.image)}
-          />
+          <PlaylistArtwork images={resolvePlaylistArtworkImages(favorite.images, favorite.image)} />
         </ItemImage>
       )
 
@@ -198,16 +191,8 @@ function FavoriteRow({ favorite, onPress, onRemove }: FavoriteRowProps) {
         </View>
       </ItemContent>
       <ItemAction>
-        <PressableFeedback
-          onPress={handleRemove}
-          className="p-2 active:opacity-50"
-        >
-          <LocalFavouriteSolidIcon
-            fill="none"
-            width={22}
-            height={22}
-            color="#ef4444"
-          />
+        <PressableFeedback onPress={handleRemove} className="p-2 active:opacity-50">
+          <LocalFavouriteSolidIcon fill="none" width={22} height={22} color="#ef4444" />
         </PressableFeedback>
       </ItemAction>
     </Item>
@@ -216,12 +201,7 @@ function FavoriteRow({ favorite, onPress, onRemove }: FavoriteRowProps) {
 
 const MemoizedFavoriteRow = React.memo(FavoriteRow)
 
-const FAVORITE_TYPE_FILTERS: FavoriteType[] = [
-  "track",
-  "album",
-  "artist",
-  "playlist",
-]
+const FAVORITE_TYPE_FILTERS: FavoriteType[] = ["track", "album", "artist", "playlist"]
 
 function getFavoriteTypeLabel(type: FavoriteType, t: TFunction) {
   switch (type) {
@@ -256,17 +236,12 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   const toggleFavoriteMutation = useToggleFavorite()
   const router = useRouter()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const visibleFavoriteTypes = FAVORITE_TYPE_FILTERS.filter((type) =>
-    availableTypes.includes(type)
-  )
+  const visibleFavoriteTypes = FAVORITE_TYPE_FILTERS.filter((type) => availableTypes.includes(type))
   const orderedFavoriteTypes = [
     ...selectedTypes.filter((type) => visibleFavoriteTypes.includes(type)),
     ...visibleFavoriteTypes.filter((type) => !selectedTypes.includes(type)),
   ]
-  const listContentContainerStyle = StyleSheet.flatten([
-    { gap: 8 },
-    contentContainerStyle,
-  ])
+  const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
 
   const toggleTypeFilter = useCallback(
     (type: FavoriteType) => {
@@ -278,73 +253,75 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
     [onSelectedTypesChange, selectedTypes]
   )
 
-  const handlePress = useCallback((favorite: FavoriteEntry) => {
-    switch (favorite.type) {
-      case "track": {
-        if (onTrackPress) {
-          onTrackPress(favorite.id)
+  const handlePress = useCallback(
+    (favorite: FavoriteEntry) => {
+      switch (favorite.type) {
+        case "track": {
+          if (onTrackPress) {
+            onTrackPress(favorite.id)
+            break
+          }
+          const track = tracks.find((item) => item.id === favorite.id)
+          if (track) {
+            playTrack(track, tracks)
+          }
           break
         }
-        const track = tracks.find((item) => item.id === favorite.id)
-        if (track) {
-          playTrack(track, tracks)
+        case "artist": {
+          router.push({
+            pathname: "/artist/[name]",
+            params: { name: favorite.name },
+          })
+          break
         }
-        break
-      }
-      case "artist": {
-        router.push({
-          pathname: "/artist/[name]",
-          params: { name: favorite.name },
-        })
-        break
-      }
-      case "album": {
-        router.push({
-          pathname: "/album/[name]",
-          params: {
-            name: favorite.name,
-            transitionId: resolveAlbumTransitionId({
+        case "album": {
+          router.push({
+            pathname: "/album/[name]",
+            params: {
+              name: favorite.name,
+              transitionId: resolveAlbumTransitionId({
+                id: favorite.id,
+                title: favorite.name,
+              }),
+            },
+          })
+          break
+        }
+        case "playlist": {
+          router.push({
+            pathname: "/playlist/[id]",
+            params: {
               id: favorite.id,
-              title: favorite.name,
-            }),
-          },
-        })
-        break
+              transitionId: resolvePlaylistTransitionId({
+                id: favorite.id,
+                title: favorite.name,
+              }),
+            },
+          })
+          break
+        }
       }
-      case "playlist": {
-        router.push({
-          pathname: "/playlist/[id]",
-          params: {
-            id: favorite.id,
-            transitionId: resolvePlaylistTransitionId({
-              id: favorite.id,
-              title: favorite.name,
-            }),
-          },
-        })
-        break
-      }
-    }
-  }, [onTrackPress, router, tracks])
+    },
+    [onTrackPress, router, tracks]
+  )
 
-  const handleRemoveFavorite = useCallback((favorite: FavoriteEntry) => {
-    void toggleFavoriteMutation.mutateAsync({
-      type: favorite.type,
-      itemId: favorite.id,
-      isCurrentlyFavorite: true,
-      name: favorite.name,
-      subtitle: favorite.subtitle,
-      image: favorite.image,
-    })
-  }, [toggleFavoriteMutation])
+  const handleRemoveFavorite = useCallback(
+    (favorite: FavoriteEntry) => {
+      void toggleFavoriteMutation.mutateAsync({
+        type: favorite.type,
+        itemId: favorite.id,
+        isCurrentlyFavorite: true,
+        name: favorite.name,
+        subtitle: favorite.subtitle,
+        image: favorite.image,
+      })
+    },
+    [toggleFavoriteMutation]
+  )
 
   const renderFavoriteItem = useCallback(
     ({ item }: LegendListRenderItemProps<FavoriteEntry>) => (
-      <MemoizedFavoriteRow
-        favorite={item}
-        onPress={handlePress}
-        onRemove={handleRemoveFavorite}
-      />
+      <MemoizedFavoriteRow favorite={item} onPress={handlePress} onRemove={handleRemoveFavorite} />
     ),
     [handlePress, handleRemoveFavorite]
   )

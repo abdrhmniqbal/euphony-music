@@ -13,10 +13,7 @@ import { useTranslation } from "react-i18next"
 
 import LocalTickIcon from "@/components/icons/local/tick"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  type AppLogLevel,
-  setAppLogLevel,
-} from "@/modules/logging/store"
+import { type AppLogLevel, setAppLogLevel } from "@/modules/logging/store"
 import { useSettingsStore } from "@/modules/settings/store"
 
 interface LogLevelOption {
@@ -48,12 +45,9 @@ export default function LogLevelSettingsScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
+    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
-        <ListGroup >
+        <ListGroup>
           {LOG_LEVEL_OPTIONS.map((option, index) => (
             <React.Fragment key={option.value}>
               {index > 0 && <Separator className="mx-4" />}
@@ -64,18 +58,11 @@ export default function LogLevelSettingsScreen() {
               >
                 <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>{t(option.labelKey)}</ListGroup.ItemTitle>
-                  <ListGroup.ItemDescription>
-                    {t(option.descriptionKey)}
-                  </ListGroup.ItemDescription>
+                  <ListGroup.ItemDescription>{t(option.descriptionKey)}</ListGroup.ItemDescription>
                 </ListGroup.ItemContent>
                 {loggingLevel === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.accent}
-                    />
+                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

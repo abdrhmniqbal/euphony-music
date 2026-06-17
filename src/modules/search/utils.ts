@@ -34,13 +34,8 @@ export function mapGenresToCategories(genres: string[]): Category[] {
   }))
 }
 
-export function getPreviewAlbums(
-  albums: GenreAlbumInfo[],
-  limit = 8
-): GenreAlbumInfo[] {
-  return [...albums]
-    .sort((a, b) => (b.year || 0) - (a.year || 0))
-    .slice(0, limit)
+export function getPreviewAlbums(albums: GenreAlbumInfo[], limit = 8): GenreAlbumInfo[] {
+  return [...albums].sort((a, b) => (b.year || 0) - (a.year || 0)).slice(0, limit)
 }
 
 export function mapAlbumsToGridData(albums: GenreAlbumInfo[]): Album[] {

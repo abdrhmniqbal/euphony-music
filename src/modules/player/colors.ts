@@ -22,22 +22,15 @@ function getStringProperty(source: unknown, key: string): string | null {
   return typeof value === "string" && value.length > 0 ? value : null
 }
 
-function resolveAndroidColors(
-  result: unknown,
-  fallbackColors: ColorPalette
-): ColorPalette {
+function resolveAndroidColors(result: unknown, fallbackColors: ColorPalette): ColorPalette {
   return {
     bg: getStringProperty(result, "average") || fallbackColors.bg,
     primary: getStringProperty(result, "dominant") || fallbackColors.primary,
-    secondary:
-      getStringProperty(result, "darkVibrant") || fallbackColors.secondary,
+    secondary: getStringProperty(result, "darkVibrant") || fallbackColors.secondary,
   }
 }
 
-function resolveIOSColors(
-  result: unknown,
-  fallbackColors: ColorPalette
-): ColorPalette {
+function resolveIOSColors(result: unknown, fallbackColors: ColorPalette): ColorPalette {
   return {
     bg: getStringProperty(result, "background") || fallbackColors.bg,
     primary: getStringProperty(result, "primary") || fallbackColors.primary,
@@ -45,10 +38,7 @@ function resolveIOSColors(
   }
 }
 
-function resolveWebColors(
-  result: unknown,
-  fallbackColors: ColorPalette
-): ColorPalette {
+function resolveWebColors(result: unknown, fallbackColors: ColorPalette): ColorPalette {
   return {
     bg:
       getStringProperty(result, "background") ||

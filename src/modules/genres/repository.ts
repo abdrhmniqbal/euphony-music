@@ -23,8 +23,7 @@ function getFallbackGenreVisual(name: string): GenreVisual {
   return {
     name,
     color: GENRE_COLORS[hash % GENRE_COLORS.length],
-    shape:
-      GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length],
+    shape: GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length],
     trackCount: 0,
   }
 }
@@ -101,13 +100,8 @@ async function listGenreVisualMetadata() {
           },
         ] as const
       })
-      .filter(
-        (
-          entry
-        ): entry is readonly [
-          string,
-          { color: string; shape: GenreVisual["shape"] }
-        ] => Boolean(entry)
+      .filter((entry): entry is readonly [string, { color: string; shape: GenreVisual["shape"] }] =>
+        Boolean(entry)
       )
 
     return new Map(entries)
@@ -163,10 +157,7 @@ export async function getAllGenreVisuals(): Promise<GenreVisual[]> {
   }
 }
 
-export async function getTopTracksByGenre(
-  genre: string,
-  limit = 25
-): Promise<Track[]> {
+export async function getTopTracksByGenre(genre: string, limit = 25): Promise<Track[]> {
   try {
     const trimmedGenre = genre.trim()
 
@@ -269,9 +260,7 @@ export async function getAllTracksByGenre(genre: string): Promise<Track[]> {
   }
 }
 
-export async function getAlbumsByGenre(
-  genre: string
-): Promise<GenreAlbumInfo[]> {
+export async function getAlbumsByGenre(genre: string): Promise<GenreAlbumInfo[]> {
   try {
     const trimmedGenre = genre.trim()
 
@@ -325,9 +314,7 @@ export async function getAlbumsByGenre(
       albumMap.get(key)!.trackCount++
     }
 
-    return Array.from(albumMap.values()).sort(
-      (a, b) => b.trackCount - a.trackCount
-    )
+    return Array.from(albumMap.values()).sort((a, b) => b.trackCount - a.trackCount)
   } catch {
     return []
   }

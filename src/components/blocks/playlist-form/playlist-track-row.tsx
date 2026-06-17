@@ -5,11 +5,7 @@ import { useTranslation } from "react-i18next"
 
 import { TrackRow } from "@/components/patterns/track-row"
 
-export function PlaylistTrackRow({
-  track,
-  isSelected,
-  onPress,
-}: PlaylistTrackRowProps) {
+export function PlaylistTrackRow({ track, isSelected, onPress }: PlaylistTrackRowProps) {
   const { t } = useTranslation()
 
   return (

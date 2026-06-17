@@ -9,10 +9,7 @@ export function isCastConnected(
   return castState === "connected" && client !== null
 }
 
-export async function toggleCastPlayback(
-  client: RemoteMediaClient,
-  isPlaying: boolean
-) {
+export async function toggleCastPlayback(client: RemoteMediaClient, isPlaying: boolean) {
   try {
     logInfo("Toggling cast playback", { isPlaying })
     if (isPlaying) {
@@ -26,10 +23,7 @@ export async function toggleCastPlayback(
   }
 }
 
-export async function seekCastPlayback(
-  client: RemoteMediaClient,
-  position: number
-) {
+export async function seekCastPlayback(client: RemoteMediaClient, position: number) {
   try {
     await client.seek({ position })
     logInfo("Cast seek completed", { position })

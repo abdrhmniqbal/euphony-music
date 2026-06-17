@@ -339,37 +339,23 @@ export const TrackPlayer = {
         AudioBrowser.handleRemoteSeek((event) => listener(event))
         return { remove: () => undefined }
       case Event.PlaybackState:
-        return addAudioBrowserListener(
-          AudioBrowser.onPlaybackChanged,
-          listener,
-          (event) => ({ state: mapAudioBrowserState(readEventString(event, "state")) })
-        )
+        return addAudioBrowserListener(AudioBrowser.onPlaybackChanged, listener, (event) => ({
+          state: mapAudioBrowserState(readEventString(event, "state")),
+        }))
       case Event.PlaybackProgressUpdated:
-        return addAudioBrowserListener(
-          AudioBrowser.onProgressUpdated,
-          listener,
-          (event) => ({
-            position: readEventNumber(event, "position") ?? 0,
-            duration: readEventNumber(event, "duration") ?? 0,
-          })
-        )
+        return addAudioBrowserListener(AudioBrowser.onProgressUpdated, listener, (event) => ({
+          position: readEventNumber(event, "position") ?? 0,
+          duration: readEventNumber(event, "duration") ?? 0,
+        }))
       case Event.PlaybackActiveTrackChanged:
-        return addAudioBrowserListener(
-          AudioBrowser.onActiveTrackChanged,
-          listener,
-          (event) => {
-            const index = readEventNumber(event, "index") ?? activeIndexMirror
-            return notifyActiveTrackChanged(index)
-          }
-        )
+        return addAudioBrowserListener(AudioBrowser.onActiveTrackChanged, listener, (event) => {
+          const index = readEventNumber(event, "index") ?? activeIndexMirror
+          return notifyActiveTrackChanged(index)
+        })
       case Event.PlaybackQueueEnded:
         return addAudioBrowserListener(AudioBrowser.onQueueEnded, listener, () => ({}))
       case Event.PlaybackError:
-        return addAudioBrowserListener(
-          AudioBrowser.onPlaybackError,
-          listener,
-          (event) => event
-        )
+        return addAudioBrowserListener(AudioBrowser.onPlaybackError, listener, (event) => event)
       case Event.ServiceKilled:
         AudioBrowser.handleBeforeServiceKilled(() => listener({}))
         return { remove: () => undefined }

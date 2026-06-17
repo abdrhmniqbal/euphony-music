@@ -7,24 +7,13 @@
  */
 
 import * as MediaLibrary from "expo-media-library/legacy"
-import {
-  AppState,
-  type AppStateStatus,
-  InteractionManager,
-} from "react-native"
+import { AppState, type AppStateStatus, InteractionManager } from "react-native"
 
 import { runAutoScan } from "@/modules/bootstrap/runtime"
-import {
-  isExtraLoggingEnabled,
-  logError,
-  logInfo,
-} from "@/modules/logging/service"
+import { isExtraLoggingEnabled, logError, logInfo } from "@/modules/logging/service"
 import { resumeTrack } from "@/modules/player/controls"
 import { syncPlaybackStateAfterForeground } from "@/modules/player/session.service"
-import {
-  getCurrentTrackState,
-  getIsPlayingState,
-} from "@/modules/player/store"
+import { getCurrentTrackState, getIsPlayingState } from "@/modules/player/store"
 import { ensureAudioPlaybackConfigLoaded } from "@/modules/settings/audio-playback"
 import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"
 
@@ -38,10 +27,7 @@ let activeBootstrapListenersCleanup: (() => void) | null = null
 export function shouldTriggerAutoScanOnMediaLibraryEvent(
   event: MediaLibrary.MediaLibraryAssetsChangeEvent
 ) {
-  return (
-    event.hasIncrementalChanges === false ||
-    (event.deletedAssets?.length ?? 0) > 0
-  )
+  return event.hasIncrementalChanges === false || (event.deletedAssets?.length ?? 0) > 0
 }
 
 export function registerBootstrapListeners() {
@@ -56,12 +42,10 @@ export function registerBootstrapListeners() {
   let previousState: AppStateStatus = AppState.currentState
   let backgroundedAt: number | null = null
   let pendingForegroundAutoScanTimeout: ReturnType<typeof setTimeout> | null = null
-  let pendingInteractionHandle: ReturnType<
-    typeof InteractionManager.runAfterInteractions
-  > | null = null
-  let pendingPlaybackSyncHandle: ReturnType<
-    typeof InteractionManager.runAfterInteractions
-  > | null = null
+  let pendingInteractionHandle: ReturnType<typeof InteractionManager.runAfterInteractions> | null =
+    null
+  let pendingPlaybackSyncHandle: ReturnType<typeof InteractionManager.runAfterInteractions> | null =
+    null
   let pendingDeferredMediaAutoScan = false
   let pendingDeferredMediaAutoScanBypassThrottle = false
 
@@ -112,18 +96,15 @@ export function registerBootstrapListeners() {
       clearPendingForegroundWork()
     }
 
-    const isReturningToForeground =
-      previousState === "background" && nextState === "active"
+    const isReturningToForeground = previousState === "background" && nextState === "active"
     previousState = nextState
 
     if (!isReturningToForeground) {
       return
     }
 
-    const timeInBackgroundMs =
-      backgroundedAt === null ? 0 : Date.now() - backgroundedAt
-    const isLongBackgroundSession =
-      timeInBackgroundMs >= LONG_BACKGROUND_THRESHOLD_MS
+    const timeInBackgroundMs = backgroundedAt === null ? 0 : Date.now() - backgroundedAt
+    const isLongBackgroundSession = timeInBackgroundMs >= LONG_BACKGROUND_THRESHOLD_MS
     const delayMs = isLongBackgroundSession
       ? LONG_BACKGROUND_AUTO_SCAN_DELAY_MS
       : FOREGROUND_AUTO_SCAN_DELAY_MS
@@ -145,11 +126,7 @@ export function registerBootstrapListeners() {
       void (async () => {
         await syncPlaybackStateAfterForeground()
         const audioPlaybackConfig = await ensureAudioPlaybackConfigLoaded()
-        if (
-          audioPlaybackConfig.resumeOnReopen &&
-          getCurrentTrackState() &&
-          !getIsPlayingState()
-        ) {
+        if (audioPlaybackConfig.resumeOnReopen && getCurrentTrackState() && !getIsPlayingState()) {
           await resumeTrack()
         }
       })().catch((error) => {
@@ -177,10 +154,7 @@ export function registerBootstrapListeners() {
 
     void (async () => {
       const indexerScanConfig = await ensureAutoScanConfigLoaded()
-      if (
-        !indexerScanConfig.autoScanEnabled ||
-        !indexerScanConfig.rescanImmediatelyEnabled
-      ) {
+      if (!indexerScanConfig.autoScanEnabled || !indexerScanConfig.rescanImmediatelyEnabled) {
         return
       }
 

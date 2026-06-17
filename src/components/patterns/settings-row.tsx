@@ -45,24 +45,15 @@ export function SettingsRow({
       )}
     >
       <View className="flex-1 gap-1">
-        <Text className="text-[16px] font-medium tracking-[-0.1px] text-foreground">
-          {title}
-        </Text>
+        <Text className="text-[16px] font-medium tracking-[-0.1px] text-foreground">{title}</Text>
         {description ? (
-          <Text className="text-[13px] leading-5 text-muted">
-            {description}
-          </Text>
+          <Text className="text-[13px] leading-5 text-muted">{description}</Text>
         ) : null}
       </View>
       <View className="flex-row items-center gap-2">
         {rightContent}
         {showChevron ? (
-          <LocalChevronRightIcon
-            fill="none"
-            width={20}
-            height={20}
-            color={theme.muted}
-          />
+          <LocalChevronRightIcon fill="none" width={20} height={20} color={theme.muted} />
         ) : null}
       </View>
     </PressableFeedback>

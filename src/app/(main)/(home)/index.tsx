@@ -21,20 +21,13 @@ import { SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
-import {
-  useRecentlyPlayedTracks,
-  useTopTracksByPeriod,
-} from "@/modules/history/queries"
+import { useRecentlyPlayedTracks, useTopTracksByPeriod } from "@/modules/history/queries"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
 import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 const CHUNK_SIZE = 5
 const RECENTLY_PLAYED_PREVIEW_LIMIT = 8
@@ -63,10 +56,7 @@ export default function HomeScreen() {
 
   const recentlyPlayedTracks = recentlyPlayedTracksData ?? []
   const topTracks = topTracksData ?? []
-  const recentlyPlayedPreviewTracks = recentlyPlayedTracks.slice(
-    0,
-    RECENTLY_PLAYED_PREVIEW_LIMIT
-  )
+  const recentlyPlayedPreviewTracks = recentlyPlayedTracks.slice(0, RECENTLY_PLAYED_PREVIEW_LIMIT)
   const topPreviewTracks = topTracks.slice(0, TOP_TRACKS_PREVIEW_LIMIT)
   const isLoading =
     (isRecentlyPlayedLoading ||
@@ -92,12 +82,8 @@ export default function HomeScreen() {
             title: t("home.recentlyPlayed"),
           })
         }
-        titleClassName={
-          currentTrackId === item.id ? "text-accent" : undefined
-        }
-        imageOverlay={
-          currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined
-        }
+        titleClassName={currentTrackId === item.id ? "text-accent" : undefined}
+        imageOverlay={currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined}
       />
     )
   }
@@ -122,14 +108,7 @@ export default function HomeScreen() {
           data={recentlyPlayedPreviewTracks}
           onViewMore={() => router.push("/(main)/(home)/recently-played")}
           emptyState={{
-            icon: (
-              <LocalClockSolidIcon
-                fill="none"
-                width={48}
-                height={48}
-                color={theme.muted}
-              />
-            ),
+            icon: <LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
             title: t("home.empty.recentlyPlayedTitle"),
             message: t("home.empty.recentlyPlayedMessage"),
           }}
@@ -150,12 +129,7 @@ export default function HomeScreen() {
           onViewMore={() => router.push("/(main)/(home)/top-tracks")}
           emptyState={{
             icon: (
-              <LocalMusicNoteSolidIcon
-                fill="none"
-                width={48}
-                height={48}
-                color={theme.muted}
-              />
+              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
             ),
             title: t("home.empty.topTracksTitle"),
             message: t("home.empty.topTracksMessage"),

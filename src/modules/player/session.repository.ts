@@ -6,12 +6,7 @@
  * Side Effects: Reads and writes playback snapshot JSON files in app document storage.
  */
 
-import type {
-  PlayerQueueContext,
-  PlayerQueueContextType,
-  RepeatModeType,
-  Track,
-} from "./types"
+import type { PlayerQueueContext, PlayerQueueContextType, RepeatModeType, Track } from "./types"
 import { File, Paths } from "expo-file-system"
 
 export interface PersistedPlaybackQueueSnapshot {
@@ -34,8 +29,7 @@ export interface PersistedPlaybackCursorSnapshot {
 }
 
 interface LegacyPersistedPlaybackSession
-  extends PersistedPlaybackQueueSnapshot,
-    PersistedPlaybackCursorSnapshot {}
+  extends PersistedPlaybackQueueSnapshot, PersistedPlaybackCursorSnapshot {}
 
 const PLAYBACK_QUEUE_FILE = new File(Paths.document, "playback-queue.json")
 const PLAYBACK_CURSOR_FILE = new File(Paths.document, "playback-cursor.json")
@@ -65,9 +59,7 @@ function asString(value: unknown): string | undefined {
 }
 
 function asNumber(value: unknown): number | undefined {
-  return typeof value === "number" && Number.isFinite(value)
-    ? value
-    : undefined
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined
 }
 
 function asBoolean(value: unknown): boolean | undefined {
@@ -83,11 +75,7 @@ function sanitizeQueueContext(value: unknown): PlayerQueueContext | null {
   const type = asString(source.type)
   const title = asString(source.title)?.trim()
 
-  if (
-    !type ||
-    !PLAYER_QUEUE_CONTEXT_TYPES.has(type as PlayerQueueContextType) ||
-    !title
-  ) {
+  if (!type || !PLAYER_QUEUE_CONTEXT_TYPES.has(type as PlayerQueueContextType) || !title) {
     return null
   }
 
@@ -169,10 +157,11 @@ function sanitizeLegacySession(payload: unknown): LegacyPersistedPlaybackSession
       }
     }
 
-    queueTrackIds = (source.queueTrackIds as unknown[])
-      ?.filter((trackId): trackId is string => typeof trackId === "string")
-      .filter((trackId) => Boolean(trackMap[trackId]))
-      .filter((trackId, index, array) => array.indexOf(trackId) === index) || []
+    queueTrackIds =
+      (source.queueTrackIds as unknown[])
+        ?.filter((trackId): trackId is string => typeof trackId === "string")
+        .filter((trackId) => Boolean(trackMap[trackId]))
+        .filter((trackId, index, array) => array.indexOf(trackId) === index) || []
   } else {
     const legacyQueue = (source.queue as unknown[])
       .map((item) => sanitizeTrack(item))
@@ -200,19 +189,14 @@ function sanitizeLegacySession(payload: unknown): LegacyPersistedPlaybackSession
     : []
 
   const repeatMode: RepeatModeType =
-    source.repeatMode === "track" ||
-    source.repeatMode === "queue" ||
-    source.repeatMode === "off"
+    source.repeatMode === "track" || source.repeatMode === "queue" || source.repeatMode === "off"
       ? (source.repeatMode as RepeatModeType)
       : "off"
   const currentTrackIdValue = asString(source.currentTrackId)
   const currentTrackId =
-    currentTrackIdValue && trackMap[currentTrackIdValue]
-      ? currentTrackIdValue
-      : null
+    currentTrackIdValue && trackMap[currentTrackIdValue] ? currentTrackIdValue : null
   const activeIndexValue = asNumber(source.activeIndex)
-  const fallbackActiveIndex =
-    currentTrackId !== null ? queueTrackIds.indexOf(currentTrackId) : -1
+  const fallbackActiveIndex = currentTrackId !== null ? queueTrackIds.indexOf(currentTrackId) : -1
 
   return {
     queueTrackIds,
@@ -235,9 +219,7 @@ function sanitizeLegacySession(payload: unknown): LegacyPersistedPlaybackSession
   }
 }
 
-function sanitizeQueueSnapshot(
-  payload: unknown
-): PersistedPlaybackQueueSnapshot | null {
+function sanitizeQueueSnapshot(payload: unknown): PersistedPlaybackQueueSnapshot | null {
   const source = asObject(payload)
   if (!source) {
     return null
@@ -290,18 +272,14 @@ function sanitizeQueueSnapshot(
   }
 }
 
-function sanitizeCursorSnapshot(
-  payload: unknown
-): PersistedPlaybackCursorSnapshot | null {
+function sanitizeCursorSnapshot(payload: unknown): PersistedPlaybackCursorSnapshot | null {
   const source = asObject(payload)
   if (!source) {
     return null
   }
 
   const repeatMode: RepeatModeType =
-    source.repeatMode === "track" ||
-    source.repeatMode === "queue" ||
-    source.repeatMode === "off"
+    source.repeatMode === "track" || source.repeatMode === "queue" || source.repeatMode === "off"
       ? (source.repeatMode as RepeatModeType)
       : "off"
   const currentTrackIdValue = asString(source.currentTrackId)
@@ -309,9 +287,7 @@ function sanitizeCursorSnapshot(
 
   return {
     currentTrackId:
-      currentTrackIdValue && currentTrackIdValue.length > 0
-        ? currentTrackIdValue
-        : null,
+      currentTrackIdValue && currentTrackIdValue.length > 0 ? currentTrackIdValue : null,
     activeIndex:
       activeIndexValue !== undefined && Math.trunc(activeIndexValue) >= 0
         ? Math.trunc(activeIndexValue)

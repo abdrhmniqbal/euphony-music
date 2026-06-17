@@ -24,23 +24,13 @@ export function DeletePlaylistDialog({
         <Dialog.Content className="gap-4">
           <View className="gap-1.5">
             <Dialog.Title>{t("playlist.deleteTitle")}</Dialog.Title>
-            <Dialog.Description>
-              {t("playlist.deleteDescription")}
-            </Dialog.Description>
+            <Dialog.Description>{t("playlist.deleteDescription")}</Dialog.Description>
           </View>
           <View className="flex-row justify-end gap-3">
-            <Button
-              variant="ghost"
-              onPress={() => onOpenChange(false)}
-              isDisabled={isDeleting}
-            >
+            <Button variant="ghost" onPress={() => onOpenChange(false)} isDisabled={isDeleting}>
               {t("common.cancel")}
             </Button>
-            <Button
-              variant="danger"
-              onPress={onConfirm}
-              isDisabled={isDeleting}
-            >
+            <Button variant="danger" onPress={onConfirm} isDisabled={isDeleting}>
               {t("track.deleteAction")}
             </Button>
           </View>

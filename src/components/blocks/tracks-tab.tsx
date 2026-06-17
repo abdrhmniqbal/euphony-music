@@ -1,8 +1,4 @@
-import type {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  RefreshControlProps,
-} from "react-native"
+import type { NativeScrollEvent, NativeSyntheticEvent, RefreshControlProps } from "react-native"
 import type { SortConfig } from "@/modules/library/sort.types"
 
 import type { Track } from "@/modules/player/store"
@@ -70,14 +66,7 @@ export const TracksTab: React.FC<TracksTabProps> = ({
   return (
     <LibraryTabState
       hasData={tracks.length > 0}
-      emptyIcon={
-        <LocalMusicNoteSolidIcon
-          fill="none"
-          width={48}
-          height={48}
-          color={theme.muted}
-        />
-      }
+      emptyIcon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
       emptyTitle={t("library.empty.tracksTitle")}
       emptyMessage={t("library.empty.tracksMessage")}
     >

@@ -3,11 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/tanstack-query"
 
 import { playlistKeys } from "./keys"
-import {
-  getPlaylistById,
-  listPlaylists,
-  listPlaylistsForTrack,
-} from "./repository"
+import { getPlaylistById, listPlaylists, listPlaylistsForTrack } from "./repository"
 
 export function usePlaylists() {
   return usePlaylistsWithOptions(true)

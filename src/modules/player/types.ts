@@ -15,12 +15,7 @@ export interface LyricLine {
 
 export type RepeatModeType = "off" | "track" | "queue"
 
-export type SleepTimerMode =
-  | "off"
-  | "minutes"
-  | "playCount"
-  | "trackEnd"
-  | "clock"
+export type SleepTimerMode = "off" | "minutes" | "playCount" | "trackEnd" | "clock"
 
 export interface SleepTimerState {
   mode: SleepTimerMode

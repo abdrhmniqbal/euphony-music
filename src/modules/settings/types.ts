@@ -58,12 +58,7 @@ export interface FolderFilterConfig {
   blacklist: string[]
 }
 
-export type TrackDurationFilterMode =
-  | "off"
-  | "min30s"
-  | "min60s"
-  | "min120s"
-  | "custom"
+export type TrackDurationFilterMode = "off" | "min30s" | "min60s" | "min120s" | "custom"
 
 export interface TrackDurationFilterConfig {
   mode: TrackDurationFilterMode

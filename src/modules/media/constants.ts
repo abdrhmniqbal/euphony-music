@@ -6,8 +6,7 @@ export const ReservedPlaylists = {
   modify: "modify",
 } as const
 
-export type ReservedPlaylistName =
-  (typeof ReservedPlaylists)[keyof typeof ReservedPlaylists]
+export type ReservedPlaylistName = (typeof ReservedPlaylists)[keyof typeof ReservedPlaylists]
 
 export const ReservedNames = new Set<string>(Object.values(ReservedPlaylists))
 

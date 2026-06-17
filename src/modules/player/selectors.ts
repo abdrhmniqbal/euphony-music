@@ -8,11 +8,7 @@
 
 import { useMemo } from "react"
 
-import {
-  type RepeatModeType,
-  type Track,
-  usePlayerStore,
-} from "./store"
+import { type RepeatModeType, type Track, usePlayerStore } from "./store"
 
 export function useCurrentTrack() {
   return usePlayerStore((state) => state.currentTrack)

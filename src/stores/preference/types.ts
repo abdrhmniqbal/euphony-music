@@ -6,11 +6,4 @@
  * Side Effects: None.
  */
 
-export type Tab =
-  | "album"
-  | "artist"
-  | "folder"
-  | "genre"
-  | "home"
-  | "playlist"
-  | "track"
+export type Tab = "album" | "artist" | "folder" | "genre" | "home" | "playlist" | "track"

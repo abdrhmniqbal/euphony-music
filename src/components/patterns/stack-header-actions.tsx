@@ -16,12 +16,7 @@ export function StackHeaderActions({ actions }: StackHeaderActionsProps) {
   return (
     <View className="-mr-2 flex-row gap-4">
       {actions.map((action) => (
-        <Button
-          key={action.key}
-          onPress={action.onPress}
-          variant="ghost"
-          isIconOnly
-        >
+        <Button key={action.key} onPress={action.onPress} variant="ghost" isIconOnly>
           {action.icon}
         </Button>
       ))}

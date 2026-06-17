@@ -27,11 +27,7 @@ interface TrackListItemProps {
   getNumber?: (track: Track, index: number) => number | string
   onTrackPress: (track: Track) => void
   onTrackLongPress: (track: Track) => void
-  renderItemPrefix?: (
-    track: Track,
-    index: number,
-    data: Track[]
-  ) => React.ReactNode
+  renderItemPrefix?: (track: Track, index: number, data: Track[]) => React.ReactNode
 }
 
 function TrackListItem({
@@ -47,9 +43,7 @@ function TrackListItem({
   onTrackLongPress,
   renderItemPrefix,
 }: TrackListItemProps) {
-  const isCurrentTrack = usePlayerStore(
-    (state) => state.currentTrack?.id === track.id
-  )
+  const isCurrentTrack = usePlayerStore((state) => state.currentTrack?.id === track.id)
 
   const handleActionPress = useCallback(
     (event: { stopPropagation: () => void }) => {
@@ -64,11 +58,7 @@ function TrackListItem({
   const handleLongPress = useCallback(() => {
     onTrackLongPress(track)
   }, [onTrackLongPress, track])
-  const rank = showNumbers
-    ? getNumber
-      ? getNumber(track, index)
-      : index + 1
-    : undefined
+  const rank = showNumbers ? (getNumber ? getNumber(track, index) : index + 1) : undefined
 
   return (
     <>

@@ -7,11 +7,7 @@ export function normalizeCodecLabel(codec?: string): string | undefined {
   if (value.includes("mp4a.40.2") || value.includes("aac lc")) {
     return "AAC LC"
   }
-  if (
-    value.includes("mp4a.40.5") ||
-    value.includes("he-aac") ||
-    value.includes("heaac")
-  ) {
+  if (value.includes("mp4a.40.5") || value.includes("he-aac") || value.includes("heaac")) {
     return "HE-AAC"
   }
   if (value.includes("aac")) {
@@ -84,14 +80,11 @@ export function formatQualityLabel(
 
   if (sampleRate && Number.isFinite(sampleRate) && sampleRate > 0) {
     const khz = sampleRate / 1000
-    segments.push(
-      `${Number.isInteger(khz) ? khz.toFixed(0) : khz.toFixed(1)}KHZ`
-    )
+    segments.push(`${Number.isInteger(khz) ? khz.toFixed(0) : khz.toFixed(1)}KHZ`)
   }
 
   if (bitrate && Number.isFinite(bitrate) && bitrate > 0) {
-    const kbps =
-      bitrate >= 10_000 ? Math.round(bitrate / 1000) : Math.round(bitrate)
+    const kbps = bitrate >= 10_000 ? Math.round(bitrate / 1000) : Math.round(bitrate)
     if (kbps > 0) {
       segments.push(`${kbps}KBPS`)
     }

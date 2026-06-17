@@ -22,9 +22,7 @@ export function getLocalizationReadySnapshot() {
   return isReady
 }
 
-export function subscribeLocalizationReady(
-  listener: LocalizationRuntimeListener
-) {
+export function subscribeLocalizationReady(listener: LocalizationRuntimeListener) {
   listeners.add(listener)
   return () => {
     listeners.delete(listener)

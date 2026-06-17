@@ -37,9 +37,7 @@ export function transformDBTrackToTrack(dbTrack: DBTrack): Track {
     ...(dbTrack.featuredArtists?.map((entry) => entry.artist?.name) ?? []),
   ])
   const albumArtist = dbTrack.album?.artist?.name?.trim() || artist
-  const genre = joinUniqueValues(
-    dbTrack.genres?.map((entry) => entry.genre?.name) ?? []
-  )
+  const genre = joinUniqueValues(dbTrack.genres?.map((entry) => entry.genre?.name) ?? [])
 
   return {
     id: dbTrack.id,

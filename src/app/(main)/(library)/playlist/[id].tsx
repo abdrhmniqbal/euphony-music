@@ -31,16 +31,11 @@ import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { EmptyState } from "@/components/ui/empty-state"
 import { screenEnterTransition } from "@/constants/animations"
-import {
-  DETAIL_HEADER_BOTTOM_SPACING,
-  SCREEN_SECTION_TOP_SPACING,
-} from "@/constants/layout"
+import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
 import { Stack } from "@/layouts/stack"
 import { resolvePlaylistTransitionId } from "@/modules/artists/artist-transition"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
-import {
-  useIsFavorite,
-} from "@/modules/favorites/queries"
+import { useIsFavorite } from "@/modules/favorites/queries"
 import { TRACK_SORT_OPTIONS } from "@/modules/library/sort.constants"
 import { sortTracks } from "@/modules/library/sort.utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
@@ -54,11 +49,7 @@ import {
   getPlaylistDuration,
 } from "@/modules/playlist/utils"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
 type PlaylistTrackSortField = TrackSortField | "playlistAddedAt"
@@ -95,9 +86,7 @@ function sortPlaylistTracks(
   order: PlaylistTrackSortOrder
 ) {
   if (field === "playlistAddedAt") {
-    return [...tracks].sort((left, right) =>
-      comparePlaylistAddedAt(left, right, order)
-    )
+    return [...tracks].sort((left, right) => comparePlaylistAddedAt(left, right, order))
   }
 
   return sortTracks(tracks, { field, order }) as PlaylistDetailTrack[]
@@ -123,8 +112,7 @@ export default function PlaylistDetailsScreen() {
   const [showActionSheet, setShowActionSheet] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showSortSheet, setShowSortSheet] = useState(false)
-  const [sortField, setSortField] =
-    useState<PlaylistTrackSortField>("playlistAddedAt")
+  const [sortField, setSortField] = useState<PlaylistTrackSortField>("playlistAddedAt")
   const [sortOrder, setSortOrder] = useState<PlaylistTrackSortOrder>("desc")
   const { data: playlist, isLoading } = usePlaylist(playlistId)
   const { data: isFavoriteData = false } = useIsFavorite("playlist", playlistId)
@@ -144,9 +132,7 @@ export default function PlaylistDetailsScreen() {
   const selectedSortOption = PLAYLIST_TRACK_SORT_OPTIONS.find(
     (option) => option.field === sortField
   )
-  const sortLabel = selectedSortOption
-    ? t(selectedSortOption.label)
-    : t("library.sort")
+  const sortLabel = selectedSortOption ? t(selectedSortOption.label) : t("library.sort")
 
   function handleBack() {
     router.back()
@@ -193,14 +179,9 @@ export default function PlaylistDetailsScreen() {
     })
   }
 
-  function handleSortSelect(
-    field: PlaylistTrackSortField,
-    order?: PlaylistTrackSortOrder
-  ) {
+  function handleSortSelect(field: PlaylistTrackSortField, order?: PlaylistTrackSortOrder) {
     const nextOrder =
-      field === "playlistAddedAt" && field !== sortField
-        ? "desc"
-        : (order ?? sortOrder)
+      field === "playlistAddedAt" && field !== sortField ? "desc" : (order ?? sortOrder)
 
     setSortField(field)
     setSortOrder(nextOrder)
@@ -243,14 +224,7 @@ export default function PlaylistDetailsScreen() {
 
     return (
       <EmptyState
-        icon={
-          <LocalPlaylistSolidIcon
-            fill="none"
-            width={48}
-            height={48}
-            color={theme.muted}
-          />
-        }
+        icon={<LocalPlaylistSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         title={t("library.playlistNotFound")}
         message={t("library.playlistRemovedMessage")}
         className="mt-12"
@@ -271,24 +245,12 @@ export default function PlaylistDetailsScreen() {
           options={{
             title: showHeaderTitle ? playlist.name : "",
             headerBackVisible: false,
-            headerLeft: () => (
-              <BackButton className="-ml-2" onPress={handleBack} />
-            ),
+            headerLeft: () => <BackButton className="-ml-2" onPress={handleBack} />,
             headerRight: () => (
               <View className="-mr-2 flex-row gap-4">
-                <Button
-                  onPress={toggleFavorite}
-                  variant="ghost"
-                  className="-mr-2"
-                  isIconOnly
-                >
+                <Button onPress={toggleFavorite} variant="ghost" className="-mr-2" isIconOnly>
                   {isFavorite ? (
-                    <LocalFavouriteSolidIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color="#ef4444"
-                    />
+                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
                   ) : (
                     <LocalFavouriteIcon
                       fill="none"
@@ -298,11 +260,7 @@ export default function PlaylistDetailsScreen() {
                     />
                   )}
                 </Button>
-                <Button
-                  variant="ghost"
-                  isIconOnly
-                  onPress={() => setShowActionSheet(true)}
-                >
+                <Button variant="ghost" isIconOnly onPress={() => setShowActionSheet(true)}>
                   <LocalMoreHorizontalCircleSolidIcon
                     fill="none"
                     width={24}
@@ -361,39 +319,24 @@ export default function PlaylistDetailsScreen() {
                   </Transition.Boundary.View>
 
                   <View className="flex-1 justify-center">
-                    <Text
-                      className="text-xl font-bold text-foreground"
-                      numberOfLines={2}
-                    >
+                    <Text className="text-xl font-bold text-foreground" numberOfLines={2}>
                       {playlist.name}
                     </Text>
                     {playlist.description ? (
-                      <Text
-                        className="mt-1 text-base text-muted"
-                        numberOfLines={2}
-                      >
+                      <Text className="mt-1 text-base text-muted" numberOfLines={2}>
                         {playlist.description}
                       </Text>
                     ) : null}
-                    <Text className="mt-2 text-sm text-muted">
-                      {playlistMetaText}
-                    </Text>
+                    <Text className="mt-2 text-sm text-muted">{playlistMetaText}</Text>
                   </View>
                 </View>
               </View>
 
               <Animated.View entering={screenEnterTransition()}>
-                <PlaybackActionsRow
-                  onPlay={playAll}
-                  onShuffle={shuffle}
-                  className="mb-4"
-                />
+                <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} className="mb-4" />
               </Animated.View>
 
-              <View
-                className="flex-row items-center justify-between"
-                style={{ marginBottom: 8 }}
-              >
+              <View className="flex-row items-center justify-between" style={{ marginBottom: 8 }}>
                 <Text className="text-lg font-bold text-foreground">
                   {t("library.count.track", { count: tracks.length })}
                 </Text>

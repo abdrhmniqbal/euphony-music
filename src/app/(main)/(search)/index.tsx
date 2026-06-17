@@ -24,11 +24,7 @@ import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
 const RECENTLY_ADDED_LIMIT = 8
@@ -47,10 +43,7 @@ export default function SearchScreen() {
     () => (dbTracks as DBTrack[]).map(transformDBTrackToTrack),
     [dbTracks]
   )
-  const recentlyAddedPreviewTracks = recentlyAddedTracks.slice(
-    0,
-    RECENTLY_ADDED_LIMIT
-  )
+  const recentlyAddedPreviewTracks = recentlyAddedTracks.slice(0, RECENTLY_ADDED_LIMIT)
 
   const renderRecentlyAddedItem = (item: Track) => (
     <TrackRow
@@ -63,9 +56,7 @@ export default function SearchScreen() {
         })
       }
       titleClassName={currentTrackId === item.id ? "text-accent" : undefined}
-      imageOverlay={
-        currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined
-      }
+      imageOverlay={currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined}
     />
   )
 
@@ -88,12 +79,7 @@ export default function SearchScreen() {
     >
       <View className="relative my-6 px-3">
         <View className="absolute top-1/2 left-7 z-10 -translate-y-1/2">
-          <LocalSearchIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.muted}
-          />
+          <LocalSearchIcon fill="none" width={24} height={24} color={theme.muted} />
         </View>
         <Input
           value=""
@@ -115,14 +101,7 @@ export default function SearchScreen() {
         data={recentlyAddedPreviewTracks}
         onViewMore={() => router.push("/(main)/(search)/recently-added")}
         emptyState={{
-          icon: (
-            <LocalClockSolidIcon
-              fill="none"
-              width={48}
-              height={48}
-              color={theme.muted}
-            />
-          ),
+          icon: <LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
           title: t("search.empty.recentlyAddedTitle"),
           message: t("search.empty.recentlyAddedMessage"),
         }}

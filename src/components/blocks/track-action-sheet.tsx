@@ -48,10 +48,7 @@ import {
 import { useTrack } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useSettingsStore } from "@/modules/settings/store"
-import {
-  splitArtistsValue,
-  splitGenresValue,
-} from "@/modules/settings/split-multiple-values"
+import { splitArtistsValue, splitGenresValue } from "@/modules/settings/split-multiple-values"
 import { resolvePlayableFileUri } from "@/utils/file-path"
 import { formatDuration } from "@/utils/format"
 import LocalDeleteSolidIcon from "../icons/local/delete-solid"
@@ -83,17 +80,13 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const toggleFavoriteMutation = useToggleFavorite()
   const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [favoriteOverrides, setFavoriteOverrides] = useState<
-    Record<string, boolean>
-  >({})
+  const [favoriteOverrides, setFavoriteOverrides] = useState<Record<string, boolean>>({})
   const favoriteTrackId = track?.id || ""
   const { data: isFavoriteData = track?.isFavorite ?? false } = useIsFavorite(
     "track",
     favoriteTrackId
   )
-  const isFavorite = track
-    ? (favoriteOverrides[track.id] ?? Boolean(isFavoriteData))
-    : false
+  const isFavorite = track ? (favoriteOverrides[track.id] ?? Boolean(isFavoriteData)) : false
   const trackUri = track?.uri ?? ""
   const { data: resolvedFileUri = null } = useQuery({
     queryKey: ["tracks", "resolved-file-uri", track?.id, trackUri] as const,
@@ -101,15 +94,9 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
     queryFn: async () => await resolvePlayableFileUri(trackUri),
   })
   const { data: fullTrackData } = useTrack(track?.id ?? "")
-  const splitMultipleValueConfig = useSettingsStore(
-    (state) => state.splitMultipleValueConfig
-  )
-  const [artistSelectionItems, setArtistSelectionItems] = useState<
-    ArtistPickerSheetItem[]
-  >([])
-  const [genreSelectionValues, setGenreSelectionValues] = useState<string[]>(
-    []
-  )
+  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
+  const [artistSelectionItems, setArtistSelectionItems] = useState<ArtistPickerSheetItem[]>([])
+  const [genreSelectionValues, setGenreSelectionValues] = useState<string[]>([])
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const [isGenreSelectionOpen, setIsGenreSelectionOpen] = useState(false)
 
@@ -180,9 +167,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
         <Toast {...props} variant="accent" placement="bottom">
           <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
           {description ? (
-            <Toast.Description className="text-xs text-muted">
-              {description}
-            </Toast.Description>
+            <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
           ) : null}
         </Toast>
       ),
@@ -280,9 +265,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
     )
 
     setArtistSelectionItems(
-      richArtistItems.length > 0
-        ? richArtistItems
-        : normalized.map((value) => ({ value }))
+      richArtistItems.length > 0 ? richArtistItems : normalized.map((value) => ({ value }))
     )
     setIsArtistSelectionOpen(true)
   }
@@ -355,9 +338,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
     }
 
     const uri = resolvedFileUri || track.uri
-    const normalizedPath = uri.startsWith("file://")
-      ? uri.slice("file://".length)
-      : uri
+    const normalizedPath = uri.startsWith("file://") ? uri.slice("file://".length) : uri
 
     try {
       return decodeURIComponent(normalizedPath)
@@ -378,15 +359,8 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
     return date.toLocaleString()
   })()
   const codecLabel = normalizeCodecLabel(track.audioCodec)
-  const formatLabel = resolveAudioFormat(
-    track.audioFormat,
-    fileName,
-    codecLabel
-  )
-  const qualityLabel = formatQualityLabel(
-    track.audioSampleRate,
-    track.audioBitrate
-  )
+  const formatLabel = resolveAudioFormat(track.audioFormat, fileName, codecLabel)
+  const qualityLabel = formatQualityLabel(track.audioSampleRate, track.audioBitrate)
   const durationLabel = formatDuration(track.duration || 0)
   const splitCommaValues = (value: string | undefined) =>
     (value || "")
@@ -408,19 +382,14 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const artistNames = (() => {
     const relationNames = [
       fullTrackData?.artist?.name?.trim(),
-      ...(fullTrackData?.featuredArtists?.map((entry) =>
-        entry.artist?.name?.trim()
-      ) ?? []),
+      ...(fullTrackData?.featuredArtists?.map((entry) => entry.artist?.name?.trim()) ?? []),
     ].filter((value): value is string => Boolean(value))
 
     if (relationNames.length > 0) {
       return dedupeValues(relationNames)
     }
 
-    const fallbackNames = splitArtistsValue(
-      track.artist,
-      splitMultipleValueConfig
-    )
+    const fallbackNames = splitArtistsValue(track.artist, splitMultipleValueConfig)
     return fallbackNames.length > 0 ? dedupeValues(fallbackNames) : []
   })()
   const albumNames = (() => {
@@ -443,10 +412,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
       return names
     }
 
-    const fallbackGenreNames = splitGenresValue(
-      track.genre,
-      splitMultipleValueConfig
-    )
+    const fallbackGenreNames = splitGenresValue(track.genre, splitMultipleValueConfig)
     if (fallbackGenreNames.length > 0) {
       return dedupeValues(fallbackGenreNames)
     }
@@ -468,8 +434,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
       label: t("track.metadata.artist"),
       segments:
         artistNames.length > 0
-          ? splitMultipleValueConfig.artistSplitMode === "original" &&
-            track.artist?.trim()
+          ? splitMultipleValueConfig.artistSplitMode === "original" && track.artist?.trim()
             ? [
                 {
                   value: track.artist.trim(),
@@ -482,10 +447,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               }))
           : [{ value: t("library.unknownArtist") }],
       fullWidth:
-        (artistNames.length > 0
-          ? artistNames.join(", ")
-          : t("library.unknownArtist")
-        ).length > 24,
+        (artistNames.length > 0 ? artistNames.join(", ") : t("library.unknownArtist")).length > 24,
     },
     {
       label: t("track.metadata.album"),
@@ -497,10 +459,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
             }))
           : [{ value: t("library.unknownAlbum") }],
       fullWidth:
-        (albumNames.length > 0
-          ? albumNames.join(", ")
-          : t("library.unknownAlbum")
-        ).length > 24,
+        (albumNames.length > 0 ? albumNames.join(", ") : t("library.unknownAlbum")).length > 24,
     },
     {
       label: t("track.metadata.genre"),
@@ -508,12 +467,10 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
         genreNames.length > 0
           ? genreNames.map((genreName) => ({
               value: genreName,
-                      onPress: () => handleOpenGenreSelection(genreNames),
+              onPress: () => handleOpenGenreSelection(genreNames),
             }))
           : [{ value: unknownValue }],
-      fullWidth:
-        (genreNames.length > 0 ? genreNames.join(", ") : unknownValue).length >
-        24,
+      fullWidth: (genreNames.length > 0 ? genreNames.join(", ") : unknownValue).length > 24,
     },
     {
       label: t("track.metadata.year"),
@@ -634,9 +591,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 )}
               </View>
               <View className="flex-1 gap-1">
-                <Text className="text-xl leading-7 font-bold text-foreground">
-                  {track.title}
-                </Text>
+                <Text className="text-xl leading-7 font-bold text-foreground">{track.title}</Text>
                 <Text className="text-sm text-muted">{fallbackArtist}</Text>
                 <Text className="text-xs text-muted/90" numberOfLines={1}>
                   {fallbackAlbum}
@@ -645,21 +600,10 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
             </View>
 
             <View className="mb-2 flex-row gap-2">
-              <Button
-                variant="primary"
-                onPress={handlePlay}
-                className="h-12 flex-1"
-              >
+              <Button variant="primary" onPress={handlePlay} className="h-12 flex-1">
                 <View className="flex-row items-center gap-2">
-                  <LocalPlaySolidIcon
-                    fill="none"
-                    width={24}
-                    height={24}
-                    color="white"
-                  />
-                  <Text className="font-semibold text-white">
-                    {t("common.play")}
-                  </Text>
+                  <LocalPlaySolidIcon fill="none" width={24} height={24} color="white" />
+                  <Text className="font-semibold text-white">{t("common.play")}</Text>
                 </View>
               </Button>
               <Button
@@ -669,65 +613,29 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 isIconOnly
               >
                 {isFavorite ? (
-                  <LocalFavouriteSolidIcon
-                    fill="none"
-                    width={28}
-                    height={28}
-                    color="#ef4444"
-                  />
+                  <LocalFavouriteSolidIcon fill="none" width={28} height={28} color="#ef4444" />
                 ) : (
-                  <LocalFavouriteIcon
-                    fill="none"
-                    width={28}
-                    height={28}
-                    color={theme.foreground}
-                  />
+                  <LocalFavouriteIcon fill="none" width={28} height={28} color={theme.foreground} />
                 )}
               </Button>
             </View>
 
             <View className="mb-2 flex-row gap-2">
-              <Button
-                variant="secondary"
-                onPress={handleAddToQueue}
-                className="h-11 flex-1"
-              >
+              <Button variant="secondary" onPress={handleAddToQueue} className="h-11 flex-1">
                 <View className="flex-row items-center gap-2">
-                  <LocalAddIcon
-                    fill="none"
-                    width={20}
-                    height={20}
-                    color={theme.foreground}
-                  />
-                  <Text className="font-semibold text-foreground">
-                    {t("track.addToQueue")}
-                  </Text>
+                  <LocalAddIcon fill="none" width={20} height={20} color={theme.foreground} />
+                  <Text className="font-semibold text-foreground">{t("track.addToQueue")}</Text>
                 </View>
               </Button>
-              <Button
-                variant="secondary"
-                onPress={handlePlayNext}
-                className="h-11 flex-1"
-              >
+              <Button variant="secondary" onPress={handlePlayNext} className="h-11 flex-1">
                 <View className="flex-row items-center gap-2">
-                  <LocalNextSolidIcon
-                    fill="none"
-                    width={20}
-                    height={20}
-                    color={theme.foreground}
-                  />
-                  <Text className="font-semibold text-foreground">
-                    {t("track.playNext")}
-                  </Text>
+                  <LocalNextSolidIcon fill="none" width={20} height={20} color={theme.foreground} />
+                  <Text className="font-semibold text-foreground">{t("track.playNext")}</Text>
                 </View>
               </Button>
             </View>
 
-            <Button
-              variant="secondary"
-              onPress={handleAddToPlaylist}
-              className="mb-2 h-11 w-full"
-            >
+            <Button variant="secondary" onPress={handleAddToPlaylist} className="mb-2 h-11 w-full">
               <View className="flex-row items-center gap-2">
                 <LocalPlaylistSolidIcon
                   fill="none"
@@ -735,51 +643,29 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                   height={20}
                   color={theme.foreground}
                 />
-                <Text className="font-semibold text-foreground">
-                  {t("track.addToPlaylist")}
-                </Text>
+                <Text className="font-semibold text-foreground">{t("track.addToPlaylist")}</Text>
               </View>
             </Button>
 
-            <Button
-              variant="danger"
-              onPress={handleOpenDeleteDialog}
-              className="mb-2 h-11 w-full"
-            >
+            <Button variant="danger" onPress={handleOpenDeleteDialog} className="mb-2 h-11 w-full">
               <View className="flex-row items-center gap-2">
-                <LocalDeleteSolidIcon
-                  fill="none"
-                  width={20}
-                  height={20}
-                  color="white"
-                />
-                <Text className="font-semibold text-white">
-                  {t("track.deleteFromDevice")}
-                </Text>
+                <LocalDeleteSolidIcon fill="none" width={20} height={20} color="white" />
+                <Text className="font-semibold text-white">{t("track.deleteFromDevice")}</Text>
               </View>
             </Button>
 
             <View className="mt-2 border-t border-border/60 pt-3">
               <View className="mb-3 flex-row flex-wrap gap-2">
                 {quickFacts.map((fact) => (
-                  <Chip
-                    key={fact.label}
-                    size="sm"
-                    variant="secondary"
-                    color="default"
-                  >
-                    <Chip.Label className="text-xs">
-                      {`${fact.label}: ${fact.value}`}
-                    </Chip.Label>
+                  <Chip key={fact.label} size="sm" variant="secondary" color="default">
+                    <Chip.Label className="text-xs">{`${fact.label}: ${fact.value}`}</Chip.Label>
                   </Chip>
                 ))}
               </View>
 
               <View className="flex-row flex-wrap gap-2">
                 {metadataLayoutItems.map((item) => {
-                  const containerClassName = item.isFullWidth
-                    ? "w-full"
-                    : "w-[48.5%]"
+                  const containerClassName = item.isFullWidth ? "w-full" : "w-[48.5%]"
                   const hasNavigableValues = item.segments.some((segment) =>
                     Boolean(segment.onPress)
                   )
@@ -796,10 +682,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                         {item.label}
                       </Text>
                       {hasNavigableValues ? (
-                        <Text
-                          className="text-sm leading-5 text-foreground"
-                          numberOfLines={1}
-                        >
+                        <Text className="text-sm leading-5 text-foreground" numberOfLines={1}>
                           {item.segments.map((segment, segmentIndex) => (
                             <React.Fragment
                               key={`${item.label}-${segment.value}-${segment.onPress ? "link" : "text"}`}
@@ -819,9 +702,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                                 </Text>
                               )}
                               {segmentIndex < item.segments.length - 1 ? (
-                                <Text className="text-sm leading-5 text-foreground">
-                                  {", "}
-                                </Text>
+                                <Text className="text-sm leading-5 text-foreground">{", "}</Text>
                               ) : null}
                             </React.Fragment>
                           ))}

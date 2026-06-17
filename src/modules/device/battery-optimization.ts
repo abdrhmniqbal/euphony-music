@@ -6,9 +6,7 @@ interface BatteryOptimizationNativeModule {
   isIgnoringBatteryOptimizations: (packageName?: string) => Promise<boolean>
   requestIgnoreBatteryOptimizations: (
     packageName?: string
-  ) => Promise<
-    "already_ignored" | "dialog_opened" | "settings_opened" | "unsupported"
-  >
+  ) => Promise<"already_ignored" | "dialog_opened" | "settings_opened" | "unsupported">
   openBatteryOptimizationSettings: () => Promise<"settings_opened">
 }
 
@@ -16,9 +14,7 @@ const batteryOptimizationModule = NativeModules.BatteryOptimization as
   | BatteryOptimizationNativeModule
   | undefined
 
-export async function isIgnoringBatteryOptimizations(
-  packageName?: string
-): Promise<boolean> {
+export async function isIgnoringBatteryOptimizations(packageName?: string): Promise<boolean> {
   if (Platform.OS !== "android") {
     return true
   }
@@ -31,9 +27,7 @@ export async function isIgnoringBatteryOptimizations(
   }
 
   try {
-    const result = await batteryOptimizationModule.isIgnoringBatteryOptimizations(
-      packageName
-    )
+    const result = await batteryOptimizationModule.isIgnoringBatteryOptimizations(packageName)
     logInfo("Checked battery optimization ignore status", {
       packageName,
       isIgnoring: result,
@@ -49,9 +43,7 @@ export async function isIgnoringBatteryOptimizations(
 
 export async function requestIgnoreBatteryOptimizations(
   packageName?: string
-): Promise<
-  "already_ignored" | "dialog_opened" | "settings_opened" | "unsupported"
-> {
+): Promise<"already_ignored" | "dialog_opened" | "settings_opened" | "unsupported"> {
   if (Platform.OS !== "android") {
     return "unsupported"
   }
@@ -64,10 +56,7 @@ export async function requestIgnoreBatteryOptimizations(
   }
 
   try {
-    const result =
-      await batteryOptimizationModule.requestIgnoreBatteryOptimizations(
-        packageName
-      )
+    const result = await batteryOptimizationModule.requestIgnoreBatteryOptimizations(packageName)
     logInfo("Requested battery optimization ignore flow", {
       packageName,
       result,
@@ -92,8 +81,7 @@ export async function openBatteryOptimizationSettings(): Promise<boolean> {
   }
 
   try {
-    const result =
-      await batteryOptimizationModule.openBatteryOptimizationSettings()
+    const result = await batteryOptimizationModule.openBatteryOptimizationSettings()
     logInfo("Opened battery optimization settings", { result })
     return result === "settings_opened"
   } catch (error) {

@@ -3,10 +3,7 @@ import { type ReactNode, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
-import {
-  initializeTrackPlayer,
-  registerPlaybackService,
-} from "@/core/audio/track-player.service"
+import { initializeTrackPlayer, registerPlaybackService } from "@/core/audio/track-player.service"
 import {
   getMediaLibraryPermission,
   requestMediaLibraryPermission,
@@ -19,13 +16,7 @@ import { startIndexing } from "@/modules/indexer/service"
 import { logError, logInfo } from "@/modules/logging/service"
 import { ensureLoggingConfigLoaded } from "@/modules/logging/store"
 import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-subscriber"
-import {
-  playNext,
-  pauseTrack,
-  resumeTrack,
-  playPrevious,
-  seekTo,
-} from "@/modules/player/controls"
+import { playNext, pauseTrack, resumeTrack, playPrevious, seekTo } from "@/modules/player/controls"
 import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
 import { ensureCrossfadeConfigLoaded } from "@/modules/settings/audio-crossfade"
 import {
@@ -108,7 +99,6 @@ function advanceToNextTrackOnce() {
   lastAutoAdvanceAt = now
   void playNext(true)
 }
-
 
 function onActiveTrackChanged(e: {
   index?: number
@@ -204,14 +194,11 @@ export function AppRuntime({
   const { success, error: migrationError } = useMigrations(db, migrations)
   const preferenceHydrated = usePreferenceStore((state) => state._hasHydrated)
   const playbackHydrated = usePlaybackStore((state) => state._hasHydrated)
-  const viewPreferenceHydrated = useViewPreferenceStore(
-    (state) => state._hasHydrated
-  )
+  const viewPreferenceHydrated = useViewPreferenceStore((state) => state._hasHydrated)
   const [status, setStatus] = useState<RuntimeStatus>("loading")
   const [error, setError] = useState<Error | null>(null)
 
-  const canStart =
-    success && preferenceHydrated && playbackHydrated && viewPreferenceHydrated
+  const canStart = success && preferenceHydrated && playbackHydrated && viewPreferenceHydrated
 
   useEffect(() => {
     if (migrationError) {
@@ -258,20 +245,15 @@ export function AppRuntime({
     }
 
     const isLegacySchemaConflict =
-      error.message.includes("CREATE TABLE") ||
-      error.message.includes("already exists")
+      error.message.includes("CREATE TABLE") || error.message.includes("already exists")
     return isLegacySchemaConflict ? t("database.schemaConflict") : error.message
   }, [error, t])
 
   if (status === "error" && error) {
     return (
       <View className="flex-1 items-center justify-center bg-background p-4">
-        <Text className="mb-2 text-center text-danger">
-          {t("database.errorTitle")}
-        </Text>
-        <Text className="text-muted-foreground text-center text-sm">
-          {message}
-        </Text>
+        <Text className="mb-2 text-center text-danger">{t("database.errorTitle")}</Text>
+        <Text className="text-muted-foreground text-center text-sm">{message}</Text>
       </View>
     )
   }

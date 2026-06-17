@@ -11,11 +11,7 @@ import { ensureCrossfadeConfigLoaded } from "@/modules/settings/audio-crossfade"
 import { getSettingsState } from "@/modules/settings/store"
 
 import { State, TrackPlayer } from "./utils"
-import {
-  getCurrentTrackState,
-  getQueueTrackIdsState,
-  getRepeatModeState,
-} from "./store"
+import { getCurrentTrackState, getQueueTrackIdsState, getRepeatModeState } from "./store"
 
 const FULL_VOLUME = 1
 const SILENT_VOLUME = 0
@@ -161,10 +157,7 @@ export async function restorePlaybackVolume() {
   }
 }
 
-export async function handleCrossfadeProgress(
-  position: number,
-  duration: number
-) {
+export async function handleCrossfadeProgress(position: number, duration: number) {
   try {
     await ensureCrossfadeConfigLoaded()
     const config = getSettingsState().crossfadeConfig
@@ -184,10 +177,7 @@ export async function handleCrossfadeProgress(
       return
     }
 
-    const fadeDurationSeconds = getFadeDurationSeconds(
-      duration,
-      config.durationSeconds
-    )
+    const fadeDurationSeconds = getFadeDurationSeconds(duration, config.durationSeconds)
     const remainingSeconds = duration - position
 
     if (
@@ -201,10 +191,7 @@ export async function handleCrossfadeProgress(
 
     fadingOutTrackId = currentTrack.id
     shouldFadeInNextTrack = true
-    await startVolumeRamp(
-      SILENT_VOLUME,
-      Math.max(MIN_FADE_SECONDS, remainingSeconds)
-    )
+    await startVolumeRamp(SILENT_VOLUME, Math.max(MIN_FADE_SECONDS, remainingSeconds))
   } catch (error) {
     logError("Failed to handle crossfade progress", error)
   }

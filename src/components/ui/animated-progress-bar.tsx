@@ -86,7 +86,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
         : Number.parseFloat(width) || screenWidth
       : typeof width === "number"
         ? width
-      : screenWidth
+        : screenWidth
 
   const progressValue = useDerivedValue(() => {
     if (indeterminate) {
@@ -112,11 +112,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
       return 0
     }
 
-    return withRepeat(
-      withTiming(1, { duration: 1500, easing: Easing.linear }),
-      -1,
-      false
-    )
+    return withRepeat(withTiming(1, { duration: 1500, easing: Easing.linear }), -1, false)
   })
 
   const pulseValue = useDerivedValue(() => {
@@ -144,9 +140,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
         height: "100%",
         backgroundColor: useGradient ? "transparent" : resolvedProgressColor,
         borderRadius,
-        transform: [
-          { translateX: indeterminateValue.value * containerWidth * 0.7 },
-        ],
+        transform: [{ translateX: indeterminateValue.value * containerWidth * 0.7 }],
       }
     }
 
@@ -164,13 +158,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
 
     const textContent = formatPercentage(validProgress)
     const textElement = (
-      <Text
-        style={[
-          styles.percentageText,
-          { color: theme.foreground },
-          percentageTextStyle,
-        ]}
-      >
+      <Text style={[styles.percentageText, { color: theme.foreground }, percentageTextStyle]}>
         {textContent}
       </Text>
     )
@@ -211,9 +199,7 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
         styles.container,
         {
           flexDirection:
-            percentagePosition === "left" || percentagePosition === "right"
-              ? "row"
-              : "column",
+            percentagePosition === "left" || percentagePosition === "right" ? "row" : "column",
         },
         containerStyle,
       ]}

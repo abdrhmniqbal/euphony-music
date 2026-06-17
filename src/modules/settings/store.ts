@@ -8,10 +8,7 @@
 
 import { create } from "zustand"
 
-import {
-  getCurrentAppVersion,
-  isPreviewReleaseVersion,
-} from "@/modules/updates/app-version"
+import { getCurrentAppVersion, isPreviewReleaseVersion } from "@/modules/updates/app-version"
 import type {
   AudioPlaybackConfig,
   AppUpdateConfig,

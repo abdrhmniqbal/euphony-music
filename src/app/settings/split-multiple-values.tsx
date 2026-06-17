@@ -78,19 +78,12 @@ function TagEditorSheetContent({
   return (
     <>
       {values.length > 0 ? (
-        <TagGroup
-          selectionMode="none"
-          size="md"
-          onRemove={removeValues}
-          className="mb-3"
-        >
+        <TagGroup selectionMode="none" size="md" onRemove={removeValues} className="mb-3">
           <TagGroup.List className="flex-row flex-wrap gap-2">
             {values.map((value) => (
               <TagGroup.Item key={value} id={value}>
                 <TagGroup.ItemLabel>{value}</TagGroup.ItemLabel>
-                <TagGroup.ItemRemoveButton
-                  accessibilityLabel={`${removeLabel} ${value}`}
-                />
+                <TagGroup.ItemRemoveButton accessibilityLabel={`${removeLabel} ${value}`} />
               </TagGroup.Item>
             ))}
           </TagGroup.List>
@@ -118,24 +111,14 @@ function TagEditorSheetContent({
           className="h-12 w-12"
           onPress={addValue}
         >
-          <LocalAddIcon
-            fill="none"
-            width={22}
-            height={22}
-            color={theme.foreground}
-          />
+          <LocalAddIcon fill="none" width={22} height={22} color={theme.foreground} />
         </Button>
       </View>
     </>
   )
 }
 
-function TagEditorSheet({
-  isOpen,
-  onOpenChange,
-  title,
-  ...contentProps
-}: TagEditorSheetProps) {
+function TagEditorSheet({ isOpen, onOpenChange, title, ...contentProps }: TagEditorSheetProps) {
   return (
     <BottomSheet isOpen={isOpen} onOpenChange={onOpenChange}>
       <BottomSheet.Portal>
@@ -178,10 +161,7 @@ export default function SplitMultipleValuesSettingsScreen() {
 
   return (
     <>
-      <ScrollView
-        className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="gap-5 px-4 py-4">
           <ListGroup>
             <ListGroup.Item onPress={() => setArtistSymbolsOpen(true)}>
@@ -209,9 +189,7 @@ export default function SplitMultipleValuesSettingsScreen() {
 
             <ListGroup.Item onPress={() => setUnsplitArtistsOpen(true)}>
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.unsplitArtists")}
-                </ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>{t("settings.library.unsplitArtists")}</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.library.unsplitArtistsDescription")}
                 </ListGroup.ItemDescription>
@@ -232,9 +210,7 @@ export default function SplitMultipleValuesSettingsScreen() {
 
             <ListGroup.Item onPress={() => setGenreSymbolsOpen(true)}>
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.genreSplitSymbols")}
-                </ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>{t("settings.library.genreSplitSymbols")}</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.library.genreSplitSymbolsDescription")}
                 </ListGroup.ItemDescription>
@@ -253,16 +229,10 @@ export default function SplitMultipleValuesSettingsScreen() {
 
             <Separator className="mx-4" />
 
-            <ListGroup.Item
-              onPress={() => router.push("/settings/artist-split-mode")}
-            >
+            <ListGroup.Item onPress={() => router.push("/settings/artist-split-mode")}>
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.artistSplitMode")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {currentModeLabel}
-                </ListGroup.ItemDescription>
+                <ListGroup.ItemTitle>{t("settings.library.artistSplitMode")}</ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>{currentModeLabel}</ListGroup.ItemDescription>
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
             </ListGroup.Item>

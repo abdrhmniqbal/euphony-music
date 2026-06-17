@@ -7,10 +7,7 @@
  */
 
 import type { ReactNode } from "react"
-import {
-  LegendList,
-  type LegendListRenderItemProps,
-} from "@legendapp/list/react-native"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { ScrollView, type StyleProp, View, type ViewStyle } from "react-native"
 import { cn } from "tailwind-variants"
 
@@ -75,10 +72,7 @@ export function MediaCarousel<T>({
           </View>
         )}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[
-          { paddingHorizontal },
-          contentContainerStyle,
-        ]}
+        contentContainerStyle={[{ paddingHorizontal }, contentContainerStyle]}
         className={cn("mb-8", className)}
         estimatedItemSize={220}
       />
@@ -90,10 +84,7 @@ export function MediaCarousel<T>({
       key={dataVersionKey}
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={[
-        { paddingHorizontal, gap },
-        contentContainerStyle,
-      ]}
+      contentContainerStyle={[{ paddingHorizontal, gap }, contentContainerStyle]}
       className={cn("mb-8", className)}
     >
       {data.map((item, index) => (

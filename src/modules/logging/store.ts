@@ -18,12 +18,8 @@ const LOG_CONFIG_FILE = createSettingsConfigFile("logging-config.json")
 let configLoadPromise: Promise<LoggingConfig> | null = null
 let hasLoadedConfig = false
 
-export function useLoggingStore<T>(
-  selector: (state: { loggingConfig: LoggingConfig }) => T
-) {
-  return useSettingsStore((state) =>
-    selector({ loggingConfig: state.loggingConfig })
-  )
+export function useLoggingStore<T>(selector: (state: { loggingConfig: LoggingConfig }) => T) {
+  return useSettingsStore((state) => selector({ loggingConfig: state.loggingConfig }))
 }
 
 export function getLoggingConfigState() {
@@ -39,15 +35,10 @@ function isValidLogLevel(value: unknown): value is AppLogLevel {
 }
 
 function sanitizeConfig(value: unknown): LoggingConfig {
-  const source =
-    value && typeof value === "object"
-      ? (value as Record<string, unknown>)
-      : {}
+  const source = value && typeof value === "object" ? (value as Record<string, unknown>) : {}
 
   return {
-    level: isValidLogLevel(source.level)
-      ? source.level
-      : getDefaultLoggingConfig().level,
+    level: isValidLogLevel(source.level) ? source.level : getDefaultLoggingConfig().level,
   }
 }
 
@@ -86,9 +77,7 @@ export async function ensureLoggingConfigLoaded(): Promise<LoggingConfig> {
   return result
 }
 
-export async function setAppLogLevel(
-  level: AppLogLevel
-): Promise<LoggingConfig> {
+export async function setAppLogLevel(level: AppLogLevel): Promise<LoggingConfig> {
   await ensureLoggingConfigLoaded()
   const next = sanitizeConfig({ ...getLoggingConfigState(), level })
   setLoggingConfigState(next)

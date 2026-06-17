@@ -41,17 +41,11 @@ export function startIndexerRunRuntime() {
   }
 }
 
-export function isIndexerRunStale(
-  controller: AbortController,
-  currentRunToken: number
-) {
+export function isIndexerRunStale(controller: AbortController, currentRunToken: number) {
   return controller.signal.aborted || currentRunToken !== runToken
 }
 
-export function scheduleIndexerCompletePhaseReset(
-  currentRunToken: number,
-  callback: () => void
-) {
+export function scheduleIndexerCompletePhaseReset(currentRunToken: number, callback: () => void) {
   clearIndexerCompletePhaseTimeout()
   completePhaseTimeout = setTimeout(() => {
     if (currentRunToken !== runToken) {
@@ -90,14 +84,9 @@ export function finishIndexerRunRuntime(controller: AbortController) {
   }
 }
 
-export function consumeQueuedIndexerRun(
-  controller: AbortController,
-  currentRunToken: number
-) {
+export function consumeQueuedIndexerRun(controller: AbortController, currentRunToken: number) {
   const shouldRunQueuedScan =
-    queuedRun.requested &&
-    currentRunToken === runToken &&
-    !controller.signal.aborted
+    queuedRun.requested && currentRunToken === runToken && !controller.signal.aborted
 
   if (!shouldRunQueuedScan) {
     return null

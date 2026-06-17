@@ -17,9 +17,7 @@ const INDEXER_LAST_RUN_SNAPSHOT_KEY = "indexer:last-run-snapshot"
 
 let latestIndexerRunSnapshotCache: IndexerRunSnapshot | null | undefined
 
-export async function saveIndexerRunSnapshot(
-  snapshot: IndexerRunSnapshot
-): Promise<void> {
+export async function saveIndexerRunSnapshot(snapshot: IndexerRunSnapshot): Promise<void> {
   const now = Date.now()
 
   await db

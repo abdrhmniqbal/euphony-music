@@ -35,13 +35,8 @@ export function ArtistPickerSheet({
     <BottomSheet isOpen={isOpen} onOpenChange={onOpenChange}>
       <BottomSheet.Portal>
         <BottomSheet.Overlay />
-        <BottomSheet.Content
-          backgroundClassName="bg-surface"
-          className="gap-1 pb-4"
-        >
-          <Text className="px-1 pb-2 text-base font-semibold text-foreground">
-            {title}
-          </Text>
+        <BottomSheet.Content backgroundClassName="bg-surface" className="gap-1 pb-4">
+          <Text className="px-1 pb-2 text-base font-semibold text-foreground">{title}</Text>
           {items.map((item) => (
             <PressableFeedback
               key={item.value}
@@ -65,9 +60,7 @@ export function ArtistPickerSheet({
               </View>
               <View className="flex-1">
                 <Text className="text-base text-foreground">{item.value}</Text>
-                {item.subtitle ? (
-                  <Text className="text-sm text-muted">{item.subtitle}</Text>
-                ) : null}
+                {item.subtitle ? <Text className="text-sm text-muted">{item.subtitle}</Text> : null}
               </View>
             </PressableFeedback>
           ))}

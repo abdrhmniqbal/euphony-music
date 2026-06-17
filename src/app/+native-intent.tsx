@@ -80,8 +80,7 @@ function normalizeExternalIntentUri(path: string) {
     const host = parsedUrl.host.toLowerCase()
     if (
       parsedUrl.protocol === "startune-music:" &&
-      (host.includes("com.mixplorer") ||
-        host.includes("com.android.providers.media.documents"))
+      (host.includes("com.mixplorer") || host.includes("com.android.providers.media.documents"))
     ) {
       return `content://${parsedUrl.host}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`
     }
@@ -112,12 +111,7 @@ function buildExternalAudioRoute(uri: string) {
   )}`
 }
 
-export function redirectSystemPath({
-  path,
-}: {
-  path: string
-  initial: boolean
-}) {
+export function redirectSystemPath({ path }: { path: string; initial: boolean }) {
   if (isLikelyExternalFileIntent(path)) {
     return buildExternalAudioRoute(decodePathRecursively(path))
   }

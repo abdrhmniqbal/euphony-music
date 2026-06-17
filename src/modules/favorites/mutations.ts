@@ -12,10 +12,7 @@ import { queryClient } from "@/lib/tanstack-query"
 import { logError, logInfo } from "@/modules/logging/service"
 
 import { FAVORITES_KEY, invalidateFavoriteQueries } from "./keys"
-import {
-  addFavorite,
-  removeFavorite,
-} from "./repository"
+import { addFavorite, removeFavorite } from "./repository"
 import type { FavoriteEntry, FavoriteType } from "./types"
 
 function sortFavoriteEntries(entries: FavoriteEntry[]) {
@@ -38,10 +35,7 @@ function upsertFavoriteEntry(entry: FavoriteEntry) {
       const nextEntries = currentEntries.filter(
         (item) => !(item.type === entry.type && item.id === entry.id)
       )
-      queryClient.setQueryData(
-        queryKey,
-        sortFavoriteEntries([entry, ...nextEntries])
-      )
+      queryClient.setQueryData(queryKey, sortFavoriteEntries([entry, ...nextEntries]))
     })
 }
 
@@ -55,9 +49,7 @@ function removeFavoriteEntry(type: FavoriteType, itemId: string) {
 
       queryClient.setQueryData(
         queryKey,
-        currentEntries.filter(
-          (item) => !(item.type === type && item.id === itemId)
-        )
+        currentEntries.filter((item) => !(item.type === type && item.id === itemId))
       )
     })
 }
@@ -123,13 +115,7 @@ export function useAddFavorite() {
 export function useRemoveFavorite() {
   return useMutation(
     {
-      mutationFn: async ({
-        type,
-        itemId,
-      }: {
-        type: FavoriteType
-        itemId: string
-      }) => {
+      mutationFn: async ({ type, itemId }: { type: FavoriteType; itemId: string }) => {
         logInfo("Removing favorite", { type, itemId })
         await removeFavorite(itemId, type)
 

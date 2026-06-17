@@ -16,11 +16,8 @@ interface ResolvePlaylistTransitionIdParams {
   title?: string | null
 }
 
-export function resolveArtistTransitionId(
-  params: ResolveArtistTransitionIdParams
-) {
-  const candidate =
-    params.transitionId?.trim() || params.id?.trim() || params.name?.trim()
+export function resolveArtistTransitionId(params: ResolveArtistTransitionIdParams) {
+  const candidate = params.transitionId?.trim() || params.id?.trim() || params.name?.trim()
 
   if (!candidate) {
     return "artist:unknown"
@@ -33,11 +30,8 @@ export function resolveArtistTransitionId(
   return `artist:${candidate}`
 }
 
-export function resolveAlbumTransitionId(
-  params: ResolveAlbumTransitionIdParams
-) {
-  const candidate =
-    params.transitionId?.trim() || params.id?.trim() || params.title?.trim()
+export function resolveAlbumTransitionId(params: ResolveAlbumTransitionIdParams) {
+  const candidate = params.transitionId?.trim() || params.id?.trim() || params.title?.trim()
 
   if (!candidate) {
     return "album:unknown"
@@ -50,11 +44,8 @@ export function resolveAlbumTransitionId(
   return `album:${candidate}`
 }
 
-export function resolvePlaylistTransitionId(
-  params: ResolvePlaylistTransitionIdParams
-) {
-  const candidate =
-    params.transitionId?.trim() || params.id?.trim() || params.title?.trim()
+export function resolvePlaylistTransitionId(params: ResolvePlaylistTransitionIdParams) {
+  const candidate = params.transitionId?.trim() || params.id?.trim() || params.title?.trim()
 
   if (!candidate) {
     return "playlist:unknown"

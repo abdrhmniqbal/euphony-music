@@ -18,20 +18,13 @@ import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
-import {
-  screenEnterTransition,
-  screenExitTransition,
-} from "@/constants/animations"
+import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
 import { useTopTracksByPeriod } from "@/modules/history/queries"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 const TOP_TRACKS_TABS = ["Realtime", "Daily", "Weekly"] as const
 type TopTracksTab = (typeof TOP_TRACKS_TABS)[number]
@@ -55,8 +48,12 @@ export default function TopTracksScreen() {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<TopTracksTab>("Realtime")
   const period = tabToPeriod(activeTab)
-  const { data: currentTracksData, isLoading, isFetching, refetch } =
-    useTopTracksByPeriod(period, TOP_TRACKS_LIMIT)
+  const {
+    data: currentTracksData,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useTopTracksByPeriod(period, TOP_TRACKS_LIMIT)
 
   const currentTracks = currentTracksData ?? []
 
@@ -116,11 +113,7 @@ export default function TopTracksScreen() {
         <Tabs.List className="w-full flex-row rounded-[26px] border border-border/60 bg-default/35 px-1 py-1">
           <Tabs.Indicator className="rounded-full bg-background text-surface-foreground" />
           {TOP_TRACKS_TABS.map((tab) => (
-            <Tabs.Trigger
-              key={tab}
-              value={tab}
-              className="flex-1 rounded-full py-2.5"
-            >
+            <Tabs.Trigger key={tab} value={tab} className="flex-1 rounded-full py-2.5">
               <Tabs.Label className="text-[15px] font-semibold">
                 {getTopTracksTabLabel(tab)}
               </Tabs.Label>
@@ -138,12 +131,7 @@ export default function TopTracksScreen() {
         >
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon
-                fill="none"
-                width={48}
-                height={48}
-                color={theme.muted}
-              />
+              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("home.empty.topTracksYetTitle")}
             message={t("home.empty.topTracksYetMessage")}
@@ -176,10 +164,7 @@ export default function TopTracksScreen() {
               />
             }
             listHeader={
-              <Animated.View
-                key={`actions-${activeTab}`}
-                entering={screenEnterTransition()}
-              >
+              <Animated.View key={`actions-${activeTab}`} entering={screenEnterTransition()}>
                 <PlaybackActionsRow
                   onPlay={playAll}
                   onShuffle={shuffle}

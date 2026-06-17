@@ -17,9 +17,7 @@ import { useSettingsStore } from "@/modules/settings/store"
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation()
-  const indexerNotificationsEnabled = useSettingsStore(
-    (state) => state.indexerNotificationsEnabled
-  )
+  const indexerNotificationsEnabled = useSettingsStore((state) => state.indexerNotificationsEnabled)
   const appUpdateNotificationsEnabled = useSettingsStore(
     (state) => state.appUpdateConfig.notificationsEnabled
   )

@@ -76,8 +76,7 @@ export function normalizeMetadata<T extends NormalizableMetadata>(
   metadata: T,
   filename: string
 ): T {
-  const normalizedTitle =
-    normalizeText(metadata.title) || extractFallbackTitle(filename)
+  const normalizedTitle = normalizeText(metadata.title) || extractFallbackTitle(filename)
   const normalizedArtist = normalizeText(metadata.artist)
   const normalizedGenres = normalizeGenres(metadata.genres)
   const normalizedArtists = Array.from(
@@ -106,9 +105,7 @@ export function normalizeMetadata<T extends NormalizableMetadata>(
     composer: normalizeText(metadata.composer),
     comment: normalizeText(metadata.comment),
     lyrics: normalizeText(
-      metadata.lyrics
-        ? stripMalformedUtf16LyricsPrefix(metadata.lyrics)
-        : undefined
+      metadata.lyrics ? stripMalformedUtf16LyricsPrefix(metadata.lyrics) : undefined
     ),
   } as T
 }

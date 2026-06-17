@@ -1,11 +1,7 @@
 import { updateColorsForImage } from "@/modules/player/colors"
 import type { Track } from "@/modules/player/types"
 
-import {
-  setCurrentTrackState,
-  setDurationState,
-  usePlayerStore,
-} from "./store"
+import { setCurrentTrackState, setDurationState, usePlayerStore } from "./store"
 
 let lastProgressPosition = 0
 let lastProgressDuration = 0

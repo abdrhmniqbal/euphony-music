@@ -10,11 +10,7 @@ import {
   updateIndexerProgressNotification,
 } from "@/modules/indexer/notification"
 
-import {
-  getDefaultIndexerState,
-  getIndexerState,
-  updateIndexerState,
-} from "./store"
+import { getDefaultIndexerState, getIndexerState, updateIndexerState } from "./store"
 
 const VISIBLE_PROGRESS_UPDATE_INTERVAL_MS = 120
 const NOTIFICATION_PROGRESS_UPDATE_INTERVAL_MS = 750
@@ -77,21 +73,16 @@ export function updateIndexerProgress(progress: IndexerScanProgress) {
 
   lastVisibleProgressUpdateAt = now
 
-  const nextProgressPercent =
-    progress.total > 0 ? (progress.current / progress.total) * 100 : 0
+  const nextProgressPercent = progress.total > 0 ? (progress.current / progress.total) * 100 : 0
   const hasMeaningfulPercentDelta =
     lastNotificationProgressPercent < 0 ||
-    nextProgressPercent - lastNotificationProgressPercent >=
-      NOTIFICATION_PROGRESS_DELTA_PERCENT
+    nextProgressPercent - lastNotificationProgressPercent >= NOTIFICATION_PROGRESS_DELTA_PERCENT
   const hasMeaningfulFileDelta =
     lastNotificationProcessedFiles < 0 ||
-    progress.current - lastNotificationProcessedFiles >=
-      NOTIFICATION_PROGRESS_DELTA_FILES
-  const hasPhaseChange =
-    lastNotificationPhase !== null && progress.phase !== lastNotificationPhase
+    progress.current - lastNotificationProcessedFiles >= NOTIFICATION_PROGRESS_DELTA_FILES
+  const hasPhaseChange = lastNotificationPhase !== null && progress.phase !== lastNotificationPhase
   const hasIntervalElapsed =
-    now - lastNotificationProgressUpdateAt >=
-    NOTIFICATION_PROGRESS_UPDATE_INTERVAL_MS
+    now - lastNotificationProgressUpdateAt >= NOTIFICATION_PROGRESS_UPDATE_INTERVAL_MS
 
   if (
     progress.phase === "complete" ||

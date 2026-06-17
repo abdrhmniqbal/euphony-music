@@ -109,9 +109,7 @@ function getResolvedLyricsCacheKey(track: TrackLyricsSourceInput) {
   ].join("|")
 }
 
-async function readSidecarLyrics(
-  candidateUri: string
-): Promise<string | undefined> {
+async function readSidecarLyrics(candidateUri: string): Promise<string | undefined> {
   try {
     const sidecarFile = new File(candidateUri)
     const info = sidecarFile.info()
@@ -168,9 +166,7 @@ export async function resolveTrackLyricsSource(
           }
         }
 
-        const lyricsFromMetadata = normalizeLyricsText(
-          await extractEmbeddedLyrics(uri)
-        )
+        const lyricsFromMetadata = normalizeLyricsText(await extractEmbeddedLyrics(uri))
         if (lyricsFromMetadata) {
           resolvedLyricsSourceCache.set(cacheKey, lyricsFromMetadata)
           return lyricsFromMetadata

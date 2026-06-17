@@ -28,12 +28,7 @@ export const AlbumArtView: React.FC<AlbumArtViewProps> = ({ currentTrack }) => {
           />
         ) : (
           <View className="h-full w-full items-center justify-center bg-surface">
-            <LocalMusicNoteSolidIcon
-              fill="none"
-              width={120}
-              height={120}
-              color={theme.muted}
-            />
+            <LocalMusicNoteSolidIcon fill="none" width={120} height={120} color={theme.muted} />
           </View>
         )}
       </Animated.View>

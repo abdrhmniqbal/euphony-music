@@ -70,10 +70,7 @@ export function FullPlayerContent({
       />
       <View
         pointerEvents="none"
-        style={[
-          StyleSheet.absoluteFill,
-          { backgroundColor: BACKGROUND_DARKEN_OVERLAY },
-        ]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: BACKGROUND_DARKEN_OVERLAY }]}
       />
 
       <View
@@ -95,11 +92,7 @@ export function FullPlayerContent({
           <AlbumArtView currentTrack={currentTrack} />
         )}
 
-        <TrackInfo
-          track={currentTrack}
-          compact={isCompactLayout}
-          onPressArtist={onPressArtist}
-        />
+        <TrackInfo track={currentTrack} compact={isCompactLayout} onPressArtist={onPressArtist} />
 
         <ProgressBar compact={isCompactLayout} />
 

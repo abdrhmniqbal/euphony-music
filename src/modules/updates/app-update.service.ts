@@ -13,15 +13,11 @@ import { i18n } from "@/modules/localization/i18n"
 import { logError, logInfo } from "@/modules/logging/service"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import type { AppUpdateConfig } from "@/modules/settings/types"
-import {
-  getCurrentAppVersion,
-  isPreviewReleaseVersion,
-} from "@/modules/updates/app-version"
+import { getCurrentAppVersion, isPreviewReleaseVersion } from "@/modules/updates/app-version"
 
 export { getCurrentAppVersion, isPreviewReleaseVersion }
 
-const GITHUB_RELEASES_URL =
-  "https://api.github.com/repos/abdrhmniqbal/startune-music/releases"
+const GITHUB_RELEASES_URL = "https://api.github.com/repos/abdrhmniqbal/startune-music/releases"
 const CHANGELOG_RAW_URL =
   "https://raw.githubusercontent.com/abdrhmniqbal/startune-music/master/CHANGELOG.md"
 const UPDATE_NOTIFICATION_CHANNEL_ID = "app-updates"
@@ -105,10 +101,7 @@ function comparePrereleasePart(left: string, right: string) {
 function compareVersions(left: string, right: string) {
   const leftVersion = parseVersion(left)
   const rightVersion = parseVersion(right)
-  const maxLength = Math.max(
-    leftVersion.mainParts.length,
-    rightVersion.mainParts.length
-  )
+  const maxLength = Math.max(leftVersion.mainParts.length, rightVersion.mainParts.length)
 
   for (let index = 0; index < maxLength; index += 1) {
     const leftPart = leftVersion.mainParts[index] ?? 0
@@ -118,10 +111,7 @@ function compareVersions(left: string, right: string) {
     }
   }
 
-  if (
-    leftVersion.prereleaseParts.length === 0 &&
-    rightVersion.prereleaseParts.length === 0
-  ) {
+  if (leftVersion.prereleaseParts.length === 0 && rightVersion.prereleaseParts.length === 0) {
     return 0
   }
 
@@ -170,10 +160,7 @@ function getReleaseVersion(release: GitHubRelease) {
 }
 
 function compareGitHubReleases(left: GitHubRelease, right: GitHubRelease) {
-  const versionComparison = compareVersions(
-    asString(right.tag_name),
-    asString(left.tag_name)
-  )
+  const versionComparison = compareVersions(asString(right.tag_name), asString(left.tag_name))
 
   if (versionComparison !== 0) {
     return versionComparison
@@ -194,9 +181,7 @@ function getSortedGitHubReleases(releases: GitHubRelease[]) {
 }
 
 function resolveReleaseDownloadUrl(release: GitHubRelease) {
-  const assets = Array.isArray(release.assets)
-    ? (release.assets as GitHubReleaseAsset[])
-    : []
+  const assets = Array.isArray(release.assets) ? (release.assets as GitHubReleaseAsset[]) : []
   const apkAsset = assets.find((asset) => {
     const name = asString(asset.name)
     const url = asString(asset.browser_download_url)
@@ -206,10 +191,7 @@ function resolveReleaseDownloadUrl(release: GitHubRelease) {
   return asString(apkAsset?.browser_download_url) || asString(release.html_url)
 }
 
-function toUpdateInfo(
-  release: GitHubRelease,
-  currentVersion: string
-): AppUpdateInfo | null {
+function toUpdateInfo(release: GitHubRelease, currentVersion: string): AppUpdateInfo | null {
   const tagName = asString(release.tag_name)
   if (!tagName || !isNewerVersion(tagName, currentVersion)) {
     return null
@@ -307,10 +289,7 @@ export async function checkForAppUpdate({
   skipWhenNotificationsDisabled?: boolean
   throwOnError?: boolean
 }): Promise<AppUpdateInfo | null> {
-  if (
-    !currentVersion ||
-    (skipWhenNotificationsDisabled && !settings.notificationsEnabled)
-  ) {
+  if (!currentVersion || (skipWhenNotificationsDisabled && !settings.notificationsEnabled)) {
     return null
   }
 
@@ -401,25 +380,16 @@ async function ensureUpdateNotificationChannel() {
     return
   }
 
-  await Notifications.setNotificationChannelAsync(
-    UPDATE_NOTIFICATION_CHANNEL_ID,
-    {
-      name: i18n.t("updates.notification.channelName"),
-      description: i18n.t("updates.notification.channelDescription"),
-      importance: Notifications.AndroidImportance.DEFAULT,
-    }
-  )
+  await Notifications.setNotificationChannelAsync(UPDATE_NOTIFICATION_CHANNEL_ID, {
+    name: i18n.t("updates.notification.channelName"),
+    description: i18n.t("updates.notification.channelDescription"),
+    importance: Notifications.AndroidImportance.DEFAULT,
+  })
   notificationsConfigured = true
 }
 
-export async function notifyAppUpdateAvailable(
-  update: AppUpdateInfo,
-  settings: AppUpdateConfig
-) {
-  if (
-    !settings.notificationsEnabled ||
-    settings.lastNotifiedVersion === update.newVersion
-  ) {
+export async function notifyAppUpdateAvailable(update: AppUpdateInfo, settings: AppUpdateConfig) {
+  if (!settings.notificationsEnabled || settings.lastNotifiedVersion === update.newVersion) {
     return
   }
 
@@ -442,10 +412,7 @@ export async function notifyAppUpdateAvailable(
           version: update.newVersion,
         },
       },
-      trigger:
-        Platform.OS === "android"
-          ? { channelId: UPDATE_NOTIFICATION_CHANNEL_ID }
-          : null,
+      trigger: Platform.OS === "android" ? { channelId: UPDATE_NOTIFICATION_CHANNEL_ID } : null,
     })
 
     await setAppUpdateConfig({ lastNotifiedVersion: update.newVersion })

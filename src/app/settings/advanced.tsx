@@ -8,15 +8,7 @@
 
 import * as Application from "expo-application"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import {
-  Button,
-  Dialog,
-  ListGroup,
-  Separator,
-  Switch,
-  Toast,
-  useToast,
-} from "heroui-native"
+import { Button, Dialog, ListGroup, Separator, Switch, Toast, useToast } from "heroui-native"
 import { useState } from "react"
 import { Linking, Platform, ScrollView, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -36,12 +28,9 @@ export default function AdvancedSettingsScreen() {
   const { toast } = useToast()
   const { t } = useTranslation()
   const loggingLevel = useSettingsStore((state) => state.loggingConfig.level)
-  const includePrereleases = useSettingsStore(
-    (state) => state.appUpdateConfig.includePrereleases
-  )
+  const includePrereleases = useSettingsStore((state) => state.appUpdateConfig.includePrereleases)
   const resetListeningHistoryMutation = useResetListeningHistory()
-  const [isResetHistoryDialogOpen, setIsResetHistoryDialogOpen] =
-    useState(false)
+  const [isResetHistoryDialogOpen, setIsResetHistoryDialogOpen] = useState(false)
 
   const isResettingHistory = resetListeningHistoryMutation.isPending
 
@@ -51,9 +40,7 @@ export default function AdvancedSettingsScreen() {
       component: (props) => (
         <Toast {...props} variant="accent" placement="bottom">
           <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
-          <Toast.Description className="text-xs text-muted">
-            {description}
-          </Toast.Description>
+          <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
         </Toast>
       ),
     })
@@ -93,8 +80,7 @@ export default function AdvancedSettingsScreen() {
 
   async function openBatteryOptimizationSettings() {
     const appPackage = Application.applicationId || "com.startune.music"
-    const BATTERY_SETTINGS_ACTION =
-      "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS"
+    const BATTERY_SETTINGS_ACTION = "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS"
 
     try {
       if (Platform.OS !== "android") {
@@ -111,10 +97,7 @@ export default function AdvancedSettingsScreen() {
       }
 
       const requestResult = await requestIgnoreBatteryOptimizations(appPackage)
-      if (
-        requestResult === "dialog_opened" ||
-        requestResult === "settings_opened"
-      ) {
+      if (requestResult === "dialog_opened" || requestResult === "settings_opened") {
         return
       }
 
@@ -148,20 +131,15 @@ export default function AdvancedSettingsScreen() {
 
   return (
     <>
-      <ScrollView
-        className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="gap-5 px-4 py-4">
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.advanced.sections.logs")}
           </Text>
-          <ListGroup >
+          <ListGroup>
             <ListGroup.Item onPress={() => router.push("/settings/log-level")}>
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.routes.logLevel.title")}
-                </ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>{t("settings.routes.logLevel.title")}</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {loggingLevel === "extra"
                     ? t("settings.advanced.logExtraDescription")
@@ -177,9 +155,7 @@ export default function AdvancedSettingsScreen() {
               }}
             >
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.advanced.shareCrashLogs")}
-                </ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>{t("settings.advanced.shareCrashLogs")}</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.advanced.shareCrashLogsDescription")}
                 </ListGroup.ItemDescription>
@@ -191,7 +167,7 @@ export default function AdvancedSettingsScreen() {
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.advanced.sections.history")}
           </Text>
-          <ListGroup >
+          <ListGroup>
             <ListGroup.Item
               onPress={() => setIsResetHistoryDialogOpen(true)}
               disabled={isResettingHistory}
@@ -210,7 +186,7 @@ export default function AdvancedSettingsScreen() {
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.advanced.sections.background")}
           </Text>
-          <ListGroup >
+          <ListGroup>
             <ListGroup.Item
               onPress={() => {
                 void openBatteryOptimizationSettings()
@@ -235,9 +211,7 @@ export default function AdvancedSettingsScreen() {
               }}
             >
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.advanced.dontKillMyApp")}
-                </ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>{t("settings.advanced.dontKillMyApp")}</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.advanced.dontKillMyAppDescription")}
                 </ListGroup.ItemDescription>
@@ -276,10 +250,7 @@ export default function AdvancedSettingsScreen() {
         </View>
       </ScrollView>
 
-      <Dialog
-        isOpen={isResetHistoryDialogOpen}
-        onOpenChange={setIsResetHistoryDialogOpen}
-      >
+      <Dialog isOpen={isResetHistoryDialogOpen} onOpenChange={setIsResetHistoryDialogOpen}>
         <Dialog.Portal>
           <Dialog.Overlay />
           <Dialog.Content className="gap-4">

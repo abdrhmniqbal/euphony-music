@@ -53,11 +53,9 @@ export function moveTrack(fromIndex: number, toIndex: number) {
   const playNextStart = queuePosition + 1
   const playNextEnd = queuePosition + numQueuedNext
   if (isWithin(playNextStart, fromIndex, playNextEnd)) {
-    if (!isWithin(playNextStart, clampedToIndex, playNextEnd))
-      newNumQueuedNext -= 1
+    if (!isWithin(playNextStart, clampedToIndex, playNextEnd)) newNumQueuedNext -= 1
   } else {
-    if (isWithin(playNextStart, clampedToIndex, playNextEnd))
-      newNumQueuedNext = 0
+    if (isWithin(playNextStart, clampedToIndex, playNextEnd)) newNumQueuedNext = 0
   }
 
   playbackStore.setState({
@@ -109,8 +107,7 @@ export async function removeIds(ids: string[]) {
 }
 
 export function removeKey(key: string) {
-  const { queue, activeKey, queuePosition, numQueuedNext } =
-    playbackStore.getState()
+  const { queue, activeKey, queuePosition, numQueuedNext } = playbackStore.getState()
 
   if (!activeKey || key === activeKey) return
 
@@ -135,17 +132,12 @@ export function removeKey(key: string) {
 }
 
 export async function synchronize() {
-  const { getTrack, shuffle, playingFrom, activeTrack } =
-    playbackStore.getState()
+  const { getTrack, shuffle, playingFrom, activeTrack } = playbackStore.getState()
 
   if (!playingFrom || !activeTrack) return
   const updatedQueue = await getTrackIdsList(playingFrom)
   if (updatedQueue.length === 0) return
-  const updatedListInfo = getUpdatedLists(
-    updatedQueue,
-    shuffle,
-    activeTrack.id,
-  )
+  const updatedListInfo = getUpdatedLists(updatedQueue, shuffle, activeTrack.id)
 
   const newTrackId = updatedListInfo.queue[updatedListInfo.queuePosition]!
   const isDiffTrack = activeTrack.id !== newTrackId
@@ -180,11 +172,9 @@ function insertIntoQueue({
     queue: queue.toSpliced(
       afterQueuedNext ? after + numQueuedNext : after,
       0,
-      ...(isString(id) ? [id] : id).map((i) => `${i}__${uniqueId}`),
+      ...(isString(id) ? [id] : id).map((i) => `${i}__${uniqueId}`)
     ),
-    numQueuedNext: !afterQueuedNext
-      ? 0
-      : numQueuedNext + (isString(id) ? 1 : id.length),
+    numQueuedNext: !afterQueuedNext ? 0 : numQueuedNext + (isString(id) ? 1 : id.length),
   })
 }
 

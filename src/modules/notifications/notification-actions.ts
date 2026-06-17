@@ -13,16 +13,10 @@ import {
   INDEXER_NOTIFICATION_ACTION_PAUSE,
   INDEXER_NOTIFICATION_ACTION_RESUME,
 } from "@/modules/indexer/notification"
-import {
-  cancelIndexing,
-  pauseIndexing,
-  resumeIndexing,
-} from "@/modules/indexer/service"
+import { cancelIndexing, pauseIndexing, resumeIndexing } from "@/modules/indexer/service"
 import { openLatestAppUpdatePrompt } from "@/modules/updates/app-update.runtime"
 
-export function handleNotificationAction(
-  response: Notifications.NotificationResponse
-) {
+export function handleNotificationAction(response: Notifications.NotificationResponse) {
   const source = response.notification.request.content.data?.source
   if (source === "app-update") {
     if (response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER) {
@@ -54,9 +48,7 @@ export function handleNotificationAction(
   }
 }
 
-export function getNotificationRoute(
-  response: Notifications.NotificationResponse
-) {
+export function getNotificationRoute(response: Notifications.NotificationResponse) {
   const route = response.notification.request.content.data?.route
   if (typeof route !== "string" || route.length === 0) {
     return null

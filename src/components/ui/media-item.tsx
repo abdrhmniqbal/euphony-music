@@ -18,8 +18,7 @@ import { cn, tv, type VariantProps } from "tailwind-variants"
 const mediaItemStyles = tv({
   slots: {
     base: "border-none bg-transparent",
-    imageContainer:
-      "items-center justify-center overflow-hidden rounded-lg bg-surface",
+    imageContainer: "items-center justify-center overflow-hidden rounded-lg bg-surface",
     content: "flex-1 justify-center gap-0.5",
     title: "text-foreground font-bold",
     description: "text-xs text-muted",
@@ -55,8 +54,7 @@ const MediaItemContext = createContext<MediaItemContextValue>({
   variant: "list",
 })
 
-const BoundaryPressableFeedback =
-  Transition.createBoundaryComponent(PressableFeedback)
+const BoundaryPressableFeedback = Transition.createBoundaryComponent(PressableFeedback)
 
 type MediaItemProps = React.ComponentProps<typeof PressableFeedback> &
   MediaItemVariant & {
@@ -75,11 +73,7 @@ function MediaItemRoot({
   if (boundaryId) {
     return (
       <MediaItemContext value={{ variant }}>
-        <BoundaryPressableFeedback
-          id={boundaryId}
-          className={cn(base(), className)}
-          {...props}
-        >
+        <BoundaryPressableFeedback id={boundaryId} className={cn(base(), className)} {...props}>
           {children}
         </BoundaryPressableFeedback>
       </MediaItemContext>

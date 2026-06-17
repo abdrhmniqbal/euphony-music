@@ -11,36 +11,29 @@ import { PressableFeedback } from "heroui-native"
 
 import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
 import { Stack } from "@/layouts/stack"
-import {
-	getMediaDetailTransitionOptions,
-} from "@/modules/navigation/stack"
+import { getMediaDetailTransitionOptions } from "@/modules/navigation/stack"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export default function SearchAlbumLayout() {
-	const theme = useThemeColors()
-	const router = useRouter()
+  const theme = useThemeColors()
+  const router = useRouter()
 
-	function handleBackPress() {
-		if (router.canGoBack?.()) {
-			router.back()
-			return
-		}
+  function handleBackPress() {
+    if (router.canGoBack?.()) {
+      router.back()
+      return
+    }
 
-		router.replace("/(main)/(search)")
-	}
+    router.replace("/(main)/(search)")
+  }
 
-	return (
-		<Stack
-			screenOptions={getMediaDetailTransitionOptions(theme, () => (
-				<PressableFeedback onPress={handleBackPress} className="-ml-2 p-2">
-					<LocalArrowLeftIcon
-						fill="none"
-						width={24}
-						height={24}
-						color={theme.foreground}
-					/>
-				</PressableFeedback>
-			))}
-		/>
-	)
+  return (
+    <Stack
+      screenOptions={getMediaDetailTransitionOptions(theme, () => (
+        <PressableFeedback onPress={handleBackPress} className="-ml-2 p-2">
+          <LocalArrowLeftIcon fill="none" width={24} height={24} color={theme.foreground} />
+        </PressableFeedback>
+      ))}
+    />
+  )
 }

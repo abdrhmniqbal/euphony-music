@@ -67,19 +67,14 @@ function syncIndexingProgressToast({
   toast,
   component,
 }: IndexingProgressToastRuntimeOptions) {
-  const shouldShowToast =
-    state.showProgress && (state.isIndexing || state.phase === "complete")
+  const shouldShowToast = state.showProgress && (state.isIndexing || state.phase === "complete")
 
   if (state.phase !== "complete") {
     isCompleteDismissed = false
     clearCompleteHideTimeout()
   }
 
-  if (
-    shouldShowToast &&
-    !isToastVisible &&
-    !(state.phase === "complete" && isCompleteDismissed)
-  ) {
+  if (shouldShowToast && !isToastVisible && !(state.phase === "complete" && isCompleteDismissed)) {
     toast.show({
       id: TOAST_ID,
       duration: "persistent",
@@ -106,9 +101,7 @@ function syncIndexingProgressToast({
   }, COMPLETE_HIDE_DELAY_MS)
 }
 
-export function scheduleIndexingProgressToastSync(
-  options: IndexingProgressToastRuntimeOptions
-) {
+export function scheduleIndexingProgressToastSync(options: IndexingProgressToastRuntimeOptions) {
   pendingOptions = options
 
   if (isSyncScheduled) {

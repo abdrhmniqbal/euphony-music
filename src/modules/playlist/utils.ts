@@ -13,10 +13,7 @@ import { transformDBTrackToTrack } from "@/utils/transformers"
 export const MAX_PLAYLIST_NAME_LENGTH = 20
 export const MAX_PLAYLIST_DESCRIPTION_LENGTH = 40
 
-export function toggleTrackSelection(
-  current: Set<string>,
-  trackId: string
-): Set<string> {
+export function toggleTrackSelection(current: Set<string>, trackId: string): Set<string> {
   const next = new Set(current)
 
   if (next.has(trackId)) {
@@ -52,15 +49,10 @@ export interface PlaylistDetailTrack extends Track {
   playlistPosition: number
 }
 
-export function buildPlaylistTracks(
-  playlist?: PlaylistEntity | null
-): PlaylistDetailTrack[] {
+export function buildPlaylistTracks(playlist?: PlaylistEntity | null): PlaylistDetailTrack[] {
   return (playlist?.tracks || [])
-    .filter(
-      (
-        playlistTrack
-      ): playlistTrack is PlaylistTrackRelation & { track: DBTrack } =>
-        Boolean(playlistTrack.track)
+    .filter((playlistTrack): playlistTrack is PlaylistTrackRelation & { track: DBTrack } =>
+      Boolean(playlistTrack.track)
     )
     .map((playlistTrack) => ({
       ...transformDBTrackToTrack(playlistTrack.track),

@@ -1,8 +1,4 @@
-import type {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  RefreshControlProps,
-} from "react-native"
+import type { NativeScrollEvent, NativeSyntheticEvent, RefreshControlProps } from "react-native"
 import type { SortConfig } from "@/modules/library/sort.types"
 
 import * as React from "react"
@@ -95,14 +91,7 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
   return (
     <LibraryTabState
       hasData={albums.length > 0}
-      emptyIcon={
-        <LocalVynilSolidIcon
-          fill="none"
-          width={48}
-          height={48}
-          color={theme.muted}
-        />
-      }
+      emptyIcon={<LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
       emptyTitle={t("library.empty.albumsTitle")}
       emptyMessage={t("library.empty.albumsMessage")}
     >

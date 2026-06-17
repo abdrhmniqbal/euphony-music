@@ -60,12 +60,7 @@ export default function SettingsLayout() {
           title: t(SETTINGS_SCREEN_TITLE_KEYS.index),
           headerLeft: () => (
             <PressableFeedback onPress={handleClose} hitSlop={20}>
-              <LocalCancelIcon
-                fill="none"
-                width={24}
-                height={24}
-                color={theme.foreground}
-              />
+              <LocalCancelIcon fill="none" width={24} height={24} color={theme.foreground} />
             </PressableFeedback>
           ),
         })}
@@ -74,10 +69,9 @@ export default function SettingsLayout() {
         <Stack.Screen
           key={screenName}
           name={screenName}
-          options={getDrillDownScreenOptions(
-            t(SETTINGS_SCREEN_TITLE_KEYS[screenName]),
-            () => <BackButton className="-ml-2" />
-          )}
+          options={getDrillDownScreenOptions(t(SETTINGS_SCREEN_TITLE_KEYS[screenName]), () => (
+            <BackButton className="-ml-2" />
+          ))}
         />
       ))}
     </Stack>

@@ -31,9 +31,7 @@ import { usePlaybackProgressState } from "@/modules/player/selectors"
 
 type AnimatedTimeInputProps = TextInputProps & { text?: string }
 
-const AnimatedTextInput = Animated.createAnimatedComponent(
-  TextInput
-) as React.ComponentType<
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput) as React.ComponentType<
   AnimatedTimeInputProps & {
     animatedProps?: Partial<AnimatedTimeInputProps>
   }
@@ -43,9 +41,7 @@ interface ProgressBarProps {
   compact?: boolean
 }
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({
-  compact = false,
-}) => {
+export const ProgressBar: React.FC<ProgressBarProps> = ({ compact = false }) => {
   const { currentTime, duration } = usePlaybackProgressState()
   const castState = useCastState()
   const remoteMediaClient = useRemoteMediaClient()
@@ -57,9 +53,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const pressed = useSharedValue(false)
   const isCasting = isCastConnected(castState, remoteMediaClient)
   const castDuration = Number(mediaStatus?.mediaInfo?.streamDuration ?? 0)
-  const effectiveCurrentTime = Number(
-    isCasting ? (castStreamPosition ?? 0) : (currentTime ?? 0)
-  )
+  const effectiveCurrentTime = Number(isCasting ? (castStreamPosition ?? 0) : (currentTime ?? 0))
   const effectiveDuration = Number(isCasting ? castDuration : (duration ?? 0))
 
   const liveProgress = useDerivedValue(() => {
@@ -91,17 +85,15 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`
   }
 
-  const animatedTextProps = useAnimatedProps<Partial<AnimatedTimeInputProps>>(
-    () => {
-      const seconds = displayProgress.value * durationSv.value
-      const mins = Math.floor(seconds / 60)
-      const secs = Math.floor(seconds % 60)
-      const text = `${mins}:${secs < 10 ? "0" : ""}${secs}`
-      return {
-        text,
-      }
+  const animatedTextProps = useAnimatedProps<Partial<AnimatedTimeInputProps>>(() => {
+    const seconds = displayProgress.value * durationSv.value
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    const text = `${mins}:${secs < 10 ? "0" : ""}${secs}`
+    return {
+      text,
     }
-  )
+  })
 
   const seekNonce = React.useRef(0)
 
@@ -157,10 +149,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   }))
 
   return (
-    <Animated.View
-      layout={Layout.duration(300)}
-      className={compact ? "mb-4" : "mb-6"}
-    >
+    <Animated.View layout={Layout.duration(300)} className={compact ? "mb-4" : "mb-6"}>
       <GestureDetector gesture={Gesture.Exclusive(seekGesture, tapGesture)}>
         <View
           className={compact ? "py-2" : "py-4"}
@@ -187,9 +176,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           value={formatTime(effectiveCurrentTime)}
           style={{ color: "rgba(255, 255, 255, 0.5)" }}
         />
-        <Text className="text-xs text-white/50">
-          {formatTime(effectiveDuration)}
-        </Text>
+        <Text className="text-xs text-white/50">{formatTime(effectiveDuration)}</Text>
       </View>
     </Animated.View>
   )

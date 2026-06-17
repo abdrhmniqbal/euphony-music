@@ -17,10 +17,7 @@ import {
   getSettingsState,
   updateSettingsState,
 } from "@/modules/settings/store"
-import {
-  getCurrentAppVersion,
-  isPreviewReleaseVersion,
-} from "@/modules/updates/app-version"
+import { getCurrentAppVersion, isPreviewReleaseVersion } from "@/modules/updates/app-version"
 
 const APP_UPDATES_FILE = createSettingsConfigFile("app-updates.json")
 
@@ -29,13 +26,8 @@ let hasLoadedConfig = false
 
 function sanitizeConfig(config: unknown): AppUpdateConfig {
   const fallback = getDefaultAppUpdateConfig()
-  const defaultIncludePrereleases = isPreviewReleaseVersion(
-    getCurrentAppVersion()
-  )
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const defaultIncludePrereleases = isPreviewReleaseVersion(getCurrentAppVersion())
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   return {
     notificationsEnabled:
@@ -47,9 +39,7 @@ function sanitizeConfig(config: unknown): AppUpdateConfig {
         ? source.includePrereleases
         : defaultIncludePrereleases || fallback.includePrereleases,
     lastNotifiedVersion:
-      typeof source.lastNotifiedVersion === "string"
-        ? source.lastNotifiedVersion
-        : undefined,
+      typeof source.lastNotifiedVersion === "string" ? source.lastNotifiedVersion : undefined,
   }
 }
 

@@ -1,7 +1,4 @@
-import {
-  LegendList,
-  type LegendListRenderItemProps,
-} from "@legendapp/list/react-native"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import * as React from "react"
 import {
   type NativeScrollEvent,
@@ -92,8 +89,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const { width: windowWidth } = useWindowDimensions()
-  const itemWidth =
-    (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
+  const itemWidth = (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
   const estimatedAlbumItemHeight = itemWidth + 52
   const gridContentContainerStyle = StyleSheet.flatten([
     { paddingBottom: 8 },
@@ -106,9 +102,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
   function getAlbumMetaText(item: Album) {
     return mergeText([
       item.albumArtist || item.artist,
-      item.trackCount > 0
-        ? t("library.count.track", { count: item.trackCount })
-        : null,
+      item.trackCount > 0 ? t("library.count.track", { count: item.trackCount }) : null,
     ])
   }
 
@@ -140,9 +134,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
         <ItemTitle className="text-sm normal-case" numberOfLines={1}>
           {item.title}
         </ItemTitle>
-        <ItemDescription numberOfLines={1}>
-          {getAlbumMetaText(item)}
-        </ItemDescription>
+        <ItemDescription numberOfLines={1}>{getAlbumMetaText(item)}</ItemDescription>
       </ItemContent>
     </Item>
   )
@@ -203,9 +195,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
                 <ItemTitle className="text-sm normal-case" numberOfLines={1}>
                   {item.title}
                 </ItemTitle>
-                <ItemDescription numberOfLines={1}>
-                  {getAlbumMetaText(item)}
-                </ItemDescription>
+                <ItemDescription numberOfLines={1}>{getAlbumMetaText(item)}</ItemDescription>
               </ItemContent>
             </Item>
           </View>

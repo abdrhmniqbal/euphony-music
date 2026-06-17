@@ -25,17 +25,13 @@ interface OpenSourceLicenseItem {
 export default function OpenSourceLicensesSettingsScreen() {
   const { t } = useTranslation()
   const entries = licenses as OpenSourceLicenseItem[]
-  const [selectedEntry, setSelectedEntry] =
-    React.useState<OpenSourceLicenseItem | null>(null)
+  const [selectedEntry, setSelectedEntry] = React.useState<OpenSourceLicenseItem | null>(null)
   const snapPoints = React.useMemo(() => ["45%", "90%"], [])
   const isSheetOpen = selectedEntry !== null
 
   return (
     <>
-      <ScrollView
-        className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="gap-4 px-4 py-4">
           <Text className="text-sm text-muted">
             {t("settings.about.openSourceLicensesDescription", {
@@ -46,8 +42,7 @@ export default function OpenSourceLicensesSettingsScreen() {
           {entries.length === 0 ? (
             <Text className="text-sm text-muted">
               {t("settings.about.openSourceLicensesEmpty", {
-                defaultValue:
-                  "No generated licenses yet. Run generate:licenses script.",
+                defaultValue: "No generated licenses yet. Run generate:licenses script.",
               })}
             </Text>
           ) : (
@@ -117,9 +112,7 @@ export default function OpenSourceLicensesSettingsScreen() {
                   }}
                   className="mt-2"
                 >
-                  <Text className="text-sm text-accent">
-                    {selectedEntry.repository}
-                  </Text>
+                  <Text className="text-sm text-accent">{selectedEntry.repository}</Text>
                 </PressableFeedback>
               ) : null}
 

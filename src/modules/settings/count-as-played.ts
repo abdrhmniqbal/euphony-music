@@ -33,15 +33,10 @@ function sanitizeMinimumPlayedPercent(value: unknown) {
 }
 
 function sanitizeConfig(config: unknown): CountAsPlayedConfig {
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   return {
-    minimumPlayedPercent: sanitizeMinimumPlayedPercent(
-      source.minimumPlayedPercent
-    ),
+    minimumPlayedPercent: sanitizeMinimumPlayedPercent(source.minimumPlayedPercent),
   }
 }
 

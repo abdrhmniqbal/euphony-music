@@ -12,9 +12,7 @@ import {
   BottomSheetScrollView,
   type BottomSheetFooterProps,
 } from "@gorhom/bottom-sheet"
-import DateTimePicker, {
-  type DateTimePickerEvent,
-} from "@react-native-community/datetimepicker"
+import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import {
   BottomSheet,
@@ -36,10 +34,7 @@ import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { getArtistByName } from "@/modules/library/repository"
-import {
-  usePlayerQueue,
-  useSleepTimerState,
-} from "@/modules/player/selectors"
+import { usePlayerQueue, useSleepTimerState } from "@/modules/player/selectors"
 import {
   clearSleepTimer,
   setSleepTimerClock,
@@ -109,11 +104,7 @@ function getSleepTimerSummary(
     return t("player.sleepTimer.endOfCurrentTrack")
   }
 
-  if (
-    mode === "clock" &&
-    clockHour !== null &&
-    clockMinute !== null
-  ) {
+  if (mode === "clock" && clockHour !== null && clockMinute !== null) {
     return t("player.sleepTimer.customTimeValue", {
       value: formatClockValue(clockHour, clockMinute),
     })
@@ -152,9 +143,7 @@ function getLockedMode({
   return null
 }
 
-function createSleepTimerDraft(
-  sleepTimer: ReturnType<typeof useSleepTimerState>
-): SleepTimerDraft {
+function createSleepTimerDraft(sleepTimer: ReturnType<typeof useSleepTimerState>): SleepTimerDraft {
   const now = new Date()
 
   return {
@@ -215,12 +204,8 @@ function SleepTimerOption({
   const header = (
     <View className="flex-row items-center justify-between gap-4">
       <View className="min-w-0 flex-1 gap-1">
-        <Text className="text-base font-semibold text-foreground">
-          {title}
-        </Text>
-        <Text className="text-sm text-muted">
-          {description}
-        </Text>
+        <Text className="text-base font-semibold text-foreground">{title}</Text>
+        <Text className="text-sm text-muted">{description}</Text>
       </View>
       {suffix ? <View className="shrink-0">{suffix}</View> : null}
     </View>
@@ -233,10 +218,7 @@ function SleepTimerOption({
     >
       <View className="w-full gap-2 rounded-lg px-1 py-2">
         {onPress ? (
-          <PressableFeedback
-            onPress={onPress}
-            className="active:opacity-50"
-          >
+          <PressableFeedback onPress={onPress} className="active:opacity-50">
             {header}
           </PressableFeedback>
         ) : (
@@ -264,9 +246,7 @@ export function PlayerActionSheet({
   const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = useState(false)
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const [isSleepTimerOpen, setIsSleepTimerOpen] = useState(false)
-  const [sleepTimerDraft, setSleepTimerDraft] = useState(() =>
-    createSleepTimerDraft(sleepTimer)
-  )
+  const [sleepTimerDraft, setSleepTimerDraft] = useState(() => createSleepTimerDraft(sleepTimer))
   const {
     timerMinutes,
     playCount,
@@ -287,11 +267,7 @@ export function PlayerActionSheet({
     () =>
       canUseLibraryActions
         ? Array.from(
-            new Set(
-              artistNames
-                .map((name) => name.trim())
-                .filter((name) => name.length > 0)
-            )
+            new Set(artistNames.map((name) => name.trim()).filter((name) => name.length > 0))
           )
         : [],
     [artistNames, canUseLibraryActions]
@@ -349,10 +325,8 @@ export function PlayerActionSheet({
 
   const artistPickerItems = useMemo(
     () =>
-      buildArtistPickerItems(
-        artistPickerSource,
-        artistNames,
-        (count) => t("library.count.track", { count })
+      buildArtistPickerItems(artistPickerSource, artistNames, (count) =>
+        t("library.count.track", { count })
       ),
     [artistNames, artistPickerSource, t]
   )
@@ -397,9 +371,7 @@ export function PlayerActionSheet({
         <Toast {...props} variant="accent" placement="bottom">
           <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
           {description ? (
-            <Toast.Description className="text-xs text-muted">
-              {description}
-            </Toast.Description>
+            <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
           ) : null}
         </Toast>
       ),
@@ -428,10 +400,7 @@ export function PlayerActionSheet({
     }))
   }
 
-  const handleCustomTimePickerChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
+  const handleCustomTimePickerChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (Platform.OS === "android") {
       setSleepTimerDraft((draft) => ({
         ...draft,
@@ -440,9 +409,7 @@ export function PlayerActionSheet({
     }
 
     if (event.type === "dismissed" || !selectedDate) {
-      setSleepTimerDraft((draft) =>
-        buildDismissedCustomTimeDraft(sleepTimer, draft)
-      )
+      setSleepTimerDraft((draft) => buildDismissedCustomTimeDraft(sleepTimer, draft))
       return
     }
 
@@ -479,9 +446,7 @@ export function PlayerActionSheet({
   }
 
   const handleOpenArtistChooser = () => {
-    const normalized = artistNames
-      .map((name) => name.trim())
-      .filter((name) => name.length > 0)
+    const normalized = artistNames.map((name) => name.trim()).filter((name) => name.length > 0)
 
     if (normalized.length === 0) {
       return
@@ -529,9 +494,7 @@ export function PlayerActionSheet({
     const queueTrackIds = Array.from(
       new Set(
         (queue.length > 0 ? queue : [track])
-          .filter(
-            (item): item is Track => item !== null && item.isExternal !== true
-          )
+          .filter((item): item is Track => item !== null && item.isExternal !== true)
           .map((item) => item.id)
       )
     )
@@ -579,10 +542,7 @@ export function PlayerActionSheet({
       <BottomSheet isOpen={visible} onOpenChange={onOpenChange}>
         <BottomSheet.Portal>
           <BottomSheet.Overlay />
-          <BottomSheet.Content
-            backgroundClassName="bg-surface"
-            className="gap-1"
-          >
+          <BottomSheet.Content backgroundClassName="bg-surface" className="gap-1">
             <PressableFeedback
               className="h-14 flex-row items-center justify-between active:opacity-50"
               onPress={handleOpenSleepTimerSheet}
@@ -590,9 +550,7 @@ export function PlayerActionSheet({
               <Text className="text-base font-medium text-foreground">
                 {t("player.sleepTimer.title")}
               </Text>
-              <Text className="text-sm text-muted">
-                {sleepTimerSummary}
-              </Text>
+              <Text className="text-sm text-muted">{sleepTimerSummary}</Text>
             </PressableFeedback>
             <PressableFeedback
               className="h-14 flex-row items-center justify-between active:opacity-50"
@@ -789,14 +747,7 @@ export function PlayerActionSheet({
                 description={customTimeDescription}
                 disabled={lockedMode !== null && lockedMode !== "clock"}
                 onPress={handleOpenCustomTimePicker}
-                suffix={
-                  <LocalChevronRightIcon
-                    fill="none"
-                    width={18}
-                    height={18}
-                    color="white"
-                  />
-                }
+                suffix={<LocalChevronRightIcon fill="none" width={18} height={18} color="white" />}
               >
                 {showCustomTimePicker ? (
                   <View className="mt-2 items-stretch overflow-hidden rounded-lg">

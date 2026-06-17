@@ -18,7 +18,7 @@ export async function getFoldersSummary() {
 
 export async function getSortedFolderTracks<TOnlyIds extends boolean | undefined = false>(
   path: string | null | undefined,
-  onlyIds?: TOnlyIds,
+  onlyIds?: TOnlyIds
 ) {
   if (!path) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]
 
@@ -29,7 +29,9 @@ export async function getSortedFolderTracks<TOnlyIds extends boolean | undefined
   })
 
   if (onlyIds) {
-    return rows.map((r) => ({ id: r.id })) as TOnlyIds extends true ? Array<{ id: string }> : never[]
+    return rows.map((r) => ({ id: r.id })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : never[]
   }
 
   return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows

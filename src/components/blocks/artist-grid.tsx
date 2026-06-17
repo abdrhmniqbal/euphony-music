@@ -1,7 +1,4 @@
-import {
-  LegendList,
-  type LegendListRenderItemProps,
-} from "@legendapp/list/react-native"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import * as React from "react"
 import {
   type NativeScrollEvent,
@@ -72,8 +69,7 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const { width: windowWidth } = useWindowDimensions()
-  const itemWidth =
-    (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
+  const itemWidth = (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
   const estimatedArtistItemHeight = itemWidth + 48
   const gridContentContainerStyle = StyleSheet.flatten([
     { paddingBottom: 8 },
@@ -83,8 +79,7 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
     onArtistPress?.(artist)
   }
 
-  const formatTrackCount = (count: number) =>
-    t("library.count.track", { count })
+  const formatTrackCount = (count: number) => t("library.count.track", { count })
 
   if (data.length === 0) {
     return (
@@ -141,10 +136,7 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
                 />
               </Transition.Boundary.Target>
               <ItemContent className="mt-1 items-center">
-                <ItemTitle
-                  className="text-center text-sm normal-case"
-                  numberOfLines={1}
-                >
+                <ItemTitle className="text-center text-sm normal-case" numberOfLines={1}>
                   {item.name}
                 </ItemTitle>
                 <ItemDescription className="text-center">

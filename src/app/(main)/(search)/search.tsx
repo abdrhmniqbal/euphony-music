@@ -12,20 +12,12 @@ import { Input, PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { useRef, useState } from "react"
 import { useMutation } from "@tanstack/react-query"
-import {
-  Keyboard,
-  ScrollView,
-  type TextInput,
-  View,
-} from "react-native"
+import { Keyboard, ScrollView, type TextInput, View } from "react-native"
 import Animated, { FadeInUp, runOnJS } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
 
-import {
-  RecentSearches,
-  type RecentSearchItem,
-} from "@/components/blocks/recent-searches"
+import { RecentSearches, type RecentSearchItem } from "@/components/blocks/recent-searches"
 import {
   type SearchAlbumResult,
   type SearchArtistResult,
@@ -92,12 +84,7 @@ function HeaderSearchInput({
           accessibilityRole="button"
           accessibilityLabel={t("common.goBack")}
         >
-          <LocalArrowLeftIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.foreground}
-          />
+          <LocalArrowLeftIcon fill="none" width={24} height={24} color={theme.foreground} />
         </PressableFeedback>
 
         <Input
@@ -117,12 +104,7 @@ function HeaderSearchInput({
             onPress={handleClear}
             className="absolute inset-y-0 right-2.5 justify-center p-1"
           >
-            <LocalCancelCircleSolidIcon
-              fill="none"
-              width={20}
-              height={20}
-              color={theme.muted}
-            />
+            <LocalCancelCircleSolidIcon fill="none" width={20} height={20} color={theme.muted} />
           </PressableFeedback>
         )}
       </View>

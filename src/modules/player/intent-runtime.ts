@@ -8,10 +8,7 @@
 
 import { waitForBootstrapComplete } from "@/modules/bootstrap/runtime"
 import { playExternalFileUri } from "@/modules/player/service"
-import {
-  type PlayerExpandedView,
-  setPlayerExpandedView,
-} from "@/modules/ui/store"
+import { type PlayerExpandedView, setPlayerExpandedView } from "@/modules/ui/store"
 
 interface PlayerIntentRuntimeSnapshot {
   isHandlingExternalUri: boolean
@@ -108,18 +105,14 @@ export function getPlayerIntentRuntimeSnapshot() {
   return snapshot
 }
 
-export function subscribePlayerIntentRuntime(
-  listener: PlayerIntentRuntimeListener
-) {
+export function subscribePlayerIntentRuntime(listener: PlayerIntentRuntimeListener) {
   listeners.add(listener)
   return () => {
     listeners.delete(listener)
   }
 }
 
-export function schedulePlayerIntentRuntimeSync(
-  options: PlayerIntentRuntimeOptions
-) {
+export function schedulePlayerIntentRuntimeSync(options: PlayerIntentRuntimeOptions) {
   pendingOptions = options
 
   if (isSyncScheduled) {

@@ -19,24 +19,17 @@ export default function SettingsScreen() {
   const { t } = useTranslation()
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 48 }}
-    >
+    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 48 }}>
       <View className="gap-5 px-4 py-4">
-        <ListGroup >
+        <ListGroup>
           {SETTINGS_CATEGORY_ROUTES.map((route, index) => (
             <React.Fragment key={route.name}>
               {index > 0 && <Separator className="mx-4" />}
-              <ListGroup.Item
-                onPress={() => router.push(`/settings/${route.name}`)}
-              >
+              <ListGroup.Item onPress={() => router.push(`/settings/${route.name}`)}>
                 <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>{t(route.titleKey)}</ListGroup.ItemTitle>
                   {route.descriptionKey ? (
-                    <ListGroup.ItemDescription>
-                      {t(route.descriptionKey)}
-                    </ListGroup.ItemDescription>
+                    <ListGroup.ItemDescription>{t(route.descriptionKey)}</ListGroup.ItemDescription>
                   ) : null}
                 </ListGroup.ItemContent>
                 <ListGroup.ItemSuffix />

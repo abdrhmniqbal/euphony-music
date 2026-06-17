@@ -11,19 +11,8 @@ import { and, eq, inArray, sql } from "drizzle-orm"
 
 import * as MediaLibrary from "expo-media-library/legacy"
 import { db } from "@/db/client"
-import {
-  albums,
-  artists,
-  genres,
-  trackArtists,
-  trackGenres,
-  tracks,
-} from "@/db/schema"
-import {
-  GENRE_COLORS,
-  GENRE_SHAPES,
-  type GenreShape,
-} from "@/modules/genres/constants"
+import { albums, artists, genres, trackArtists, trackGenres, tracks } from "@/db/schema"
+import { GENRE_COLORS, GENRE_SHAPES, type GenreShape } from "@/modules/genres/constants"
 import { waitForIndexerResume } from "@/modules/indexer/runtime"
 
 import { logError } from "@/modules/logging/service"
@@ -42,26 +31,11 @@ import {
   splitGenresValue,
   type SplitMultipleValueConfig,
 } from "@/modules/settings/split-multiple-values"
-import {
-  cleanupUnusedArtworkCache,
-  extractMetadata,
-  saveArtworkToCache,
-} from "./metadata"
-import {
-  generateAssetHash,
-  generateId,
-  generateSortName,
-  hashString,
-} from "./file-identity"
-import {
-  normalizeMetadata,
-  normalizeText,
-} from "./normalization"
+import { cleanupUnusedArtworkCache, extractMetadata, saveArtworkToCache } from "./metadata"
+import { generateAssetHash, generateId, generateSortName, hashString } from "./file-identity"
+import { normalizeMetadata, normalizeText } from "./normalization"
 import { saveIndexerRunSnapshot } from "./run-snapshot"
-import {
-  isAllowedAssetUri,
-  isSupportedAssetByExtension,
-} from "./scan-filter"
+import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
 import { chunkArray, wait, yieldToEventLoop } from "./batch-utils"
 
 export { getLastIndexerRunSnapshot } from "./run-snapshot"
@@ -141,20 +115,10 @@ function createEmptyGenreVisualLookup(): GenreVisualLookup {
   }
 }
 
-function registerGenreVisual(
-  visualLookup: GenreVisualLookup,
-  color: string,
-  shape: GenreShape
-) {
+function registerGenreVisual(visualLookup: GenreVisualLookup, color: string, shape: GenreShape) {
   visualLookup.usedCombinations.add(`${color}::${shape}`)
-  visualLookup.colorUsage.set(
-    color,
-    (visualLookup.colorUsage.get(color) ?? 0) + 1
-  )
-  visualLookup.shapeUsage.set(
-    shape,
-    (visualLookup.shapeUsage.get(shape) ?? 0) + 1
-  )
+  visualLookup.colorUsage.set(color, (visualLookup.colorUsage.get(color) ?? 0) + 1)
+  visualLookup.shapeUsage.set(shape, (visualLookup.shapeUsage.get(shape) ?? 0) + 1)
 }
 
 function getAlbumLookupKey(artistId: string, title: string) {
@@ -211,16 +175,11 @@ async function preloadIndexingLookupCache(): Promise<IndexingLookupCache> {
   }
 
   return {
-    artistIdsByName: new Map(
-      artistRows.map((artist) => [artist.name, artist.id])
-    ),
+    artistIdsByName: new Map(artistRows.map((artist) => [artist.name, artist.id])),
     albumIdsByArtistAndTitle: new Map(
       albumRows
         .filter((album) => album.artistId)
-        .map((album) => [
-          getAlbumLookupKey(album.artistId as string, album.title),
-          album.id,
-        ])
+        .map((album) => [getAlbumLookupKey(album.artistId as string, album.title), album.id])
     ),
     genreIdsByName,
     genreVisuals,
@@ -249,10 +208,7 @@ async function runWithScopeCommit(work: () => Promise<void>): Promise<void> {
     } catch (error) {
       lastError = error
 
-      if (
-        !isTransientCommitError(error) ||
-        attempt >= COMMIT_SCOPE_MAX_ATTEMPTS
-      ) {
+      if (!isTransientCommitError(error) || attempt >= COMMIT_SCOPE_MAX_ATTEMPTS) {
         break
       }
 
@@ -260,16 +216,11 @@ async function runWithScopeCommit(work: () => Promise<void>): Promise<void> {
     }
   }
 
-  throw lastError instanceof Error
-    ? lastError
-    : new Error("Failed to commit indexing scope")
+  throw lastError instanceof Error ? lastError : new Error("Failed to commit indexing scope")
 }
 
 function isTransientCommitError(error: unknown): boolean {
-  const message =
-    error instanceof Error
-      ? error.message.toLowerCase()
-      : String(error).toLowerCase()
+  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase()
 
   return (
     message.includes("database is locked") ||
@@ -296,18 +247,13 @@ async function processDeletedTracksInScopes(
     }
 
     await removeTracksFromFavoritesAndPlaylists(scope)
-    await db
-      .update(tracks)
-      .set({ isDeleted: 1 })
-      .where(inArray(tracks.id, scope))
+    await db.update(tracks).set({ isDeleted: 1 }).where(inArray(tracks.id, scope))
 
     await yieldToEventLoop()
   }
 }
 
-async function hardDeleteSoftDeletedTracksInScopes(
-  signal?: AbortSignal
-): Promise<void> {
+async function hardDeleteSoftDeletedTracksInScopes(signal?: AbortSignal): Promise<void> {
   const softDeletedTracks = await db.query.tracks.findMany({
     columns: { id: true },
     where: eq(tracks.isDeleted, 1),
@@ -421,17 +367,13 @@ export async function scanMediaLibrary(
   })
   if (signal?.aborted) return
 
-  const existingTrackMap = new Map(
-    existingTracks.map((t) => [t.id, t.fileHash])
-  )
+  const existingTrackMap = new Map(existingTracks.map((t) => [t.id, t.fileHash]))
   const currentAssetIds = new Set(scopedAssets.map((a) => a.id))
   const lookupCache = await preloadIndexingLookupCache()
   if (signal?.aborted) return
 
   // Find deleted tracks
-  const deletedTrackIds = existingTracks
-    .filter((t) => !currentAssetIds.has(t.id))
-    .map((t) => t.id)
+  const deletedTrackIds = existingTracks.filter((t) => !currentAssetIds.has(t.id)).map((t) => t.id)
 
   if (deletedTrackIds.length > 0) {
     await processDeletedTracksInScopes(deletedTrackIds, signal)
@@ -551,11 +493,7 @@ async function processBatch(
   let committedCount = 0
   let failedCount = preparedBatchResult.failedCount
 
-  for (
-    let index = 0;
-    index < preparedAssets.length;
-    index += COMMIT_SCOPE_SIZE
-  ) {
+  for (let index = 0; index < preparedAssets.length; index += COMMIT_SCOPE_SIZE) {
     if (signal?.aborted) {
       return {
         preparedCount: preparedAssets.length,
@@ -587,13 +525,9 @@ async function processBatch(
       })
       committedCount += scope.length
     } catch (error) {
-      logError(
-        "Failed to commit indexing scope; retrying asset-by-asset",
-        error,
-        {
-          scopeSize: scope.length,
-        }
-      )
+      logError("Failed to commit indexing scope; retrying asset-by-asset", error, {
+        scopeSize: scope.length,
+      })
 
       for (const prepared of scope) {
         if (signal?.aborted) {
@@ -697,11 +631,7 @@ async function prepareAssetForIndexing(
   let metadata: ExtractedMetadata | null = null
   let lastError: unknown = null
 
-  for (
-    let attempt = 1;
-    attempt <= METADATA_EXTRACTION_MAX_ATTEMPTS;
-    attempt += 1
-  ) {
+  for (let attempt = 1; attempt <= METADATA_EXTRACTION_MAX_ATTEMPTS; attempt += 1) {
     if (signal?.aborted) {
       return null
     }
@@ -723,9 +653,7 @@ async function prepareAssetForIndexing(
   }
 
   if (!metadata) {
-    throw lastError instanceof Error
-      ? lastError
-      : new Error("Metadata extraction failed")
+    throw lastError instanceof Error ? lastError : new Error("Metadata extraction failed")
   }
 
   const normalizedMetadata = normalizeMetadata(metadata, asset.filename || "")
@@ -757,9 +685,7 @@ async function upsertPreparedAsset(
     return
   }
 
-  const artistId = metadata.artist
-    ? await getOrCreateArtist(metadata.artist, lookupCache)
-    : null
+  const artistId = metadata.artist ? await getOrCreateArtist(metadata.artist, lookupCache) : null
   const relationArtistNames = metadata.artists.length
     ? metadata.artists
     : metadata.artist
@@ -791,8 +717,7 @@ async function upsertPreparedAsset(
         )
       : null
 
-  const genresToProcess =
-    metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
+  const genresToProcess = metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
   const genreIds = await Promise.all(
     genresToProcess.map((genre) => getOrCreateGenre(genre, lookupCache))
   )
@@ -954,9 +879,7 @@ export async function rebuildSplitMetadataRelations(
       for (const track of scope) {
         const artistSource = normalizeText(track.rawArtist) || track.artist?.name
         const albumArtistSource =
-          normalizeText(track.rawAlbumArtist) ||
-          track.album?.artist?.name ||
-          artistSource
+          normalizeText(track.rawAlbumArtist) || track.album?.artist?.name || artistSource
         const genreSource =
           normalizeText(track.rawGenre) ||
           track.genres
@@ -976,13 +899,9 @@ export async function rebuildSplitMetadataRelations(
           tracksMissingRawGenre += 1
         }
 
-        const artistNames = dedupeNormalizedValues(
-          splitArtistsValue(artistSource, splitConfig)
-        )
+        const artistNames = dedupeNormalizedValues(splitArtistsValue(artistSource, splitConfig))
         const primaryArtistName =
-          splitConfig.artistSplitMode === "original"
-            ? normalizeText(artistSource)
-            : artistNames[0]
+          splitConfig.artistSplitMode === "original" ? normalizeText(artistSource) : artistNames[0]
         const primaryArtistId = primaryArtistName
           ? await getOrCreateArtist(primaryArtistName, lookupCache)
           : null
@@ -1012,18 +931,13 @@ export async function rebuildSplitMetadataRelations(
         const relationArtistIds = Array.from(
           new Set(
             await Promise.all(
-              [
-                ...relationArtistNames,
-                primaryArtistName ?? "",
-              ]
+              [...relationArtistNames, primaryArtistName ?? ""]
                 .filter((artist): artist is string => Boolean(artist))
                 .map((artist) => getOrCreateArtist(artist, lookupCache))
             )
           )
         )
-        const genreNames = dedupeNormalizedValues(
-          splitGenresValue(genreSource, splitConfig)
-        )
+        const genreNames = dedupeNormalizedValues(splitGenresValue(genreSource, splitConfig))
         const genreIds = await Promise.all(
           (genreNames.length > 0 ? genreNames : ["Unknown"]).map((genre) =>
             getOrCreateGenre(genre, lookupCache)
@@ -1072,10 +986,7 @@ export async function rebuildSplitMetadataRelations(
   }
 }
 
-async function getOrCreateArtist(
-  name: string,
-  lookupCache?: IndexingLookupCache
-): Promise<string> {
+async function getOrCreateArtist(name: string, lookupCache?: IndexingLookupCache): Promise<string> {
   const cachedArtistId = lookupCache?.artistIdsByName.get(name)
   if (cachedArtistId) {
     return cachedArtistId
@@ -1143,10 +1054,7 @@ async function getOrCreateAlbum(
   return id
 }
 
-async function getOrCreateGenre(
-  name: string,
-  lookupCache?: IndexingLookupCache
-): Promise<string> {
+async function getOrCreateGenre(name: string, lookupCache?: IndexingLookupCache): Promise<string> {
   const cachedGenreId = lookupCache?.genreIdsByName.get(name)
   if (cachedGenreId) {
     return cachedGenreId
@@ -1196,10 +1104,7 @@ function selectGenreVisuals(
     const hash = hashString(name)
     return {
       color: GENRE_COLORS[hash % GENRE_COLORS.length],
-      shape:
-        GENRE_SHAPES[
-          Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length
-        ],
+      shape: GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length],
     }
   }
 
@@ -1224,8 +1129,7 @@ function selectGenreVisuals(
   // If all combinations are used, deterministic overlap based on the genre name.
   const hash = hashString(name)
   const color = GENRE_COLORS[hash % GENRE_COLORS.length]
-  const shape =
-    GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length]
+  const shape = GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length]
   return { color, shape }
 }
 

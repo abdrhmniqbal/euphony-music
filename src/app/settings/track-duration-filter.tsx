@@ -74,14 +74,9 @@ export default function TrackDurationFilterScreen() {
   const theme = useThemeColors()
   const { t } = useTranslation()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
-  const config = useSettingsStore(
-    (state) => state.trackDurationFilterConfig
-  )
-  const [customSliderValue, setCustomSliderValue] = React.useState<
-    number | null
-  >(null)
-  const resolvedCustomSliderValue =
-    customSliderValue ?? config.customMinimumSeconds
+  const config = useSettingsStore((state) => state.trackDurationFilterConfig)
+  const [customSliderValue, setCustomSliderValue] = React.useState<number | null>(null)
+  const resolvedCustomSliderValue = customSliderValue ?? config.customMinimumSeconds
 
   async function handleModeSelect(mode: TrackDurationFilterMode) {
     await setTrackDurationFilterConfig({ mode })
@@ -103,7 +98,7 @@ export default function TrackDurationFilterScreen() {
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
-        <ListGroup >
+        <ListGroup>
           {DURATION_OPTIONS.map((option, index) => (
             <React.Fragment key={option.value}>
               {index > 0 && <Separator className="mx-4" />}
@@ -123,12 +118,7 @@ export default function TrackDurationFilterScreen() {
                 </ListGroup.ItemContent>
                 {config.mode === option.value && (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.accent}
-                    />
+                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 )}
               </ListGroup.Item>

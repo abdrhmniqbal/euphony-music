@@ -49,10 +49,7 @@ export async function addFavorite(entry: FavoriteEntry): Promise<void> {
   } catch {}
 }
 
-export async function removeFavorite(
-  id: string,
-  type: FavoriteType
-): Promise<void> {
+export async function removeFavorite(id: string, type: FavoriteType): Promise<void> {
   try {
     const table = getTableForType(type)
 
@@ -66,20 +63,13 @@ export async function removeFavorite(
   } catch {}
 }
 
-export async function isFavorite(
-  id: string,
-  type: FavoriteType
-): Promise<boolean> {
+export async function isFavorite(id: string, type: FavoriteType): Promise<boolean> {
   try {
     let result: unknown = null
     switch (type) {
       case "track":
         result = await db.query.tracks.findFirst({
-          where: and(
-            eq(tracks.id, id),
-            eq(tracks.isFavorite, 1),
-            eq(tracks.isDeleted, 0)
-          ),
+          where: and(eq(tracks.id, id), eq(tracks.isFavorite, 1), eq(tracks.isDeleted, 0)),
         })
         break
       case "artist":
@@ -105,9 +95,7 @@ export async function isFavorite(
   }
 }
 
-export async function getFavorites(
-  type?: FavoriteType
-): Promise<FavoriteEntry[]> {
+export async function getFavorites(type?: FavoriteType): Promise<FavoriteEntry[]> {
   try {
     const favorites: FavoriteEntry[] = []
 
@@ -201,9 +189,7 @@ export async function getFavorites(
           }
 
           playlist.tracks.forEach((playlistTrack) => {
-            const artwork =
-              playlistTrack.track?.artwork ||
-              playlistTrack.track?.album?.artwork
+            const artwork = playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork
             if (artwork && !images.includes(artwork) && images.length < 4) {
               images.push(artwork)
             }

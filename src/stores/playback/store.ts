@@ -35,9 +35,7 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
         const wantedTrack = await getTrack(tId)
         return wantedTrack
       } catch {
-        console.log(
-          `[Database Mismatch] Track (${tId}) doesn't exist in the database.`,
-        )
+        console.log(`[Database Mismatch] Track (${tId}) doesn't exist in the database.`)
         await get().reset()
       }
     },
@@ -66,17 +64,13 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
 
         const [allTracks, trackRels] = await Promise.all([
           db.query.tracks.findMany({ columns: { id: true } }),
-          db
-            .selectDistinct({ id: playlistTracks.trackId })
-            .from(playlistTracks),
+          db.selectDistinct({ id: playlistTracks.trackId }).from(playlistTracks),
         ])
         const trackIds = new Set(allTracks.map((t) => t.id))
         const relTrackIds = trackRels.map((t) => t.id)
         const invalidTracks = relTrackIds.filter((id) => !trackIds.has(id))
         if (invalidTracks.length > 0) {
-          await db
-            .delete(playlistTracks)
-            .where(inArray(playlistTracks.trackId, invalidTracks))
+          await db.delete(playlistTracks).where(inArray(playlistTracks.trackId, invalidTracks))
         }
       } catch {}
     },
@@ -111,16 +105,14 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
   {
     name: "music::playback-store",
     partialize: (state) =>
-      Object.fromEntries(
-        Object.entries(state).filter(([key]) => PersistedFields.includes(key)),
-      ),
+      Object.fromEntries(Object.entries(state).filter(([key]) => PersistedFields.includes(key))),
     onRehydrateStorage: () => {
       return (state, error) => {
         if (error) console.log("[Playback Store]", error)
         else state?._init(state)
       }
     },
-  },
+  }
 )
 
 export function usePlaybackStore<T>(selector: (s: PlaybackStore) => T): T {

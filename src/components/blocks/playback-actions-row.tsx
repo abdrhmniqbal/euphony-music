@@ -22,11 +22,7 @@ interface PlaybackActionsRowProps {
   className?: string
 }
 
-export function PlaybackActionsRow({
-  onPlay,
-  onShuffle,
-  className,
-}: PlaybackActionsRowProps) {
+export function PlaybackActionsRow({ onPlay, onShuffle, className }: PlaybackActionsRowProps) {
   const { t } = useTranslation()
   const theme = useThemeColors()
 
@@ -38,12 +34,7 @@ export function PlaybackActionsRow({
         size="lg"
         onPress={onPlay}
       >
-        <LocalPlaySolidIcon
-          fill="none"
-          width={20}
-          height={20}
-          color={theme.foreground}
-        />
+        <LocalPlaySolidIcon fill="none" width={20} height={20} color={theme.foreground} />
         <Text className="text-base font-semibold tracking-[0.1px] text-foreground">
           {t("common.playAll")}
         </Text>
@@ -54,16 +45,8 @@ export function PlaybackActionsRow({
         size="lg"
         onPress={onShuffle}
       >
-        <LocalShuffleSolidIcon
-          fill="none"
-          width={24}
-          height={24}
-          color={theme.foreground}
-        />
-        <Text
-          numberOfLines={1}
-          className="text-base font-semibold text-foreground"
-        >
+        <LocalShuffleSolidIcon fill="none" width={24} height={24} color={theme.foreground} />
+        <Text numberOfLines={1} className="text-base font-semibold text-foreground">
           {t("common.shuffle")}
         </Text>
       </Button>

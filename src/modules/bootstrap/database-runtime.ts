@@ -9,12 +9,7 @@
 import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup"
 import { logError, logInfo } from "@/modules/logging/service"
 
-type DatabaseRuntimeStatus =
-  | "idle"
-  | "waiting-migrations"
-  | "loading"
-  | "ready"
-  | "error"
+type DatabaseRuntimeStatus = "idle" | "waiting-migrations" | "loading" | "ready" | "error"
 
 interface DatabaseRuntimeSnapshot {
   status: DatabaseRuntimeStatus

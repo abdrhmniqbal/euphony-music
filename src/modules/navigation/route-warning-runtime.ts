@@ -41,12 +41,7 @@ function flushWarnings() {
   }
 }
 
-export function scheduleRouteWarning({
-  key,
-  message,
-  metadata,
-  enabled,
-}: RouteWarningOptions) {
+export function scheduleRouteWarning({ key, message, metadata, enabled }: RouteWarningOptions) {
   if (!enabled || seenWarningKeys.has(key)) {
     return
   }

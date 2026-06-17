@@ -37,9 +37,7 @@ interface FolderEntry {
   trackCount: number
 }
 
-function buildFolderEntries(
-  trackUris: Array<{ uri?: string | null }>
-): FolderEntry[] {
+function buildFolderEntries(trackUris: Array<{ uri?: string | null }>): FolderEntry[] {
   const folderMap = new Map<string, FolderEntry>()
 
   for (const track of trackUris) {
@@ -93,9 +91,7 @@ function FolderRow({
       <ListGroup.Item disabled={isDisabled}>
         <ListGroup.ItemContent>
           <ListGroup.ItemTitle>{displayName}</ListGroup.ItemTitle>
-          <ListGroup.ItemDescription numberOfLines={2}>
-            {path}
-          </ListGroup.ItemDescription>
+          <ListGroup.ItemDescription numberOfLines={2}>{path}</ListGroup.ItemDescription>
           {trackCount > 0 ? (
             <ListGroup.ItemDescription>
               {trackCount} {trackCount === 1 ? "track" : "tracks"}
@@ -110,12 +106,7 @@ function FolderRow({
             hitSlop={8}
             isIconOnly
           >
-            <LocalCancelIcon
-              fill="none"
-              width={18}
-              height={18}
-              color={removeIconColor}
-            />
+            <LocalCancelIcon fill="none" width={18} height={18} color={removeIconColor} />
           </Button>
         </ListGroup.ItemSuffix>
       </ListGroup.Item>
@@ -156,10 +147,10 @@ export default function FolderFiltersScreen() {
     useSettingsStore((state) => state.folderFilterConfig)
   )
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
-  const [pendingConfig, setPendingConfig] =
-    React.useState<FolderFilterConfig>(folderFilterConfig)
-  const [selectedMode, setSelectedMode] =
-    React.useState<FolderFilterMode>(() => getModeFromConfig(folderFilterConfig))
+  const [pendingConfig, setPendingConfig] = React.useState<FolderFilterConfig>(folderFilterConfig)
+  const [selectedMode, setSelectedMode] = React.useState<FolderFilterMode>(() =>
+    getModeFromConfig(folderFilterConfig)
+  )
   const [hasPendingChanges, setHasPendingChanges] = React.useState(false)
   const [isModeSheetOpen, setIsModeSheetOpen] = React.useState(false)
 
@@ -167,13 +158,9 @@ export default function FolderFiltersScreen() {
   const folderPaths = Array.from(
     new Set([...pendingConfig.whitelist, ...pendingConfig.blacklist])
   ).sort((a, b) =>
-    getFolderNameFromPath(a).localeCompare(
-      getFolderNameFromPath(b),
-      undefined,
-      {
-        sensitivity: "base",
-      }
-    )
+    getFolderNameFromPath(a).localeCompare(getFolderNameFromPath(b), undefined, {
+      sensitivity: "base",
+    })
   )
   const hasAnyFilters = folderPaths.length > 0
 
@@ -234,9 +221,7 @@ export default function FolderFiltersScreen() {
     }
 
     setPendingConfig((prev) => {
-      const folders = Array.from(
-        new Set([...prev.whitelist, ...prev.blacklist])
-      )
+      const folders = Array.from(new Set([...prev.whitelist, ...prev.blacklist]))
       return mode === "whitelist"
         ? { whitelist: folders, blacklist: [] }
         : { whitelist: [], blacklist: folders }
@@ -279,9 +264,7 @@ export default function FolderFiltersScreen() {
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4 pb-2">
                 <Card.Title>{t("settings.library.filterMode")}</Card.Title>
-                <Card.Description>
-                  {t("settings.library.filterModeDescription")}
-                </Card.Description>
+                <Card.Description>{t("settings.library.filterModeDescription")}</Card.Description>
               </View>
               <Button
                 variant="secondary"
@@ -301,12 +284,7 @@ export default function FolderFiltersScreen() {
               isDisabled={isIndexing}
               className="flex-1"
             >
-              <LocalAddIcon
-                fill="none"
-                width={24}
-                height={24}
-                color={theme.accent}
-              />
+              <LocalAddIcon fill="none" width={24} height={24} color={theme.accent} />
               <Button.Label>{t("settings.library.addNewFolder")}</Button.Label>
             </Button>
           </Card.Footer>
@@ -327,20 +305,13 @@ export default function FolderFiltersScreen() {
 
         {folderPaths.length === 0 ? (
           <EmptyState
-            icon={
-              <LocalFolderSolidIcon
-                fill="none"
-                width={40}
-                height={40}
-                color={theme.muted}
-              />
-            }
+            icon={<LocalFolderSolidIcon fill="none" width={40} height={40} color={theme.muted} />}
             title={t("settings.library.noFoldersAdded")}
             message={t("settings.library.noFoldersAddedMessage")}
             className="mt-4"
           />
         ) : (
-          <ListGroup >
+          <ListGroup>
             {folderPaths.map((path, index) => (
               <FolderRow
                 key={path}
@@ -367,19 +338,14 @@ export default function FolderFiltersScreen() {
           isDisabled={!hasPendingChanges || isIndexing}
           className="rounded-[22px]"
         >
-          {isIndexing
-            ? t("settings.library.indexing")
-            : t("settings.library.applyFilter")}
+          {isIndexing ? t("settings.library.indexing") : t("settings.library.applyFilter")}
         </Button>
       </View>
 
       <BottomSheet isOpen={isModeSheetOpen} onOpenChange={setIsModeSheetOpen}>
         <BottomSheet.Portal>
           <BottomSheet.Overlay />
-          <BottomSheet.Content
-            className="gap-1"
-            backgroundClassName="bg-surface"
-          >
+          <BottomSheet.Content className="gap-1" backgroundClassName="bg-surface">
             <BottomSheet.Title className="mb-1 text-xl">
               {t("settings.library.selectFilterMode")}
             </BottomSheet.Title>
@@ -392,20 +358,13 @@ export default function FolderFiltersScreen() {
             >
               <Text
                 className={`text-base ${
-                  selectedMode === "whitelist"
-                    ? "text-accent"
-                    : "text-foreground"
+                  selectedMode === "whitelist" ? "text-accent" : "text-foreground"
                 }`}
               >
                 {t("settings.library.whitelist")}
               </Text>
               {selectedMode === "whitelist" ? (
-                <LocalTickIcon
-                  fill="none"
-                  width={20}
-                  height={20}
-                  color={theme.accent}
-                />
+                <LocalTickIcon fill="none" width={20} height={20} color={theme.accent} />
               ) : null}
             </PressableFeedback>
             <PressableFeedback
@@ -417,20 +376,13 @@ export default function FolderFiltersScreen() {
             >
               <Text
                 className={`text-base ${
-                  selectedMode === "blacklist"
-                    ? "text-accent"
-                    : "text-foreground"
+                  selectedMode === "blacklist" ? "text-accent" : "text-foreground"
                 }`}
               >
                 {t("settings.library.blacklist")}
               </Text>
               {selectedMode === "blacklist" ? (
-                <LocalTickIcon
-                  fill="none"
-                  width={20}
-                  height={20}
-                  color={theme.accent}
-                />
+                <LocalTickIcon fill="none" width={20} height={20} color={theme.accent} />
               ) : null}
             </PressableFeedback>
           </BottomSheet.Content>

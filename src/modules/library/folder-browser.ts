@@ -45,11 +45,7 @@ function getTrackDirectorySegments(track: Track): string[] {
 function trimDeviceRootSegments(segments: string[]): string[] {
   if (segments.length >= 3) {
     const [first, second, third] = segments
-    if (
-      first.toLowerCase() === "storage" &&
-      second.toLowerCase() === "emulated" &&
-      third === "0"
-    ) {
+    if (first.toLowerCase() === "storage" && second.toLowerCase() === "emulated" && third === "0") {
       return segments.slice(3)
     }
   }
@@ -81,9 +77,7 @@ function buildFolderTree(tracks: Track[]): FolderNode {
         continue
       }
 
-      const nextPath = current.path
-        ? `${current.path}/${segmentKey}`
-        : segmentKey
+      const nextPath = current.path ? `${current.path}/${segmentKey}` : segmentKey
       const nextNode: FolderNode = {
         name: decodePathSegment(segmentKey),
         path: nextPath,
@@ -214,11 +208,7 @@ function sortFolderTracks(tracks: Track[], sortConfig: SortConfig): Track[] {
       return compareNumbers(a.dateAdded || 0, b.dateAdded || 0, order)
     }
 
-    return compareText(
-      a.title || a.filename || "",
-      b.title || b.filename || "",
-      order
-    )
+    return compareText(a.title || a.filename || "", b.title || b.filename || "", order)
   })
 }
 

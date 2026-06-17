@@ -1,9 +1,6 @@
 import AudioBrowser from "react-native-audio-browser"
 
-import {
-  removePlayedMediaList,
-  updatePlayedMediaList,
-} from "@/data/recent/api"
+import { removePlayedMediaList, updatePlayedMediaList } from "@/data/recent/api"
 import { getTrack } from "@/data/track/api"
 import type { PlayFromSource } from "../types"
 import { arePlaybackSourceEqual, getSourceName } from "../utils"
@@ -11,10 +8,7 @@ import { playbackStore } from "../store"
 
 import { applyReplayGainToTrack } from "@/modules/audio/replayGain/core/apply"
 
-export async function onActiveTrack(args: {
-  type: "album" | "track"
-  id: string
-}) {
+export async function onActiveTrack(args: { type: "album" | "track"; id: string }) {
   const { activeTrack } = playbackStore.getState()
   if (!activeTrack) return
   if (args.type === "album" && activeTrack.albumId !== args.id) return
@@ -26,9 +20,7 @@ export async function onActiveTrack(args: {
 
     const rnabTrack = AudioBrowser.getActiveTrack()
     if (!rnabTrack) return
-    AudioBrowser.updateNowPlaying(
-      await applyReplayGainToTrack(updatedTrackData, false),
-    )
+    AudioBrowser.updateNowPlaying(await applyReplayGainToTrack(updatedTrackData, false))
   } catch {}
 }
 

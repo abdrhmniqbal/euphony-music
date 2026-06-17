@@ -20,11 +20,9 @@ export default function PlaylistLayout() {
       <Stack.Screen name="[id]" options={{ title: t("playlist.playlist") }} />
       <Stack.Screen
         name="form"
-        options={getModalTaskTransitionOptions(
-          theme,
-          t("playlist.playlist"),
-          () => <BackButton className="-ml-2" />
-        )}
+        options={getModalTaskTransitionOptions(theme, t("playlist.playlist"), () => (
+          <BackButton className="-ml-2" />
+        ))}
       />
     </Stack>
   )

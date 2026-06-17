@@ -19,10 +19,7 @@ import {
   loadSettingsConfig,
   saveSettingsConfig,
 } from "@/modules/settings/repository"
-import {
-  getSettingsState,
-  updateSettingsState,
-} from "@/modules/settings/store"
+import { getSettingsState, updateSettingsState } from "@/modules/settings/store"
 
 interface LanguageConfig {
   languageCode: LanguageCode
@@ -107,10 +104,7 @@ let loadPromise: Promise<LanguageCode> | null = null
 let hasLoadedConfig = false
 
 function sanitizeConfig(config: unknown): LanguageConfig {
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   return {
     languageCode: isSupportedLanguageCode(source.languageCode)
@@ -156,12 +150,8 @@ export async function ensureLanguageConfigLoaded(): Promise<LanguageCode> {
   return result
 }
 
-export async function setLanguageCode(
-  languageCode: LanguageCode
-): Promise<LanguageCode> {
-  const next = isSupportedLanguageCode(languageCode)
-    ? languageCode
-    : DEFAULT_LANGUAGE_CODE
+export async function setLanguageCode(languageCode: LanguageCode): Promise<LanguageCode> {
+  const next = isSupportedLanguageCode(languageCode) ? languageCode : DEFAULT_LANGUAGE_CODE
   updateSettingsState({ languageCode: next })
   hasLoadedConfig = true
   await applyLanguage(next)

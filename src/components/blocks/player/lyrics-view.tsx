@@ -11,13 +11,7 @@ import { useQuery } from "@tanstack/react-query"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 
-import {
-  type LayoutChangeEvent,
-  ScrollView,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native"
+import { type LayoutChangeEvent, ScrollView, Text, useWindowDimensions, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import Animated, {
   Easing,
@@ -76,9 +70,7 @@ function stripMalformedUtf16LyricsPrefix(value: string) {
     const trimmed = line.trim()
     return (
       trimmed.length > 0 &&
-      !/^\[(id|ti|ar|al|au|lr|length|by|offset|re|tool|re\/tool|ve)\s*:[^\]\r\n]*\]$/i.test(
-        trimmed
-      )
+      !/^\[(id|ti|ar|al|au|lr|length|by|offset|re|tool|re\/tool|ve)\s*:[^\]\r\n]*\]$/i.test(trimmed)
     )
   })
 
@@ -108,11 +100,7 @@ function stripMalformedUtf16LyricsPrefix(value: string) {
   return lines.join("\n")
 }
 
-function findActiveIndexByTime<T>(
-  lines: T[],
-  time: number,
-  getTime: (line: T) => number
-) {
+function findActiveIndexByTime<T>(lines: T[], time: number, getTime: (line: T) => number) {
   let low = 0
   let high = lines.length - 1
   let activeIndex = -1
@@ -325,26 +313,14 @@ const TimedMarkupLineRow: React.FC<{
   onSeek: (time: number) => void
   onLayoutLine: (id: string, y: number) => void
   currentTimeSv: ReadableSharedValue<number>
-}> = ({
-  line,
-  isActive,
-  isPast,
-  fontScale,
-  onSeek,
-  onLayoutLine,
-  currentTimeSv,
-}) => {
-  const lineText = React.useMemo(
-    () => getTimedMarkupLineText(line).trim(),
-    [line]
-  )
+}> = ({ line, isActive, isPast, fontScale, onSeek, onLayoutLine, currentTimeSv }) => {
+  const lineText = React.useMemo(() => getTimedMarkupLineText(line).trim(), [line])
   const handlePress = React.useCallback(
     () => onSeek(line.begin, lineText),
     [line.begin, lineText, onSeek]
   )
   const handleLayout = React.useCallback(
-    (event: LayoutChangeEvent) =>
-      onLayoutLine(line.id, event.nativeEvent.layout.y),
+    (event: LayoutChangeEvent) => onLayoutLine(line.id, event.nativeEvent.layout.y),
     [line.id, onLayoutLine]
   )
   const wordGroups = React.useMemo(() => getTimedMarkupWordGroups(line), [line])
@@ -493,9 +469,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
   const scrollViewRef = React.useRef<ScrollView | null>(null)
   const syncedLineOffsetRef = React.useRef<Record<string, number>>({})
   const isUserScrollingRef = React.useRef(false)
-  const autoScrollResumeTimeoutRef = React.useRef<ReturnType<
-    typeof setTimeout
-  > | null>(null)
+  const autoScrollResumeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const layoutCacheKeyRef = React.useRef("")
   const [viewportHeight, setViewportHeight] = React.useState(0)
   const playbackTime = usePlaybackCurrentTime()
@@ -599,10 +573,8 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
     scheduleAutoScrollResume()
   }, [scheduleAutoScrollResume])
 
-  const isSyncedMode =
-    effectiveMode === "synced" || effectiveMode === "timedMarkup"
-  const activeLines =
-    effectiveMode === "timedMarkup" ? timedMarkupLines : syncedLines
+  const isSyncedMode = effectiveMode === "synced" || effectiveMode === "timedMarkup"
+  const activeLines = effectiveMode === "timedMarkup" ? timedMarkupLines : syncedLines
   const activeLine = activeLines[activeSyncedLineIndex]
 
   scheduleLyricsAutoScroll({
@@ -613,9 +585,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
       viewportHeight > 0 &&
       !isUserScrollingRef.current,
     scrollView: scrollViewRef.current,
-    measuredY: activeLine
-      ? syncedLineOffsetRef.current[activeLine.id]
-      : undefined,
+    measuredY: activeLine ? syncedLineOffsetRef.current[activeLine.id] : undefined,
     fallbackY: activeSyncedLineIndex * 52 * fontScale,
     viewportHeight,
   })
@@ -633,14 +603,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
         className="-mx-2 my-3 flex-1 justify-center"
       >
         <EmptyState
-          icon={
-            <LocalMicIcon
-              fill="none"
-              width={36}
-              height={36}
-              color={theme.muted}
-            />
-          }
+          icon={<LocalMicIcon fill="none" width={36} height={36} color={theme.muted} />}
           title={t("library.empty.lyricsTitle")}
           message={t("library.empty.lyricsMessage")}
           className="py-0"
@@ -660,9 +623,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
       }))
     : []
 
-  const staticDisplayLines = hasTimedMarkupLyrics
-    ? timedMarkupStaticLines
-    : lines
+  const staticDisplayLines = hasTimedMarkupLyrics ? timedMarkupStaticLines : lines
 
   return (
     <Animated.View
@@ -694,8 +655,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
         {effectiveMode === "timedMarkup"
           ? timedMarkupLines.map((line, index) => {
               const isActive = index === activeSyncedLineIndex
-              const isPast =
-                activeSyncedLineIndex >= 0 && index < activeSyncedLineIndex
+              const isPast = activeSyncedLineIndex >= 0 && index < activeSyncedLineIndex
 
               return (
                 <TimedMarkupLineRow
@@ -717,10 +677,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
                 }
 
                 return (
-                  <PressableFeedback
-                    key={line.id}
-                    className="py-1 active:opacity-85"
-                  >
+                  <PressableFeedback key={line.id} className="py-1 active:opacity-85">
                     <Text
                       selectable={false}
                       style={{
@@ -738,8 +695,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
               })
             : syncedLines.map((line, index) => {
                 const isActive = index === activeSyncedLineIndex
-                const isPast =
-                  activeSyncedLineIndex >= 0 && index < activeSyncedLineIndex
+                const isPast = activeSyncedLineIndex >= 0 && index < activeSyncedLineIndex
 
                 return (
                   <PressableFeedback
@@ -748,9 +704,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
                       void seekTo(line.time)
                     }}
                     className="py-1 active:opacity-85"
-                    onLayout={(event) =>
-                      setSyncedLineOffset(line.id, event.nativeEvent.layout.y)
-                    }
+                    onLayout={(event) => setSyncedLineOffset(line.id, event.nativeEvent.layout.y)}
                   >
                     <Text
                       selectable={false}
@@ -779,18 +733,14 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
           className="absolute bottom-3 left-2 rounded-full px-3 py-2 active:opacity-90"
           style={{
             backgroundColor:
-              effectiveMode !== "static"
-                ? theme.foreground
-                : "rgba(255, 255, 255, 0.14)",
+              effectiveMode !== "static" ? theme.foreground : "rgba(255, 255, 255, 0.14)",
           }}
         >
           <Text
             className="text-xs font-semibold"
             style={{ color: effectiveMode !== "static" ? "#0A0A0A" : "white" }}
           >
-            {effectiveMode !== "static"
-              ? t("player.karaokeOn")
-              : t("player.karaokeOff")}
+            {effectiveMode !== "static" ? t("player.karaokeOn") : t("player.karaokeOff")}
           </Text>
         </PressableFeedback>
       ) : null}
@@ -800,9 +750,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
         className="absolute right-2 bottom-3 rounded-full px-3 py-2 active:opacity-90"
         style={{ backgroundColor: "rgba(255, 255, 255, 0.14)" }}
       >
-        <Text className="text-xs font-semibold text-white">
-          {fontScaleLabel}
-        </Text>
+        <Text className="text-xs font-semibold text-white">{fontScaleLabel}</Text>
       </PressableFeedback>
     </Animated.View>
   )

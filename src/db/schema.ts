@@ -7,14 +7,7 @@
  */
 
 import { relations } from "drizzle-orm"
-import {
-  index,
-  integer,
-  primaryKey,
-  real,
-  sqliteTable,
-  text,
-} from "drizzle-orm/sqlite-core"
+import { index, integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 // ==================== CORE TABLES ====================
 
@@ -234,10 +227,7 @@ export const playlistTracks = sqliteTable(
   (table) => ({
     playlistIdx: index("playlist_tracks_playlist_idx").on(table.playlistId),
     trackIdx: index("playlist_tracks_track_idx").on(table.trackId),
-    positionIdx: index("playlist_tracks_position_idx").on(
-      table.playlistId,
-      table.position
-    ),
+    positionIdx: index("playlist_tracks_position_idx").on(table.playlistId, table.position),
   })
 )
 

@@ -1,17 +1,11 @@
 import type { Album } from "@/components/blocks/album-grid"
-import type {
-  GenreAlbumInfo,
-  GenreCategory,
-  GenreVisual,
-} from "@/modules/genres/types"
+import type { GenreAlbumInfo, GenreCategory, GenreVisual } from "@/modules/genres/types"
 
 export function mapGenresToCategories(genres: GenreVisual[]): GenreCategory[] {
   const mapped = genres
     .map((genre) => {
       const title =
-        typeof genre?.name === "string" && genre.name.trim().length > 0
-          ? genre.name.trim()
-          : null
+        typeof genre?.name === "string" && genre.name.trim().length > 0 ? genre.name.trim() : null
 
       if (!title) {
         return null
@@ -32,10 +26,7 @@ export function mapGenresToCategories(genres: GenreVisual[]): GenreCategory[] {
   return arrangeForGrid(mapped, 2)
 }
 
-function arrangeForGrid(
-  categories: GenreCategory[],
-  columns: number
-): GenreCategory[] {
+function arrangeForGrid(categories: GenreCategory[], columns: number): GenreCategory[] {
   const remaining = [...categories]
   const arranged: GenreCategory[] = []
 
@@ -97,13 +88,8 @@ function getPlacementScore(
   return score
 }
 
-export function getPreviewAlbums(
-  albums: GenreAlbumInfo[],
-  limit = 8
-): GenreAlbumInfo[] {
-  return [...albums]
-    .sort((a, b) => (b.year || 0) - (a.year || 0))
-    .slice(0, limit)
+export function getPreviewAlbums(albums: GenreAlbumInfo[], limit = 8): GenreAlbumInfo[] {
+  return [...albums].sort((a, b) => (b.year || 0) - (a.year || 0)).slice(0, limit)
 }
 
 export function mapAlbumsToGridData(albums: GenreAlbumInfo[]): Album[] {

@@ -3,10 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/tanstack-query"
 
 import { FAVORITES_KEY } from "./keys"
-import {
-  getFavorites,
-  isFavorite,
-} from "./repository"
+import { getFavorites, isFavorite } from "./repository"
 import type { FavoriteType } from "./types"
 
 interface QueryOptions {

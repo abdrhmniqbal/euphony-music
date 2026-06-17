@@ -18,10 +18,7 @@ import { useTranslation } from "react-i18next"
 
 import { ReleaseNotesMarkdown } from "@/components/blocks/release-notes-markdown"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
-import {
-  closeAppUpdatePrompt,
-  useAppUpdatePromptStore,
-} from "@/modules/updates/app-update.store"
+import { closeAppUpdatePrompt, useAppUpdatePromptStore } from "@/modules/updates/app-update.store"
 
 export function AppUpdateSheet() {
   const { t } = useTranslation()
@@ -51,18 +48,10 @@ export function AppUpdateSheet() {
             <Button.Label>{t("updates.downloadAndInstall")}</Button.Label>
           </Button>
           <View className="flex-row gap-2">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onPress={() => void handleDontRemind()}
-            >
+            <Button variant="secondary" className="flex-1" onPress={() => void handleDontRemind()}>
               <Button.Label>{t("updates.dontRemind")}</Button.Label>
             </Button>
-            <Button
-              variant="ghost"
-              className="flex-1"
-              onPress={closeAppUpdatePrompt}
-            >
+            <Button variant="ghost" className="flex-1" onPress={closeAppUpdatePrompt}>
               <Button.Label>{t("updates.later")}</Button.Label>
             </Button>
           </View>
@@ -105,8 +94,7 @@ export function AppUpdateSheet() {
           >
             <Text className="text-base font-semibold text-foreground">
               {t("updates.versionChange", {
-                currentVersion:
-                  updateInfo?.currentVersion || t("common.unknown"),
+                currentVersion: updateInfo?.currentVersion || t("common.unknown"),
                 newVersion: updateInfo?.newVersion || t("common.unknown"),
               })}
             </Text>
@@ -122,9 +110,7 @@ export function AppUpdateSheet() {
             </Text>
             <View className="mt-2">
               <ReleaseNotesMarkdown
-                markdown={
-                  updateInfo?.body?.trim() || t("updates.noReleaseNotes")
-                }
+                markdown={updateInfo?.body?.trim() || t("updates.noReleaseNotes")}
               />
             </View>
           </BottomSheetScrollView>

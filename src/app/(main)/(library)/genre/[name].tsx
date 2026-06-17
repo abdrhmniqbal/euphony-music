@@ -28,16 +28,10 @@ import { useIndexerStore } from "@/modules/indexer/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
 import { useGenreDetails } from "@/modules/search/queries"
-import {
-  getPreviewAlbums,
-} from "@/modules/search/utils"
+import { getPreviewAlbums } from "@/modules/search/utils"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
@@ -97,24 +91,16 @@ export default function GenreDetailsScreen() {
   }
 
   function renderAlbumItem(album: GenreAlbumInfo) {
-    const subtitle = `${album.artist || t("library.unknownArtist")} · ${t(
-      "library.count.track",
-      { count: album.trackCount }
-    )}`
+    const subtitle = `${album.artist || t("library.unknownArtist")} · ${t("library.count.track", {
+      count: album.trackCount,
+    })}`
 
     return (
       <MusicCard
         title={album.name}
         subtitle={subtitle}
         image={album.image}
-        icon={
-          <LocalMusicNoteSolidIcon
-            fill="none"
-            width={48}
-            height={48}
-            color={theme.muted}
-          />
-        }
+        icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         onPress={() =>
           router.push({
             pathname: "/album/[name]",
@@ -167,12 +153,7 @@ export default function GenreDetailsScreen() {
             }
             emptyState={{
               icon: (
-                <LocalMusicNoteSolidIcon
-                  fill="none"
-                  width={48}
-                  height={48}
-                  color={theme.muted}
-                />
+                <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
               ),
               title: t("home.empty.topTracksTitle"),
               message: t("library.genreTopTracksMessage", {
@@ -198,18 +179,9 @@ export default function GenreDetailsScreen() {
           <ContentSection
             title={t("library.recommendedAlbums")}
             data={previewAlbums}
-            onViewMore={() =>
-              router.push({ pathname: "./albums", params: { name: genreName } })
-            }
+            onViewMore={() => router.push({ pathname: "./albums", params: { name: genreName } })}
             emptyState={{
-              icon: (
-                <LocalVynilSolidIcon
-                  fill="none"
-                  width={48}
-                  height={48}
-                  color={theme.muted}
-                />
-              ),
+              icon: <LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
               title: t("library.empty.albumsFoundTitle"),
               message: t("library.genreAlbumsUnavailable", {
                 genre: genreName,

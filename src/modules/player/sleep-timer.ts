@@ -129,24 +129,16 @@ export function setSleepTimerClock(hour: number, minute: number) {
 }
 
 function shouldStopForTimestamp(state: SleepTimerState) {
-  return Boolean(
-    state.targetTimestamp && Date.now() >= state.targetTimestamp
-  )
+  return Boolean(state.targetTimestamp && Date.now() >= state.targetTimestamp)
 }
 
-export function evaluateSleepTimerOnProgress(
-  positionSeconds: number,
-  durationSeconds: number
-) {
+export function evaluateSleepTimerOnProgress(positionSeconds: number, durationSeconds: number) {
   const state = getSleepTimerState()
   if (state.mode === "off") {
     return
   }
 
-  if (
-    (state.mode === "minutes" || state.mode === "clock") &&
-    shouldStopForTimestamp(state)
-  ) {
+  if ((state.mode === "minutes" || state.mode === "clock") && shouldStopForTimestamp(state)) {
     void stopPlaybackForSleepTimer()
     return
   }
@@ -160,8 +152,7 @@ export function evaluateSleepTimerOnProgress(
     return
   }
 
-  const isNearTrackEnd =
-    positionSeconds >= Math.max(durationSeconds - TRACK_END_EPSILON_SECONDS, 0)
+  const isNearTrackEnd = positionSeconds >= Math.max(durationSeconds - TRACK_END_EPSILON_SECONDS, 0)
 
   if (!isNearTrackEnd) {
     return
@@ -202,10 +193,7 @@ export function handleSleepTimerTrackChanged(
     return
   }
 
-  if (
-    (state.mode === "minutes" || state.mode === "clock") &&
-    shouldStopForTimestamp(state)
-  ) {
+  if ((state.mode === "minutes" || state.mode === "clock") && shouldStopForTimestamp(state)) {
     void stopPlaybackForSleepTimer()
     return
   }

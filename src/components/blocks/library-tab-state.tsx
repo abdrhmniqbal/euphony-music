@@ -18,9 +18,7 @@ export function LibraryTabState({
   children,
 }: LibraryTabStateProps) {
   if (!hasData) {
-    return (
-      <EmptyState icon={emptyIcon} title={emptyTitle} message={emptyMessage} />
-    )
+    return <EmptyState icon={emptyIcon} title={emptyTitle} message={emptyMessage} />
   }
 
   return <>{children}</>

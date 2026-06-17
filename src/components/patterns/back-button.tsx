@@ -39,12 +39,7 @@ export function BackButton({
   }
 
   return (
-    <Button
-      onPress={handlePress}
-      variant={variant}
-      className={className}
-      isIconOnly
-    >
+    <Button onPress={handlePress} variant={variant} className={className} isIconOnly>
       <LocalArrowLeftIcon
         fill="none"
         width={24}

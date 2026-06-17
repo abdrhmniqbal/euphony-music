@@ -16,10 +16,7 @@ import { useState } from "react"
 
 import appIcon from "@/assets/icon.png"
 import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
-import {
-  checkForAppUpdate,
-  getCurrentAppVersion,
-} from "@/modules/updates/app-update.service"
+import { checkForAppUpdate, getCurrentAppVersion } from "@/modules/updates/app-update.service"
 import { openAppUpdatePrompt } from "@/modules/updates/app-update.store"
 
 export default function AboutSettingsScreen() {
@@ -38,9 +35,7 @@ export default function AboutSettingsScreen() {
       component: (props) => (
         <Toast {...props} variant="accent" placement="bottom">
           <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
-          <Toast.Description className="text-xs text-muted">
-            {description}
-          </Toast.Description>
+          <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
         </Toast>
       ),
     })
@@ -83,15 +78,9 @@ export default function AboutSettingsScreen() {
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
         <View className="flex-row items-center gap-6 bg-background px-2 py-1">
-          <Image
-            source={appIcon}
-            style={{ width: 64, height: 64 }}
-            contentFit="contain"
-          />
+          <Image source={appIcon} style={{ width: 64, height: 64 }} contentFit="contain" />
           <View className="flex-1">
-            <Text className="text-[17px] font-normal text-foreground">
-              {appName}
-            </Text>
+            <Text className="text-[17px] font-normal text-foreground">{appName}</Text>
             <Text className="mt-1 text-[13px] leading-5 text-muted">
               v{version || t("common.unknown")}
             </Text>
@@ -106,9 +95,7 @@ export default function AboutSettingsScreen() {
             disabled={isCheckingForUpdates}
           >
             <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>
-                {t("settings.about.checkForUpdates")}
-              </ListGroup.ItemTitle>
+              <ListGroup.ItemTitle>{t("settings.about.checkForUpdates")}</ListGroup.ItemTitle>
               <ListGroup.ItemDescription>
                 {isCheckingForUpdates
                   ? t("settings.about.checkingForUpdates")
@@ -124,9 +111,7 @@ export default function AboutSettingsScreen() {
             }}
           >
             <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>
-                {t("settings.about.whatsNew")}
-              </ListGroup.ItemTitle>
+              <ListGroup.ItemTitle>{t("settings.about.whatsNew")}</ListGroup.ItemTitle>
               <ListGroup.ItemDescription>
                 {t("settings.about.whatsNewDescription")}
               </ListGroup.ItemDescription>
@@ -140,9 +125,7 @@ export default function AboutSettingsScreen() {
             }}
           >
             <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>
-                {t("settings.about.github")}
-              </ListGroup.ItemTitle>
+              <ListGroup.ItemTitle>{t("settings.about.github")}</ListGroup.ItemTitle>
               <ListGroup.ItemDescription>
                 {t("settings.about.repositoryDescription")}
               </ListGroup.ItemDescription>
@@ -156,9 +139,7 @@ export default function AboutSettingsScreen() {
             }}
           >
             <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>
-                {t("settings.about.helpTranslate")}
-              </ListGroup.ItemTitle>
+              <ListGroup.ItemTitle>{t("settings.about.helpTranslate")}</ListGroup.ItemTitle>
               <ListGroup.ItemDescription>
                 {t("settings.about.helpTranslateDescription")}
               </ListGroup.ItemDescription>

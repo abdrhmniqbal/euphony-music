@@ -2,15 +2,8 @@ import { queryClient } from "@/lib/tanstack-query"
 import { invalidateQueryKeys } from "@/lib/query-invalidation"
 import { FAVORITES_KEY } from "@/modules/favorites/keys"
 import { GENRES_KEY } from "@/modules/genres/keys"
-import {
-  HISTORY_RECENTLY_PLAYED_KEY,
-  HISTORY_TOP_TRACKS_KEY,
-} from "@/modules/history/keys"
-import {
-  ALBUMS_KEY,
-  ARTISTS_KEY,
-  SEARCH_KEY,
-} from "@/modules/library/keys"
+import { HISTORY_RECENTLY_PLAYED_KEY, HISTORY_TOP_TRACKS_KEY } from "@/modules/history/keys"
+import { ALBUMS_KEY, ARTISTS_KEY, SEARCH_KEY } from "@/modules/library/keys"
 import { logInfo } from "@/modules/logging/service"
 import { PLAYLISTS_KEY } from "@/modules/playlist/keys"
 import { loadTracks } from "@/modules/player/library"

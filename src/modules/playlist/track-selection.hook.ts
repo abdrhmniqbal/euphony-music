@@ -4,10 +4,7 @@ import { queryClient } from "@/lib/tanstack-query"
 import { logError, logInfo } from "@/modules/logging/service"
 
 import { invalidatePlaylistQueries } from "./keys"
-import {
-  addTrackToPlaylist,
-  removeTrackFromPlaylist,
-} from "./repository"
+import { addTrackToPlaylist, removeTrackFromPlaylist } from "./repository"
 
 export interface SelectTrackPlaylistInput {
   playlistId: string

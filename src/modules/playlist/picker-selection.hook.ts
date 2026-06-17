@@ -33,9 +33,7 @@ export function usePlaylistPickerSelection({
       }
 
       if (result.status === "failed") {
-        showPlaylistToast(
-          hasTrack ? "Failed to remove track" : "Failed to add track"
-        )
+        showPlaylistToast(hasTrack ? "Failed to remove track" : "Failed to add track")
         return
       }
 

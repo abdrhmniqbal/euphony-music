@@ -6,11 +6,7 @@
  * Side Effects: Starts notification runtime, drives splash-screen visibility, triggers bootstrap lifecycle, routes into player/settings screens.
  */
 
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "expo-router/react-navigation"
+import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router/react-navigation"
 import { useSegments } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import * as SplashScreen from "expo-splash-screen"
@@ -18,11 +14,7 @@ import { HeroUINativeProvider } from "heroui-native"
 import { type ReactNode, useRef } from "react"
 import { View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-  withTiming,
-} from "react-native-reanimated"
+import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useUniwind } from "uniwind"
 
@@ -35,10 +27,7 @@ import {
   handleBootstrapDatabaseReady,
 } from "@/modules/bootstrap/runtime"
 import { checkStartupAppUpdate } from "@/modules/updates/app-update.runtime"
-import {
-  ROOT_MODAL_SCREEN_OPTIONS,
-  getHiddenPlayerScreenOptions,
-} from "@/modules/navigation/stack"
+import { ROOT_MODAL_SCREEN_OPTIONS, getHiddenPlayerScreenOptions } from "@/modules/navigation/stack"
 import {
   ensureNotificationRuntimeStarted,
   setNotificationRouteHandler,
@@ -75,10 +64,7 @@ function ToastAnimatedWrapper({
   }))
 
   return (
-    <Animated.View
-      style={[{ flex: 1 }, animatedStyle]}
-      pointerEvents="box-none"
-    >
+    <Animated.View style={[{ flex: 1 }, animatedStyle]} pointerEvents="box-none">
       {children}
     </Animated.View>
   )
@@ -127,17 +113,14 @@ export default function Layout() {
   }
   const tabBarHeight = getTabBarHeight(insets.bottom)
   const isMainTabsRoute = segments[0] === "(main)"
-  const isFolderFiltersRoute =
-    segments[0] === "settings" && segments.at(1) === "folder-filters"
+  const isFolderFiltersRoute = segments[0] === "settings" && segments.at(1) === "folder-filters"
   const folderFiltersToastOffset = isFolderFiltersRoute
     ? SETTINGS_FOLDER_FILTERS_ACTION_HEIGHT +
       Math.max(insets.bottom, SETTINGS_FOLDER_FILTERS_ACTION_TOP_PADDING)
     : 0
   const toastExtraBottomOffset = isMainTabsRoute
     ? barsVisible
-      ? tabBarHeight +
-        (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) +
-        TOAST_VISIBLE_BOTTOM_GAP
+      ? tabBarHeight + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) + TOAST_VISIBLE_BOTTOM_GAP
       : TOAST_HIDDEN_BOTTOM_GAP
     : folderFiltersToastOffset
 
@@ -154,9 +137,7 @@ export default function Layout() {
   }
 
   return (
-    <GestureHandlerRootView
-      style={{ flex: 1, backgroundColor: theme.background }}
-    >
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.background }}>
       <ThemeProvider value={navigationTheme}>
         <View style={{ flex: 1, backgroundColor: theme.background }}>
           <HeroUINativeProvider
@@ -189,9 +170,7 @@ export default function Layout() {
                   <Stack.Screen name="settings" options={ROOT_MODAL_SCREEN_OPTIONS} />
                   <Stack.Screen
                     name="player"
-                    options={({ route }) =>
-                      getHiddenPlayerScreenOptions(route.params)
-                    }
+                    options={({ route }) => getHiddenPlayerScreenOptions(route.params)}
                   />
                 </Stack>
                 <AppUpdateSheet />

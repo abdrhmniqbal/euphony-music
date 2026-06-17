@@ -7,11 +7,7 @@
  */
 
 import type { Track } from "@/modules/player/types"
-import {
-  getAlbumsByGenre,
-  getAllGenres,
-  getAllTracksByGenre,
-} from "@/modules/genres/repository"
+import { getAlbumsByGenre, getAllGenres, getAllTracksByGenre } from "@/modules/genres/repository"
 
 import type { GenreAlbumInfo } from "./types"
 
@@ -34,8 +30,6 @@ export async function getGenreTopTracks(genreName: string): Promise<Track[]> {
   return getAllTracksByGenre(genreName)
 }
 
-export async function getGenreAlbums(
-  genreName: string
-): Promise<GenreAlbumInfo[]> {
+export async function getGenreAlbums(genreName: string): Promise<GenreAlbumInfo[]> {
   return getAlbumsByGenre(genreName)
 }

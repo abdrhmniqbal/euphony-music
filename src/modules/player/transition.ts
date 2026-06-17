@@ -5,8 +5,7 @@ interface ResolvePlayerTransitionIdParams {
 }
 
 export function resolvePlayerTransitionId(params: ResolvePlayerTransitionIdParams) {
-  const candidate =
-    params.transitionId?.trim() || params.trackId?.trim() || params.title?.trim()
+  const candidate = params.transitionId?.trim() || params.trackId?.trim() || params.title?.trim()
 
   if (!candidate) {
     return "player:unknown"

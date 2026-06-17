@@ -7,12 +7,7 @@
  */
 
 import type { RepeatModeType } from "@/modules/player/types"
-import {
-  isExtraLoggingEnabled,
-  logError,
-  logInfo,
-  logWarn,
-} from "@/modules/logging/service"
+import { isExtraLoggingEnabled, logError, logInfo, logWarn } from "@/modules/logging/service"
 import {
   fadePlaybackVolumeIn,
   fadePlaybackVolumeOut,
@@ -32,12 +27,7 @@ import {
   togglePlaybackCore,
 } from "@/modules/player/playback-core"
 
-import {
-  getRepeatModeState,
-  setIsPlayingState,
-  setRepeatModeState,
-  usePlayerStore,
-} from "./store"
+import { getRepeatModeState, setIsPlayingState, setRepeatModeState, usePlayerStore } from "./store"
 
 export async function pauseTrack() {
   try {

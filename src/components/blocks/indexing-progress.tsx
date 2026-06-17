@@ -6,19 +6,10 @@
  * Side Effects: Schedules progress toast show/hide and stop-indexing actions.
  */
 
-import {
-  PressableFeedback,
-  Toast,
-  type ToastComponentProps,
-  useToast,
-} from "heroui-native"
+import { PressableFeedback, Toast, type ToastComponentProps, useToast } from "heroui-native"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import Animated, {
-  useDerivedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated"
+import Animated, { useDerivedValue, useAnimatedStyle, withTiming } from "react-native-reanimated"
 
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -55,9 +46,7 @@ function IndexingProgressToast(props: ToastComponentProps) {
       <Toast {...props} variant="accent" placement="bottom" isSwipeable={false}>
         <View className="flex-row items-center gap-3 px-4 py-3">
           <View className="flex-1">
-            <Toast.Title className="text-sm font-semibold">
-              {phaseLabels.complete}
-            </Toast.Title>
+            <Toast.Title className="text-sm font-semibold">{phaseLabels.complete}</Toast.Title>
             <Toast.Description className="text-xs text-muted">
               {t("indexing.tracksIndexed", {
                 count: state.totalFiles,
@@ -74,38 +63,20 @@ function IndexingProgressToast(props: ToastComponentProps) {
       <View className="gap-2 px-4 py-3">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
-            <Toast.Title className="text-sm font-semibold">
-              {phaseLabels[state.phase]}
-            </Toast.Title>
+            <Toast.Title className="text-sm font-semibold">{phaseLabels[state.phase]}</Toast.Title>
           </View>
 
-          <PressableFeedback
-            onPress={stopIndexing}
-            className="p-1 active:opacity-50"
-            hitSlop={8}
-          >
-            <LocalCancelIcon
-              fill="none"
-              width={18}
-              height={18}
-              color={theme.muted}
-            />
+          <PressableFeedback onPress={stopIndexing} className="p-1 active:opacity-50" hitSlop={8}>
+            <LocalCancelIcon fill="none" width={18} height={18} color={theme.muted} />
           </PressableFeedback>
         </View>
 
         <View className="h-1.5 w-full overflow-hidden rounded-full bg-muted/20">
-          <Animated.View
-            style={progressBarStyle}
-            className="h-full rounded-full bg-accent"
-          />
+          <Animated.View style={progressBarStyle} className="h-full rounded-full bg-accent" />
         </View>
 
         <View className="flex-row items-center justify-between">
-          <Text
-            className="flex-1 text-xs text-muted"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
+          <Text className="flex-1 text-xs text-muted" numberOfLines={1} ellipsizeMode="tail">
             {state.currentFile || t("indexing.preparing")}
           </Text>
           <Text className="ml-2 text-xs text-muted">

@@ -82,22 +82,14 @@ function TypeBadge({ type }: { type: NonNullable<RecentSearchItem["type"]> }) {
   )
 }
 
-function RecentSearchRow({
-  item,
-  icon,
-  mutedColor,
-  onPress,
-  onRemove,
-}: RecentSearchRowProps) {
+function RecentSearchRow({ item, icon, mutedColor, onPress, onRemove }: RecentSearchRowProps) {
   const imageClassName = item.type === "artist" ? "rounded-full" : "rounded-md"
 
   return (
     <Item onPress={() => onPress(item)}>
       {item.type === "playlist" ? (
         <ItemImage className="items-center justify-center overflow-hidden rounded-md bg-default">
-          <PlaylistArtwork
-            images={resolvePlaylistArtworkImages(item.images, item.image)}
-          />
+          <PlaylistArtwork images={resolvePlaylistArtworkImages(item.images, item.image)} />
         </ItemImage>
       ) : (
         <ItemImage icon={icon} image={item.image} className={imageClassName} />
@@ -110,12 +102,7 @@ function RecentSearchRow({
         </View>
       </ItemContent>
       <ItemAction className="p-2" onPress={() => onRemove(item.id)}>
-        <LocalCancelIcon
-          fill="none"
-          width={20}
-          height={20}
-          color={mutedColor}
-        />
+        <LocalCancelIcon fill="none" width={20} height={20} color={mutedColor} />
       </ItemAction>
     </Item>
   )
@@ -130,46 +117,21 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
 
-  const getIconForType = useCallback((type?: string) => {
-    switch (type) {
-      case "artist":
-        return (
-          <LocalUserIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.muted}
-          />
-        )
-      case "album":
-        return (
-          <LocalVynilSolidIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.muted}
-          />
-        )
-      case "playlist":
-        return (
-          <LocalPlaylistSolidIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.muted}
-          />
-        )
-      default:
-        return (
-          <LocalClockSolidIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.muted}
-          />
-        )
-    }
-  }, [theme.muted])
+  const getIconForType = useCallback(
+    (type?: string) => {
+      switch (type) {
+        case "artist":
+          return <LocalUserIcon fill="none" width={24} height={24} color={theme.muted} />
+        case "album":
+          return <LocalVynilSolidIcon fill="none" width={24} height={24} color={theme.muted} />
+        case "playlist":
+          return <LocalPlaylistSolidIcon fill="none" width={24} height={24} color={theme.muted} />
+        default:
+          return <LocalClockSolidIcon fill="none" width={24} height={24} color={theme.muted} />
+      }
+    },
+    [theme.muted]
+  )
 
   if (searches.length === 0) {
     return null
@@ -178,24 +140,22 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
   return (
     <View className="px-4 py-4">
       <View className="mb-6 flex-row items-center justify-between">
-        <Text className="text-lg font-bold text-foreground">
-          {t("search.recentSearches")}
-        </Text>
+        <Text className="text-lg font-bold text-foreground">{t("search.recentSearches")}</Text>
         <PressableFeedback className="active:opacity-50" onPress={onClear}>
           <Text className="text-muted">{t("common.clear")}</Text>
         </PressableFeedback>
       </View>
       <View className="gap-2">
-          {searches.map((item) => (
-            <RecentSearchRow
-              key={item.id}
-              item={item}
-              icon={getIconForType(item.type)}
-              mutedColor={theme.muted}
-              onPress={onItemPress}
-              onRemove={onRemoveItem}
-            />
-          ))}
+        {searches.map((item) => (
+          <RecentSearchRow
+            key={item.id}
+            item={item}
+            icon={getIconForType(item.type)}
+            mutedColor={theme.muted}
+            onPress={onItemPress}
+            onRemove={onRemoveItem}
+          />
+        ))}
       </View>
     </View>
   )

@@ -20,9 +20,7 @@ import { useCallback, useMemo, useState } from "react"
 import { Keyboard, ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { LEGEND_LIST_SECTION_CONFIG } from "@/components/blocks/legend-list-config"
-import {
-  MemoizedSearchResultRow,
-} from "@/components/patterns/search-result-row"
+import { MemoizedSearchResultRow } from "@/components/patterns/search-result-row"
 
 export type {
   SearchAlbumResult,
@@ -223,14 +221,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         case "section-header":
           return (
             <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-lg font-bold text-foreground">
-                {item.title}
-              </Text>
+              <Text className="text-lg font-bold text-foreground">{item.title}</Text>
               {item.showSeeMore && onSeeMoreTracks && (
                 <PressableFeedback onPress={onSeeMoreTracks}>
-                  <Text className="text-xs text-muted">
-                    {t("common.seeMore")}
-                  </Text>
+                  <Text className="text-xs text-muted">{t("common.seeMore")}</Text>
                 </PressableFeedback>
               )}
             </View>
@@ -247,14 +241,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
           )
       }
     },
-    [
-      onAlbumPress,
-      onArtistPress,
-      onPlaylistPress,
-      onSeeMoreTracks,
-      onTrackPress,
-      t,
-    ]
+    [onAlbumPress, onArtistPress, onPlaylistPress, onSeeMoreTracks, onTrackPress, t]
   )
 
   return (
@@ -278,9 +265,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             color={activeTab === tab ? "accent" : "default"}
             size="lg"
           >
-            <Chip.Label className="font-medium">
-              {getSearchTabLabel(tab)}
-            </Chip.Label>
+            <Chip.Label className="font-medium">{getSearchTabLabel(tab)}</Chip.Label>
           </Chip>
         ))}
       </ScrollView>

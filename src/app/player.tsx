@@ -17,11 +17,7 @@ import {
 import { buildArtistPickerItems } from "@/components/blocks/artist-picker.utils"
 import { FullPlayerContent } from "@/components/blocks/player/full-player-content"
 import { PlayerActionSheet } from "@/components/blocks/player/action-sheet"
-import {
-  useCurrentTrack,
-  useIsPlaying,
-  usePlayerQueueContext,
-} from "@/modules/player/selectors"
+import { useCurrentTrack, useIsPlaying, usePlayerQueueContext } from "@/modules/player/selectors"
 import {
   getPlayerIntentRuntimeSnapshot,
   schedulePlayerIntentRuntimeSync,
@@ -30,11 +26,7 @@ import {
 import { useTrack } from "@/modules/tracks/queries"
 import { splitArtistsValue } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
-import {
-  type PlayerExpandedView,
-  setPlayerExpandedView,
-  useUIStore,
-} from "@/modules/ui/store"
+import { type PlayerExpandedView, setPlayerExpandedView, useUIStore } from "@/modules/ui/store"
 import { useTranslation } from "react-i18next"
 
 function isPlayerExpandedView(value: string): value is PlayerExpandedView {
@@ -51,13 +43,9 @@ export default function PlayerRoute() {
   const currentTrack = useCurrentTrack()
   const isPlaying = useIsPlaying()
   const queueContext = usePlayerQueueContext()
-  const splitMultipleValueConfig = useSettingsStore(
-    (state) => state.splitMultipleValueConfig
-  )
+  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
   const playerExpandedView = useUIStore((state) => state.playerExpandedView)
-  const { data: fullTrackData } = useTrack(
-    currentTrack?.isExternal ? "" : currentTrack?.id ?? ""
-  )
+  const { data: fullTrackData } = useTrack(currentTrack?.isExternal ? "" : (currentTrack?.id ?? ""))
   const [isActionSheetOpen, setIsActionSheetOpen] = useState(false)
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const intentSnapshot = useSyncExternalStore(
@@ -67,13 +55,9 @@ export default function PlayerRoute() {
   )
 
   const externalUriValue =
-    typeof externalUri === "string" && externalUri.length > 0
-      ? externalUri
-      : null
+    typeof externalUri === "string" && externalUri.length > 0 ? externalUri : null
   const initialViewValue =
-    typeof initialView === "string" && isPlayerExpandedView(initialView)
-      ? initialView
-      : null
+    typeof initialView === "string" && isPlayerExpandedView(initialView) ? initialView : null
 
   schedulePlayerIntentRuntimeSync({
     initialView: initialViewValue,
@@ -86,17 +70,13 @@ export default function PlayerRoute() {
   const artistNames = useMemo(() => {
     const relationNames = [
       fullTrackData?.artist?.name?.trim(),
-      ...(fullTrackData?.featuredArtists?.map((entry) =>
-        entry.artist?.name?.trim()
-      ) ?? []),
+      ...(fullTrackData?.featuredArtists?.map((entry) => entry.artist?.name?.trim()) ?? []),
     ].filter((value): value is string => Boolean(value))
 
     if (relationNames.length > 0) {
       return relationNames.filter(
         (value, index, all) =>
-          all.findIndex(
-            (entry) => entry.toLowerCase() === value.toLowerCase()
-          ) === index
+          all.findIndex((entry) => entry.toLowerCase() === value.toLowerCase()) === index
       )
     }
 
@@ -127,10 +107,7 @@ export default function PlayerRoute() {
     [artistNames, fullTrackData, t]
   )
 
-  if (
-    externalUriValue &&
-    (intentSnapshot.isHandlingExternalUri || !currentTrack)
-  ) {
+  if (externalUriValue && (intentSnapshot.isHandlingExternalUri || !currentTrack)) {
     return null
   }
 
@@ -181,9 +158,7 @@ export default function PlayerRoute() {
         playerExpandedView={playerExpandedView}
         queueContext={queueContext}
         onClose={dismissPlayer}
-        onOpenMore={
-          currentTrack.isExternal ? undefined : () => setIsActionSheetOpen(true)
-        }
+        onOpenMore={currentTrack.isExternal ? undefined : () => setIsActionSheetOpen(true)}
         onPressArtist={currentTrack.isExternal ? undefined : handleArtistPress}
       />
 

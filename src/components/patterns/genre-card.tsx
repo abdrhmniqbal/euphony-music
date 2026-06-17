@@ -28,13 +28,7 @@ const GRID_PATTERN_KEYS = [
   "grid-12",
 ]
 
-export function GenreCard({
-  title,
-  trackCount,
-  color,
-  pattern,
-  onPress,
-}: GenreCardProps) {
+export function GenreCard({ title, trackCount, color, pattern, onPress }: GenreCardProps) {
   const { t } = useTranslation()
   const normalizedTrackCount = Number.isFinite(trackCount)
     ? Math.max(0, Math.trunc(trackCount))
@@ -44,22 +38,10 @@ export function GenreCard({
   })
 
   return (
-    <PressableFeedback
-      onPress={onPress}
-      className="w-[47.5%] active:opacity-80"
-    >
-      <Card
-        className={cn(
-          "relative h-24 justify-between overflow-hidden border-none p-4",
-          color
-        )}
-      >
-        <Text className="z-10 text-[17px] leading-tight font-bold text-white">
-          {title}
-        </Text>
-        <Text className="z-10 text-xs font-medium text-white/80">
-          {trackCountLabel}
-        </Text>
+    <PressableFeedback onPress={onPress} className="w-[47.5%] active:opacity-80">
+      <Card className={cn("relative h-24 justify-between overflow-hidden border-none p-4", color)}>
+        <Text className="z-10 text-[17px] leading-tight font-bold text-white">{title}</Text>
+        <Text className="z-10 text-xs font-medium text-white/80">{trackCountLabel}</Text>
         <View className="absolute inset-0">
           {pattern === "circles" && (
             <>

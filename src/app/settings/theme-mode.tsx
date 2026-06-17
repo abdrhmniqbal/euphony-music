@@ -33,9 +33,7 @@ export default function ThemeModeSettingsScreen() {
   const theme = useThemeColors()
   const { t } = useTranslation()
 
-  const currentMode: ThemeValue = hasAdaptiveThemes
-    ? "system"
-    : (currentTheme as ThemeValue)
+  const currentMode: ThemeValue = hasAdaptiveThemes ? "system" : (currentTheme as ThemeValue)
 
   function handleThemeChange(value: ThemeValue) {
     Uniwind.setTheme(value)

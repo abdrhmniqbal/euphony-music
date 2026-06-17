@@ -12,10 +12,7 @@ import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalTickIcon from "@/components/icons/local/tick"
-import {
-  getLanguageOptions,
-  setLanguageCode,
-} from "@/modules/localization/language-settings"
+import { getLanguageOptions, setLanguageCode } from "@/modules/localization/language-settings"
 import { getDeviceLanguageCode } from "@/modules/localization/i18n"
 import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -36,9 +33,7 @@ export default function LanguageSettingsScreen() {
     const sortedOptions = options.sort((left, right) =>
       collator.compare(t(left.labelKey), t(right.labelKey))
     )
-    const selectedIndex = sortedOptions.findIndex(
-      (option) => option.code === selectedLanguageCode
-    )
+    const selectedIndex = sortedOptions.findIndex((option) => option.code === selectedLanguageCode)
 
     if (selectedIndex <= 0) {
       return sortedOptions
@@ -61,10 +56,7 @@ export default function LanguageSettingsScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
+    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
         <ListGroup>
           {languageOptions.map((option, index) => (
@@ -79,18 +71,11 @@ export default function LanguageSettingsScreen() {
                   <ListGroup.ItemTitle>
                     {getLanguageLabel(option.code, option.labelKey)}
                   </ListGroup.ItemTitle>
-                  <ListGroup.ItemDescription>
-                    {t(option.nativeLabelKey)}
-                  </ListGroup.ItemDescription>
+                  <ListGroup.ItemDescription>{t(option.nativeLabelKey)}</ListGroup.ItemDescription>
                 </ListGroup.ItemContent>
                 {languageCode === option.code ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.accent}
-                    />
+                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

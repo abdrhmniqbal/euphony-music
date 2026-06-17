@@ -6,10 +6,7 @@
  * Side Effects: Reads/writes split-multiple-values.json and mutates in-memory settings state.
  */
 
-import type {
-  ArtistSplitMode,
-  SplitMultipleValueConfig,
-} from "@/modules/settings/types"
+import type { ArtistSplitMode, SplitMultipleValueConfig } from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
@@ -23,9 +20,7 @@ import {
 
 export type { ArtistSplitMode, SplitMultipleValueConfig }
 
-const SPLIT_MULTIPLE_VALUES_FILE = createSettingsConfigFile(
-  "split-multiple-values.json"
-)
+const SPLIT_MULTIPLE_VALUES_FILE = createSettingsConfigFile("split-multiple-values.json")
 
 let loadPromise: Promise<SplitMultipleValueConfig> | null = null
 let hasLoadedConfig = false
@@ -91,26 +86,17 @@ function sanitizeArtists(value: unknown): string[] {
 }
 
 function sanitizeConfig(config: unknown): SplitMultipleValueConfig {
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   const defaults = getDefaultSplitMultipleValueConfig()
   const artistSplitMode: ArtistSplitMode =
     source.artistSplitMode === "original" ? "original" : "split"
 
   return {
-    artistSplitSymbols: sanitizeSymbols(
-      source.artistSplitSymbols,
-      defaults.artistSplitSymbols
-    ),
+    artistSplitSymbols: sanitizeSymbols(source.artistSplitSymbols, defaults.artistSplitSymbols),
     unsplitArtists: sanitizeArtists(source.unsplitArtists),
     artistSplitMode,
-    genreSplitSymbols: sanitizeSymbols(
-      source.genreSplitSymbols,
-      defaults.genreSplitSymbols
-    ),
+    genreSplitSymbols: sanitizeSymbols(source.genreSplitSymbols, defaults.genreSplitSymbols),
   }
 }
 
@@ -189,20 +175,11 @@ function dedupeValues(values: string[]): string[] {
   return result
 }
 
-function splitArtistsWithConfig(
-  value: string,
-  config: SplitMultipleValueConfig
-): string[] {
-  const { maskedValue, placeholders } = maskUnsplitArtists(
-    value,
-    config.unsplitArtists
-  )
+function splitArtistsWithConfig(value: string, config: SplitMultipleValueConfig): string[] {
+  const { maskedValue, placeholders } = maskUnsplitArtists(value, config.unsplitArtists)
 
   return dedupeValues(
-    restoreMaskedArtists(
-      splitBySymbols(maskedValue, config.artistSplitSymbols),
-      placeholders
-    )
+    restoreMaskedArtists(splitBySymbols(maskedValue, config.artistSplitSymbols), placeholders)
   )
 }
 

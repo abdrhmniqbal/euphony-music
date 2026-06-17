@@ -6,11 +6,7 @@
  * Side Effects: Reads audio files/artwork, writes artwork cache entries, and deletes unreferenced cached artwork files.
  */
 
-import {
-  getArtwork,
-  getLyric,
-  getMetadata,
-} from "@missingcore/react-native-metadata-retriever"
+import { getArtwork, getLyric, getMetadata } from "@missingcore/react-native-metadata-retriever"
 import { eq } from "drizzle-orm"
 import { Directory, File, Paths } from "expo-file-system"
 
@@ -18,10 +14,7 @@ import { db } from "@/db/client"
 import { artworkCache } from "@/db/schema"
 import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
 import type { SplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
-import {
-  splitArtistsValue,
-  splitGenresValue,
-} from "@/modules/settings/split-multiple-values"
+import { splitArtistsValue, splitGenresValue } from "@/modules/settings/split-multiple-values"
 
 export interface ExtractedMetadata {
   title: string
@@ -150,9 +143,7 @@ function extractId3SyncedLyrics(frameBytes: Uint8Array) {
   const descriptorAndData = frameBytes.slice(6)
   const descriptorEnd = findEncodedTextTerminator(descriptorAndData, encoding)
   const dataStart =
-    descriptorEnd >= 0
-      ? descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2)
-      : 0
+    descriptorEnd >= 0 ? descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2) : 0
   const payload = descriptorAndData.slice(dataStart)
   if (payload.length === 0) {
     return undefined
@@ -226,9 +217,7 @@ function extractId3Lyrics(bytes: Uint8Array) {
     }
 
     const frameSize =
-      version === 4
-        ? decodeSyncSafeInteger(bytes, offset + 4)
-        : decodeInteger(bytes, offset + 4)
+      version === 4 ? decodeSyncSafeInteger(bytes, offset + 4) : decodeInteger(bytes, offset + 4)
     if (frameSize <= 0) {
       break
     }
@@ -251,18 +240,11 @@ function extractId3Lyrics(bytes: Uint8Array) {
       const frameBytes = bytes.slice(frameStart, frameEnd)
       const encoding = frameBytes[0] || 0
       const descriptorAndLyrics = frameBytes.slice(4)
-      const descriptorEnd = findEncodedTextTerminator(
-        descriptorAndLyrics,
-        encoding
-      )
+      const descriptorEnd = findEncodedTextTerminator(descriptorAndLyrics, encoding)
       const lyricsStart =
-        descriptorEnd >= 0
-          ? descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2)
-          : 0
+        descriptorEnd >= 0 ? descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2) : 0
       const lyricsBytes = descriptorAndLyrics.slice(lyricsStart)
-      const lyrics = stripMalformedUtf16LyricsPrefix(
-        decodeTextValue(lyricsBytes, encoding)
-      ).trim()
+      const lyrics = stripMalformedUtf16LyricsPrefix(decodeTextValue(lyricsBytes, encoding)).trim()
       if (lyrics) {
         return lyrics
       }
@@ -305,12 +287,7 @@ function findMp4AtomData(
       return bytes.slice(childStart, atomEnd)
     }
 
-    if (
-      type === "moov" ||
-      type === "udta" ||
-      type === "meta" ||
-      type === "ilst"
-    ) {
+    if (type === "moov" || type === "udta" || type === "meta" || type === "ilst") {
       const nested = findMp4AtomData(bytes, targetType, childStart, atomEnd)
       if (nested) {
         return nested
@@ -324,10 +301,7 @@ function findMp4AtomData(
 }
 
 function extractMp4Lyrics(bytes: Uint8Array) {
-  const lyricAtom = findMp4AtomData(
-    bytes,
-    String.fromCharCode(0xa9, 0x6c, 0x79, 0x72)
-  )
+  const lyricAtom = findMp4AtomData(bytes, String.fromCharCode(0xa9, 0x6c, 0x79, 0x72))
   if (!lyricAtom) {
     return undefined
   }
@@ -400,8 +374,7 @@ export async function extractMetadata(
         ? Math.round(metadata.bitrate)
         : undefined
     const sampleRate =
-      typeof metadata.sampleRate === "number" &&
-      Number.isFinite(metadata.sampleRate)
+      typeof metadata.sampleRate === "number" && Number.isFinite(metadata.sampleRate)
         ? Math.round(metadata.sampleRate)
         : undefined
     const codec =
@@ -409,8 +382,7 @@ export async function extractMetadata(
         ? metadata.codecs
         : undefined
     const format =
-      typeof metadata.sampleMimeType === "string" &&
-      metadata.sampleMimeType.length > 0
+      typeof metadata.sampleMimeType === "string" && metadata.sampleMimeType.length > 0
         ? metadata.sampleMimeType
         : undefined
 
@@ -419,18 +391,13 @@ export async function extractMetadata(
       artist:
         splitConfig.artistSplitMode === "original"
           ? metadata.artist || undefined
-          : splitArtistsValue(metadata.artist, splitConfig)[0] ||
-            metadata.artist ||
-            undefined,
+          : splitArtistsValue(metadata.artist, splitConfig)[0] || metadata.artist || undefined,
       artists: splitArtistsValue(metadata.artist, splitConfig),
       album: metadata.albumTitle || undefined,
       albumArtist:
         splitConfig.artistSplitMode === "original"
           ? metadata.albumArtist || metadata.artist || undefined
-          : splitArtistsValue(
-              metadata.albumArtist || metadata.artist,
-              splitConfig
-            )[0] ||
+          : splitArtistsValue(metadata.albumArtist || metadata.artist, splitConfig)[0] ||
             metadata.albumArtist ||
             metadata.artist ||
             undefined,
@@ -534,35 +501,34 @@ export async function saveArtworkToCache(
 }
 
 export async function cleanupUnusedArtworkCache(): Promise<void> {
-  const [cachedArtwork, trackRows, albumRows, artistRows, playlistRows] =
-    await Promise.all([
-      db.query.artworkCache.findMany({
-        columns: {
-          hash: true,
-          path: true,
-        },
-      }),
-      db.query.tracks.findMany({
-        columns: {
-          artwork: true,
-        },
-      }),
-      db.query.albums.findMany({
-        columns: {
-          artwork: true,
-        },
-      }),
-      db.query.artists.findMany({
-        columns: {
-          artwork: true,
-        },
-      }),
-      db.query.playlists.findMany({
-        columns: {
-          artwork: true,
-        },
-      }),
-    ])
+  const [cachedArtwork, trackRows, albumRows, artistRows, playlistRows] = await Promise.all([
+    db.query.artworkCache.findMany({
+      columns: {
+        hash: true,
+        path: true,
+      },
+    }),
+    db.query.tracks.findMany({
+      columns: {
+        artwork: true,
+      },
+    }),
+    db.query.albums.findMany({
+      columns: {
+        artwork: true,
+      },
+    }),
+    db.query.artists.findMany({
+      columns: {
+        artwork: true,
+      },
+    }),
+    db.query.playlists.findMany({
+      columns: {
+        artwork: true,
+      },
+    }),
+  ])
 
   const referencedArtworkPaths = new Set(
     [...trackRows, ...albumRows, ...artistRows, ...playlistRows]
@@ -597,10 +563,7 @@ export async function cleanupUnusedArtworkCache(): Promise<void> {
         continue
       }
 
-      if (
-        referencedArtworkPaths.has(entry.uri) ||
-        cachedFilePaths.has(entry.uri)
-      ) {
+      if (referencedArtworkPaths.has(entry.uri) || cachedFilePaths.has(entry.uri)) {
         continue
       }
 

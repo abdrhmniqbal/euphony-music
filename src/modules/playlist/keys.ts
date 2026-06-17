@@ -7,8 +7,7 @@ export const PLAYLISTS_KEY = "playlists"
 export const playlistKeys = {
   all: [PLAYLISTS_KEY] as const,
   detail: (playlistId: string) => [PLAYLISTS_KEY, playlistId] as const,
-  membership: (trackId: string) =>
-    [PLAYLISTS_KEY, "track-membership", trackId] as const,
+  membership: (trackId: string) => [PLAYLISTS_KEY, "track-membership", trackId] as const,
 }
 
 export async function invalidatePlaylistQueries(

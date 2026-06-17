@@ -7,18 +7,10 @@ import { queryClient } from "@/lib/tanstack-query"
 import { logError } from "@/modules/logging/service"
 import { getAllTracks } from "@/modules/player/repository"
 
-import {
-  buildSelectedTracksList,
-  buildTrackPickerResults,
-  reorderTrackIds,
-} from "./form"
+import { buildSelectedTracksList, buildTrackPickerResults, reorderTrackIds } from "./form"
 import { invalidatePlaylistQueries } from "./keys"
 import { createPlaylist, updatePlaylist } from "./repository"
-import {
-  clampPlaylistDescription,
-  clampPlaylistName,
-  toggleTrackSelection,
-} from "./utils"
+import { clampPlaylistDescription, clampPlaylistName, toggleTrackSelection } from "./utils"
 
 const SEARCH_DEBOUNCE_MS = 140
 const LIBRARY_TRACKS_QUERY_KEY = ["library", "tracks"] as const
@@ -65,12 +57,7 @@ export function usePlaylistFormEditor({
     {
       mutationFn: async (payload: PlaylistFormPayload) => {
         if (payload.id) {
-          await updatePlaylist(
-            payload.id,
-            payload.name,
-            payload.description,
-            payload.trackIds
-          )
+          await updatePlaylist(payload.id, payload.name, payload.description, payload.trackIds)
           return
         }
 
@@ -78,7 +65,7 @@ export function usePlaylistFormEditor({
       },
       onSuccess: async () => {
         await invalidatePlaylistQueries(queryClient, {
-          playlistId: isEditMode ? playlistId ?? null : null,
+          playlistId: isEditMode ? (playlistId ?? null) : null,
         })
       },
     },
@@ -202,15 +189,7 @@ export function usePlaylistFormEditor({
         isEditMode,
       })
     }
-  }, [
-    description,
-    isEditMode,
-    name,
-    onSaved,
-    playlistId,
-    savePlaylistMutation,
-    selectedTrackIds,
-  ])
+  }, [description, isEditMode, name, onSaved, playlistId, savePlaylistMutation, selectedTrackIds])
 
   const isSaving = savePlaylistMutation.isPending
   const canSave = name.trim().length > 0 && !isSaving

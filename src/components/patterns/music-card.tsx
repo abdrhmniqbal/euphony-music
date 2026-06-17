@@ -18,21 +18,11 @@ interface MusicCardProps {
   className?: string
 }
 
-export function MusicCard({
-  title,
-  subtitle,
-  image,
-  icon,
-  onPress,
-  className,
-}: MusicCardProps) {
+export function MusicCard({ title, subtitle, image, icon, onPress, className }: MusicCardProps) {
   const theme = useThemeColors()
 
   return (
-    <PressableFeedback
-      onPress={onPress}
-      className={cn("w-36 active:opacity-70", className)}
-    >
+    <PressableFeedback onPress={onPress} className={cn("w-36 active:opacity-70", className)}>
       <Card
         tone="default"
         padding="none"
@@ -57,10 +47,7 @@ export function MusicCard({
           </View>
         )}
       </Card>
-      <Text
-        className="w-36 text-sm font-bold text-foreground"
-        numberOfLines={1}
-      >
+      <Text className="w-36 text-sm font-bold text-foreground" numberOfLines={1}>
         {title}
       </Text>
       <Text className="w-36 text-xs text-muted" numberOfLines={1}>

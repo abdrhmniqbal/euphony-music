@@ -82,12 +82,8 @@ function PlaylistFormEditor({
     <>
       <Stack.Screen
         options={{
-          title: isEditMode
-            ? t("playlist.editPlaylist")
-            : t("playlist.createPlaylist"),
-          headerLeft: () => (
-            <BackButton className="-ml-2" onPress={onCancel} />
-          ),
+          title: isEditMode ? t("playlist.editPlaylist") : t("playlist.createPlaylist"),
+          headerLeft: () => <BackButton className="-ml-2" onPress={onCancel} />,
           headerRight: () => (
             <Button
               onPress={save}
@@ -118,10 +114,7 @@ function PlaylistFormEditor({
         openTrackSheet={openTrackSheet}
       />
 
-      <BottomSheet
-        isOpen={isTrackSheetOpen}
-        onOpenChange={handleTrackSheetOpenChange}
-      >
+      <BottomSheet isOpen={isTrackSheetOpen} onOpenChange={handleTrackSheetOpenChange}>
         <BottomSheet.Portal>
           <BottomSheet.Overlay />
           <TrackPickerSheetContent
@@ -153,8 +146,10 @@ export default function PlaylistFormScreen() {
   )
   const initialCreateTrackIds = initialCreateDraft.trackIds
   const isQueueDraft = initialCreateDraft.source === "queue"
-  const { data: playlistToEdit, isLoading: isEditPlaylistLoading } =
-    usePlaylist(playlistId?.trim() ?? "", isEditMode)
+  const { data: playlistToEdit, isLoading: isEditPlaylistLoading } = usePlaylist(
+    playlistId?.trim() ?? "",
+    isEditMode
+  )
 
   function closeForm() {
     clearPlaylistFormDraft()
@@ -199,18 +194,13 @@ export default function PlaylistFormScreen() {
   return (
     <View className="flex-1 bg-background">
       <PlaylistFormEditor
-        key={
-          isEditMode
-            ? playlistId ?? "edit"
-            : `create-${initialCreateTrackIds.length}`
-        }
+        key={isEditMode ? (playlistId ?? "edit") : `create-${initialCreateTrackIds.length}`}
         playlistId={playlistId}
         initialName={playlistToEdit?.name ?? ""}
         initialDescription={playlistToEdit?.description ?? ""}
         initialSelectedTrackIds={
           isEditMode
-            ? playlistToEdit?.tracks?.map((playlistTrack) => playlistTrack.trackId) ??
-              []
+            ? (playlistToEdit?.tracks?.map((playlistTrack) => playlistTrack.trackId) ?? [])
             : initialCreateTrackIds
         }
         isEditMode={isEditMode}

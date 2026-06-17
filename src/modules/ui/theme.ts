@@ -40,19 +40,17 @@ function asColor(value: string | number | undefined, fallback: string) {
 
 export function useThemeColors(): ThemeColors {
   const { theme: currentTheme } = useUniwind()
-  const [background, foreground, defaultColor, muted, accent, border, link] =
-    useCSSVariable([
-      "--color-background",
-      "--color-foreground",
-      "--color-default",
-      "--color-muted",
-      "--color-accent",
-      "--color-border",
-      "--color-link",
-    ])
+  const [background, foreground, defaultColor, muted, accent, border, link] = useCSSVariable([
+    "--color-background",
+    "--color-foreground",
+    "--color-default",
+    "--color-muted",
+    "--color-accent",
+    "--color-border",
+    "--color-link",
+  ])
 
-  const fallbackTheme =
-    currentTheme === "dark" ? FALLBACK_DARK_THEME : FALLBACK_LIGHT_THEME
+  const fallbackTheme = currentTheme === "dark" ? FALLBACK_DARK_THEME : FALLBACK_LIGHT_THEME
 
   return {
     background: asColor(background, fallbackTheme.background),

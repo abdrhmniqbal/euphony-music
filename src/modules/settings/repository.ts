@@ -30,10 +30,7 @@ export async function loadSettingsConfig<T>(
   }
 }
 
-export async function saveSettingsConfig<T>(
-  file: File,
-  config: T
-): Promise<void> {
+export async function saveSettingsConfig<T>(file: File, config: T): Promise<void> {
   if (!file.exists) {
     file.create({
       intermediates: true,

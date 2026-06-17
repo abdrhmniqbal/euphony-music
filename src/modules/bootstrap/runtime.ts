@@ -11,12 +11,7 @@ import { bootstrapApp } from "@/modules/bootstrap/utils"
 import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"
 import { startIndexing } from "@/modules/indexer/service"
 import { isIndexerRunActive } from "@/modules/indexer/runtime"
-import {
-  initializeLogging,
-  logError,
-  logInfo,
-  logWarn,
-} from "@/modules/logging/service"
+import { initializeLogging, logError, logInfo, logWarn } from "@/modules/logging/service"
 
 type DatabaseStatus = "pending" | "ready" | "error"
 

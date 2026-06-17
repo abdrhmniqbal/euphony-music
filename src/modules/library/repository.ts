@@ -7,17 +7,7 @@
  */
 
 import type { Track } from "@/modules/player/types"
-import {
-  and,
-  asc,
-  desc,
-  eq,
-  gt,
-  inArray,
-  like,
-  or,
-  sql,
-} from "drizzle-orm"
+import { and, asc, desc, eq, gt, inArray, like, or, sql } from "drizzle-orm"
 
 import { db } from "@/db/client"
 import {
@@ -31,16 +21,9 @@ import {
 } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
 import { transformDBTrackToTrack } from "@/utils/transformers"
-import {
-  getDominantAlbumArtworkMap,
-  selectDominantArtwork,
-} from "./artwork"
+import { getDominantAlbumArtworkMap, selectDominantArtwork } from "./artwork"
 
-import type {
-  AddRecentSearchInput,
-  RecentSearchEntry,
-  SearchResults,
-} from "./types"
+import type { AddRecentSearchInput, RecentSearchEntry, SearchResults } from "./types"
 
 const RECENT_SEARCHES_SETTINGS_KEY = "library:recent-searches"
 const MAX_RECENT_SEARCHES = 30
@@ -70,20 +53,11 @@ function createRecentSearchId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
 
-function isRecentSearchType(
-  value: unknown
-): value is RecentSearchEntry["type"] {
-  return (
-    value === "track" ||
-    value === "album" ||
-    value === "artist" ||
-    value === "playlist"
-  )
+function isRecentSearchType(value: unknown): value is RecentSearchEntry["type"] {
+  return value === "track" || value === "album" || value === "artist" || value === "playlist"
 }
 
-function normalizeRecentSearchEntry(
-  value: unknown
-): RecentSearchEntry | null {
+function normalizeRecentSearchEntry(value: unknown): RecentSearchEntry | null {
   if (!value || typeof value !== "object") {
     return null
   }
@@ -188,10 +162,7 @@ async function writeRecentSearches(items: RecentSearchEntry[]): Promise<void> {
     })
 }
 
-function areRecentSearchItemsEqual(
-  left: RecentSearchEntry,
-  right: RecentSearchEntry
-) {
+function areRecentSearchItemsEqual(left: RecentSearchEntry, right: RecentSearchEntry) {
   return (
     left.id === right.id &&
     left.query === right.query &&
@@ -205,9 +176,7 @@ function areRecentSearchItemsEqual(
   )
 }
 
-async function hydrateRecentSearchEntry(
-  item: RecentSearchEntry
-): Promise<RecentSearchEntry> {
+async function hydrateRecentSearchEntry(item: RecentSearchEntry): Promise<RecentSearchEntry> {
   const normalizedQuery = normalizeLookup(item.query)
   if (!normalizedQuery || !item.type) {
     return item
@@ -343,8 +312,7 @@ async function hydrateRecentSearchEntry(
     }
 
     for (const playlistTrack of playlist.tracks) {
-      const artwork =
-        playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork
+      const artwork = playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork
 
       if (!artwork) {
         continue
@@ -370,9 +338,7 @@ async function hydrateRecentSearchEntry(
   return item
 }
 
-async function hydrateRecentSearches(
-  items: RecentSearchEntry[]
-): Promise<RecentSearchEntry[]> {
+async function hydrateRecentSearches(items: RecentSearchEntry[]): Promise<RecentSearchEntry[]> {
   const hydrated: RecentSearchEntry[] = []
 
   for (const item of items) {
@@ -482,12 +448,7 @@ export async function getArtistById(id: string) {
 }
 
 export async function listAlbums(
-  orderByField:
-    | "title"
-    | "artist"
-    | "year"
-    | "trackCount"
-    | "dateAdded" = "title",
+  orderByField: "title" | "artist" | "year" | "trackCount" | "dateAdded" = "title",
   order: "asc" | "desc" = "asc"
 ) {
   const direction = order === "asc" ? asc : desc
@@ -645,9 +606,7 @@ export async function getTracksByAlbumName(albumName: string): Promise<Track[]> 
     })
 
     return fallbackTracks
-      .filter(
-        (track) => normalizeLookup(track.album?.title) === normalizedAlbumName
-      )
+      .filter((track) => normalizeLookup(track.album?.title) === normalizedAlbumName)
       .map(transformDBTrackToTrack)
   }
 
@@ -681,9 +640,7 @@ export async function getTracksByAlbumName(albumName: string): Promise<Track[]> 
   return results.map(transformDBTrackToTrack)
 }
 
-export async function getTracksByArtistName(
-  artistName: string
-): Promise<Track[]> {
+export async function getTracksByArtistName(artistName: string): Promise<Track[]> {
   const normalizedArtistName = normalizeLookup(artistName)
   const matchingArtists = await db.query.artists.findMany({
     columns: {
@@ -796,73 +753,69 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
       .innerJoin(artists, eq(artists.id, trackArtists.artistId))
       .where(like(artists.name, searchTerm))
 
-    const [artistResults, albumResults, playlistResults, titleTrackResults] =
-      await Promise.all([
-        db.query.artists.findMany({
-          where: and(like(artists.name, searchTerm), gt(artists.trackCount, 0)),
-          columns: {
-            id: true,
-            name: true,
-            artwork: true,
-            trackCount: true,
-          },
-          orderBy: [asc(sql`lower(coalesce(${artists.name}, ''))`)],
-          limit: 10,
-        }),
-        db.query.albums.findMany({
-          where: and(like(albums.title, searchTerm), gt(albums.trackCount, 0)),
-          with: { artist: true },
-          orderBy: [asc(sql`lower(coalesce(${albums.title}, ''))`)],
-          limit: 10,
-        }),
-        db.query.playlists.findMany({
-          where: like(playlists.name, searchTerm),
-          orderBy: [desc(playlists.updatedAt)],
-          limit: 10,
-          with: {
-            tracks: {
-              limit: 4,
-              orderBy: [asc(playlistTracks.position)],
-              with: {
-                track: {
-                  with: {
-                    album: true,
-                  },
+    const [artistResults, albumResults, playlistResults, titleTrackResults] = await Promise.all([
+      db.query.artists.findMany({
+        where: and(like(artists.name, searchTerm), gt(artists.trackCount, 0)),
+        columns: {
+          id: true,
+          name: true,
+          artwork: true,
+          trackCount: true,
+        },
+        orderBy: [asc(sql`lower(coalesce(${artists.name}, ''))`)],
+        limit: 10,
+      }),
+      db.query.albums.findMany({
+        where: and(like(albums.title, searchTerm), gt(albums.trackCount, 0)),
+        with: { artist: true },
+        orderBy: [asc(sql`lower(coalesce(${albums.title}, ''))`)],
+        limit: 10,
+      }),
+      db.query.playlists.findMany({
+        where: like(playlists.name, searchTerm),
+        orderBy: [desc(playlists.updatedAt)],
+        limit: 10,
+        with: {
+          tracks: {
+            limit: 4,
+            orderBy: [asc(playlistTracks.position)],
+            with: {
+              track: {
+                with: {
+                  album: true,
                 },
               },
             },
           },
-        }),
-        db.query.tracks.findMany({
-          where: and(
-            eq(tracks.isDeleted, 0),
-            or(
-              like(tracks.title, searchTerm),
-              inArray(tracks.id, featuredArtistTrackMatchIds)
-            )
-          ),
-          with: {
-            artist: true,
-            featuredArtists: {
-              with: {
-                artist: true,
-              },
-            },
-            album: {
-              with: {
-                artist: true,
-              },
-            },
-            genres: {
-              with: {
-                genre: true,
-              },
+        },
+      }),
+      db.query.tracks.findMany({
+        where: and(
+          eq(tracks.isDeleted, 0),
+          or(like(tracks.title, searchTerm), inArray(tracks.id, featuredArtistTrackMatchIds))
+        ),
+        with: {
+          artist: true,
+          featuredArtists: {
+            with: {
+              artist: true,
             },
           },
-          orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
-          limit: 20,
-        }),
-      ])
+          album: {
+            with: {
+              artist: true,
+            },
+          },
+          genres: {
+            with: {
+              genre: true,
+            },
+          },
+        },
+        orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
+        limit: 20,
+      }),
+    ])
 
     const matchedArtistIds = artistResults.map((artist) => artist.id)
     const matchedAlbumIds = albumResults.map((album) => album.id)
@@ -873,7 +826,8 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
             inArray(tracks.artistId, matchedArtistIds),
             inArray(
               tracks.id,
-              db.select({ trackId: trackArtists.trackId })
+              db
+                .select({ trackId: trackArtists.trackId })
                 .from(trackArtists)
                 .where(inArray(trackArtists.artistId, matchedArtistIds))
             ),
@@ -884,7 +838,8 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
               inArray(tracks.artistId, matchedArtistIds),
               inArray(
                 tracks.id,
-                db.select({ trackId: trackArtists.trackId })
+                db
+                  .select({ trackId: trackArtists.trackId })
                   .from(trackArtists)
                   .where(inArray(trackArtists.artistId, matchedArtistIds))
               )
@@ -943,7 +898,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
         type: "Artist",
         followerCount: 0,
         isVerified: false,
-          trackCount: artist.trackCount ?? 0,
+        trackCount: artist.trackCount ?? 0,
         image: artist.artwork || undefined,
       })),
       albums: albumResults.map((album) => ({
@@ -962,9 +917,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
 
         for (const playlistTrack of playlist.tracks) {
           const image =
-            playlistTrack.track?.artwork ||
-            playlistTrack.track?.album?.artwork ||
-            undefined
+            playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork || undefined
 
           if (image) {
             images.add(image)
@@ -1005,9 +958,7 @@ export async function getRecentSearches() {
   return hydrated
 }
 
-export async function addRecentSearch(
-  input: AddRecentSearchInput
-): Promise<RecentSearchEntry[]> {
+export async function addRecentSearch(input: AddRecentSearchInput): Promise<RecentSearchEntry[]> {
   const query = normalizeRecentSearchQuery(input.query)
   if (!query) {
     return readRecentSearches()
@@ -1029,9 +980,7 @@ export async function addRecentSearch(
     targetId,
     query,
   })
-  const existingMatch = existing.find(
-    (item) => getRecentSearchDedupeKey(item) === dedupeKey
-  )
+  const existingMatch = existing.find((item) => getRecentSearchDedupeKey(item) === dedupeKey)
 
   const nextItem: RecentSearchEntry = {
     id: existingMatch?.id || createRecentSearchId(),
@@ -1054,9 +1003,7 @@ export async function addRecentSearch(
   return nextItems
 }
 
-export async function deleteRecentSearch(
-  id: string
-): Promise<RecentSearchEntry[]> {
+export async function deleteRecentSearch(id: string): Promise<RecentSearchEntry[]> {
   const normalizedId = normalizeRecentSearchQuery(id)
   if (!normalizedId) {
     return readRecentSearches()
@@ -1075,7 +1022,5 @@ export async function deleteRecentSearch(
 }
 
 export async function clearRecentSearches() {
-  await db
-    .delete(appSettings)
-    .where(eq(appSettings.key, RECENT_SEARCHES_SETTINGS_KEY))
+  await db.delete(appSettings).where(eq(appSettings.key, RECENT_SEARCHES_SETTINGS_KEY))
 }

@@ -20,33 +20,21 @@ import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { screenEnterTransition } from "@/constants/animations"
-import {
-  DETAIL_HEADER_BOTTOM_SPACING,
-  SCREEN_SECTION_TOP_SPACING,
-} from "@/constants/layout"
+import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
 import { Stack } from "@/layouts/stack"
 import { formatAlbumDuration } from "@/modules/albums/utils"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useIsFavorite } from "@/modules/favorites/queries"
-import {
-  ALBUM_TRACK_SORT_OPTIONS,
-} from "@/modules/library/sort.constants"
-import {
-  setSortConfig,
-  useLibrarySortStore,
-} from "@/modules/library/sort.store"
+import { ALBUM_TRACK_SORT_OPTIONS } from "@/modules/library/sort.constants"
+import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort.store"
 import { sortTracks } from "@/modules/library/sort.utils"
 import { useTracksByAlbumName } from "@/modules/library/queries"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { usePlayerTracks } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import { mergeText } from "@/utils/merge-text"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
@@ -114,25 +102,18 @@ export default function AlbumDetailsScreen() {
     albumTracksFromQuery.length > 0
       ? albumTracksFromQuery
       : allTracks.filter(
-          (track) =>
-            (track.album || "").trim().toLowerCase() === normalizedAlbumName
+          (track) => (track.album || "").trim().toLowerCase() === normalizedAlbumName
         )
   const albumInfo =
     albumTracks.length > 0
       ? {
           title: albumTracks[0].album || t("library.unknownAlbum"),
-          artist:
-            albumTracks[0].albumArtist ||
-            albumTracks[0].artist ||
-            t("library.unknownArtist"),
+          artist: albumTracks[0].albumArtist || albumTracks[0].artist || t("library.unknownArtist"),
           image: albumTracks[0].albumArtwork || albumTracks[0].image,
           year: albumTracks[0].year,
         }
       : null
-  const totalDuration = albumTracks.reduce(
-    (sum, track) => sum + (track.duration || 0),
-    0
-  )
+  const totalDuration = albumTracks.reduce((sum, track) => sum + (track.duration || 0), 0)
   const sortConfig = allSortConfigs.AlbumTracks || {
     field: "trackNumber" as AlbumTrackSortField,
     order: "asc" as const,
@@ -144,20 +125,12 @@ export default function AlbumDetailsScreen() {
     id: albumId,
     title: albumInfo?.title || albumName,
   })
-  const { data: isAlbumFavorite = false } = useIsFavorite(
-    "album",
-    albumId || ""
-  )
-  const isLoading =
-    (isAlbumTracksLoading || isAlbumTracksFetching) && albumTracks.length === 0
+  const { data: isAlbumFavorite = false } = useIsFavorite("album", albumId || "")
+  const isLoading = (isAlbumTracksLoading || isAlbumTracksFetching) && albumTracks.length === 0
   const totalDurationLabel = formatAlbumDuration(totalDuration)
-  const hasMultipleDiscs =
-    new Set(sortedTracks.map((track) => track.discNumber || 1)).size > 1
+  const hasMultipleDiscs = new Set(sortedTracks.map((track) => track.discNumber || 1)).size > 1
 
-  function handleSortSelect(
-    field: AlbumTrackSortField,
-    order?: "asc" | "desc"
-  ) {
+  function handleSortSelect(field: AlbumTrackSortField, order?: "asc" | "desc") {
     setSortConfig("AlbumTracks", field, order)
   }
 
@@ -172,14 +145,7 @@ export default function AlbumDetailsScreen() {
 
     return (
       <EmptyState
-        icon={
-          <LocalVynilSolidIcon
-            fill="none"
-            width={48}
-            height={48}
-            color={theme.muted}
-          />
-        }
+        icon={<LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         title={t("library.empty.albumsFoundTitle")}
         message={t("library.empty.albumsFoundTitle")}
         className="mt-12"
@@ -213,9 +179,7 @@ export default function AlbumDetailsScreen() {
   }
 
   function getSortLabel() {
-    const option = ALBUM_TRACK_SORT_OPTIONS.find(
-      (item) => item.field === sortConfig.field
-    )
+    const option = ALBUM_TRACK_SORT_OPTIONS.find((item) => item.field === sortConfig.field)
     return option ? t(option.label) : t("library.sort")
   }
 
@@ -232,9 +196,7 @@ export default function AlbumDetailsScreen() {
           options={{
             title: showHeaderTitle ? albumInfo.title : "",
             headerBackVisible: false,
-            headerLeft: () => (
-              <BackButton className="-ml-2" onPress={handleBack} />
-            ),
+            headerLeft: () => <BackButton className="-ml-2" onPress={handleBack} />,
             headerRight: () =>
               albumId && (
                 <Button
@@ -258,12 +220,7 @@ export default function AlbumDetailsScreen() {
                   isIconOnly
                 >
                   {isAlbumFavorite ? (
-                    <LocalFavouriteSolidIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color="#ef4444"
-                    />
+                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
                   ) : (
                     <LocalFavouriteIcon
                       fill="none"
@@ -289,8 +246,7 @@ export default function AlbumDetailsScreen() {
 
             const currentDisc = track.discNumber || 1
             const previousDisc = tracks[index - 1]?.discNumber || 1
-            const shouldShowDiscSeparator =
-              index === 0 || currentDisc !== previousDisc
+            const shouldShowDiscSeparator = index === 0 || currentDisc !== previousDisc
 
             if (!shouldShowDiscSeparator) {
               return null
@@ -349,10 +305,7 @@ export default function AlbumDetailsScreen() {
                   </Transition.Boundary.View>
 
                   <View className="flex-1 justify-center">
-                    <Text
-                      className="text-xl font-bold text-foreground"
-                      numberOfLines={1}
-                    >
+                    <Text className="text-xl font-bold text-foreground" numberOfLines={1}>
                       {albumInfo.title}
                     </Text>
                     <Text className="mt-1 text-sm text-muted" numberOfLines={1}>
@@ -373,10 +326,7 @@ export default function AlbumDetailsScreen() {
                 />
               </Animated.View>
 
-              <View
-                className="flex-row items-center justify-between"
-                style={{ marginBottom: 8 }}
-              >
+              <View className="flex-row items-center justify-between" style={{ marginBottom: 8 }}>
                 <Text className="text-lg font-bold text-foreground">
                   {t("library.count.track", { count: sortedTracks.length })}
                 </Text>

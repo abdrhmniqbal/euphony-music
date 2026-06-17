@@ -7,10 +7,7 @@
  */
 
 import { refreshIndexedMediaState } from "@/modules/indexer/refresh"
-import {
-  rebuildSplitMetadataRelations,
-  scanMediaLibrary,
-} from "@/modules/indexer/repository"
+import { rebuildSplitMetadataRelations, scanMediaLibrary } from "@/modules/indexer/repository"
 import {
   consumeQueuedIndexerRun,
   finishIndexerRunRuntime,
@@ -41,10 +38,7 @@ import type { SplitMultipleValueConfig } from "@/modules/settings/split-multiple
 
 const INCREMENTAL_REFRESH_INTERVAL_MS = 1500
 
-export async function startIndexing(
-  forceFullScan = false,
-  showProgress = true
-) {
+export async function startIndexing(forceFullScan = false, showProgress = true) {
   if (isIndexerRunActive()) {
     queueIndexerRun(forceFullScan, showProgress)
     logInfo("Indexer run queued while another run is active", {
@@ -142,9 +136,7 @@ export async function forceReindexLibrary(showProgress = true) {
   await startIndexing(true, showProgress)
 }
 
-export async function rebuildSplitRelationsForConfig(
-  config: SplitMultipleValueConfig
-) {
+export async function rebuildSplitRelationsForConfig(config: SplitMultipleValueConfig) {
   const result = await measurePerfTrace(
     "indexer.rebuildSplitMetadataRelations",
     async () => await rebuildSplitMetadataRelations(config)

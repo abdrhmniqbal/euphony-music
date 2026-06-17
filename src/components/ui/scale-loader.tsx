@@ -32,10 +32,7 @@ function Bar({ delay, maxHeight }: { delay: number; maxHeight: number }) {
     withDelay(
       delay,
       withRepeat(
-        withSequence(
-          withTiming(1, { duration: 360 }),
-          withTiming(0.35, { duration: 360 })
-        ),
+        withSequence(withTiming(1, { duration: 360 }), withTiming(0.35, { duration: 360 })),
         -1,
         false
       )

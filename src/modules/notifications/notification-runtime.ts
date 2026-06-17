@@ -17,9 +17,7 @@ let hasStartedNotificationRuntime = false
 let handledNotificationResponseKey: string | null = null
 let routeHandler: ((route: string) => void) | null = null
 
-function buildNotificationResponseKey(
-  response: Notifications.NotificationResponse
-) {
+function buildNotificationResponseKey(response: Notifications.NotificationResponse) {
   const responseTitle = response.notification.request.content.title ?? ""
   const responseBody = response.notification.request.content.body ?? ""
 
@@ -32,9 +30,7 @@ function buildNotificationResponseKey(
   ].join(":")
 }
 
-function handleNotificationResponse(
-  response: Notifications.NotificationResponse | null
-) {
+function handleNotificationResponse(response: Notifications.NotificationResponse | null) {
   if (!response) {
     return
   }
@@ -58,9 +54,7 @@ function handleNotificationResponse(
   routeHandler?.(route)
 }
 
-export function setNotificationRouteHandler(
-  handler: ((route: string) => void) | null
-) {
+export function setNotificationRouteHandler(handler: ((route: string) => void) | null) {
   routeHandler = handler
 }
 
@@ -70,10 +64,6 @@ export function ensureNotificationRuntimeStarted() {
   }
 
   hasStartedNotificationRuntime = true
-  void Notifications.getLastNotificationResponseAsync().then(
-    handleNotificationResponse
-  )
-  Notifications.addNotificationResponseReceivedListener(
-    handleNotificationResponse
-  )
+  void Notifications.getLastNotificationResponseAsync().then(handleNotificationResponse)
+  Notifications.addNotificationResponseReceivedListener(handleNotificationResponse)
 }

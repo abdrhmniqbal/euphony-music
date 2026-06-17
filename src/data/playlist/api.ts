@@ -21,13 +21,15 @@ export async function getPlaylist(id: string) {
 }
 
 export async function getPlaylistsSummary() {
-  const rows = await db.query.playlists.findMany({ orderBy: asc(sql`lower(coalesce(${playlists.name}, ''))`) })
+  const rows = await db.query.playlists.findMany({
+    orderBy: asc(sql`lower(coalesce(${playlists.name}, ''))`),
+  })
   return rows.map(toPlaylist)
 }
 
 export async function getPlaylistTracks<TOnlyIds extends boolean | undefined = false>(
   id: string,
-  onlyIds?: TOnlyIds,
+  onlyIds?: TOnlyIds
 ) {
   const rels = await db
     .select({ trackId: playlistTracks.trackId })
@@ -40,7 +42,9 @@ export async function getPlaylistTracks<TOnlyIds extends boolean | undefined = f
   if (trackIds.length === 0) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]
 
   if (onlyIds) {
-    return trackIds.map((tid) => ({ id: tid })) as TOnlyIds extends true ? Array<{ id: string }> : never[]
+    return trackIds.map((tid) => ({ id: tid })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : never[]
   }
 
   const rows = await db.query.tracks.findMany({

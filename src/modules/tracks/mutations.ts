@@ -10,10 +10,7 @@ import {
   type DeleteTrackFromDeviceInput,
 } from "./track-device-deletion.service"
 import { trackKeys } from "./keys"
-import {
-  incrementTrackPlayCount,
-  setTrackFavoriteStatus,
-} from "./repository"
+import { incrementTrackPlayCount, setTrackFavoriteStatus } from "./repository"
 
 type TrackDetail = Awaited<ReturnType<typeof getTrackById>>
 
@@ -25,9 +22,7 @@ export function useToggleFavoriteTrack() {
         await queryClient.cancelQueries({
           queryKey: trackKeys.detail(trackId),
         })
-        const previousTrack = queryClient.getQueryData<TrackDetail>(
-          trackKeys.detail(trackId)
-        )
+        const previousTrack = queryClient.getQueryData<TrackDetail>(trackKeys.detail(trackId))
 
         queryClient.setQueryData<TrackDetail>(trackKeys.detail(trackId), (old) =>
           old
@@ -41,10 +36,7 @@ export function useToggleFavoriteTrack() {
         return { previousTrack }
       },
       onError: (_error, variables, context) => {
-        queryClient.setQueryData(
-          trackKeys.detail(variables.trackId),
-          context?.previousTrack
-        )
+        queryClient.setQueryData(trackKeys.detail(variables.trackId), context?.previousTrack)
       },
       onSettled: async (_data, _error, variables) => {
         await invalidateQueryKeys(queryClient, [

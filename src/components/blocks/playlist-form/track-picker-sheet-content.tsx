@@ -53,9 +53,7 @@ export function TrackPickerSheetContent({
       <LegendList
         data={filteredTracks}
         getItemType={() => "track"}
-        renderItem={({
-          item,
-        }: LegendListRenderItemProps<(typeof filteredTracks)[number]>) => (
+        renderItem={({ item }: LegendListRenderItemProps<(typeof filteredTracks)[number]>) => (
           <PlaylistTrackRow
             track={item}
             isSelected={selectedTracks.has(item.id)}
@@ -77,12 +75,7 @@ export function TrackPickerSheetContent({
         ListEmptyComponent={() => (
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon
-                fill="none"
-                width={48}
-                height={48}
-                color={theme.muted}
-              />
+              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("library.empty.tracksFoundTitle")}
             message={t("search.tryDifferentKeyword")}

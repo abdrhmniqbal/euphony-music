@@ -1,51 +1,30 @@
 {
-  // Disable the default formatter, use eslint instead
+  // Use Oxfmt for formatting and Oxlint for lint fixes.
   "prettier.enable": false,
-  "editor.formatOnSave": false,
-
-  // Auto fix
+  "eslint.enable": false,
+  "editor.defaultFormatter": "oxc.oxfmt",
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
+    "source.fixAll.oxlint": "explicit",
     "source.organizeImports": "never"
   },
 
-  // Silent the stylistic rules in your IDE, but still auto fix them
-  "eslint.rules.customizations": [
-    { "rule": "style/*", "severity": "off", "fixable": true },
-    { "rule": "format/*", "severity": "off", "fixable": true },
-    { "rule": "*-indent", "severity": "off", "fixable": true },
-    { "rule": "*-spacing", "severity": "off", "fixable": true },
-    { "rule": "*-spaces", "severity": "off", "fixable": true },
-    { "rule": "*-order", "severity": "off", "fixable": true },
-    { "rule": "*-dangle", "severity": "off", "fixable": true },
-    { "rule": "*-newline", "severity": "off", "fixable": true },
-    { "rule": "*quotes", "severity": "off", "fixable": true },
-    { "rule": "*semi", "severity": "off", "fixable": true }
-  ],
-
-  // Enable eslint for all supported languages
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "vue",
-    "html",
-    "markdown",
-    "json",
-    "json5",
-    "jsonc",
-    "yaml",
-    "toml",
-    "xml",
-    "gql",
-    "graphql",
-    "astro",
-    "svelte",
-    "css",
-    "less",
-    "scss",
-    "pcss",
-    "postcss"
-  ]
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxfmt"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxfmt"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxfmt"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxfmt"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxfmt"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxfmt"
+  }
 }

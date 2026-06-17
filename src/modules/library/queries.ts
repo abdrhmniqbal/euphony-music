@@ -75,12 +75,7 @@ export function useArtistByName(name: string) {
 }
 
 export function useAlbums(
-  orderByField:
-    | "title"
-    | "artist"
-    | "year"
-    | "trackCount"
-    | "dateAdded" = "title",
+  orderByField: "title" | "artist" | "year" | "trackCount" | "dateAdded" = "title",
   order: "asc" | "desc" = "asc",
   options: QueryOptions = {}
 ) {

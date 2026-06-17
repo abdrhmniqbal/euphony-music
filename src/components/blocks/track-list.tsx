@@ -7,10 +7,7 @@
  */
 
 import type { Track } from "@/modules/player/store"
-import {
-  LegendList,
-  type LegendListRenderItemProps,
-} from "@legendapp/list/react-native"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -54,11 +51,7 @@ interface TrackListProps {
   refreshControl?: React.ReactElement<RefreshControlProps> | null
   resetScrollKey?: string
   currentTrackId?: string
-  renderItemPrefix?: (
-    track: Track,
-    index: number,
-    data: Track[]
-  ) => React.ReactNode
+  renderItemPrefix?: (track: Track, index: number, data: Track[]) => React.ReactNode
 }
 
 export const TrackList: React.FC<TrackListProps> = ({
@@ -88,10 +81,7 @@ export const TrackList: React.FC<TrackListProps> = ({
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const activeTrackId = currentTrackId ?? useCurrentTrackId() ?? undefined
-  const { listRef, listBehaviorProps } = useLegendListBehavior(
-    resetScrollKey,
-    activeTrackId
-  )
+  const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey, activeTrackId)
   const isCompactNumberedList = hideCover && showNumbers
   const estimatedItemSize = isCompactNumberedList ? 56 : 84
   const listContentContainerStyle = StyleSheet.flatten([
@@ -99,14 +89,17 @@ export const TrackList: React.FC<TrackListProps> = ({
     contentContainerStyle,
   ])
 
-  const handleTrackPress = useCallback((track: Track) => {
-    if (onTrackPress) {
-      onTrackPress(track)
-      return
-    }
+  const handleTrackPress = useCallback(
+    (track: Track) => {
+      if (onTrackPress) {
+        onTrackPress(track)
+        return
+      }
 
-    playTrack(track, data)
-  }, [data, onTrackPress])
+      playTrack(track, data)
+    },
+    [data, onTrackPress]
+  )
 
   const showActionMenu = useCallback((track: Track) => {
     setSelectedTrack(track)
@@ -161,12 +154,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         ListEmptyComponent={
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon
-                fill="none"
-                width={48}
-                height={48}
-                color={theme.muted}
-              />
+              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("library.empty.tracksTitle")}
             message={t("library.empty.tracksMessage")}

@@ -1,8 +1,5 @@
 import type { Track } from "@/modules/player/store"
-import {
-  LegendList,
-  type LegendListRenderItemProps,
-} from "@legendapp/list/react-native"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { Button, PressableFeedback } from "heroui-native"
 import * as React from "react"
 
@@ -104,8 +101,7 @@ export const FolderList: React.FC<FolderListProps> = ({
     onTrackPress?.(track)
   }
 
-  const formatItemCount = (count: number) =>
-    t("library.count.item", { count })
+  const formatItemCount = (count: number) => t("library.count.item", { count })
 
   const renderFolderItem = (item: Folder) => (
     <Item key={item.id} onPress={() => handlePress(item)}>
@@ -124,12 +120,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         <ItemDescription>{formatItemCount(item.fileCount)}</ItemDescription>
       </ItemContent>
       <ItemAction>
-        <LocalChevronRightIcon
-          fill="none"
-          width={24}
-          height={24}
-          color={theme.muted}
-        />
+        <LocalChevronRightIcon fill="none" width={24} height={24} color={theme.muted} />
       </ItemAction>
     </Item>
   )
@@ -148,9 +139,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         image={track.image}
       />
       <ItemContent>
-        <ItemTitle>
-          {track.title || track.filename || t("library.unknownTrack")}
-        </ItemTitle>
+        <ItemTitle>{track.title || track.filename || t("library.unknownTrack")}</ItemTitle>
         <ItemDescription>
           {mergeText([
             track.artist || t("library.unknownArtist"),
@@ -179,14 +168,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   if (!hasEntries) {
     return (
       <EmptyState
-        icon={
-          <LocalFolderSolidIcon
-            fill="none"
-            width={48}
-            height={48}
-            color={theme.muted}
-          />
-        }
+        icon={<LocalFolderSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         title={t("library.empty.foldersTitle")}
         message={t("library.empty.foldersMessage")}
       />
@@ -202,9 +184,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         keyExtractor={(item) => item.id}
         getItemType={(item) => item.type}
         renderItem={({ item }: LegendListRenderItemProps<FolderListItem>) =>
-          item.type === "folder"
-            ? renderFolderItem(item.folder)
-            : renderTrackItem(item.track)
+          item.type === "folder" ? renderFolderItem(item.folder) : renderTrackItem(item.track)
         }
         contentContainerStyle={listContentContainerStyle}
         onScroll={onScroll}
@@ -219,12 +199,7 @@ export const FolderList: React.FC<FolderListProps> = ({
           hasNestedPath ? (
             <View className="mb-2">
               <View className="mb-2 flex-row items-center gap-2">
-                <Button
-                  onPress={onBackPress}
-                  variant="secondary"
-                  className="h-8 w-8"
-                  isIconOnly
-                >
+                <Button onPress={onBackPress} variant="secondary" className="h-8 w-8" isIconOnly>
                   <LocalChevronLeftIcon
                     fill="none"
                     width={16}
@@ -237,23 +212,13 @@ export const FolderList: React.FC<FolderListProps> = ({
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ alignItems: "center", gap: 8 }}
                 >
-                  <PressableFeedback
-                    onPress={() => onBreadcrumbPress?.("")}
-                    className="max-w-24"
-                  >
-                    <Text
-                      className="text-sm text-muted"
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
+                  <PressableFeedback onPress={() => onBreadcrumbPress?.("")} className="max-w-24">
+                    <Text className="text-sm text-muted" numberOfLines={1} ellipsizeMode="tail">
                       Folders
                     </Text>
                   </PressableFeedback>
                   {breadcrumbs.map((breadcrumb) => (
-                    <View
-                      key={breadcrumb.path}
-                      className="flex-row items-center gap-2"
-                    >
+                    <View key={breadcrumb.path} className="flex-row items-center gap-2">
                       <LocalChevronRightIcon
                         fill="none"
                         width={12}

@@ -33,17 +33,13 @@ export function PlaylistActionsSheet({
             className="h-14 flex-row items-center justify-between active:opacity-50"
             onPress={handleEditPress}
           >
-            <Text className="text-base font-medium text-foreground">
-              Edit Playlist
-            </Text>
+            <Text className="text-base font-medium text-foreground">Edit Playlist</Text>
           </PressableFeedback>
           <PressableFeedback
             className="h-14 flex-row items-center justify-between active:opacity-50"
             onPress={handleDeletePress}
           >
-            <Text className="text-base font-medium text-danger">
-              Delete Playlist
-            </Text>
+            <Text className="text-base font-medium text-danger">Delete Playlist</Text>
           </PressableFeedback>
         </BottomSheet.Content>
       </BottomSheet.Portal>

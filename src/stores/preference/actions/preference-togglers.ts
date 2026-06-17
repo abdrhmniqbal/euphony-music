@@ -40,9 +40,7 @@ export function toggleKey(key: ToggleableKey) {
 export async function toggleContinuePlaybackOnDismiss() {
   const nextState = !preferenceStore.getState().continuePlaybackOnDismiss
   preferenceStore.setState({ continuePlaybackOnDismiss: nextState })
-  AudioBrowser.updateOptions(
-    getAudioBrowserOptions({ continuePlaybackOnDismiss: nextState })
-  )
+  AudioBrowser.updateOptions(getAudioBrowserOptions({ continuePlaybackOnDismiss: nextState }))
 }
 
 export async function toggleDownsamplingProcessor() {

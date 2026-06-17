@@ -7,10 +7,7 @@
  */
 
 import { i18n } from "@/modules/localization/i18n"
-import type {
-  TrackDurationFilterConfig,
-  TrackDurationFilterMode,
-} from "@/modules/settings/types"
+import type { TrackDurationFilterConfig, TrackDurationFilterMode } from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
@@ -24,9 +21,7 @@ import {
 
 export type { TrackDurationFilterConfig, TrackDurationFilterMode }
 
-const TRACK_DURATION_FILTER_FILE = createSettingsConfigFile(
-  "track-duration-filter.json"
-)
+const TRACK_DURATION_FILTER_FILE = createSettingsConfigFile("track-duration-filter.json")
 
 let loadPromise: Promise<TrackDurationFilterConfig> | null = null
 let hasLoadedConfig = false
@@ -40,10 +35,7 @@ function clampCustomSeconds(value: number): number {
 }
 
 function sanitizeConfig(config: unknown): TrackDurationFilterConfig {
-  const source =
-    config && typeof config === "object"
-      ? (config as Record<string, unknown>)
-      : {}
+  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
 
   const mode: TrackDurationFilterMode =
     source.mode === "min30s" ||
@@ -56,9 +48,7 @@ function sanitizeConfig(config: unknown): TrackDurationFilterConfig {
   return {
     mode,
     customMinimumSeconds: clampCustomSeconds(
-      (typeof source.customMinimumSeconds === "number"
-        ? source.customMinimumSeconds
-        : undefined) ??
+      (typeof source.customMinimumSeconds === "number" ? source.customMinimumSeconds : undefined) ??
         getDefaultTrackDurationFilterConfig().customMinimumSeconds
     ),
   }
@@ -105,9 +95,7 @@ export async function setTrackDurationFilterConfig(
   return next
 }
 
-export function getTrackDurationMinimumSeconds(
-  config: TrackDurationFilterConfig
-): number {
+export function getTrackDurationMinimumSeconds(config: TrackDurationFilterConfig): number {
   if (config.mode === "min30s") {
     return 30
   }
@@ -143,9 +131,7 @@ export function isAssetAllowedByTrackDuration(
   return durationSeconds >= minDuration
 }
 
-export function getTrackDurationFilterLabel(
-  config: TrackDurationFilterConfig
-): string {
+export function getTrackDurationFilterLabel(config: TrackDurationFilterConfig): string {
   if (config.mode === "min30s") {
     return i18n.t("settings.trackDuration.label.min30")
   }

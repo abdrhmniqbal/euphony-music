@@ -26,10 +26,7 @@ export function areStringArraysEqual(left: string[], right: string[]) {
   return true
 }
 
-export function areTracksPresentationEqual(
-  left: Track | null,
-  right: Track | null
-) {
+export function areTracksPresentationEqual(left: Track | null, right: Track | null) {
   if (left === right) {
     return true
   }
