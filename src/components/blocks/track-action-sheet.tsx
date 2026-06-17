@@ -6,7 +6,7 @@
  * Side Effects: Opens dialogs/sheets, queues playback actions, and navigates to artist/album/genre routes.
  */
 
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { BottomSheet, Button, Card, Chip, Toast, useToast } from "heroui-native"
@@ -35,19 +35,19 @@ import { MarqueeText } from "@/components/ui/marquee-text"
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { openDeviceFile } from "@/modules/device/file-viewer"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
-import { useToggleFavorite } from "@/modules/favorites/favorites.mutations"
-import { useIsFavorite } from "@/modules/favorites/favorites.queries"
-import { playTrack } from "@/modules/player/player.service"
-import { addToQueue, queueTrackNext } from "@/modules/player/queue.service"
-import { usePlaylistPickerSelection } from "@/modules/playlist/playlist-picker-selection.hook"
+import { useToggleFavorite } from "@/modules/favorites/mutations"
+import { useIsFavorite } from "@/modules/favorites/queries"
+import { playTrack } from "@/modules/player/service"
+import { addToQueue, queueTrackNext } from "@/modules/player/queue"
+import { usePlaylistPickerSelection } from "@/modules/playlist/picker-selection.hook"
 import {
   formatQualityLabel,
   normalizeCodecLabel,
   resolveAudioFormat,
 } from "@/modules/tracks/track-metadata.utils"
-import { useTrack } from "@/modules/tracks/tracks.queries"
+import { useTrack } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 import {
   splitArtistsValue,
   splitGenresValue,

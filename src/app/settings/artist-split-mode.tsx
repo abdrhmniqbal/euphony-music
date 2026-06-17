@@ -12,9 +12,9 @@ import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalTickIcon from "@/components/icons/local/tick"
-import { rebuildSplitRelationsForConfig } from "@/modules/indexer/indexer.service"
+import { rebuildSplitRelationsForConfig } from "@/modules/indexer/service"
 import { setSplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
 type SplitMode = "original" | "split"

@@ -10,10 +10,10 @@ import type { Playlist } from "@/components/blocks/playlist-list"
 import type {
   FavoriteEntry,
   FavoriteType,
-} from "@/modules/favorites/favorites.types"
-import type { GenreCategory } from "@/modules/genres/genres.types"
-import type { SortField } from "@/modules/library/library-sort.types"
-import type { Track } from "@/modules/player/player.store"
+} from "@/modules/favorites/types"
+import type { GenreCategory } from "@/modules/genres/types"
+import type { SortField } from "@/modules/library/sort.types"
+import type { Track } from "@/modules/player/store"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { Tabs } from "heroui-native"
 
@@ -46,9 +46,9 @@ import {
   resolveArtistTransitionId,
   resolvePlaylistTransitionId,
 } from "@/modules/artists/artist-transition"
-import { useFavorites } from "@/modules/favorites/favorites.queries"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
+import { useFavorites } from "@/modules/favorites/queries"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
 import {
   buildFolderBrowserState,
   getParentFolderPath,
@@ -61,31 +61,31 @@ import {
   GENRE_SORT_OPTIONS,
   PLAYLIST_SORT_OPTIONS,
   TRACK_SORT_OPTIONS,
-} from "@/modules/library/library-sort.constants"
+} from "@/modules/library/sort.constants"
 import {
   setSortConfig,
   useLibrarySortStore,
-} from "@/modules/library/library-sort.store"
+} from "@/modules/library/sort.store"
 import {
   sortGeneric,
   sortTracks,
-} from "@/modules/library/library-sort.utils"
-import { useAlbums, useArtists } from "@/modules/library/library.queries"
+} from "@/modules/library/sort.utils"
+import { useAlbums, useArtists } from "@/modules/library/queries"
 import {
   useHasCurrentTrack,
   usePlayerTracks,
-} from "@/modules/player/player-selectors"
-import { playTrack } from "@/modules/player/player.service"
-import { usePlaylistsWithOptions } from "@/modules/playlist/playlist.queries"
-import { getPlaylistTrackIdsByPlaylistIds } from "@/modules/playlist/playlist.repository"
-import { useGenres } from "@/modules/genres/genres.queries"
-import { mapGenresToCategories } from "@/modules/genres/genres.utils"
+} from "@/modules/player/selectors"
+import { playTrack } from "@/modules/player/service"
+import { usePlaylistsWithOptions } from "@/modules/playlist/queries"
+import { getPlaylistTrackIdsByPlaylistIds } from "@/modules/playlist/repository"
+import { useGenres } from "@/modules/genres/queries"
+import { mapGenresToCategories } from "@/modules/genres/utils"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 const LIBRARY_TABS = [
   "Tracks",

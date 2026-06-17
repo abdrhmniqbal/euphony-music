@@ -6,17 +6,17 @@
  * Side Effects: Reads and writes `audio-playback.json` in Expo document storage and mutates settings state.
  */
 
-import type { AudioPlaybackConfig } from "@/modules/settings/settings.types"
+import type { AudioPlaybackConfig } from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
   saveSettingsConfig,
-} from "@/modules/settings/settings.repository"
+} from "@/modules/settings/repository"
 import {
   getDefaultAudioPlaybackConfig,
   getSettingsState,
   updateSettingsState,
-} from "@/modules/settings/settings.store"
+} from "@/modules/settings/store"
 
 export type { AudioPlaybackConfig }
 

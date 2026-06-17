@@ -6,7 +6,7 @@
  * Side Effects: Starts indexing on refresh, updates scroll state, and starts playback from full section queues.
  */
 
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import * as React from "react"
 
@@ -24,17 +24,17 @@ import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import {
   useRecentlyPlayedTracks,
   useTopTracksByPeriod,
-} from "@/modules/history/history.queries"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
-import { useCurrentTrackId } from "@/modules/player/player-selectors"
-import { playTrack } from "@/modules/player/player.service"
+} from "@/modules/history/queries"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
+import { useCurrentTrackId } from "@/modules/player/selectors"
+import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 const CHUNK_SIZE = 5
 const RECENTLY_PLAYED_PREVIEW_LIMIT = 8

@@ -1,0 +1,1319 @@
+/**
+ * Purpose: Scans the device media library, extracts audio metadata/artwork, rebuilds split relations, and commits indexed tracks into SQLite.
+ * Caller: indexer.service startIndexing(), bootstrap auto-scan, manual library refresh actions.
+ * Dependencies: Expo MediaLibrary/FileSystem, Drizzle DB schema, metadata repository, split settings config, folder/duration filters, indexer runtime.
+ * Main Functions: scanMediaLibrary(), rebuildSplitMetadataRelations(), getLastIndexerRunSnapshot()
+ * Side Effects: Reads media library/files, writes tracks/artists/albums/genres/track_artists/track_genres/indexer_state, recomputes stored artist artwork from primary tracks during reindex, rebuilds split artist/genre relations, emits incremental commit notifications, marks missing tracks deleted, and cleans unused artwork cache files.
+ */
+
+import type { IndexerScanProgress } from "./types"
+import { and, eq, inArray, sql } from "drizzle-orm"
+
+import * as MediaLibrary from "expo-media-library/legacy"
+import { db } from "@/db/client"
+import {
+  albums,
+  artists,
+  genres,
+  trackArtists,
+  trackGenres,
+  tracks,
+} from "@/db/schema"
+import {
+  GENRE_COLORS,
+  GENRE_SHAPES,
+  type GenreShape,
+} from "@/modules/genres/constants"
+import { waitForIndexerResume } from "@/modules/indexer/runtime"
+
+import { logError } from "@/modules/logging/service"
+import {
+  ensureFolderFilterConfigLoaded,
+  isAssetAllowedByFolderFilters,
+} from "@/modules/settings/folder-filters"
+import {
+  ensureTrackDurationFilterConfigLoaded,
+  isAssetAllowedByTrackDuration,
+} from "@/modules/settings/track-duration-filter"
+import { removeTracksFromFavoritesAndPlaylists } from "@/modules/tracks/track-cleanup.repository"
+import {
+  ensureSplitMultipleValueConfigLoaded,
+  splitArtistsValue,
+  splitGenresValue,
+  type SplitMultipleValueConfig,
+} from "@/modules/settings/split-multiple-values"
+import {
+  cleanupUnusedArtworkCache,
+  extractMetadata,
+  saveArtworkToCache,
+} from "./metadata"
+import {
+  generateAssetHash,
+  generateId,
+  generateSortName,
+  hashString,
+} from "./file-identity"
+import {
+  normalizeMetadata,
+  normalizeText,
+} from "./normalization"
+import { saveIndexerRunSnapshot } from "./run-snapshot"
+import {
+  isAllowedAssetUri,
+  isSupportedAssetByExtension,
+} from "./scan-filter"
+import { chunkArray, wait, yieldToEventLoop } from "./batch-utils"
+
+export { getLastIndexerRunSnapshot } from "./run-snapshot"
+
+const BATCH_SIZE = 24
+const BATCH_CONCURRENCY = 4
+const COMMIT_SCOPE_SIZE = 24
+const DELETE_SCOPE_SIZE = 300
+const COMMIT_SCOPE_MAX_ATTEMPTS = 3
+const COMMIT_SCOPE_RETRY_DELAY_MS = 160
+const METADATA_EXTRACTION_MAX_ATTEMPTS = 2
+const METADATA_EXTRACTION_RETRY_DELAY_MS = 120
+type ExtractedMetadata = Awaited<ReturnType<typeof extractMetadata>>
+
+interface PreparedAssetForIndex {
+  asset: MediaLibrary.Asset
+  fileHash: string
+  metadata: ExtractedMetadata
+  artworkPath: string | undefined
+}
+
+interface IndexingLookupCache {
+  artistIdsByName: Map<string, string>
+  albumIdsByArtistAndTitle: Map<string, string>
+  genreIdsByName: Map<string, string>
+  genreVisuals: GenreVisualLookup
+}
+
+interface GenreVisualLookup {
+  supportsVisualColumns: boolean
+  usedCombinations: Set<string>
+  colorUsage: Map<string, number>
+  shapeUsage: Map<GenreShape, number>
+}
+
+interface BatchProcessingResult {
+  preparedCount: number
+  committedCount: number
+  failedCount: number
+}
+
+interface IncrementalCommitResult {
+  committedAssets: number
+  processedAssets: number
+  totalAssets: number
+}
+
+export interface SplitRelationRebuildResult {
+  rebuiltTracks: number
+  tracksMissingRawArtist: number
+  tracksMissingRawAlbumArtist: number
+  tracksMissingRawGenre: number
+}
+
+interface PreparedBatchResult {
+  preparedAssets: PreparedAssetForIndex[]
+  failedCount: number
+}
+
+function createEmptyGenreVisualLookup(): GenreVisualLookup {
+  const colorUsage = new Map<string, number>()
+  const shapeUsage = new Map<GenreShape, number>()
+
+  for (const color of GENRE_COLORS) {
+    colorUsage.set(color, 0)
+  }
+
+  for (const shape of GENRE_SHAPES) {
+    shapeUsage.set(shape, 0)
+  }
+
+  return {
+    supportsVisualColumns: true,
+    usedCombinations: new Set(),
+    colorUsage,
+    shapeUsage,
+  }
+}
+
+function registerGenreVisual(
+  visualLookup: GenreVisualLookup,
+  color: string,
+  shape: GenreShape
+) {
+  visualLookup.usedCombinations.add(`${color}::${shape}`)
+  visualLookup.colorUsage.set(
+    color,
+    (visualLookup.colorUsage.get(color) ?? 0) + 1
+  )
+  visualLookup.shapeUsage.set(
+    shape,
+    (visualLookup.shapeUsage.get(shape) ?? 0) + 1
+  )
+}
+
+function getAlbumLookupKey(artistId: string, title: string) {
+  return `${artistId}::${title}`
+}
+
+async function preloadIndexingLookupCache(): Promise<IndexingLookupCache> {
+  const [artistRows, albumRows] = await Promise.all([
+    db.query.artists.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+    }),
+    db.query.albums.findMany({
+      columns: {
+        id: true,
+        title: true,
+        artistId: true,
+      },
+    }),
+  ])
+
+  const genreVisuals = createEmptyGenreVisualLookup()
+  const genreIdsByName = new Map<string, string>()
+
+  try {
+    const genreRows = await db.query.genres.findMany({
+      columns: {
+        id: true,
+        name: true,
+        color: true,
+        shape: true,
+      },
+    })
+
+    for (const genre of genreRows) {
+      genreIdsByName.set(genre.name, genre.id)
+      registerGenreVisual(genreVisuals, genre.color, genre.shape as GenreShape)
+    }
+  } catch {
+    genreVisuals.supportsVisualColumns = false
+
+    const genreRows = await db.query.genres.findMany({
+      columns: {
+        id: true,
+        name: true,
+      },
+    })
+
+    for (const genre of genreRows) {
+      genreIdsByName.set(genre.name, genre.id)
+    }
+  }
+
+  return {
+    artistIdsByName: new Map(
+      artistRows.map((artist) => [artist.name, artist.id])
+    ),
+    albumIdsByArtistAndTitle: new Map(
+      albumRows
+        .filter((album) => album.artistId)
+        .map((album) => [
+          getAlbumLookupKey(album.artistId as string, album.title),
+          album.id,
+        ])
+    ),
+    genreIdsByName,
+    genreVisuals,
+  }
+}
+
+async function runWithScopeCommit(work: () => Promise<void>): Promise<void> {
+  let lastError: unknown = null
+
+  for (let attempt = 1; attempt <= COMMIT_SCOPE_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      await db.run(sql`BEGIN IMMEDIATE`)
+
+      try {
+        await work()
+        await db.run(sql`COMMIT`)
+        return
+      } catch (error) {
+        try {
+          await db.run(sql`ROLLBACK`)
+        } catch {
+          // Ignore rollback failures so the original error is preserved.
+        }
+        throw error
+      }
+    } catch (error) {
+      lastError = error
+
+      if (
+        !isTransientCommitError(error) ||
+        attempt >= COMMIT_SCOPE_MAX_ATTEMPTS
+      ) {
+        break
+      }
+
+      await wait(COMMIT_SCOPE_RETRY_DELAY_MS * attempt)
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Failed to commit indexing scope")
+}
+
+function isTransientCommitError(error: unknown): boolean {
+  const message =
+    error instanceof Error
+      ? error.message.toLowerCase()
+      : String(error).toLowerCase()
+
+  return (
+    message.includes("database is locked") ||
+    message.includes("database locked") ||
+    message.includes("database busy") ||
+    message.includes("sql_busy")
+  )
+}
+
+async function processDeletedTracksInScopes(
+  deletedTrackIds: string[],
+  signal?: AbortSignal
+): Promise<void> {
+  const deleteScopes = chunkArray(deletedTrackIds, DELETE_SCOPE_SIZE)
+
+  for (const scope of deleteScopes) {
+    if (signal?.aborted) {
+      return
+    }
+
+    await waitForIndexerResume(signal)
+    if (signal?.aborted) {
+      return
+    }
+
+    await removeTracksFromFavoritesAndPlaylists(scope)
+    await db
+      .update(tracks)
+      .set({ isDeleted: 1 })
+      .where(inArray(tracks.id, scope))
+
+    await yieldToEventLoop()
+  }
+}
+
+async function hardDeleteSoftDeletedTracksInScopes(
+  signal?: AbortSignal
+): Promise<void> {
+  const softDeletedTracks = await db.query.tracks.findMany({
+    columns: { id: true },
+    where: eq(tracks.isDeleted, 1),
+  })
+
+  const softDeletedIds = softDeletedTracks.map((track) => track.id)
+  if (softDeletedIds.length === 0) {
+    return
+  }
+
+  const deleteScopes = chunkArray(softDeletedIds, DELETE_SCOPE_SIZE)
+
+  for (const scope of deleteScopes) {
+    if (signal?.aborted) {
+      return
+    }
+
+    await waitForIndexerResume(signal)
+    if (signal?.aborted) {
+      return
+    }
+
+    await db.delete(tracks).where(inArray(tracks.id, scope))
+    await yieldToEventLoop()
+  }
+}
+
+export async function scanMediaLibrary(
+  onProgress?: (progress: IndexerScanProgress) => void,
+  forceFullScan = false,
+  signal?: AbortSignal,
+  onIncrementalCommit?: (result: IncrementalCommitResult) => Promise<void> | void
+): Promise<void> {
+  const startedAt = Date.now()
+  let discoveredAssets = 0
+  let skippedByUri = 0
+  let skippedByExtension = 0
+  let skippedByFolderFilters = 0
+  let skippedByDurationFilters = 0
+  let preparedAssetsCount = 0
+  let committedAssetsCount = 0
+  let failedAssetsCount = 0
+
+  if (signal?.aborted) return
+
+  // Get all audio assets
+  const assets: MediaLibrary.Asset[] = []
+  let hasMore = true
+  let endCursor: string | undefined
+
+  while (hasMore) {
+    if (signal?.aborted) return
+    await waitForIndexerResume(signal)
+    if (signal?.aborted) return
+
+    const result = await MediaLibrary.getAssetsAsync({
+      mediaType: MediaLibrary.MediaType.audio,
+      first: 500,
+      after: endCursor,
+    })
+
+    if (signal?.aborted) return
+
+    assets.push(...result.assets)
+    hasMore = result.hasNextPage
+    endCursor = result.endCursor
+
+    await yieldToEventLoop()
+  }
+
+  const folderFilterConfig = await ensureFolderFilterConfigLoaded()
+  const durationFilterConfig = await ensureTrackDurationFilterConfigLoaded()
+  const splitConfig = await ensureSplitMultipleValueConfigLoaded()
+  discoveredAssets = assets.length
+  const scopedAssets: MediaLibrary.Asset[] = []
+
+  for (const asset of assets) {
+    if (!isAllowedAssetUri(asset.uri)) {
+      skippedByUri += 1
+      continue
+    }
+
+    if (!isSupportedAssetByExtension(asset)) {
+      skippedByExtension += 1
+      continue
+    }
+
+    if (!isAssetAllowedByFolderFilters(asset.uri, folderFilterConfig)) {
+      skippedByFolderFilters += 1
+      continue
+    }
+
+    if (!isAssetAllowedByTrackDuration(asset.duration, durationFilterConfig)) {
+      skippedByDurationFilters += 1
+      continue
+    }
+
+    scopedAssets.push(asset)
+  }
+
+  onProgress?.({
+    phase: "scanning",
+    current: 0,
+    total: scopedAssets.length,
+    currentFile: "",
+  })
+
+  // Get existing tracks to compare
+  const existingTracks = await db.query.tracks.findMany({
+    columns: { id: true, fileHash: true },
+  })
+  if (signal?.aborted) return
+
+  const existingTrackMap = new Map(
+    existingTracks.map((t) => [t.id, t.fileHash])
+  )
+  const currentAssetIds = new Set(scopedAssets.map((a) => a.id))
+  const lookupCache = await preloadIndexingLookupCache()
+  if (signal?.aborted) return
+
+  // Find deleted tracks
+  const deletedTrackIds = existingTracks
+    .filter((t) => !currentAssetIds.has(t.id))
+    .map((t) => t.id)
+
+  if (deletedTrackIds.length > 0) {
+    await processDeletedTracksInScopes(deletedTrackIds, signal)
+    if (signal?.aborted) return
+  }
+
+  // Filter assets to process
+  const currentAssetHashMap = new Map<string, string>()
+  const assetsToProcess = forceFullScan
+    ? scopedAssets
+    : scopedAssets.filter((asset) => {
+        const existingHash = existingTrackMap.get(asset.id)
+        const currentHash = generateAssetHash(asset)
+        currentAssetHashMap.set(asset.id, currentHash)
+        return !existingHash || existingHash !== currentHash
+      })
+  const unchangedAssets = forceFullScan
+    ? 0
+    : Math.max(0, scopedAssets.length - assetsToProcess.length)
+
+  // Process in batches
+  for (let i = 0; i < assetsToProcess.length; i += BATCH_SIZE) {
+    if (signal?.aborted) return
+    await waitForIndexerResume(signal)
+    if (signal?.aborted) return
+
+    const batch = assetsToProcess.slice(i, i + BATCH_SIZE)
+
+    const batchResult = await processBatch(
+      batch,
+      (asset) => {
+        onProgress?.({
+          phase: "processing",
+          current: i + batch.indexOf(asset) + 1,
+          total: assetsToProcess.length,
+          currentFile: asset.filename || "Unknown",
+        })
+      },
+      signal,
+      currentAssetHashMap,
+      lookupCache,
+      splitConfig
+    )
+
+    preparedAssetsCount += batchResult.preparedCount
+    committedAssetsCount += batchResult.committedCount
+    failedAssetsCount += batchResult.failedCount
+
+    if (batchResult.committedCount > 0) {
+      await onIncrementalCommit?.({
+        committedAssets: committedAssetsCount,
+        processedAssets: i + batch.length,
+        totalAssets: assetsToProcess.length,
+      })
+    }
+
+    await yieldToEventLoop()
+  }
+
+  if (signal?.aborted) return
+
+  await updateArtistCounts()
+  if (signal?.aborted) return
+  await updateAlbumCounts()
+  if (signal?.aborted) return
+  await updateGenreCounts()
+  if (signal?.aborted) return
+
+  onProgress?.({
+    phase: "complete",
+    current: assetsToProcess.length,
+    total: assetsToProcess.length,
+    currentFile: "",
+  })
+
+  if (signal?.aborted) return
+  await hardDeleteSoftDeletedTracksInScopes(signal)
+  if (signal?.aborted) return
+  await cleanupUnusedArtworkCache()
+
+  await saveIndexerRunSnapshot({
+    startedAt,
+    finishedAt: Date.now(),
+    durationMs: Date.now() - startedAt,
+    forceFullScan,
+    discoveredAssets,
+    scopedAssets: scopedAssets.length,
+    skippedByUri,
+    skippedByExtension,
+    skippedByFolderFilters,
+    skippedByDurationFilters,
+    deletedTracks: deletedTrackIds.length,
+    changedAssets: assetsToProcess.length,
+    unchangedAssets,
+    preparedAssets: preparedAssetsCount,
+    committedAssets: committedAssetsCount,
+    failedAssets: failedAssetsCount,
+  })
+}
+
+async function processBatch(
+  assets: MediaLibrary.Asset[],
+  onFileStart?: (asset: MediaLibrary.Asset) => void,
+  signal?: AbortSignal,
+  precomputedHashMap?: Map<string, string>,
+  lookupCache?: IndexingLookupCache,
+  splitConfig?: SplitMultipleValueConfig
+): Promise<BatchProcessingResult> {
+  const preparedBatchResult = await prepareBatchAssets(
+    assets,
+    onFileStart,
+    signal,
+    precomputedHashMap,
+    splitConfig
+  )
+  const preparedAssets = preparedBatchResult.preparedAssets
+  let committedCount = 0
+  let failedCount = preparedBatchResult.failedCount
+
+  for (
+    let index = 0;
+    index < preparedAssets.length;
+    index += COMMIT_SCOPE_SIZE
+  ) {
+    if (signal?.aborted) {
+      return {
+        preparedCount: preparedAssets.length,
+        committedCount,
+        failedCount,
+      }
+    }
+
+    await waitForIndexerResume(signal)
+    if (signal?.aborted) {
+      return {
+        preparedCount: preparedAssets.length,
+        committedCount,
+        failedCount,
+      }
+    }
+
+    const scope = preparedAssets.slice(index, index + COMMIT_SCOPE_SIZE)
+
+    try {
+      await runWithScopeCommit(async () => {
+        for (const prepared of scope) {
+          if (signal?.aborted) {
+            return
+          }
+
+          await upsertPreparedAsset(prepared, signal, lookupCache)
+        }
+      })
+      committedCount += scope.length
+    } catch (error) {
+      logError(
+        "Failed to commit indexing scope; retrying asset-by-asset",
+        error,
+        {
+          scopeSize: scope.length,
+        }
+      )
+
+      for (const prepared of scope) {
+        if (signal?.aborted) {
+          return {
+            preparedCount: preparedAssets.length,
+            committedCount,
+            failedCount,
+          }
+        }
+
+        try {
+          await upsertPreparedAsset(prepared, signal, lookupCache)
+          committedCount += 1
+        } catch (assetError) {
+          failedCount += 1
+          logError("Failed to index prepared asset", assetError, {
+            assetId: prepared.asset.id,
+            filename: prepared.asset.filename,
+          })
+        }
+      }
+    }
+
+    await yieldToEventLoop()
+  }
+
+  return {
+    preparedCount: preparedAssets.length,
+    committedCount,
+    failedCount,
+  }
+}
+
+async function prepareBatchAssets(
+  assets: MediaLibrary.Asset[],
+  onFileStart?: (asset: MediaLibrary.Asset) => void,
+  signal?: AbortSignal,
+  precomputedHashMap?: Map<string, string>,
+  splitConfig?: SplitMultipleValueConfig
+): Promise<PreparedBatchResult> {
+  const preparedAssets: PreparedAssetForIndex[] = []
+  let failedCount = 0
+  let nextAssetIndex = 0
+  const workerCount = Math.min(BATCH_CONCURRENCY, assets.length)
+
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      while (nextAssetIndex < assets.length) {
+        if (signal?.aborted) return
+        await waitForIndexerResume(signal)
+        if (signal?.aborted) return
+
+        const asset = assets[nextAssetIndex]
+        nextAssetIndex += 1
+        if (!asset) {
+          continue
+        }
+
+        if (signal?.aborted) return
+
+        onFileStart?.(asset)
+
+        try {
+          const prepared = await prepareAssetForIndexing(
+            asset,
+            signal,
+            precomputedHashMap,
+            splitConfig
+          )
+          if (prepared) {
+            preparedAssets.push(prepared)
+          }
+        } catch (error) {
+          failedCount += 1
+          logError("Failed to index asset", error, {
+            assetId: asset.id,
+            filename: asset.filename,
+          })
+        }
+      }
+    })
+  )
+
+  return {
+    preparedAssets,
+    failedCount,
+  }
+}
+
+async function prepareAssetForIndexing(
+  asset: MediaLibrary.Asset,
+  signal?: AbortSignal,
+  precomputedHashMap?: Map<string, string>,
+  splitConfig?: SplitMultipleValueConfig
+): Promise<PreparedAssetForIndex | null> {
+  if (signal?.aborted) {
+    return null
+  }
+
+  const fileHash = precomputedHashMap?.get(asset.id) || generateAssetHash(asset)
+  let metadata: ExtractedMetadata | null = null
+  let lastError: unknown = null
+
+  for (
+    let attempt = 1;
+    attempt <= METADATA_EXTRACTION_MAX_ATTEMPTS;
+    attempt += 1
+  ) {
+    if (signal?.aborted) {
+      return null
+    }
+
+    try {
+      metadata = await extractMetadata(
+        asset.uri,
+        asset.filename || "",
+        asset.duration,
+        splitConfig || (await ensureSplitMultipleValueConfigLoaded())
+      )
+      break
+    } catch (error) {
+      lastError = error
+      if (attempt < METADATA_EXTRACTION_MAX_ATTEMPTS) {
+        await wait(METADATA_EXTRACTION_RETRY_DELAY_MS * attempt)
+      }
+    }
+  }
+
+  if (!metadata) {
+    throw lastError instanceof Error
+      ? lastError
+      : new Error("Metadata extraction failed")
+  }
+
+  const normalizedMetadata = normalizeMetadata(metadata, asset.filename || "")
+
+  if (signal?.aborted) {
+    return null
+  }
+
+  const artworkPath = await saveArtworkToCache(metadata.artwork)
+  if (signal?.aborted) {
+    return null
+  }
+
+  return {
+    asset,
+    fileHash,
+    metadata: normalizedMetadata,
+    artworkPath,
+  }
+}
+
+async function upsertPreparedAsset(
+  prepared: PreparedAssetForIndex,
+  signal?: AbortSignal,
+  lookupCache?: IndexingLookupCache
+): Promise<void> {
+  const { asset, fileHash, metadata, artworkPath } = prepared
+  if (signal?.aborted) {
+    return
+  }
+
+  const artistId = metadata.artist
+    ? await getOrCreateArtist(metadata.artist, lookupCache)
+    : null
+  const relationArtistNames = metadata.artists.length
+    ? metadata.artists
+    : metadata.artist
+      ? [metadata.artist]
+      : []
+  const relationArtistIds = Array.from(
+    new Set(
+      await Promise.all(
+        [...relationArtistNames, metadata.artist ?? ""]
+          .filter((artist): artist is string => Boolean(artist))
+          .map((artist) => getOrCreateArtist(artist, lookupCache))
+      )
+    )
+  )
+
+  const albumArtistId =
+    metadata.albumArtist && metadata.albumArtist !== metadata.artist
+      ? await getOrCreateArtist(metadata.albumArtist, lookupCache)
+      : artistId
+
+  const albumId =
+    metadata.album && albumArtistId
+      ? await getOrCreateAlbum(
+          metadata.album,
+          albumArtistId,
+          artworkPath,
+          metadata.year,
+          lookupCache
+        )
+      : null
+
+  const genresToProcess =
+    metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
+  const genreIds = await Promise.all(
+    genresToProcess.map((genre) => getOrCreateGenre(genre, lookupCache))
+  )
+  if (signal?.aborted) {
+    return
+  }
+
+  const now = Date.now()
+  await db
+    .insert(tracks)
+    .values({
+      id: asset.id,
+      title: metadata.title,
+      artistId,
+      albumId,
+      duration: metadata.duration,
+      uri: asset.uri,
+      trackNumber: metadata.trackNumber,
+      discNumber: metadata.discNumber,
+      year: metadata.year,
+      filename: asset.filename || "",
+      fileHash,
+      audioBitrate: metadata.bitrate || null,
+      audioSampleRate: metadata.sampleRate || null,
+      audioCodec: metadata.codec || null,
+      audioFormat: metadata.format || null,
+      artwork: artworkPath || null,
+      lyrics: metadata.lyrics || null,
+      composer: metadata.composer || null,
+      comment: metadata.comment || null,
+      rawArtist: metadata.rawArtist || null,
+      rawAlbumArtist: metadata.rawAlbumArtist || null,
+      rawGenre: metadata.rawGenre || null,
+      dateAdded: asset.creationTime || now,
+      scanTime: now,
+      isDeleted: 0,
+      isFavorite: 0,
+      playCount: 0,
+      rating: null,
+      lastPlayedAt: null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: tracks.id,
+      set: {
+        title: metadata.title,
+        artistId,
+        albumId,
+        duration: metadata.duration,
+        trackNumber: metadata.trackNumber,
+        discNumber: metadata.discNumber,
+        year: metadata.year,
+        fileHash,
+        audioBitrate: metadata.bitrate || null,
+        audioSampleRate: metadata.sampleRate || null,
+        audioCodec: metadata.codec || null,
+        audioFormat: metadata.format || null,
+        artwork: artworkPath || null,
+        lyrics: metadata.lyrics || null,
+        composer: metadata.composer || null,
+        comment: metadata.comment || null,
+        rawArtist: metadata.rawArtist || null,
+        rawAlbumArtist: metadata.rawAlbumArtist || null,
+        rawGenre: metadata.rawGenre || null,
+        scanTime: now,
+        isDeleted: 0,
+        updatedAt: now,
+      },
+    })
+
+  if (signal?.aborted) {
+    return
+  }
+
+  if (genreIds.length === 0) {
+    return
+  }
+
+  await db.delete(trackGenres).where(eq(trackGenres.trackId, asset.id))
+  await db.delete(trackArtists).where(eq(trackArtists.trackId, asset.id))
+  if (signal?.aborted) {
+    return
+  }
+
+  if (relationArtistIds.length > 0) {
+    await db.insert(trackArtists).values(
+      relationArtistIds.map((relationArtistId) => ({
+        trackId: asset.id,
+        artistId: relationArtistId,
+      }))
+    )
+  }
+
+  await db.insert(trackGenres).values(
+    genreIds.map((genreId) => ({
+      trackId: asset.id,
+      genreId,
+    }))
+  )
+}
+
+function dedupeNormalizedValues(values: string[]) {
+  const seen = new Set<string>()
+  const result: string[] = []
+
+  for (const value of values) {
+    const normalized = normalizeText(value)
+    if (!normalized) {
+      continue
+    }
+
+    const key = normalized.toLowerCase()
+    if (seen.has(key)) {
+      continue
+    }
+
+    seen.add(key)
+    result.push(normalized)
+  }
+
+  return result
+}
+
+export async function rebuildSplitMetadataRelations(
+  splitConfig: SplitMultipleValueConfig
+): Promise<SplitRelationRebuildResult> {
+  const lookupCache = await preloadIndexingLookupCache()
+  const indexedTracks = await db.query.tracks.findMany({
+    columns: {
+      id: true,
+      rawArtist: true,
+      rawAlbumArtist: true,
+      rawGenre: true,
+      albumId: true,
+    },
+    where: eq(tracks.isDeleted, 0),
+    with: {
+      artist: true,
+      album: {
+        with: {
+          artist: true,
+        },
+      },
+      genres: {
+        with: {
+          genre: true,
+        },
+      },
+    },
+  })
+  let rebuiltTracks = 0
+  let tracksMissingRawArtist = 0
+  let tracksMissingRawAlbumArtist = 0
+  let tracksMissingRawGenre = 0
+
+  for (const scope of chunkArray(indexedTracks, COMMIT_SCOPE_SIZE)) {
+    await runWithScopeCommit(async () => {
+      for (const track of scope) {
+        const artistSource = normalizeText(track.rawArtist) || track.artist?.name
+        const albumArtistSource =
+          normalizeText(track.rawAlbumArtist) ||
+          track.album?.artist?.name ||
+          artistSource
+        const genreSource =
+          normalizeText(track.rawGenre) ||
+          track.genres
+            ?.map((entry) => entry.genre?.name)
+            .filter((value): value is string => Boolean(value))
+            .join(", ")
+
+        if (!track.rawArtist) {
+          tracksMissingRawArtist += 1
+        }
+
+        if (!track.rawAlbumArtist) {
+          tracksMissingRawAlbumArtist += 1
+        }
+
+        if (!track.rawGenre) {
+          tracksMissingRawGenre += 1
+        }
+
+        const artistNames = dedupeNormalizedValues(
+          splitArtistsValue(artistSource, splitConfig)
+        )
+        const primaryArtistName =
+          splitConfig.artistSplitMode === "original"
+            ? normalizeText(artistSource)
+            : artistNames[0]
+        const primaryArtistId = primaryArtistName
+          ? await getOrCreateArtist(primaryArtistName, lookupCache)
+          : null
+        const albumArtistNames = dedupeNormalizedValues(
+          splitArtistsValue(albumArtistSource, splitConfig)
+        )
+        const primaryAlbumArtistName =
+          splitConfig.artistSplitMode === "original"
+            ? normalizeText(albumArtistSource)
+            : albumArtistNames[0]
+        const primaryAlbumArtistId = primaryAlbumArtistName
+          ? await getOrCreateArtist(primaryAlbumArtistName, lookupCache)
+          : primaryArtistId
+        const albumId =
+          track.album?.title && primaryAlbumArtistId
+            ? await getOrCreateAlbum(
+                track.album.title,
+                primaryAlbumArtistId,
+                track.album.artwork || undefined,
+                track.album.year || undefined,
+                lookupCache
+              )
+            : track.albumId
+        const relationArtistNames = dedupeNormalizedValues(
+          splitArtistsValue(artistSource, splitConfig)
+        )
+        const relationArtistIds = Array.from(
+          new Set(
+            await Promise.all(
+              [
+                ...relationArtistNames,
+                primaryArtistName ?? "",
+              ]
+                .filter((artist): artist is string => Boolean(artist))
+                .map((artist) => getOrCreateArtist(artist, lookupCache))
+            )
+          )
+        )
+        const genreNames = dedupeNormalizedValues(
+          splitGenresValue(genreSource, splitConfig)
+        )
+        const genreIds = await Promise.all(
+          (genreNames.length > 0 ? genreNames : ["Unknown"]).map((genre) =>
+            getOrCreateGenre(genre, lookupCache)
+          )
+        )
+
+        await db
+          .update(tracks)
+          .set({ artistId: primaryArtistId, albumId, updatedAt: Date.now() })
+          .where(eq(tracks.id, track.id))
+        await db.delete(trackArtists).where(eq(trackArtists.trackId, track.id))
+        await db.delete(trackGenres).where(eq(trackGenres.trackId, track.id))
+
+        if (relationArtistIds.length > 0) {
+          await db.insert(trackArtists).values(
+            relationArtistIds.map((artistId) => ({
+              trackId: track.id,
+              artistId,
+            }))
+          )
+        }
+
+        await db.insert(trackGenres).values(
+          genreIds.map((genreId) => ({
+            trackId: track.id,
+            genreId,
+          }))
+        )
+
+        rebuiltTracks += 1
+      }
+    })
+
+    await yieldToEventLoop()
+  }
+
+  await updateArtistCounts()
+  await updateAlbumCounts()
+  await updateGenreCounts()
+
+  return {
+    rebuiltTracks,
+    tracksMissingRawArtist,
+    tracksMissingRawAlbumArtist,
+    tracksMissingRawGenre,
+  }
+}
+
+async function getOrCreateArtist(
+  name: string,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
+  const cachedArtistId = lookupCache?.artistIdsByName.get(name)
+  if (cachedArtistId) {
+    return cachedArtistId
+  }
+
+  const sortName = generateSortName(name)
+  const existing = await db.query.artists.findFirst({
+    where: eq(artists.name, name),
+  })
+
+  if (existing) {
+    lookupCache?.artistIdsByName.set(name, existing.id)
+    return existing.id
+  }
+
+  const id = generateId()
+  await db.insert(artists).values({
+    id,
+    name,
+    sortName,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  })
+
+  lookupCache?.artistIdsByName.set(name, id)
+
+  return id
+}
+
+async function getOrCreateAlbum(
+  title: string,
+  artistId: string,
+  artwork?: string,
+  year?: number,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
+  const cacheKey = getAlbumLookupKey(artistId, title)
+  const cachedAlbumId = lookupCache?.albumIdsByArtistAndTitle.get(cacheKey)
+  if (cachedAlbumId) {
+    return cachedAlbumId
+  }
+
+  const existing = await db.query.albums.findFirst({
+    where: and(eq(albums.title, title), eq(albums.artistId, artistId)),
+  })
+
+  if (existing) {
+    lookupCache?.albumIdsByArtistAndTitle.set(cacheKey, existing.id)
+    return existing.id
+  }
+
+  const id = generateId()
+  await db.insert(albums).values({
+    id,
+    title,
+    artistId,
+    year: year || null,
+    artwork: artwork || null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  })
+
+  lookupCache?.albumIdsByArtistAndTitle.set(cacheKey, id)
+
+  return id
+}
+
+async function getOrCreateGenre(
+  name: string,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
+  const cachedGenreId = lookupCache?.genreIdsByName.get(name)
+  if (cachedGenreId) {
+    return cachedGenreId
+  }
+
+  const existing = await db.query.genres.findFirst({
+    where: eq(genres.name, name),
+  })
+
+  if (existing) {
+    lookupCache?.genreIdsByName.set(name, existing.id)
+    return existing.id
+  }
+
+  const id = generateId()
+  const { color, shape } = selectGenreVisuals(name, lookupCache)
+  try {
+    await db.insert(genres).values({
+      id,
+      name,
+      color,
+      shape,
+      createdAt: Date.now(),
+    })
+  } catch {
+    // Backward compatibility for databases that have not applied genre visual columns yet.
+    await db.insert(genres).values({
+      id,
+      name,
+      createdAt: Date.now(),
+    })
+  }
+
+  lookupCache?.genreIdsByName.set(name, id)
+  if (lookupCache?.genreVisuals.supportsVisualColumns) {
+    registerGenreVisual(lookupCache.genreVisuals, color, shape)
+  }
+
+  return id
+}
+
+function selectGenreVisuals(
+  name: string,
+  lookupCache?: IndexingLookupCache
+): { color: string; shape: GenreShape } {
+  if (!lookupCache?.genreVisuals.supportsVisualColumns) {
+    const hash = hashString(name)
+    return {
+      color: GENRE_COLORS[hash % GENRE_COLORS.length],
+      shape:
+        GENRE_SHAPES[
+          Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length
+        ],
+    }
+  }
+
+  const { colorUsage, shapeUsage, usedCombinations } = lookupCache.genreVisuals
+
+  const colorsByUsage = [...GENRE_COLORS].sort(
+    (a, b) => (colorUsage.get(a) ?? 0) - (colorUsage.get(b) ?? 0)
+  )
+  const shapesByUsage = [...GENRE_SHAPES].sort(
+    (a, b) => (shapeUsage.get(a) ?? 0) - (shapeUsage.get(b) ?? 0)
+  )
+
+  for (const color of colorsByUsage) {
+    for (const shape of shapesByUsage) {
+      const key = `${color}::${shape}`
+      if (!usedCombinations.has(key)) {
+        return { color, shape }
+      }
+    }
+  }
+
+  // If all combinations are used, deterministic overlap based on the genre name.
+  const hash = hashString(name)
+  const color = GENRE_COLORS[hash % GENRE_COLORS.length]
+  const shape =
+    GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length]
+  return { color, shape }
+}
+
+async function updateArtistCounts(): Promise<void> {
+  await db.run(sql`
+    UPDATE artists 
+    SET track_count = (
+      SELECT COUNT(DISTINCT t.id)
+      FROM tracks t
+      JOIN track_artists ta ON ta.track_id = t.id
+      WHERE ta.artist_id = artists.id AND t.is_deleted = 0
+    ),
+    album_count = (
+      SELECT COUNT(DISTINCT t.album_id)
+      FROM tracks t
+      JOIN track_artists ta ON ta.track_id = t.id
+      WHERE ta.artist_id = artists.id AND t.is_deleted = 0
+    ),
+    artwork = COALESCE(
+      (
+        SELECT t.artwork FROM tracks t
+        WHERE t.artist_id = artists.id
+          AND t.is_deleted = 0
+          AND t.artwork IS NOT NULL
+        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+        LIMIT 1
+      ),
+      (
+        SELECT a.artwork FROM tracks t
+        JOIN track_artists ta ON ta.track_id = t.id
+        JOIN albums a ON a.id = t.album_id
+        WHERE ta.artist_id = artists.id
+          AND t.artist_id != artists.id
+          AND t.is_deleted = 0
+          AND a.artwork IS NOT NULL
+        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+        LIMIT 1
+      ),
+      (
+        SELECT a.artwork FROM tracks t
+        JOIN albums a ON a.id = t.album_id
+        WHERE t.artist_id = artists.id
+          AND t.is_deleted = 0
+          AND a.artwork IS NOT NULL
+        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+        LIMIT 1
+      ),
+      NULL
+    ),
+    updated_at = ${Date.now()}
+  `)
+}
+
+async function updateAlbumCounts(): Promise<void> {
+  await db.run(sql`
+    UPDATE albums 
+    SET track_count = (
+      SELECT COUNT(*) FROM tracks 
+      WHERE tracks.album_id = albums.id AND tracks.is_deleted = 0
+    ),
+    duration = (
+      SELECT COALESCE(SUM(duration), 0) FROM tracks 
+      WHERE tracks.album_id = albums.id AND tracks.is_deleted = 0
+    ),
+    artwork = COALESCE(
+      (
+        SELECT t.artwork
+        FROM tracks t
+        WHERE t.album_id = albums.id
+          AND t.is_deleted = 0
+          AND t.artwork IS NOT NULL
+        GROUP BY t.artwork
+        ORDER BY COUNT(*) DESC, COALESCE(MAX(t.date_added), 0) DESC
+        LIMIT 1
+      ),
+      albums.artwork
+    ),
+    updated_at = ${Date.now()}
+  `)
+}
+
+async function updateGenreCounts(): Promise<void> {
+  await db.run(sql`
+    UPDATE genres 
+    SET track_count = (
+      SELECT COUNT(*) FROM track_genres tg
+      JOIN tracks t ON tg.track_id = t.id
+      WHERE tg.genre_id = genres.id AND t.is_deleted = 0
+    )
+  `)
+}

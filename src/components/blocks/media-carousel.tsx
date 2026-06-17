@@ -10,7 +10,7 @@ import type { ReactNode } from "react"
 import {
   LegendList,
   type LegendListRenderItemProps,
-} from "@legendapp/list"
+} from "@legendapp/list/react-native"
 import { ScrollView, type StyleProp, View, type ViewStyle } from "react-native"
 import { cn } from "tailwind-variants"
 

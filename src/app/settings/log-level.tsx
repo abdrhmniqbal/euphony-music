@@ -16,8 +16,8 @@ import { useThemeColors } from "@/modules/ui/theme"
 import {
   type AppLogLevel,
   setAppLogLevel,
-} from "@/modules/logging/logging.store"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+} from "@/modules/logging/store"
+import { useSettingsStore } from "@/modules/settings/store"
 
 interface LogLevelOption {
   labelKey: string

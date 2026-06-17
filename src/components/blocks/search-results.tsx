@@ -10,9 +10,9 @@ import type {
   SearchAlbumResult,
   SearchArtistResult,
   SearchPlaylistResult,
-} from "@/modules/library/library.types"
-import type { Track } from "@/modules/player/player.store"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+} from "@/modules/library/types"
+import type { Track } from "@/modules/player/store"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { Chip, PressableFeedback } from "heroui-native"
 import * as React from "react"
 
@@ -28,7 +28,7 @@ export type {
   SearchAlbumResult,
   SearchArtistResult,
   SearchPlaylistResult,
-} from "@/modules/library/library.types"
+} from "@/modules/library/types"
 
 const SEARCH_TABS = ["All", "Track", "Album", "Artist", "Playlist"] as const
 export type SearchTab = (typeof SEARCH_TABS)[number]

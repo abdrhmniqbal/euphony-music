@@ -6,7 +6,7 @@
  * Side Effects: Updates scroll state, starts playback from full recent-addition queues, and navigates to search/library detail routes.
  */
 
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import type { DBTrack } from "@/types/database"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 
@@ -20,15 +20,15 @@ import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
 import LocalSearchIcon from "@/components/icons/local/search"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
-import { useCurrentTrackId } from "@/modules/player/player-selectors"
-import { playTrack } from "@/modules/player/player.service"
-import { useTracks } from "@/modules/tracks/tracks.queries"
+import { useCurrentTrackId } from "@/modules/player/selectors"
+import { playTrack } from "@/modules/player/service"
+import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
 const RECENTLY_ADDED_LIMIT = 8

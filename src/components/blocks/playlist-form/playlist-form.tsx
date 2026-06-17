@@ -1,5 +1,5 @@
 import type { PlaylistFormProps } from "./types"
-import type { Track } from "@/modules/player/player.types"
+import type { Track } from "@/modules/player/types"
 import { Button, Input, PressableFeedback, TextArea } from "heroui-native"
 
 import { Text, View } from "react-native"
@@ -18,7 +18,7 @@ import { useThemeColors } from "@/modules/ui/theme"
 import {
   MAX_PLAYLIST_DESCRIPTION_LENGTH,
   MAX_PLAYLIST_NAME_LENGTH,
-} from "@/modules/playlist/playlist.utils"
+} from "@/modules/playlist/utils"
 
 interface ReorderableSelectedTrackRowProps {
   track: Track

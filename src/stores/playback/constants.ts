@@ -1,44 +1,56 @@
-/**
- * Purpose: Defines playback store constants and persisted field names.
- * Caller: Playback store and actions.
- * Dependencies: player domain types.
- * Main Functions: RepeatModes, PersistedFields, PlaybackStore.
- * Side Effects: None.
- */
+import type { Track } from "@/data/track/types"
 
-import type { PlayerQueueContext, RepeatModeType, Track } from "@/modules/player/player.types"
 import type { PlayFromSource } from "./types"
 
+import type { ObjectValues } from "@/utils/types"
+
 export const RepeatModes = {
-  NO_REPEAT: "off",
-  REPEAT: "queue",
-  REPEAT_ONE: "track",
-} as const satisfies Record<string, RepeatModeType>
+  NO_REPEAT: "no-repeat",
+  REPEAT: "repeat",
+  REPEAT_ONE: "repeat-one",
+} as const
+
+export type RepeatMode = ObjectValues<typeof RepeatModes>
 
 export interface PlaybackStore {
   _hasHydrated: boolean
+  _init: (state: PlaybackStore) => Promise<void>
+
+  getTrack: (trackKey: string) => Promise<Track | undefined>
+  reset: () => Promise<void>
+  resetOnCrash: () => Promise<void>
+
+  _hasRestoredPosition: boolean
+  _restoredTrackKey: string | undefined
+
   isPlaying: boolean
   lastPosition: number
-  duration: number
-  repeat: RepeatModeType
+
+  repeat: RepeatMode
   shuffle: boolean
+
   playingFrom: PlayFromSource | undefined
   playingFromName: string
+
   orderSnapshot: string[]
   queue: string[]
+
   activeKey: string | undefined
   activeTrack: Track | undefined
   queuePosition: number
   numQueuedNext: number
-  queueContext: PlayerQueueContext | null
-  tracks: Track[]
-  reset: () => Promise<void>
-  getTrack: (trackKey: string) => Promise<Track | undefined>
+
+  isReplayGainEnabled: boolean
+  preAmpWTags: number
+  preAmpWOTags: number
+
+  restoreVolume: boolean
+  volume: number
 }
 
 export const PersistedFields: string[] = [
+  "_restoredTrackKey",
   "lastPosition",
-  "duration",
   "repeat",
   "shuffle",
   "playingFrom",
@@ -47,5 +59,9 @@ export const PersistedFields: string[] = [
   "queue",
   "activeKey",
   "queuePosition",
-  "queueContext",
+  "isReplayGainEnabled",
+  "preAmpWTags",
+  "preAmpWOTags",
+  "restoreVolume",
+  "volume",
 ] satisfies Array<keyof PlaybackStore>

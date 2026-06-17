@@ -9,29 +9,29 @@
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { useCallback, useRef } from "react"
+import { useTranslation } from "react-i18next"
 import { type FlatList, Text, View } from "react-native"
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated"
 import ReorderableList, {
   useReorderableDrag,
 } from "react-native-reorderable-list"
-import { useTranslation } from "react-i18next"
 import { cn } from "tailwind-variants"
 
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
 import { TrackRow } from "@/components/patterns/track-row"
+import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
+import { skipToQueueItem } from "@/modules/player/controls"
+import { moveInQueue, removeFromQueue } from "@/modules/player/queue"
 import {
   useCurrentTrack,
   usePlayerQueueInfo,
-} from "@/modules/player/player-selectors"
-import { skipToQueueItem } from "@/modules/player/player-controls.service"
+} from "@/modules/player/selectors"
 import {
-  getQueueState,
   type Track,
   usePlayerStore,
-} from "@/modules/player/player.store"
-import { moveInQueue, removeFromQueue } from "@/modules/player/queue.service"
+} from "@/modules/player/store"
 
 interface QueueItemProps {
   track: Track
@@ -145,7 +145,22 @@ export const QueueView: React.FC = () => {
     ),
     [currentIndex, handlePlayFromQueue, handleRemove]
   )
-  if (!currentTrack || queue.length === 0) return null
+  if (!currentTrack || queue.length === 0) {
+    return (
+      <Animated.View
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(200)}
+        layout={Layout.duration(300)}
+        className="-mx-2 my-3 flex-1 justify-center"
+      >
+        <EmptyState
+          title="No queue"
+          message="Start playback to see upcoming tracks here."
+          className="py-0"
+        />
+      </Animated.View>
+    )
+  }
 
   return (
     <Animated.View

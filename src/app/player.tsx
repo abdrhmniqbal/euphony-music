@@ -16,25 +16,25 @@ import {
 } from "@/components/blocks/artist-picker-sheet"
 import { buildArtistPickerItems } from "@/components/blocks/artist-picker.utils"
 import { FullPlayerContent } from "@/components/blocks/player/full-player-content"
-import { PlayerActionSheet } from "@/components/blocks/player/player-action-sheet"
+import { PlayerActionSheet } from "@/components/blocks/player/action-sheet"
 import {
   useCurrentTrack,
   useIsPlaying,
   usePlayerQueueContext,
-} from "@/modules/player/player-selectors"
+} from "@/modules/player/selectors"
 import {
   getPlayerIntentRuntimeSnapshot,
   schedulePlayerIntentRuntimeSync,
   subscribePlayerIntentRuntime,
-} from "@/modules/player/player-intent-runtime"
-import { useTrack } from "@/modules/tracks/tracks.queries"
+} from "@/modules/player/intent-runtime"
+import { useTrack } from "@/modules/tracks/queries"
 import { splitArtistsValue } from "@/modules/settings/split-multiple-values"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 import {
   type PlayerExpandedView,
   setPlayerExpandedView,
   useUIStore,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 import { useTranslation } from "react-i18next"
 
 function isPlayerExpandedView(value: string): value is PlayerExpandedView {

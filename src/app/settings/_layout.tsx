@@ -18,7 +18,7 @@ import {
   getDefaultNativeStackOptions,
   getDrillDownScreenOptions,
 } from "@/modules/navigation/stack"
-import { SETTINGS_SCREEN_TITLE_KEYS } from "@/modules/settings/settings.routes"
+import { SETTINGS_SCREEN_TITLE_KEYS } from "@/modules/settings/routes"
 import { useThemeColors } from "@/modules/ui/theme"
 
 const DETAIL_SETTINGS_SCREENS = [
@@ -36,6 +36,7 @@ const DETAIL_SETTINGS_SCREENS = [
   "artist-split-mode",
   "open-source-licenses",
   "whats-new",
+  "theme-mode",
 ] as const
 
 export default function SettingsLayout() {

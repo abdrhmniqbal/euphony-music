@@ -2,12 +2,12 @@ import {
   createSettingsConfigFile,
   loadSettingsConfig,
   saveSettingsConfig,
-} from "@/modules/settings/settings.repository"
+} from "@/modules/settings/repository"
 import {
   getDefaultIndexerNotificationsEnabled,
   getSettingsState,
   updateSettingsState,
-} from "@/modules/settings/settings.store"
+} from "@/modules/settings/store"
 
 interface IndexerNotificationsConfig {
   enabled: boolean

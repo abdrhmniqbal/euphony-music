@@ -6,8 +6,8 @@
  * Side Effects: Starts native audio playback service listeners.
  */
 
-import { setupPlayer } from "@/modules/player/player.service"
-import { logError, logInfo } from "@/modules/logging/logging.service"
+import { setupPlayer } from "@/modules/player/service"
+import { logError, logInfo } from "@/modules/logging/service"
 
 let isPlaybackServiceRegistered = false
 

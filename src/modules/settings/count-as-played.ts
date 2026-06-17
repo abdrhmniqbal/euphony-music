@@ -6,17 +6,17 @@
  * Side Effects: Reads and writes `count-as-played.json` in Expo document storage and mutates settings state.
  */
 
-import type { CountAsPlayedConfig } from "@/modules/settings/settings.types"
+import type { CountAsPlayedConfig } from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
   saveSettingsConfig,
-} from "@/modules/settings/settings.repository"
+} from "@/modules/settings/repository"
 import {
   getDefaultCountAsPlayedConfig,
   getSettingsState,
   updateSettingsState,
-} from "@/modules/settings/settings.store"
+} from "@/modules/settings/store"
 
 const COUNT_AS_PLAYED_FILE = createSettingsConfigFile("count-as-played.json")
 

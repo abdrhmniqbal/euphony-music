@@ -6,7 +6,6 @@
  * Side Effects: Persists folder filter configuration and can trigger library reindexing.
  */
 
-import { Directory } from "expo-file-system"
 import { BottomSheet, Button, Card, ListGroup, PressableFeedback, Separator } from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
@@ -18,9 +17,9 @@ import LocalCancelIcon from "@/components/icons/local/cancel"
 import LocalFolderSolidIcon from "@/components/icons/local/folder-solid"
 import LocalTickIcon from "@/components/icons/local/tick"
 import { EmptyState } from "@/components/ui/empty-state"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
-import { usePlayerTracks } from "@/modules/player/player-selectors"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
+import { usePlayerTracks } from "@/modules/player/selectors"
 import {
   commitFolderFilterConfig,
   type FolderFilterConfig,
@@ -29,7 +28,7 @@ import {
   getFolderPathFromUri,
   normalizeFolderPath,
 } from "@/modules/settings/folder-filters"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
 interface FolderEntry {
@@ -127,6 +126,15 @@ function FolderRow({
 
 const EMPTY_PENDING: FolderFilterConfig = { whitelist: [], blacklist: [] }
 
+function sanitizeFolderFilterConfig(
+  config: FolderFilterConfig | null | undefined
+): FolderFilterConfig {
+  return {
+    whitelist: Array.isArray(config?.whitelist) ? config.whitelist : [],
+    blacklist: Array.isArray(config?.blacklist) ? config.blacklist : [],
+  }
+}
+
 function getModeFromConfig(config: FolderFilterConfig): FolderFilterMode {
   if (config.whitelist.length > 0) {
     return "whitelist"
@@ -144,7 +152,9 @@ export default function FolderFiltersScreen() {
   const theme = useThemeColors()
   const { t } = useTranslation()
   const tracks = usePlayerTracks()
-  const folderFilterConfig = useSettingsStore((state) => state.folderFilterConfig)
+  const folderFilterConfig = sanitizeFolderFilterConfig(
+    useSettingsStore((state) => state.folderFilterConfig)
+  )
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const [pendingConfig, setPendingConfig] =
     React.useState<FolderFilterConfig>(folderFilterConfig)
@@ -169,6 +179,11 @@ export default function FolderFiltersScreen() {
 
   async function pickFolder() {
     try {
+      const { Directory } = await import("expo-file-system")
+      if (typeof Directory?.pickDirectoryAsync !== "function") {
+        return
+      }
+
       const directory = await Directory.pickDirectoryAsync()
       if (!directory?.uri) {
         return

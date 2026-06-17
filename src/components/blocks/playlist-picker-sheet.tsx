@@ -1,5 +1,5 @@
 import { useBottomSheetInternal } from "@gorhom/bottom-sheet"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import {
   BottomSheet,
   Button,
@@ -35,9 +35,9 @@ import {
   MediaItemTitle as ItemTitle,
 } from "@/components/ui/media-item"
 import { EmptyState } from "@/components/ui/empty-state"
-import type { PlaylistPickerSelection } from "@/modules/playlist/playlist.types"
+import type { PlaylistPickerSelection } from "@/modules/playlist/types"
 import { useThemeColors } from "@/modules/ui/theme"
-import { usePlaylistsForTrack } from "@/modules/playlist/playlist.queries"
+import { usePlaylistsForTrack } from "@/modules/playlist/queries"
 
 interface PlaylistPickerSheetProps {
   isOpen: boolean

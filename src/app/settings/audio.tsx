@@ -16,7 +16,7 @@ import {
   type AudioPlaybackConfig,
 } from "@/modules/settings/audio-playback"
 import { setCrossfadeConfig } from "@/modules/settings/audio-crossfade"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 
 function getSliderNumericValue(value: number | number[]): number {
   return Array.isArray(value) ? (value[0] ?? 0) : value

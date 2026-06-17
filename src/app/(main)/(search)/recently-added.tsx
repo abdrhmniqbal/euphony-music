@@ -15,17 +15,17 @@ import { TrackList } from "@/components/blocks/track-list"
 import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useCurrentTrackId } from "@/modules/player/player-selectors"
-import { playTrack } from "@/modules/player/player.service"
-import { useTracks } from "@/modules/tracks/tracks.queries"
+import { useIndexerStore } from "@/modules/indexer/store"
+import { startIndexing } from "@/modules/indexer/service"
+import { useCurrentTrackId } from "@/modules/player/selectors"
+import { playTrack } from "@/modules/player/service"
+import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import type { DBTrack } from "@/types/database"
 

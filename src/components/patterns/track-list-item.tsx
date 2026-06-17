@@ -6,7 +6,7 @@
  * Side Effects: Triggers playback and row action callbacks.
  */
 
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 
@@ -14,7 +14,7 @@ import { useCallback } from "react"
 import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
-import { usePlayerStore } from "@/modules/player/player.store"
+import { usePlayerStore } from "@/modules/player/store"
 
 interface TrackListItemProps {
   track: Track

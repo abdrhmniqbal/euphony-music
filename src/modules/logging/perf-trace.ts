@@ -6,7 +6,7 @@
  * Side Effects: Emits dev-only timing logs when extra logging is enabled.
  */
 
-import { isExtraLoggingEnabled, logInfo } from "@/modules/logging/logging.service"
+import { isExtraLoggingEnabled, logInfo } from "@/modules/logging/service"
 
 interface PerfTraceContext {
   [key: string]: unknown

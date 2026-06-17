@@ -33,7 +33,7 @@ import { Stack } from "@/layouts/stack"
 import {
   handleBootstrapDatabaseError,
   handleBootstrapDatabaseReady,
-} from "@/modules/bootstrap/bootstrap.runtime"
+} from "@/modules/bootstrap/runtime"
 import { checkStartupAppUpdate } from "@/modules/updates/app-update.runtime"
 import {
   ROOT_MODAL_SCREEN_OPTIONS,
@@ -43,9 +43,9 @@ import {
   ensureNotificationRuntimeStarted,
   setNotificationRouteHandler,
 } from "@/modules/notifications/notification-runtime"
-import { useHasCurrentTrack } from "@/modules/player/player-selectors"
+import { useHasCurrentTrack } from "@/modules/player/selectors"
 import { useThemeColors } from "@/modules/ui/theme"
-import { useUIStore } from "@/modules/ui/ui.store"
+import { useUIStore } from "@/modules/ui/store"
 
 import "../global.css"
 

@@ -9,7 +9,12 @@
 import * as React from "react"
 import { Text, TextInput, type TextInputProps, View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
-import { useCastState, useMediaStatus, useRemoteMediaClient, useStreamPosition } from "react-native-google-cast"
+import {
+  useCastState,
+  useMediaStatus,
+  useRemoteMediaClient,
+  useStreamPosition,
+} from "react-native-google-cast"
 import Animated, {
   Layout,
   runOnJS,
@@ -20,9 +25,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 
-import { isCastConnected, seekCastPlayback } from "@/modules/cast/cast.service"
-import { seekTo } from "@/modules/player/player-controls.service"
-import { usePlaybackProgressState } from "@/modules/player/player-selectors"
+import { isCastConnected, seekCastPlayback } from "@/modules/cast/service"
+import { seekTo } from "@/modules/player/controls"
+import { usePlaybackProgressState } from "@/modules/player/selectors"
 
 type AnimatedTimeInputProps = TextInputProps & { text?: string }
 
@@ -53,9 +58,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const isCasting = isCastConnected(castState, remoteMediaClient)
   const castDuration = Number(mediaStatus?.mediaInfo?.streamDuration ?? 0)
   const effectiveCurrentTime = Number(
-    isCasting ? castStreamPosition ?? 0 : currentTime ?? 0
+    isCasting ? (castStreamPosition ?? 0) : (currentTime ?? 0)
   )
-  const effectiveDuration = Number(isCasting ? castDuration : duration ?? 0)
+  const effectiveDuration = Number(isCasting ? castDuration : (duration ?? 0))
 
   const liveProgress = useDerivedValue(() => {
     if (effectiveDuration <= 0) {
@@ -98,10 +103,21 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     }
   )
 
+  const seekNonce = React.useRef(0)
+
+  const finishSeek = async (seekTime: number, nonce: number) => {
+    await seekPlayback(seekTime)
+    if (seekNonce.current === nonce) {
+      isSeeking.value = false
+      pressed.value = false
+    }
+  }
+
   const seekGesture = Gesture.Pan()
     .onStart((e) => {
       isSeeking.value = true
       pressed.value = true
+      seekNonce.current += 1
       if (barWidth.value > 0) {
         seekProgress.value = Math.max(0, Math.min(1, e.x / barWidth.value))
       }
@@ -113,24 +129,23 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     })
     .onEnd(() => {
       const seekTime = displayProgress.value * effectiveDuration
-      runOnJS(seekPlayback)(seekTime)
-      isSeeking.value = false
-      pressed.value = false
+      const currentNonce = seekNonce.current
+      runOnJS(finishSeek)(seekTime, currentNonce)
     })
 
   const tapGesture = Gesture.Tap()
     .onStart((e) => {
       isSeeking.value = true
       pressed.value = true
+      seekNonce.current += 1
       if (barWidth.value > 0) {
         seekProgress.value = Math.max(0, Math.min(1, e.x / barWidth.value))
       }
     })
     .onEnd(() => {
       const seekTime = displayProgress.value * effectiveDuration
-      runOnJS(seekPlayback)(seekTime)
-      isSeeking.value = false
-      pressed.value = false
+      const currentNonce = seekNonce.current
+      runOnJS(finishSeek)(seekTime, currentNonce)
     })
 
   const progressStyle = useAnimatedStyle(() => ({
@@ -146,7 +161,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
       layout={Layout.duration(300)}
       className={compact ? "mb-4" : "mb-6"}
     >
-      <GestureDetector gesture={Gesture.Simultaneous(seekGesture, tapGesture)}>
+      <GestureDetector gesture={Gesture.Exclusive(seekGesture, tapGesture)}>
         <View
           className={compact ? "py-2" : "py-4"}
           onLayout={(e) => {
@@ -172,7 +187,9 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           value={formatTime(effectiveCurrentTime)}
           style={{ color: "rgba(255, 255, 255, 0.5)" }}
         />
-        <Text className="text-xs text-white/50">{formatTime(effectiveDuration)}</Text>
+        <Text className="text-xs text-white/50">
+          {formatTime(effectiveDuration)}
+        </Text>
       </View>
     </Animated.View>
   )

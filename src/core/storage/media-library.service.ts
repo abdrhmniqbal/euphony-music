@@ -1,5 +1,5 @@
-import * as MediaLibrary from "expo-media-library"
-import { logError, logInfo } from "@/modules/logging/logging.service"
+import * as MediaLibrary from "expo-media-library/legacy"
+import { logError, logInfo } from "@/modules/logging/service"
 
 export async function getMediaLibraryPermission() {
   try {

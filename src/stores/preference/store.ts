@@ -7,14 +7,16 @@
  */
 
 import { I18nManager } from "react-native"
-import { create } from "zustand"
+import { useStore } from "zustand"
 import { Uniwind } from "uniwind"
 
+import { createPersistedStore } from "@/lib/zustand"
 import { i18n } from "@/modules/localization/i18n"
 import type { PreferenceStore } from "./constants"
+import { OmittedFields } from "./constants"
 import { resolveLanguageConfigs } from "./utils"
 
-export const preferenceStore = create<PreferenceStore>((set) => ({
+export const preferenceStore = createPersistedStore<PreferenceStore>((set) => ({
   _hasHydrated: false,
   _init: async (state) => {
     Uniwind.setTheme(state.theme)
@@ -72,10 +74,22 @@ export const preferenceStore = create<PreferenceStore>((set) => ({
   downsamplingProcessor: true,
   queueAwareNext: false,
   waveformSlider: false,
-}))
+}), {
+  name: "startune::preference-store",
+  partialize: (state) =>
+    Object.fromEntries(
+      Object.entries(state).filter(([key]) => !OmittedFields.includes(key))
+    ),
+  onRehydrateStorage: () => (state, error) => {
+    if (error) {
+      console.warn("[Preference Store]", error)
+      return
+    }
 
-void preferenceStore.getState()._init(preferenceStore.getState())
+    void state?._init(state)
+  },
+})
 
 export function usePreferenceStore<T>(selector: (state: PreferenceStore) => T): T {
-  return preferenceStore(selector)
+  return useStore(preferenceStore, selector)
 }

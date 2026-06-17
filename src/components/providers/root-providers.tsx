@@ -1,7 +1,7 @@
 /**
  * Purpose: Composes app-level providers for localization, data fetching, database setup, and bootstrap listeners.
  * Caller: Root app layout.
- * Dependencies: React Query, localization provider, database provider, and bootstrap listeners runtime.
+ * Dependencies: React Query, localization provider, and reference-style app runtime provider.
  * Main Functions: RootProviders()
  * Side Effects: Starts bootstrap listeners runtime.
  */
@@ -9,7 +9,6 @@
 import { QueryClientProvider } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/tanstack-query"
-import { ensureBootstrapListenersStarted } from "@/modules/bootstrap/bootstrap-listeners.runtime"
 
 import { DatabaseProvider } from "./database-provider"
 import { LocalizationProvider } from "./localization-provider"
@@ -23,8 +22,6 @@ export function RootProviders({
   onDatabaseReady?: () => void
   onDatabaseError?: () => void
 }) {
-  ensureBootstrapListenersStarted()
-
   return (
     <LocalizationProvider>
       <QueryClientProvider client={queryClient}>

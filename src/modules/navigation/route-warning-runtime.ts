@@ -6,7 +6,7 @@
  * Side Effects: Emits warning logs once per warning key.
  */
 
-import { logWarn } from "@/modules/logging/logging.service"
+import { logWarn } from "@/modules/logging/service"
 
 interface RouteWarningOptions {
   key: string

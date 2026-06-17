@@ -1,16 +1,20 @@
-/**
- * Purpose: Transitional facade from old player modules to the new playback store/actions.
- * Caller: Existing player service and control modules during playback rewrite.
- * Dependencies: playback store actions.
- * Main Functions: setupPlaybackCore(), playFromTracks(), pausePlayback(), resumePlayback(), nextTrack(), previousTrack(), seekPlayback(), setPlaybackRepeatMode().
- * Side Effects: Delegates to AudioBrowser-backed playback actions.
- */
+import AudioBrowser from "react-native-audio-browser"
 
-import type { PlayerQueueContext, RepeatModeType, Track } from "@/modules/player/player.types"
-import { PlaybackControls } from "@/stores/playback/actions"
+import type { PlayerQueueContext, RepeatModeType, Track } from "@/modules/player/types"
+import { PlaybackControls, PlaybackSettings, Queue } from "@/stores/playback/actions"
+import { playbackStore } from "@/stores/playback/store"
+import { getUpdatedLists } from "@/stores/playback/utils"
+
+import { getAudioBrowserOptions } from "@/lib/react-native-audio-browser"
 
 export async function setupPlaybackCore() {
-  await PlaybackControls.setupPlayback()
+  await AudioBrowser.setupPlayer({
+    android: {
+      allowedArtworkParentPaths: [],
+      downsamplingProcessor: true,
+    },
+  })
+  AudioBrowser.updateOptions(getAudioBrowserOptions())
 }
 
 export function isPlaybackCoreSetUp() {
@@ -23,7 +27,23 @@ export async function playFromTracks(options: {
   context: PlayerQueueContext | null
   shuffle: boolean
 }) {
-  return await PlaybackControls.playFromTracks(options)
+  const trackIds = options.tracks.map((t) => t.id)
+  const listInfo = getUpdatedLists(trackIds, options.shuffle, options.track.id)
+  const activeKey = listInfo.queue[0]
+  const activeTrack = await playbackStore.getState().getTrack(activeKey!)
+  if (!activeTrack) return false
+
+  playbackStore.setState({
+    isPlaying: true,
+    lastPosition: 0,
+    ...listInfo,
+    activeKey,
+    activeTrack,
+  })
+
+  await PlaybackControls.loadCurrentTrack()
+  AudioBrowser.play()
+  return true
 }
 
 export async function pausePlayback() {
@@ -55,5 +75,15 @@ export async function seekPlayback(seconds: number) {
 }
 
 export async function setPlaybackRepeatMode(mode: RepeatModeType) {
-  PlaybackControls.setRepeatMode(mode)
+  repeatMode: switch (mode) {
+    case "off":
+      playbackStore.setState({ repeat: "no-repeat" })
+      break
+    case "queue":
+      playbackStore.setState({ repeat: "repeat" })
+      break
+    case "track":
+      playbackStore.setState({ repeat: "repeat-one" })
+      break
+  }
 }

@@ -9,7 +9,7 @@
 import type {
   AlbumSortField,
   SortOrder,
-} from "@/modules/library/library-sort.types"
+} from "@/modules/library/sort.types"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { useMemo, useState } from "react"
@@ -28,21 +28,21 @@ import {
 } from "@/constants/animations"
 import { Stack } from "@/layouts/stack"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
-import { ALBUM_SORT_OPTIONS } from "@/modules/library/library-sort.constants"
-import { sortAlbums } from "@/modules/library/library-sort.utils"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
+import { ALBUM_SORT_OPTIONS } from "@/modules/library/sort.constants"
+import { sortAlbums } from "@/modules/library/sort.utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
-import { useGenreAlbums } from "@/modules/search/search.queries"
+import { useGenreAlbums } from "@/modules/search/queries"
 import {
   mapAlbumsToGridData,
-} from "@/modules/search/search.utils"
+} from "@/modules/search/utils"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")

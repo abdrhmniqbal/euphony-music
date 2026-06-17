@@ -6,17 +6,17 @@
  * Side Effects: Reads and writes `indexer-auto-scan.json` in Expo document storage and mutates settings state.
  */
 
-import type { IndexerScanConfig } from "@/modules/settings/settings.types"
+import type { IndexerScanConfig } from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
   saveSettingsConfig,
-} from "@/modules/settings/settings.repository"
+} from "@/modules/settings/repository"
 import {
   getDefaultIndexerScanConfig,
   getSettingsState,
   updateSettingsState,
-} from "@/modules/settings/settings.store"
+} from "@/modules/settings/store"
 
 const AUTO_SCAN_FILE = createSettingsConfigFile("indexer-auto-scan.json")
 

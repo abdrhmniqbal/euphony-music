@@ -6,8 +6,8 @@
  * Side Effects: Loads cached DB state, emits runtime updates, and calls ready/error callbacks.
  */
 
-import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup.service"
-import { logError, logInfo } from "@/modules/logging/logging.service"
+import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup"
+import { logError, logInfo } from "@/modules/logging/service"
 
 type DatabaseRuntimeStatus =
   | "idle"

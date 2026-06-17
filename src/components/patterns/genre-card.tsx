@@ -1,4 +1,4 @@
-import type { PatternType } from "@/modules/genres/genres.types"
+import type { PatternType } from "@/modules/genres/types"
 import { Card, PressableFeedback } from "heroui-native"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"

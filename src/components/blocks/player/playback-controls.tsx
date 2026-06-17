@@ -1,6 +1,6 @@
 import type {
   RepeatModeType,
-} from "@/modules/player/player.store"
+} from "@/modules/player/store"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
@@ -19,18 +19,18 @@ import {
   playCastNext,
   playCastPrevious,
   toggleCastPlayback,
-} from "@/modules/cast/cast.service"
+} from "@/modules/cast/service"
 import {
   playNext,
   playPrevious,
   togglePlayback,
   toggleRepeatMode,
-} from "@/modules/player/player-controls.service"
+} from "@/modules/player/controls"
 import {
   useIsShuffled,
   usePlaybackRepeatMode,
-} from "@/modules/player/player-selectors"
-import { toggleShuffle } from "@/modules/player/queue.service"
+} from "@/modules/player/selectors"
+import { toggleShuffle } from "@/modules/player/queue"
 import { useThemeColors } from "@/modules/ui/theme"
 import { cn } from "@/utils/common"
 

@@ -6,7 +6,7 @@
  * Side Effects: Starts indexing on refresh, updates scroll state, and starts context-aware playback.
  */
 
-import type { HistoryTopTracksPeriod as TopTracksPeriod } from "@/modules/history/history.types"
+import type { HistoryTopTracksPeriod as TopTracksPeriod } from "@/modules/history/types"
 import { Tabs } from "heroui-native"
 import { useState } from "react"
 import { View } from "react-native"
@@ -22,16 +22,16 @@ import {
   screenEnterTransition,
   screenExitTransition,
 } from "@/constants/animations"
-import { useTopTracksByPeriod } from "@/modules/history/history.queries"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
-import { playTrack } from "@/modules/player/player.service"
+import { useTopTracksByPeriod } from "@/modules/history/queries"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
+import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 const TOP_TRACKS_TABS = ["Realtime", "Daily", "Weekly"] as const
 type TopTracksTab = (typeof TOP_TRACKS_TABS)[number]

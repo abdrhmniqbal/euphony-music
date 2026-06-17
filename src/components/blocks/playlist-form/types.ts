@@ -1,4 +1,4 @@
-import type { Track } from "@/modules/player/player.types"
+import type { Track } from "@/modules/player/types"
 
 export interface PlaylistTrackRowProps {
   track: Track

@@ -10,10 +10,10 @@ import { ListGroup, Separator, Switch } from "heroui-native"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import { dismissIndexerProgressNotification } from "@/modules/indexer/indexer-notification.service"
+import { dismissIndexerProgressNotification } from "@/modules/indexer/notification"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { setIndexerNotificationsEnabled } from "@/modules/settings/indexer-notifications"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation()

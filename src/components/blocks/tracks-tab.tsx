@@ -3,17 +3,17 @@ import type {
   NativeSyntheticEvent,
   RefreshControlProps,
 } from "react-native"
-import type { SortConfig } from "@/modules/library/library-sort.types"
+import type { SortConfig } from "@/modules/library/sort.types"
 
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import type { DBTrack } from "@/types/database"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { LibraryTabState } from "@/components/blocks/library-tab-state"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
-import { sortTracks } from "@/modules/library/library-sort.utils"
-import { useTracks } from "@/modules/tracks/tracks.queries"
+import { sortTracks } from "@/modules/library/sort.utils"
+import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 

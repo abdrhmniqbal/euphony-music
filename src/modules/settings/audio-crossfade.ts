@@ -6,17 +6,17 @@
  * Side Effects: Reads and writes `audio-crossfade.json` in Expo document storage and mutates settings state.
  */
 
-import type { CrossfadeConfig } from "@/modules/settings/settings.types"
+import type { CrossfadeConfig } from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
   saveSettingsConfig,
-} from "@/modules/settings/settings.repository"
+} from "@/modules/settings/repository"
 import {
   getDefaultCrossfadeConfig,
   getSettingsState,
   updateSettingsState,
-} from "@/modules/settings/settings.store"
+} from "@/modules/settings/store"
 
 export type { CrossfadeConfig }
 

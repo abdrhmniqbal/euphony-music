@@ -10,17 +10,17 @@ import { i18n } from "@/modules/localization/i18n"
 import type {
   TrackDurationFilterConfig,
   TrackDurationFilterMode,
-} from "@/modules/settings/settings.types"
+} from "@/modules/settings/types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
   saveSettingsConfig,
-} from "@/modules/settings/settings.repository"
+} from "@/modules/settings/repository"
 import {
   getDefaultTrackDurationFilterConfig,
   getSettingsState,
   updateSettingsState,
-} from "@/modules/settings/settings.store"
+} from "@/modules/settings/store"
 
 export type { TrackDurationFilterConfig, TrackDurationFilterMode }
 

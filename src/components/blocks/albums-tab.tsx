@@ -3,15 +3,15 @@ import type {
   NativeSyntheticEvent,
   RefreshControlProps,
 } from "react-native"
-import type { SortConfig } from "@/modules/library/library-sort.types"
+import type { SortConfig } from "@/modules/library/sort.types"
 
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { type Album, AlbumGrid } from "@/components/blocks/album-grid"
 import { LibraryTabState } from "@/components/blocks/library-tab-state"
 import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
-import { sortAlbums } from "@/modules/library/library-sort.utils"
-import { useAlbums } from "@/modules/library/library.queries"
+import { sortAlbums } from "@/modules/library/sort.utils"
+import { useAlbums } from "@/modules/library/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 
 type AlbumOrderByField = Parameters<typeof useAlbums>[0]

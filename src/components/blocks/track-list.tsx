@@ -6,11 +6,11 @@
  * Side Effects: Opens track action sheet and dispatches playback actions.
  */
 
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import {
   LegendList,
   type LegendListRenderItemProps,
-} from "@legendapp/list"
+} from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
@@ -30,8 +30,8 @@ import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behav
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
 import { MemoizedTrackListItem } from "@/components/patterns/track-list-item"
 import { EmptyState } from "@/components/ui/empty-state"
-import { useCurrentTrackId } from "@/modules/player/player-selectors"
-import { playTrack } from "@/modules/player/player.service"
+import { useCurrentTrackId } from "@/modules/player/selectors"
+import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 
 interface TrackListProps {

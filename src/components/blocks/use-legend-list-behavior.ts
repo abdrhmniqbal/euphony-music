@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { LegendListRef } from "@legendapp/list"
+import type { LegendListRef } from "@legendapp/list/react-native"
 import { useMemo, useRef } from "react"
 
 interface LegendListBehaviorProps {

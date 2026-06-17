@@ -1,6 +1,6 @@
 import type { TrackPickerSheetContentProps } from "./types"
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { BottomSheet, Button } from "heroui-native"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"

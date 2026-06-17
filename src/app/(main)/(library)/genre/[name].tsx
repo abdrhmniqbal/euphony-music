@@ -6,7 +6,7 @@
  * Side Effects: Starts indexing on refresh, starts playback, and updates scroll state.
  */
 
-import type { GenreAlbumInfo } from "@/modules/search/search.types"
+import type { GenreAlbumInfo } from "@/modules/search/types"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { useMemo } from "react"
@@ -23,21 +23,21 @@ import { MusicCard } from "@/components/patterns/music-card"
 import { screenEnterTransition } from "@/constants/animations"
 import { Stack } from "@/layouts/stack"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
-import { playTrack } from "@/modules/player/player.service"
-import { useGenreDetails } from "@/modules/search/search.queries"
+import { playTrack } from "@/modules/player/service"
+import { useGenreDetails } from "@/modules/search/queries"
 import {
   getPreviewAlbums,
-} from "@/modules/search/search.utils"
+} from "@/modules/search/utils"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")

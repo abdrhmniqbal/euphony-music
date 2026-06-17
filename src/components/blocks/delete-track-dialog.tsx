@@ -1,9 +1,9 @@
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import { Button, Dialog, Toast, useToast } from "heroui-native"
 
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { useDeleteTrackFromDevice } from "@/modules/tracks/tracks.mutations"
+import { useDeleteTrackFromDevice } from "@/modules/tracks/mutations"
 
 interface DeleteTrackDialogProps {
   track: Track | null

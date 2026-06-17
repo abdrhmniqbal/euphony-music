@@ -6,21 +6,21 @@
  * Side Effects: Drives drag animation state for dismiss gestures.
  */
 
-import type { PlayerQueueContext, Track } from "@/modules/player/player.types"
-import type { PlayerExpandedView } from "@/modules/ui/ui.store"
+import type { PlayerQueueContext, Track } from "@/modules/player/types"
+import type { PlayerExpandedView } from "@/modules/ui/store"
 
 import { LinearGradient } from "expo-linear-gradient"
 import { StyleSheet, View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { usePlayerColorsStore } from "@/modules/player/player-colors.store"
+import { usePlayerColorsStore } from "@/modules/player/colors-store"
 
 import { AlbumArtView } from "./album-art-view"
 import { LyricsView } from "./lyrics-view"
 import { PlaybackControls } from "./playback-controls"
-import { PlayerFooter } from "./player-footer"
-import { PlayerHeader } from "./player-header"
+import { PlayerFooter } from "./footer"
+import { PlayerHeader } from "./header"
 import { ProgressBar } from "./progress-bar"
 import { QueueView } from "./queue-view"
 import { TrackInfo } from "./track-info"
@@ -59,16 +59,19 @@ export function FullPlayerContent({
   })
 
   return (
-    <Animated.View className="relative flex-1" style={containerStyle}>
+    <Animated.View
+      className="relative flex-1"
+      style={[{ backgroundColor: colors.bg }, containerStyle]}
+    >
       <LinearGradient
         colors={[colors.bg, colors.secondary, "#09090B"]}
         locations={[0, 0.6, 1]}
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
       />
       <View
         pointerEvents="none"
         style={[
-          StyleSheet.absoluteFillObject,
+          StyleSheet.absoluteFill,
           { backgroundColor: BACKGROUND_DARKEN_OVERLAY },
         ]}
       />

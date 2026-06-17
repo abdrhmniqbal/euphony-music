@@ -6,8 +6,8 @@
  * Side Effects: Starts playlist-context playback, toggles favorites, deletes playlists, opens action sheets, updates scroll UI state.
  */
 
-import type { TrackSortField } from "@/modules/library/library-sort.types"
-import type { PlaylistDetailTrack } from "@/modules/playlist/playlist.utils"
+import type { TrackSortField } from "@/modules/library/sort.types"
+import type { PlaylistDetailTrack } from "@/modules/playlist/utils"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { Button } from "heroui-native"
@@ -37,28 +37,28 @@ import {
 } from "@/constants/layout"
 import { Stack } from "@/layouts/stack"
 import { resolvePlaylistTransitionId } from "@/modules/artists/artist-transition"
-import { useToggleFavorite } from "@/modules/favorites/favorites.mutations"
+import { useToggleFavorite } from "@/modules/favorites/mutations"
 import {
   useIsFavorite,
-} from "@/modules/favorites/favorites.queries"
-import { TRACK_SORT_OPTIONS } from "@/modules/library/library-sort.constants"
-import { sortTracks } from "@/modules/library/library-sort.utils"
+} from "@/modules/favorites/queries"
+import { TRACK_SORT_OPTIONS } from "@/modules/library/sort.constants"
+import { sortTracks } from "@/modules/library/sort.utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
-import { playTrack } from "@/modules/player/player.service"
-import { useDeletePlaylist } from "@/modules/playlist/playlist.mutations"
-import { usePlaylist } from "@/modules/playlist/playlist.queries"
-import { formatDuration } from "@/modules/playlist/playlist.utils"
+import { playTrack } from "@/modules/player/service"
+import { useDeletePlaylist } from "@/modules/playlist/mutations"
+import { usePlaylist } from "@/modules/playlist/queries"
+import { formatDuration } from "@/modules/playlist/utils"
 import {
   buildPlaylistImages,
   buildPlaylistTracks,
   getPlaylistDuration,
-} from "@/modules/playlist/playlist.utils"
+} from "@/modules/playlist/utils"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
 type PlaylistTrackSortField = TrackSortField | "playlistAddedAt"

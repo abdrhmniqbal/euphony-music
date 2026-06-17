@@ -12,13 +12,13 @@ import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import { forceReindexLibrary } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
+import { forceReindexLibrary } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
 import { setAutoScanConfig } from "@/modules/settings/auto-scan"
 import { setCountAsPlayedConfig } from "@/modules/settings/count-as-played"
-import type { IndexerScanConfig } from "@/modules/settings/settings.types"
+import type { IndexerScanConfig } from "@/modules/settings/types"
 import { getTrackDurationFilterLabel } from "@/modules/settings/track-duration-filter"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 
 function getSliderNumericValue(value: number | number[]): number {
   return Array.isArray(value) ? (value[0] ?? 0) : value

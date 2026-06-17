@@ -1,7 +1,7 @@
 import {
   LegendList,
   type LegendListRenderItemProps,
-} from "@legendapp/list"
+} from "@legendapp/list/react-native"
 import * as React from "react"
 import {
   type NativeScrollEvent,

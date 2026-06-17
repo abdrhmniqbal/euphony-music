@@ -12,7 +12,7 @@ import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import { SETTINGS_CATEGORY_ROUTES } from "@/modules/settings/settings.routes"
+import { SETTINGS_CATEGORY_ROUTES } from "@/modules/settings/routes"
 
 export default function SettingsScreen() {
   const router = useRouter()

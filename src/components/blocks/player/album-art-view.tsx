@@ -1,4 +1,4 @@
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import { Image } from "expo-image"
 import * as React from "react"
 import { View } from "react-native"

@@ -1,8 +1,8 @@
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import {
   LegendList,
   type LegendListRenderItemProps,
-} from "@legendapp/list"
+} from "@legendapp/list/react-native"
 import { Button, PressableFeedback } from "heroui-native"
 import * as React from "react"
 

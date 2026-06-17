@@ -11,15 +11,15 @@ import type {
   NativeSyntheticEvent,
   RefreshControlProps,
 } from "react-native"
-import type { SortConfig } from "@/modules/library/library-sort.types"
+import type { SortConfig } from "@/modules/library/sort.types"
 
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { type Artist, ArtistGrid } from "@/components/blocks/artist-grid"
 import { LibraryTabState } from "@/components/blocks/library-tab-state"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
-import { sortArtists } from "@/modules/library/library-sort.utils"
-import { useArtists } from "@/modules/library/library.queries"
+import { sortArtists } from "@/modules/library/sort.utils"
+import { useArtists } from "@/modules/library/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 
 type ArtistOrderByField = Parameters<typeof useArtists>[0]

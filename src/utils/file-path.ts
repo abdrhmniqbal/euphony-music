@@ -9,7 +9,7 @@
 import { getActualPath } from "@missingcore/react-native-actual-path"
 import * as FileSystem from "expo-file-system/legacy"
 
-import { logWarn } from "@/modules/logging/logging.service"
+import { logWarn } from "@/modules/logging/service"
 
 const EXTERNAL_AUDIO_CACHE_FOLDER = "external-audio"
 const DEFAULT_AUDIO_EXTENSION = ".audio"

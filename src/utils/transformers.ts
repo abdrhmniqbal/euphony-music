@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { Album, Artist, Track } from "@/modules/player/player.types"
+import type { Album, Artist, Track } from "@/modules/player/types"
 import type { DBAlbum, DBArtist, DBTrack } from "@/types/database"
 
 function joinUniqueValues(values: Array<string | null | undefined>) {
@@ -57,7 +57,7 @@ export function transformDBTrackToTrack(dbTrack: DBTrack): Track {
     audioSampleRate: dbTrack.audioSampleRate || undefined,
     audioCodec: dbTrack.audioCodec || undefined,
     audioFormat: dbTrack.audioFormat || undefined,
-    lyrics: dbTrack.lyrics || undefined,
+    lyrics: (dbTrack.lyrics || undefined)?.replace(/^\uFEFF/, ""),
     fileHash: dbTrack.fileHash || undefined,
     scanTime: dbTrack.scanTime || undefined,
     isDeleted: Boolean(dbTrack.isDeleted),

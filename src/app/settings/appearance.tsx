@@ -12,7 +12,7 @@ import { ScrollView, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 import { getLanguageOptions } from "@/modules/localization/language-settings"
 import { getDeviceLanguageCode } from "@/modules/localization/i18n"
 

@@ -26,10 +26,10 @@ import {
   openBatteryOptimizationSettings as openNativeBatteryOptimizationSettings,
   requestIgnoreBatteryOptimizations,
 } from "@/modules/device/battery-optimization"
-import { useResetListeningHistory } from "@/modules/history/history.mutations"
-import { shareCrashLogs } from "@/modules/logging/logging.service"
+import { useResetListeningHistory } from "@/modules/history/mutations"
+import { shareCrashLogs } from "@/modules/logging/service"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 
 export default function AdvancedSettingsScreen() {
   const router = useRouter()

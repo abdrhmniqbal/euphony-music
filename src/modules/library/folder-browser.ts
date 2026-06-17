@@ -1,6 +1,6 @@
 import type { Folder, FolderBreadcrumb } from "@/components/blocks/folder-list"
-import type { SortConfig, SortOrder } from "@/modules/library/library-sort.types"
-import type { Track } from "@/modules/player/player.types"
+import type { SortConfig, SortOrder } from "@/modules/library/sort.types"
+import type { Track } from "@/modules/player/types"
 
 interface FolderNode {
   name: string

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"

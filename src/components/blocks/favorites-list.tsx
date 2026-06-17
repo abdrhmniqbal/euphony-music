@@ -9,8 +9,8 @@
 import type {
   FavoriteEntry,
   FavoriteType,
-} from "@/modules/favorites/favorites.types"
-import { LegendList, type LegendListRenderItemProps } from "@legendapp/list"
+} from "@/modules/favorites/types"
+import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { Chip, PressableFeedback } from "heroui-native"
@@ -52,9 +52,9 @@ import {
   resolveAlbumTransitionId,
   resolvePlaylistTransitionId,
 } from "@/modules/artists/artist-transition"
-import { useToggleFavorite } from "@/modules/favorites/favorites.mutations"
-import { usePlayerTracks } from "@/modules/player/player-selectors"
-import { playTrack } from "@/modules/player/player.service"
+import { useToggleFavorite } from "@/modules/favorites/mutations"
+import { usePlayerTracks } from "@/modules/player/selectors"
+import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 
 interface FavoritesListProps {

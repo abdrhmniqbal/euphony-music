@@ -13,16 +13,16 @@ import {
   getDeviceLanguageCode,
   isSupportedLanguageCode,
 } from "./i18n"
-import type { LanguageCode, LanguageOption } from "./localization.types"
+import type { LanguageCode, LanguageOption } from "./types"
 import {
   createSettingsConfigFile,
   loadSettingsConfig,
   saveSettingsConfig,
-} from "@/modules/settings/settings.repository"
+} from "@/modules/settings/repository"
 import {
   getSettingsState,
   updateSettingsState,
-} from "@/modules/settings/settings.store"
+} from "@/modules/settings/store"
 
 interface LanguageConfig {
   languageCode: LanguageCode

@@ -7,6 +7,6 @@
  */
 
 declare module "*.json" {
-  const value: import("@/modules/localization/localization.types").TranslationResources
+  const value: import("@/modules/localization/types").TranslationResources
   export default value
 }

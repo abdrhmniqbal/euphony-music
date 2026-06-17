@@ -6,7 +6,7 @@
  * Side Effects: Toggles favorite state for indexed library tracks.
  */
 
-import type { Track } from "@/modules/player/player.store"
+import type { Track } from "@/modules/player/store"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
@@ -19,8 +19,8 @@ import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import { MarqueeText } from "@/components/ui/marquee-text"
 import {
   useIsFavorite,
-} from "@/modules/favorites/favorites.queries"
-import { useToggleFavorite } from "@/modules/favorites/favorites.mutations"
+} from "@/modules/favorites/queries"
+import { useToggleFavorite } from "@/modules/favorites/mutations"
 
 interface TrackInfoProps {
   track: Track

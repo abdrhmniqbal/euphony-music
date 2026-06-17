@@ -22,9 +22,9 @@ import Animated, {
 
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import { useThemeColors } from "@/modules/ui/theme"
-import { stopIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
-import { scheduleIndexingProgressToastSync } from "@/modules/indexer/indexing-progress-toast-runtime"
+import { stopIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
+import { scheduleIndexingProgressToastSync } from "@/modules/indexer/progress-toast-runtime"
 
 function IndexingProgressToast(props: ToastComponentProps) {
   const theme = useThemeColors()

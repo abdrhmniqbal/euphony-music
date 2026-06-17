@@ -6,8 +6,8 @@
  * Side Effects: Starts context-aware playback, toggles artist favorites, navigates to album routes, updates scroll UI state.
  */
 
-import type { SortField } from "@/modules/library/library-sort.types"
-import type { Track } from "@/modules/player/player.store"
+import type { SortField } from "@/modules/library/sort.types"
+import type { Track } from "@/modules/player/store"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { useLocalSearchParams } from "expo-router"
@@ -60,39 +60,39 @@ import {
   resolveAlbumTransitionId,
   resolveArtistTransitionId,
 } from "@/modules/artists/artist-transition"
-import { buildArtistAlbums } from "@/modules/artists/artists.utils"
-import { useToggleFavorite } from "@/modules/favorites/favorites.mutations"
-import { useIsFavorite } from "@/modules/favorites/favorites.queries"
+import { buildArtistAlbums } from "@/modules/artists/utils"
+import { useToggleFavorite } from "@/modules/favorites/mutations"
+import { useIsFavorite } from "@/modules/favorites/queries"
 import {
   ALBUM_SORT_OPTIONS,
   TRACK_SORT_OPTIONS,
-} from "@/modules/library/library-sort.constants"
+} from "@/modules/library/sort.constants"
 import {
   setSortConfig,
   useLibrarySortStore,
-} from "@/modules/library/library-sort.store"
-import { sortAlbums, sortTracks } from "@/modules/library/library-sort.utils"
+} from "@/modules/library/sort.store"
+import { sortAlbums, sortTracks } from "@/modules/library/sort.utils"
 import {
   useArtistByName,
   useTracksByArtistName,
-} from "@/modules/library/library.queries"
+} from "@/modules/library/queries"
 import {
   useCurrentTrack,
   usePlayerTracks,
-} from "@/modules/player/player-selectors"
+} from "@/modules/player/selectors"
 import {
   type SplitMultipleValueConfig,
   splitArtistsValue,
 } from "@/modules/settings/split-multiple-values"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
-import { playTrack } from "@/modules/player/player.service"
+import { playTrack } from "@/modules/player/service"
 import { cn } from "@/utils/common"
 
 const SCROLL_SYNC_DELTA = 12

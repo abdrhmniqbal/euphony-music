@@ -10,9 +10,9 @@ import * as Notifications from "expo-notifications"
 import { Platform } from "react-native"
 
 import { i18n } from "@/modules/localization/i18n"
-import { logError, logInfo } from "@/modules/logging/logging.service"
+import { logError, logInfo } from "@/modules/logging/service"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
-import type { AppUpdateConfig } from "@/modules/settings/settings.types"
+import type { AppUpdateConfig } from "@/modules/settings/types"
 import {
   getCurrentAppVersion,
   isPreviewReleaseVersion,

@@ -1,5 +1,5 @@
-import type { AlbumTrackSortField } from "@/modules/library/library-sort.types"
-import type { Track } from "@/modules/player/player.store"
+import type { AlbumTrackSortField } from "@/modules/library/sort.types"
+import type { Track } from "@/modules/player/store"
 import { Image } from "expo-image"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -25,28 +25,28 @@ import {
   SCREEN_SECTION_TOP_SPACING,
 } from "@/constants/layout"
 import { Stack } from "@/layouts/stack"
-import { formatAlbumDuration } from "@/modules/albums/albums.utils"
+import { formatAlbumDuration } from "@/modules/albums/utils"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
-import { useToggleFavorite } from "@/modules/favorites/favorites.mutations"
-import { useIsFavorite } from "@/modules/favorites/favorites.queries"
+import { useToggleFavorite } from "@/modules/favorites/mutations"
+import { useIsFavorite } from "@/modules/favorites/queries"
 import {
   ALBUM_TRACK_SORT_OPTIONS,
-} from "@/modules/library/library-sort.constants"
+} from "@/modules/library/sort.constants"
 import {
   setSortConfig,
   useLibrarySortStore,
-} from "@/modules/library/library-sort.store"
-import { sortTracks } from "@/modules/library/library-sort.utils"
-import { useTracksByAlbumName } from "@/modules/library/library.queries"
+} from "@/modules/library/sort.store"
+import { sortTracks } from "@/modules/library/sort.utils"
+import { useTracksByAlbumName } from "@/modules/library/queries"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
-import { usePlayerTracks } from "@/modules/player/player-selectors"
-import { playTrack } from "@/modules/player/player.service"
+import { usePlayerTracks } from "@/modules/player/selectors"
+import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 import { mergeText } from "@/utils/merge-text"
 
 const HEADER_COLLAPSE_THRESHOLD = 120

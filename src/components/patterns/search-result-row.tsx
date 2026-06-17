@@ -10,8 +10,8 @@ import type {
   SearchAlbumResult,
   SearchArtistResult,
   SearchPlaylistResult,
-} from "@/modules/library/library.types"
-import type { Track } from "@/modules/player/player.store"
+} from "@/modules/library/types"
+import type { Track } from "@/modules/player/store"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { Text } from "react-native"

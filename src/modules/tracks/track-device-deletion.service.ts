@@ -1,9 +1,9 @@
-import * as MediaLibrary from "expo-media-library"
+import * as MediaLibrary from "expo-media-library/legacy"
 
 import { requestMediaLibraryPermission } from "@/core/storage/media-library.service"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { logError, logInfo, logWarn } from "@/modules/logging/logging.service"
-import { removeFromQueue } from "@/modules/player/queue.service"
+import { startIndexing } from "@/modules/indexer/service"
+import { logError, logInfo, logWarn } from "@/modules/logging/service"
+import { removeFromQueue } from "@/modules/player/queue"
 
 import { hardDeleteTrack } from "./track-cleanup.repository"
 

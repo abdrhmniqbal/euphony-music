@@ -26,7 +26,7 @@ import ptBR from "./resources/pt.json"
 import ru from "./resources/ru.json"
 import zhHans from "./resources/zs.json"
 import zhHant from "./resources/zt.json"
-import type { LanguageCode } from "./localization.types"
+import type { LanguageCode } from "./types"
 
 export const DEFAULT_LANGUAGE_CODE: LanguageCode = "en"
 export const SUPPORTED_LANGUAGE_CODES: LanguageCode[] = [

@@ -6,7 +6,7 @@
  * Side Effects: Reads lyrics metadata/DB fallback, seeks playback, updates session-only lyrics preferences.
  */
 
-import type { Track } from "@/modules/player/player.types"
+import type { Track } from "@/modules/player/types"
 import { useQuery } from "@tanstack/react-query"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
@@ -38,21 +38,21 @@ import {
   parseSyncedLyricsLines,
   splitLyricsLines,
   type TimedMarkupLine,
-} from "@/modules/lyrics/lyrics"
-import { scheduleLyricsAutoScroll } from "@/modules/lyrics/lyrics-auto-scroll-runtime"
-import { resolveTrackLyricsSource } from "@/modules/lyrics/lyrics-source"
-import { seekTo } from "@/modules/player/player-controls.service"
+} from "@/modules/lyrics"
+import { scheduleLyricsAutoScroll } from "@/modules/lyrics/auto-scroll-runtime"
+import { resolveTrackLyricsSource } from "@/modules/lyrics/source"
+import { seekTo } from "@/modules/player/controls"
 import {
   useIsPlaying,
   usePlaybackCurrentTime,
   usePlaybackDuration,
-} from "@/modules/player/player-selectors"
+} from "@/modules/player/selectors"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   setPlayerLyricsFontScale,
   setPlayerLyricsKaraokeEnabled,
   useUIStore,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 type LyricsMode = "static" | "synced" | "timedMarkup"
 
@@ -415,7 +415,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
       },
       placeholderData: () => {
         const metadataLyrics = track?.lyrics?.trim()
-        return metadataLyrics ? track?.lyrics : null
+        return metadataLyrics ? metadataLyrics : null
       },
     },
     queryClient

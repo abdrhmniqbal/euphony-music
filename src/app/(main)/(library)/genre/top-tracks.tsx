@@ -22,17 +22,17 @@ import {
   screenExitTransition,
 } from "@/constants/animations"
 import { Stack } from "@/layouts/stack"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
-import { playTrack } from "@/modules/player/player.service"
-import { useGenreTopTracks } from "@/modules/search/search.queries"
+import { playTrack } from "@/modules/player/service"
+import { useGenreTopTracks } from "@/modules/search/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   handleScroll,
   handleScrollStart,
   handleScrollStop,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")

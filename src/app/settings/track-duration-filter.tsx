@@ -17,9 +17,9 @@ import {
   setTrackDurationFilterConfig,
   type TrackDurationFilterMode,
 } from "@/modules/settings/track-duration-filter"
-import { startIndexing } from "@/modules/indexer/indexer.service"
-import { useIndexerStore } from "@/modules/indexer/indexer.store"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { startIndexing } from "@/modules/indexer/service"
+import { useIndexerStore } from "@/modules/indexer/store"
+import { useSettingsStore } from "@/modules/settings/store"
 
 interface DurationOption {
   labelKey: string

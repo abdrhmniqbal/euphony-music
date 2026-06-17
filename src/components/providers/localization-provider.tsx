@@ -14,7 +14,7 @@ import {
   ensureLocalizationInitialized,
   getLocalizationReadySnapshot,
   subscribeLocalizationReady,
-} from "@/modules/localization/localization-runtime"
+} from "@/modules/localization/runtime"
 
 export function LocalizationProvider({ children }: { children: ReactNode }) {
   void ensureLocalizationInitialized()

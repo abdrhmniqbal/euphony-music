@@ -42,16 +42,16 @@ import {
   resolveArtistTransitionId,
   resolvePlaylistTransitionId,
 } from "@/modules/artists/artist-transition"
-import { libraryKeys } from "@/modules/library/library.keys"
+import { libraryKeys } from "@/modules/library/keys"
 import {
   addRecentSearch,
   clearRecentSearches,
   deleteRecentSearch,
-} from "@/modules/library/library.repository"
+} from "@/modules/library/repository"
 import { useThemeColors } from "@/modules/ui/theme"
-import { useRecentSearches, useSearch } from "@/modules/library/library.queries"
-import type { Track } from "@/modules/player/player.types"
-import { playTrack } from "@/modules/player/player.service"
+import { useRecentSearches, useSearch } from "@/modules/library/queries"
+import type { Track } from "@/modules/player/types"
+import { playTrack } from "@/modules/player/service"
 
 interface HeaderSearchInputProps {
   theme: ReturnType<typeof useThemeColors>

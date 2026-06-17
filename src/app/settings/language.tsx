@@ -17,7 +17,7 @@ import {
   setLanguageCode,
 } from "@/modules/localization/language-settings"
 import { getDeviceLanguageCode } from "@/modules/localization/i18n"
-import { useSettingsStore } from "@/modules/settings/settings.store"
+import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export default function LanguageSettingsScreen() {

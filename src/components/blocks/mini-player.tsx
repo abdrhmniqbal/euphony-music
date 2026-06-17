@@ -11,17 +11,17 @@ import LocalNextSolidIcon from "@/components/icons/local/next-solid"
 import LocalPauseSolidIcon from "@/components/icons/local/pause-solid"
 import LocalPlaySolidIcon from "@/components/icons/local/play-solid"
 import { MarqueeText } from "@/components/ui/marquee-text"
-import { playNext, togglePlayback } from "@/modules/player/player-controls.service"
+import { playNext, togglePlayback } from "@/modules/player/controls"
 import {
   useCurrentTrack,
   useIsPlaying,
   usePlaybackProgressState,
-} from "@/modules/player/player-selectors"
-import { resolvePlayerTransitionId } from "@/modules/player/player-transition"
+} from "@/modules/player/selectors"
+import { resolvePlayerTransitionId } from "@/modules/player/transition"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   setPlayerExpandedView,
-} from "@/modules/ui/ui.store"
+} from "@/modules/ui/store"
 
 import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid"
 import LocalQueueIcon from "../icons/local/queue"
@@ -166,7 +166,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
     <Animated.View
       entering={SlideInDown.duration(300)}
       exiting={SlideOutDown.duration(300)}
-      className="absolute right-0 left-0 h-16 overflow-hidden"
+      className="absolute right-0 left-0 h-16"
       style={{
         bottom: bottomOffset,
       }}
@@ -180,6 +180,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
 
       <View className="flex-1 flex-row items-center gap-3 px-4">
         <BoundaryPressableFeedback
+          key={currentTrack.id}
           id={transitionId}
           onPress={() => {
             openFullPlayer("artwork")

@@ -31,7 +31,7 @@ import {
   getTabBarHeight,
   MINI_PLAYER_HEIGHT,
 } from "@/constants/layout"
-import { useUIStore } from "@/modules/ui/ui.store"
+import { useUIStore } from "@/modules/ui/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
 const TAB_HIDE_DURATION_MS = 250
