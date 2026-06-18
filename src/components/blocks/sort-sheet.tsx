@@ -2,6 +2,7 @@ import { BottomSheet, Button, PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { createContext, use } from "react"
 import { Text } from "react-native"
+import type { GestureResponderEvent } from "react-native"
 import { useTranslation } from "react-i18next"
 import { cn } from "tailwind-variants"
 
@@ -95,10 +96,10 @@ function SortSheetTrigger({
   const theme = useThemeColors()
   const { onOpenChange, currentOrder } = useSortSheetContext<string>()
 
-  function handlePress(
-    event: Parameters<NonNullable<React.ComponentProps<typeof PressableFeedback>["onPress"]>>[0]
-  ) {
-    onPress?.(event)
+  function handlePress(event: GestureResponderEvent) {
+    if (typeof onPress === "function") {
+      onPress(event)
+    }
     onOpenChange(true)
   }
 

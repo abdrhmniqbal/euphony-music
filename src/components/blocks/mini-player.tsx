@@ -76,14 +76,14 @@ interface MiniPlayerControlsProps {
 function MiniPlayerControls({ isPlaying, foregroundColor, onOpenQueue }: MiniPlayerControlsProps) {
   return (
     <View className="flex-row items-center gap-3">
-      <PressableFeedback onPress={togglePlayback} className="p-2 active:opacity-60">
+      <PressableFeedback onPress={() => togglePlayback()} className="p-2 active:opacity-60">
         {isPlaying ? (
           <LocalPauseSolidIcon fill="none" width={28} height={28} color={foregroundColor} />
         ) : (
           <LocalPlaySolidIcon fill="none" width={28} height={28} color={foregroundColor} />
         )}
       </PressableFeedback>
-      <PressableFeedback onPress={playNext} className="p-2 active:opacity-60">
+      <PressableFeedback onPress={() => playNext()} className="p-2 active:opacity-60">
         <LocalNextSolidIcon fill="none" width={24} height={24} color={foregroundColor} />
       </PressableFeedback>
       <PressableFeedback onPress={onOpenQueue} className="p-2 active:opacity-60">
