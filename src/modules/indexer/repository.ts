@@ -39,10 +39,8 @@ import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
 import { chunkArray, wait, yieldToEventLoop } from "./batch-utils"
 import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts.repository"
 import { processDeletedTracksInScopes, hardDeleteSoftDeletedTracksInScopes } from "./deleted-tracks.repository"
-import { prepareBatchAssets } from "./prepared-assets"
-import { upsertPreparedAsset } from "./track-upsert.repository"
-import { runWithScopeCommit, COMMIT_SCOPE_SIZE } from "./scope-commit"
 export { rebuildSplitMetadataRelations, type SplitRelationRebuildResult } from "./relation-rebuild.repository"
+import { processBatch } from "./batch-processor"
 import {
   type IndexingLookupCache,
   type GenreVisualLookup,
@@ -272,100 +270,4 @@ export async function scanMediaLibrary(
     failedAssets: failedAssetsCount,
   })
 }
-
-async function processBatch(
-  assets: MediaLibrary.Asset[],
-  onFileStart?: (asset: MediaLibrary.Asset) => void,
-  signal?: AbortSignal,
-  precomputedHashMap?: Map<string, string>,
-  lookupCache?: IndexingLookupCache,
-  splitConfig?: SplitMultipleValueConfig
-): Promise<BatchProcessingResult> {
-  const preparedBatchResult = await prepareBatchAssets(
-    assets,
-    onFileStart,
-    signal,
-    precomputedHashMap,
-    splitConfig
-  )
-  const preparedAssets = preparedBatchResult.preparedAssets
-  let committedCount = 0
-  let failedCount = preparedBatchResult.failedCount
-
-  for (let index = 0; index < preparedAssets.length; index += COMMIT_SCOPE_SIZE) {
-    if (signal?.aborted) {
-      return {
-        preparedCount: preparedAssets.length,
-        committedCount,
-        failedCount,
-      }
-    }
-
-    await waitForIndexerResume(signal)
-    if (signal?.aborted) {
-      return {
-        preparedCount: preparedAssets.length,
-        committedCount,
-        failedCount,
-      }
-    }
-
-    const scope = preparedAssets.slice(index, index + COMMIT_SCOPE_SIZE)
-
-    try {
-      await runWithScopeCommit(async () => {
-        for (const prepared of scope) {
-          if (signal?.aborted) {
-            return
-          }
-
-          await upsertPreparedAsset(prepared, signal, lookupCache)
-        }
-      })
-      committedCount += scope.length
-    } catch (error) {
-      logError("Failed to commit indexing scope; retrying asset-by-asset", error, {
-        scopeSize: scope.length,
-      })
-
-      for (const prepared of scope) {
-        if (signal?.aborted) {
-          return {
-            preparedCount: preparedAssets.length,
-            committedCount,
-            failedCount,
-          }
-        }
-
-        try {
-          await upsertPreparedAsset(prepared, signal, lookupCache)
-          committedCount += 1
-        } catch (assetError) {
-          failedCount += 1
-          logError("Failed to index prepared asset", assetError, {
-            assetId: prepared.asset.id,
-            filename: prepared.asset.filename,
-          })
-        }
-      }
-    }
-
-    await yieldToEventLoop()
-  }
-
-  return {
-    preparedCount: preparedAssets.length,
-    committedCount,
-    failedCount,
-  }
-}
-
-
-
-
-
-
-
-
-
 
