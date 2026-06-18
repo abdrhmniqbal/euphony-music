@@ -6,6 +6,7 @@
  * Side Effects: Reads play history; writes play_history rows; updates track play counts and last-played timestamps.
  */
 
+import { createId } from "@paralleldrive/cuid2"
 import type { Track } from "@/modules/player/types"
 
 import { desc, eq, sql } from "drizzle-orm"
@@ -131,7 +132,7 @@ export async function getTopTracksByPeriod(
 export async function addTrackToHistory(trackId: string): Promise<void> {
   try {
     await db.insert(playHistory).values({
-      id: `${trackId}-${Date.now()}`,
+      id: createId(),
       trackId,
       playedAt: Date.now(),
       duration: 0,
@@ -187,7 +188,7 @@ export async function addPlayedTrack(trackUri: string) {
     .update(tracks)
     .set({ playCount: (row.playCount ?? 0) + 1, lastPlayedAt: now })
     .where(eq(tracks.id, row.id))
-  await db.insert(playHistory).values({ id: `${row.id}-${now}`, trackId: row.id, playedAt: now })
+  await db.insert(playHistory).values({ id: createId(), trackId: row.id, playedAt: now })
   return row.id
 }
 

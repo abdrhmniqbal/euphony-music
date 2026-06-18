@@ -1,3 +1,4 @@
+import { createId } from "@paralleldrive/cuid2"
 import { and, asc, eq, gt, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { albums, appSettings, artists, playlists, playlistTracks } from "@/db/schema"
@@ -29,7 +30,7 @@ function getRecentSearchDedupeKey(item: {
 }
 
 function createRecentSearchId() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+  return createId()
 }
 
 function isRecentSearchType(value: unknown): value is RecentSearchEntry["type"] {

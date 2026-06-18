@@ -6,6 +6,7 @@
  * Side Effects: Reads tracks from DB; writes favorite status, play counts, and play history records.
  */
 
+import { createId } from "@paralleldrive/cuid2"
 import { and, asc, desc, eq, inArray, like, or, sql } from "drizzle-orm"
 
 import { db } from "@/db/client"
@@ -173,7 +174,7 @@ export async function incrementTrackPlayCount(trackId: string) {
     .where(eq(tracks.id, trackId))
 
   await db.insert(playHistory).values({
-    id: `${trackId}-${now}`,
+    id: createId(),
     trackId,
     playedAt: now,
   })
@@ -339,5 +340,5 @@ export async function addPlayedTrack(trackUri: string) {
       lastPlayedAt: now,
     })
     .where(eq(tracks.id, row.id))
-  await db.insert(playHistory).values({ id: `${row.id}-${now}`, trackId: row.id, playedAt: now })
+  await db.insert(playHistory).values({ id: createId(), trackId: row.id, playedAt: now })
 }

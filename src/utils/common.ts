@@ -1,12 +1,10 @@
+import { createId } from "@paralleldrive/cuid2"
 import { cn as twCn } from "tailwind-variants"
 
 export const cn = twCn
 
 export function generateId(): string {
-  if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
-    return globalThis.crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+  return createId()
 }
 
 export function formatDuration(seconds: number): string {

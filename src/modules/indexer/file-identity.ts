@@ -53,8 +53,10 @@ export function generateSortName(name: string): string {
   return name
 }
 
+import { createId } from "@paralleldrive/cuid2"
+
 export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return createId()
 }
 
 export function hashString(value: string): number {
