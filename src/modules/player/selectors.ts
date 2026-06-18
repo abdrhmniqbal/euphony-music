@@ -7,6 +7,7 @@
  */
 
 import { useMemo } from "react"
+import { usePolledProgress } from "react-native-audio-browser"
 
 import { type RepeatModeType, type Track, usePlayerStore } from "./store"
 
@@ -27,21 +28,16 @@ export function useIsPlaying() {
 }
 
 export function usePlaybackCurrentTime() {
-  return usePlayerStore((state) => state.currentTime)
+  return usePolledProgress().position
 }
 
 export function usePlaybackDuration() {
-  return usePlayerStore((state) => state.duration)
+  return usePolledProgress().duration
 }
 
 export function usePlaybackProgressState() {
-  const currentTime = usePlaybackCurrentTime()
-  const duration = usePlaybackDuration()
-
-  return {
-    currentTime,
-    duration,
-  }
+  const { position: currentTime, duration } = usePolledProgress()
+  return { currentTime, duration }
 }
 
 export function usePlaybackRepeatMode(): RepeatModeType {
