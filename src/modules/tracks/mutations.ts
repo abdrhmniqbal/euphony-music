@@ -10,7 +10,7 @@ import { showAppToast } from "@/modules/ui/toast"
 import {
   deleteTrackFromDevice,
   type DeleteTrackFromDeviceInput,
-} from "./track-device-deletion.service"
+} from "./track-device-deletion-service"
 import { trackKeys } from "./keys"
 import { incrementTrackPlayCount, setTrackFavoriteStatus } from "./repository"
 

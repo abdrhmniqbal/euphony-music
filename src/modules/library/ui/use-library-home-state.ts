@@ -3,15 +3,15 @@ import { useTranslation } from "react-i18next"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types"
 import type { GenreCategory } from "@/modules/genres/types"
-import type { SortField } from "@/modules/library/sort.types"
+import type { SortField } from "@/modules/library/sort-types"
 import type { Track } from "@/modules/player/store"
 import type { Playlist } from "@/components/blocks/playlist-list"
 import { useFavorites } from "@/modules/favorites/queries"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
 import { buildFolderBrowserState, getParentFolderPath } from "@/modules/library/folder-browser"
-import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort.store"
-import { sortGeneric, sortTracks } from "@/modules/library/sort.utils"
+import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort-store"
+import { sortGeneric, sortTracks } from "@/modules/library/sort-utils"
 import { useAlbums, useArtists } from "@/modules/library/queries"
 import { useHasCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
@@ -34,7 +34,7 @@ import {
   GENRE_SORT_OPTIONS,
   PLAYLIST_SORT_OPTIONS,
   TRACK_SORT_OPTIONS,
-} from "@/modules/library/sort.constants"
+} from "@/modules/library/sort-constants"
 
 export const LIBRARY_TABS = [
   "Tracks",

@@ -8,7 +8,7 @@ import type {
   SortConfig,
   TabName,
   TrackSortField,
-} from "@/modules/library/sort.types"
+} from "@/modules/library/sort-types"
 
 export const DEFAULT_SORT_CONFIG: Record<TabName, SortConfig> = {
   Tracks: { field: "title", order: "asc" },

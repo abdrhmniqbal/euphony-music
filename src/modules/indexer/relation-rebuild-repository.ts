@@ -9,13 +9,13 @@ import {
   getOrCreateArtist,
   getOrCreateAlbum,
   getOrCreateGenre,
-} from "./lookup-cache.repository"
+} from "./lookup-cache-repository"
 import {
   splitArtistsValue,
   splitGenresValue,
   type SplitMultipleValueConfig,
 } from "@/modules/settings/split-multiple-values"
-import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts.repository"
+import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts-repository"
 
 export interface SplitRelationRebuildResult {
   rebuiltTracks: number

@@ -14,7 +14,7 @@ import {
   restorePlaybackVolume,
 } from "@/modules/player/crossfade"
 import { setPlaybackProgress } from "@/modules/player/runtime-state"
-import { persistPlaybackSession } from "@/modules/player/session.service"
+import { persistPlaybackSession } from "@/modules/player/session-service"
 import { ensureAudioPlaybackConfigLoaded } from "@/modules/settings/audio-playback"
 import {
   nextTrack,

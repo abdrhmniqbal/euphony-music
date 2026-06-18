@@ -16,8 +16,8 @@ import { useState } from "react"
 
 import appIcon from "@/assets/icon.png"
 import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
-import { checkForAppUpdate, getCurrentAppVersion } from "@/modules/updates/app-update.service"
-import { openAppUpdatePrompt } from "@/modules/updates/app-update.store"
+import { checkForAppUpdate, getCurrentAppVersion } from "@/modules/updates/app-update-service"
+import { openAppUpdatePrompt } from "@/modules/updates/app-update-store"
 import { showAppToast } from "@/modules/ui/toast"
 
 export default function AboutSettingsScreen() {

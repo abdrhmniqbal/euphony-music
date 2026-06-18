@@ -21,8 +21,8 @@ import { Stack } from "@/layouts/stack"
 import {
   clearPlaylistFormDraft,
   consumePlaylistFormDraft,
-} from "@/modules/playlist/form-draft.store"
-import { usePlaylistFormEditor } from "@/modules/playlist/form-editor.hook"
+} from "@/modules/playlist/form-draft-store"
+import { usePlaylistFormEditor } from "@/modules/playlist/use-form-editor"
 import { usePlaylist } from "@/modules/playlist/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 

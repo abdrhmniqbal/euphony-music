@@ -15,4 +15,4 @@ export {
 export {
   saveArtworkToCache,
   cleanupUnusedArtworkCache,
-} from "./metadata/artwork-cache.repository"
+} from "./metadata/artwork-cache-repository"

@@ -14,7 +14,7 @@ import { ReleaseNotesMarkdown } from "@/components/blocks/release-notes-markdown
 import {
   getChangelogReleaseNotesUntilCurrent,
   getCurrentAppVersion,
-} from "@/modules/updates/app-update.service"
+} from "@/modules/updates/app-update-service"
 
 export default function WhatsNewSettingsScreen() {
   const { t } = useTranslation()

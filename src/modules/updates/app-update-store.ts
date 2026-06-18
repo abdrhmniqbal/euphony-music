@@ -8,7 +8,7 @@
 
 import { create } from "zustand"
 
-import type { AppUpdateInfo } from "@/modules/updates/app-update.service"
+import type { AppUpdateInfo } from "@/modules/updates/app-update-service"
 
 interface AppUpdatePromptState {
   isOpen: boolean

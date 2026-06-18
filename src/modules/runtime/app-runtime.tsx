@@ -3,11 +3,11 @@ import { type ReactNode, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
-import { initializeTrackPlayer, registerPlaybackService } from "@/core/audio/track-player.service"
+import { initializeTrackPlayer, registerPlaybackService } from "@/core/audio/track-player-service"
 import {
   getMediaLibraryPermission,
   requestMediaLibraryPermission,
-} from "@/core/storage/media-library.service"
+} from "@/core/storage/media-library-service"
 import { db } from "@/db/client"
 import migrations from "@/db/migrations/migrations"
 import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup"

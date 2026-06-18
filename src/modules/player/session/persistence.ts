@@ -5,7 +5,7 @@ import {
   savePlaybackCursorSnapshot,
   savePlaybackQueueSnapshot,
   type PersistedPlaybackQueueSnapshot,
-} from "@/modules/player/session.repository"
+} from "@/modules/player/session-repository"
 import type { Track } from "@/modules/player/types"
 import {
   areStringArraysEqual,

@@ -504,69 +504,75 @@ Repo has both `src/data/*` and `src/modules/*/repository.ts`. This creates uncle
 
 ---
 
-# Phase 27 — Dotted Filename Restructure Pass
+# Phase 27 [Completed] — Kebab-Case Filename Convention Pass
 
 ## Why
-Current source has many dotted implementation filenames. This makes modules feel like loose files rather than cohesive subsystems. User preference is nested folders or promoted single modules instead of dot suffix filenames.
+Current source should use kebab-case filenames for consistency and AI-navigability. Dotted implementation filenames and PascalCase source files make modules feel fragmented.
 
 ## Current Targets
-- `src/components/blocks/artist-picker.utils.ts`
-- `src/components/ui/animated-progress-bar.types.tsx`
-- `src/core/audio/track-player.service.ts`
-- `src/core/storage/media-library.service.ts`
-- `src/modules/history/cache.service.ts`
-- `src/modules/indexer/counts.repository.ts`
-- `src/modules/library/recent-searches.repository.ts`
-- `src/modules/library/sort.constants.ts`
-- `src/modules/library/sort.store.ts`
-- `src/modules/library/sort.types.ts`
-- `src/modules/library/sort.utils.ts`
-- `src/modules/player/session.repository.ts`
-- `src/modules/player/session.service.ts`
-- `src/modules/playlist/form-draft.store.ts`
-- `src/modules/playlist/form-editor.hook.ts`
-- `src/modules/playlist/picker-selection.hook.ts`
-- `src/modules/playlist/track-selection.hook.ts`
-- `src/modules/tracks/track-cleanup.repository.ts`
-- `src/modules/tracks/track-device-deletion.service.ts`
-- `src/modules/tracks/track-metadata.utils.ts`
-- `src/modules/updates/app-update.runtime.ts`
-- `src/modules/updates/app-update.service.ts`
-- `src/modules/updates/app-update.store.ts`
+- `src/components/blocks/artist-picker-utils.ts`
+- `src/components/blocks/onboarding/onboarding-welcome.tsx`
+- `src/components/blocks/onboarding/use-onboarding-permissions.ts`
+- `src/components/ui/animated-progress-bar-types.ts`
+- `src/core/audio/track-player-service.ts`
+- `src/core/storage/media-library-service.ts`
+- `src/modules/history/cache-service.ts`
+- `src/modules/indexer/counts-repository.ts`
+- `src/modules/library/recent-searches-repository.ts`
+- `src/modules/library/sort-constants.ts`
+- `src/modules/library/sort-store.ts`
+- `src/modules/library/sort-types.ts`
+- `src/modules/library/sort-utils.ts`
+- `src/modules/player/session-repository.ts`
+- `src/modules/player/session-service.ts`
+- `src/modules/playlist/form-draft-store.ts`
+- `src/modules/playlist/use-form-editor.ts`
+- `src/modules/playlist/use-picker-selection.ts`
+- `src/modules/playlist/use-track-selection.ts`
+- `src/modules/tracks/track-cleanup-repository.ts`
+- `src/modules/tracks/track-device-deletion-service.ts`
+- `src/modules/tracks/track-metadata-utils.ts`
+- `src/modules/updates/app-update-runtime.ts`
+- `src/modules/updates/app-update-service.ts`
+- `src/modules/updates/app-update-store.ts`
 
 ## Exemptions
 - `*.d.ts` declaration files.
+- SQL migration filenames.
+- JSON snapshot metadata files.
 - Expo Router route files when dotted filenames have route semantics, e.g. `notification.click.tsx`, unless route can be safely represented as a folder without changing URL behavior.
+- Files that must retain framework-required names like `_layout.tsx`, `+native-intent.tsx`, `[name].tsx`, and `[id].tsx`.
 
 ## Target Structures
 - Library sort:
-  - from `src/modules/library/sort.*.ts`
+  - from `src/modules/library/sort-*.ts`
   - to `src/modules/library/sort/{constants,store,types,utils,index}.ts`
 - Player session:
-  - from `src/modules/player/session.service.ts` and `session.repository.ts`
+  - from `src/modules/player/session-service.ts` and `session-repository.ts`
   - to `src/modules/player/session/{service,repository,index}.ts`
 - Playlist form/selection:
-  - from `form-draft.store.ts`, `form-editor.hook.ts`, `picker-selection.hook.ts`, `track-selection.hook.ts`
+  - from `form-draft-store.ts`, `use-form-editor.ts`, `use-picker-selection.ts`, `use-track-selection.ts`
   - to `src/modules/playlist/form/{draft-store,use-editor}.ts` and `src/modules/playlist/selection/{use-picker-selection,use-track-selection}.ts`
 - Tracks helpers:
-  - from `track-cleanup.repository.ts`, `track-device-deletion.service.ts`, `track-metadata.utils.ts`
+  - from `track-cleanup-repository.ts`, `track-device-deletion-service.ts`, `track-metadata-utils.ts`
   - to `src/modules/tracks/cleanup/repository.ts`, `device-deletion/service.ts`, `metadata/utils.ts`
 - Updates subsystem:
-  - from `app-update.*.ts`
+  - from `app-update-*.ts`
   - to `src/modules/updates/app-update/{runtime,service,store,index}.ts`
 - Core adapters:
-  - from `track-player.service.ts`, `media-library.service.ts`
+  - from `track-player-service.ts`, `media-library-service.ts`
   - to `src/core/audio/track-player/service.ts`, `src/core/storage/media-library/service.ts`
 
 ## Actions
 1. Do pure move/rename commits first, no logic edits.
 2. Add `index.ts` barrels where existing call sites need stable import paths.
-3. Update imports with search/replace and run targeted checks.
+3. Update imports with search/replace and run filename audit plus targeted checks.
 4. Delete old files only after all imports move.
 5. Keep compatibility re-exports for high-churn modules, then remove in a later cleanup pass.
 
 ## Success Criteria
-- No dotted implementation filenames remain in targeted source areas.
+- No dotted implementation filenames remain in `src/`, except allowed route/framework exceptions.
+- No PascalCase source filenames remain in `src/`, except allowed route/framework exceptions.
 - Imports still resolve.
 - Behavior unchanged.
 - Dotted declaration files remain untouched.
@@ -763,7 +769,7 @@ Some files appear in technically valid but semantically weak locations. Over tim
 17. Phase 30 — Settings screen pattern extraction
 
 ## Cleanup / consistency
-18. Phase 27 — Dotted filename restructure pass
+18. Phase 27 [Completed] — Kebab-case filename convention pass
 19. Phase 23 — Lyrics module split
 20. Phase 26 — Repository naming boundary cleanup
 21. Phase 28 — Silent catch cleanup

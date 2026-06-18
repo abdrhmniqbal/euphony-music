@@ -12,7 +12,7 @@ import { clamp } from "@/utils/number"
 import { moveArray } from "@/utils/object"
 import { bgWait } from "@/utils/promise"
 import { isString } from "@/utils/validation"
-import { applyReplayGainToTrack } from "@/modules/audio/replayGain/core/apply"
+import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
 
 interface QueueInsertionProps {
   id: string | string[]

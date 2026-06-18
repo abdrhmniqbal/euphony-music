@@ -31,7 +31,7 @@ import {
   formatClockValue,
 } from "./sleep-timer-section"
 import { ArtistPickerSheet } from "@/components/blocks/artist-picker-sheet"
-import { buildArtistPickerItems } from "@/components/blocks/artist-picker.utils"
+import { buildArtistPickerItems } from "@/components/blocks/artist-picker-utils"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
@@ -44,9 +44,9 @@ import {
   setSleepTimerPlayCount,
   setSleepTimerTrackEnd,
 } from "@/modules/player/sleep-timer"
-import { usePlaylistPickerSelection } from "@/modules/playlist/picker-selection.hook"
+import { usePlaylistPickerSelection } from "@/modules/playlist/use-picker-selection"
 import { showAppToast } from "@/modules/ui/toast"
-import { setPlaylistFormDraft } from "@/modules/playlist/form-draft.store"
+import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
 
 interface ArtistPickerSourceArtist {
   name: string

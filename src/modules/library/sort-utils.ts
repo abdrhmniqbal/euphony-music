@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { SortConfig, SortField, SortOrder } from "@/modules/library/sort.types"
+import type { SortConfig, SortField, SortOrder } from "@/modules/library/sort-types"
 
 import type { Track } from "@/modules/player/types"
 

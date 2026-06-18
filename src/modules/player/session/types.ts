@@ -1,5 +1,5 @@
 import type { PlayerQueueContext, RepeatModeType, Track } from "@/modules/player/types"
-import type { PersistedPlaybackCursorSnapshot } from "@/modules/player/session.repository"
+import type { PersistedPlaybackCursorSnapshot } from "@/modules/player/session-repository"
 import type { TrackPlayer } from "@/modules/player/utils"
 
 export const MIN_SESSION_SAVE_INTERVAL_MS = 2000

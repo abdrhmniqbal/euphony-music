@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 
-import { useSelectTrackPlaylist } from "./track-selection.hook"
+import { useSelectTrackPlaylist } from "./use-track-selection"
 import type { PlaylistPickerSelection } from "./types"
 
 interface UsePlaylistPickerSelectionOptions {

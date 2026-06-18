@@ -11,8 +11,8 @@ import {
   checkForAppUpdate,
   getCurrentAppVersion,
   notifyAppUpdateAvailable,
-} from "@/modules/updates/app-update.service"
-import { openAppUpdatePrompt } from "@/modules/updates/app-update.store"
+} from "@/modules/updates/app-update-service"
+import { openAppUpdatePrompt } from "@/modules/updates/app-update-store"
 
 let startupCheckPromise: Promise<void> | null = null
 

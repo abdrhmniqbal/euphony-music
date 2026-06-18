@@ -39,7 +39,7 @@ import {
   addRecentSearch,
   clearRecentSearches,
   deleteRecentSearch,
-} from "@/modules/library/recent-searches.repository"
+} from "@/modules/library/recent-searches-repository"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useRecentSearches, useSearch } from "@/modules/library/queries"
 import type { Track } from "@/modules/player/types"

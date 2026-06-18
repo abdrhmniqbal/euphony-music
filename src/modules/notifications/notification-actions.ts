@@ -14,7 +14,7 @@ import {
   INDEXER_NOTIFICATION_ACTION_RESUME,
 } from "@/modules/indexer/notification"
 import { cancelIndexing, pauseIndexing, resumeIndexing } from "@/modules/indexer/service"
-import { openLatestAppUpdatePrompt } from "@/modules/updates/app-update.runtime"
+import { openLatestAppUpdatePrompt } from "@/modules/updates/app-update-runtime"
 
 export function handleNotificationAction(response: Notifications.NotificationResponse) {
   const source = response.notification.request.content.data?.source

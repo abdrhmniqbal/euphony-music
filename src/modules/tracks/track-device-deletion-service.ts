@@ -1,11 +1,11 @@
 import * as MediaLibrary from "expo-media-library/legacy"
 
-import { requestMediaLibraryPermission } from "@/core/storage/media-library.service"
+import { requestMediaLibraryPermission } from "@/core/storage/media-library-service"
 import { startIndexing } from "@/modules/indexer/service"
 import { logError, logInfo, logWarn } from "@/modules/logging/service"
 import { removeFromQueue } from "@/modules/player/queue"
 
-import { hardDeleteTrack } from "./track-cleanup.repository"
+import { hardDeleteTrack } from "./track-cleanup-repository"
 
 export interface DeleteTrackFromDeviceInput {
   trackId: string

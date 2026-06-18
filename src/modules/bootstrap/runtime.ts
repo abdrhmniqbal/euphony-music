@@ -6,7 +6,7 @@
  * Side Effects: Initializes logging/bootstrap workflow, updates in-memory readiness state, may start media indexing.
  */
 
-import { getMediaLibraryPermission } from "@/core/storage/media-library.service"
+import { getMediaLibraryPermission } from "@/core/storage/media-library-service"
 import { bootstrapApp } from "@/modules/bootstrap/utils"
 import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"
 import { startIndexing } from "@/modules/indexer/service"

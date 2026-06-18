@@ -6,7 +6,7 @@ import {
   getOrCreateArtist,
   getOrCreateAlbum,
   getOrCreateGenre,
-} from "./lookup-cache.repository"
+} from "./lookup-cache-repository"
 import type { PreparedAssetForIndex } from "./prepared-assets"
 
 export async function upsertPreparedAsset(

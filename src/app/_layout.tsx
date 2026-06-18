@@ -27,7 +27,7 @@ import {
   handleBootstrapDatabaseError,
   handleBootstrapDatabaseReady,
 } from "@/modules/bootstrap/runtime"
-import { checkStartupAppUpdate } from "@/modules/updates/app-update.runtime"
+import { checkStartupAppUpdate } from "@/modules/updates/app-update-runtime"
 import { ROOT_MODAL_SCREEN_OPTIONS, getHiddenPlayerScreenOptions } from "@/modules/navigation/stack"
 import {
   ensureNotificationRuntimeStarted,

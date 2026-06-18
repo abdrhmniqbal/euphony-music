@@ -11,7 +11,7 @@ import { EXTERNAL_TRACK_ID_PREFIX, type Track } from "@/modules/player/types"
 import {
   invalidateHistoryAfterPlayback,
   optimisticallyUpdateRecentlyPlayedHistory,
-} from "@/modules/history/cache.service"
+} from "@/modules/history/cache-service"
 import { addTrackToHistory, incrementTrackPlayCount } from "@/modules/history/repository"
 import { getSettingsState } from "@/modules/settings/store"
 

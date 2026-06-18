@@ -1,7 +1,7 @@
 import { create } from "zustand"
 
-import { DEFAULT_SORT_CONFIG } from "@/modules/library/sort.constants"
-import type { SortConfig, SortField, SortOrder, TabName } from "@/modules/library/sort.types"
+import { DEFAULT_SORT_CONFIG } from "@/modules/library/sort-constants"
+import type { SortConfig, SortField, SortOrder, TabName } from "@/modules/library/sort-types"
 
 interface LibrarySortState {
   sortConfig: Record<TabName, SortConfig>

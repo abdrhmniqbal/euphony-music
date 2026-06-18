@@ -6,7 +6,7 @@
  * Side Effects: Starts context-aware playback, toggles artist favorites, navigates to album routes, updates scroll UI state.
  */
 
-import type { SortField } from "@/modules/library/sort.types"
+import type { SortField } from "@/modules/library/sort-types"
 import type { Track } from "@/modules/player/store"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -59,9 +59,9 @@ import {
 import { buildArtistAlbums } from "@/modules/artists/utils"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useIsFavorite } from "@/modules/favorites/queries"
-import { ALBUM_SORT_OPTIONS, TRACK_SORT_OPTIONS } from "@/modules/library/sort.constants"
-import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort.store"
-import { sortAlbums, sortTracks } from "@/modules/library/sort.utils"
+import { ALBUM_SORT_OPTIONS, TRACK_SORT_OPTIONS } from "@/modules/library/sort-constants"
+import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort-store"
+import { sortAlbums, sortTracks } from "@/modules/library/sort-utils"
 import { useArtistByName, useTracksByArtistName } from "@/modules/library/queries"
 import { useCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
 import {

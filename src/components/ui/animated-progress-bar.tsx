@@ -6,7 +6,7 @@
  * Side Effects: Runs native-thread progress animations and optional completion callback.
  */
 
-import type { AnimatedProgressBarProps } from "./animated-progress-bar.types"
+import type { AnimatedProgressBarProps } from "./animated-progress-bar-types"
 import { LinearGradient } from "expo-linear-gradient"
 import * as React from "react"
 import { Text, useWindowDimensions, View } from "react-native"

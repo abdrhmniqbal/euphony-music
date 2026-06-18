@@ -24,7 +24,7 @@ import {
   ensureTrackDurationFilterConfigLoaded,
   isAssetAllowedByTrackDuration,
 } from "@/modules/settings/track-duration-filter"
-import { removeTracksFromFavoritesAndPlaylists } from "@/modules/tracks/track-cleanup.repository"
+import { removeTracksFromFavoritesAndPlaylists } from "@/modules/tracks/track-cleanup-repository"
 import {
   ensureSplitMultipleValueConfigLoaded,
   splitArtistsValue,
@@ -37,9 +37,9 @@ import { normalizeMetadata, normalizeText } from "./normalization"
 import { saveIndexerRunSnapshot } from "./run-snapshot"
 import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
 import { chunkArray, wait, yieldToEventLoop } from "./batch-utils"
-import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts.repository"
-import { processDeletedTracksInScopes, hardDeleteSoftDeletedTracksInScopes } from "./deleted-tracks.repository"
-export { rebuildSplitMetadataRelations, type SplitRelationRebuildResult } from "./relation-rebuild.repository"
+import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts-repository"
+import { processDeletedTracksInScopes, hardDeleteSoftDeletedTracksInScopes } from "./deleted-tracks-repository"
+export { rebuildSplitMetadataRelations, type SplitRelationRebuildResult } from "./relation-rebuild-repository"
 import { processBatch } from "./batch-processor"
 import {
   type IndexingLookupCache,
@@ -48,7 +48,7 @@ import {
   getOrCreateArtist,
   getOrCreateAlbum,
   getOrCreateGenre,
-} from "./lookup-cache.repository"
+} from "./lookup-cache-repository"
 
 
 export { getLastIndexerRunSnapshot } from "./run-snapshot"

@@ -14,7 +14,7 @@ import {
 import { playbackStore } from "../store"
 
 import { isAudioBrowserSetUp } from "@/lib/react-native-audio-browser"
-import { applyReplayGainToTrack } from "@/modules/audio/replayGain/core/apply"
+import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
 import { revalidateWidgets } from "@/modules/widget/utils"
 
 export async function loadCurrentTrack() {

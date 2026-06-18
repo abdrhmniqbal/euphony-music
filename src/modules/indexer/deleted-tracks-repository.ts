@@ -1,7 +1,7 @@
 import { inArray, eq } from "drizzle-orm"
 import { db } from "@/db/client"
 import { tracks } from "@/db/schema"
-import { removeTracksFromFavoritesAndPlaylists } from "@/modules/tracks/track-cleanup.repository"
+import { removeTracksFromFavoritesAndPlaylists } from "@/modules/tracks/track-cleanup-repository"
 import { chunkArray } from "./batch-utils"
 
 export const DELETE_SCOPE_SIZE = 300

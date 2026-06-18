@@ -21,7 +21,7 @@ import {
   ArtistPickerSheet,
   type ArtistPickerSheetItem,
 } from "@/components/blocks/artist-picker-sheet"
-import { buildArtistPickerItems } from "@/components/blocks/artist-picker.utils"
+import { buildArtistPickerItems } from "@/components/blocks/artist-picker-utils"
 import LocalAddIcon from "@/components/icons/local/add"
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import LocalDeleteSolidIcon from "@/components/icons/local/delete-solid"
@@ -40,7 +40,7 @@ import { useIsFavorite } from "@/modules/favorites/queries"
 import { playTrack } from "@/modules/player/service"
 import { addToQueue, queueTrackNext } from "@/modules/player/queue"
 import { useRemoveTrackFromPlaylist } from "@/modules/playlist/mutations"
-import { usePlaylistPickerSelection } from "@/modules/playlist/picker-selection.hook"
+import { usePlaylistPickerSelection } from "@/modules/playlist/use-picker-selection"
 import { showAppToast } from "@/modules/ui/toast"
 import { useTrack } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"

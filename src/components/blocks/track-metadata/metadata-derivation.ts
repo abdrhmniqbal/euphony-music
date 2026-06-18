@@ -5,7 +5,7 @@ import {
   formatQualityLabel,
   normalizeCodecLabel,
   resolveAudioFormat,
-} from "@/modules/tracks/track-metadata.utils"
+} from "@/modules/tracks/track-metadata-utils"
 import { splitArtistsValue, splitGenresValue } from "@/modules/settings/split-multiple-values"
 import { formatDuration } from "@/utils/format"
 

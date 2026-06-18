@@ -6,7 +6,7 @@ import type { PlayFromSource } from "../types"
 import { arePlaybackSourceEqual, getSourceName } from "../utils"
 import { playbackStore } from "../store"
 
-import { applyReplayGainToTrack } from "@/modules/audio/replayGain/core/apply"
+import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
 
 export async function onActiveTrack(args: { type: "album" | "track"; id: string }) {
   const { activeTrack } = playbackStore.getState()

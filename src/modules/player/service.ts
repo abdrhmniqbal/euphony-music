@@ -28,7 +28,7 @@ import {
 import { resetCrossfadeVolume } from "@/modules/player/crossfade"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import { beginPlayerQueueReplacement, endPlayerQueueReplacement } from "@/modules/player/runtime"
-import { persistPlaybackSession } from "@/modules/player/session.service"
+import { persistPlaybackSession } from "@/modules/player/session-service"
 import { resolvePlayableFileUri } from "@/utils/file-path"
 import { generateId } from "@/utils/common"
 import { transformDBTrackToTrack } from "@/utils/transformers"

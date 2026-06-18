@@ -6,7 +6,7 @@
  * Side Effects: Starts indexing on refresh and updates local sort state.
  */
 
-import type { AlbumSortField, SortOrder } from "@/modules/library/sort.types"
+import type { AlbumSortField, SortOrder } from "@/modules/library/sort-types"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { useMemo, useState } from "react"
@@ -24,8 +24,8 @@ import { Stack } from "@/layouts/stack"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
-import { ALBUM_SORT_OPTIONS } from "@/modules/library/sort.constants"
-import { sortAlbums } from "@/modules/library/sort.utils"
+import { ALBUM_SORT_OPTIONS } from "@/modules/library/sort-constants"
+import { sortAlbums } from "@/modules/library/sort-utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { useGenreAlbums } from "@/modules/search/queries"
 import { mapAlbumsToGridData } from "@/modules/search/utils"

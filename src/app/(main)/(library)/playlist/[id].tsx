@@ -6,7 +6,7 @@
  * Side Effects: Starts playlist-context playback, toggles favorites, deletes playlists, opens action sheets, updates scroll UI state.
  */
 
-import type { TrackSortField } from "@/modules/library/sort.types"
+import type { TrackSortField } from "@/modules/library/sort-types"
 import type { PlaylistDetailTrack } from "@/modules/playlist/utils"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -36,8 +36,8 @@ import { Stack } from "@/layouts/stack"
 import { resolvePlaylistTransitionId } from "@/modules/artists/artist-transition"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useIsFavorite } from "@/modules/favorites/queries"
-import { TRACK_SORT_OPTIONS } from "@/modules/library/sort.constants"
-import { sortTracks } from "@/modules/library/sort.utils"
+import { TRACK_SORT_OPTIONS } from "@/modules/library/sort-constants"
+import { sortTracks } from "@/modules/library/sort-utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
 import { useDeletePlaylist } from "@/modules/playlist/mutations"
