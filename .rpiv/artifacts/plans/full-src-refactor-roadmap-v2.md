@@ -398,7 +398,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 23 — Lyrics Module Split
+# Phase 23 [Completed] — Lyrics Module Split
 
 ## Why
 `src/modules/lyrics/index.ts` is 581 lines. It likely mixes source parsing, synced LRC parsing, timed markup parsing, timing heuristics, and exports.
