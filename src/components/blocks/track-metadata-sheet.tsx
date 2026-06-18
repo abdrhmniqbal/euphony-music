@@ -1,0 +1,522 @@
+import type { Track } from "@/modules/player/store"
+import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { BottomSheet, Card, Chip } from "heroui-native"
+import * as React from "react"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { ScrollView, Text, View } from "react-native"
+import { useTranslation } from "react-i18next"
+import {
+  ArtistPickerSheet,
+  type ArtistPickerSheetItem,
+} from "@/components/blocks/artist-picker-sheet"
+import { buildArtistPickerItems } from "@/components/blocks/artist-picker.utils"
+import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
+import { MarqueeText } from "@/components/ui/marquee-text"
+import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
+import {
+  formatQualityLabel,
+  normalizeCodecLabel,
+  resolveAudioFormat,
+} from "@/modules/tracks/track-metadata.utils"
+import { useTrack } from "@/modules/tracks/queries"
+import { useSettingsStore } from "@/modules/settings/store"
+import { splitArtistsValue, splitGenresValue } from "@/modules/settings/split-multiple-values"
+import { resolvePlayableFileUri } from "@/utils/file-path"
+import { formatDuration } from "@/utils/format"
+import { openDeviceFile } from "@/modules/device/file-viewer"
+
+interface MetadataValueSegment {
+  value: string
+  onPress?: () => void
+}
+
+interface TrackMetadataSheetProps {
+  track: Track
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  onCloseParent: () => void
+}
+
+export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
+  track,
+  isOpen,
+  onOpenChange,
+  onCloseParent,
+}) => {
+  const router = useRouter()
+  const { t } = useTranslation()
+
+  const trackUri = track.uri ?? ""
+  const { data: resolvedFileUri = null } = useQuery({
+    queryKey: ["tracks", "resolved-file-uri", track.id, trackUri] as const,
+    enabled: trackUri.length > 0,
+    queryFn: async () => await resolvePlayableFileUri(trackUri),
+  })
+  const { data: fullTrackData } = useTrack(track.id)
+  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
+
+  const [artistSelectionItems, setArtistSelectionItems] = useState<ArtistPickerSheetItem[]>([])
+  const [genreSelectionValues, setGenreSelectionValues] = useState<string[]>([])
+  const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
+  const [isGenreSelectionOpen, setIsGenreSelectionOpen] = useState(false)
+
+  const handleOpenArtist = (artistName: string) => {
+    const normalizedArtistName = artistName.trim()
+    if (!normalizedArtistName) {
+      return
+    }
+
+    setIsArtistSelectionOpen(false)
+    router.push({
+      pathname: "/artist/[name]",
+      params: { name: normalizedArtistName },
+    })
+    onOpenChange(false)
+    onCloseParent()
+  }
+
+  const handleOpenAlbum = (albumName: string) => {
+    const normalizedAlbumName = albumName.trim()
+    if (!normalizedAlbumName) {
+      return
+    }
+
+    router.push({
+      pathname: "/album/[name]",
+      params: {
+        name: normalizedAlbumName,
+        transitionId: resolveAlbumTransitionId({
+          id: track.albumId,
+          title: normalizedAlbumName,
+        }),
+      },
+    })
+    onOpenChange(false)
+    onCloseParent()
+  }
+
+  const handleOpenGenre = (genreName: string) => {
+    const normalizedGenreName = genreName.trim()
+    if (!normalizedGenreName) {
+      return
+    }
+
+    setIsGenreSelectionOpen(false)
+    router.push({
+      pathname: "/genre/[name]",
+      params: { name: normalizedGenreName },
+    })
+    onOpenChange(false)
+    onCloseParent()
+  }
+
+  const handleOpenArtistSelection = (values: string[]) => {
+    const normalized = dedupeValues(
+      values.map((value) => value.trim()).filter((value) => value.length > 0)
+    )
+    if (normalized.length === 0) {
+      return
+    }
+
+    if (normalized.length === 1) {
+      handleOpenArtist(normalized[0] || "")
+      return
+    }
+
+    const richArtistItems = buildArtistPickerItems(
+      {
+        artwork: fullTrackData?.artwork,
+        albumArtwork: fullTrackData?.album?.artwork,
+        artist: fullTrackData?.artist,
+        featuredArtists: fullTrackData?.featuredArtists,
+      },
+      normalized,
+      (count) => t("library.count.track", { count })
+    )
+
+    setArtistSelectionItems(
+      richArtistItems.length > 0 ? richArtistItems : normalized.map((value) => ({ value }))
+    )
+    setIsArtistSelectionOpen(true)
+  }
+
+  const handleOpenGenreSelection = (values: string[]) => {
+    const normalized = dedupeValues(
+      values.map((value) => value.trim()).filter((value) => value.length > 0)
+    )
+    if (normalized.length === 0) {
+      return
+    }
+
+    if (normalized.length === 1) {
+      handleOpenGenre(normalized[0] || "")
+      return
+    }
+
+    setGenreSelectionValues(normalized)
+    setIsGenreSelectionOpen(true)
+  }
+
+  const handleOpenFile = async () => {
+    if (!track.uri) {
+      return
+    }
+
+    const opened = await openDeviceFile({
+      uri: track.uri,
+      trackId: track.id,
+    })
+
+    if (opened) {
+      onOpenChange(false)
+      onCloseParent()
+    }
+  }
+
+  const unknownValue = t("common.unknown")
+  const fileName = (() => {
+    if (track.filename) {
+      return track.filename
+    }
+
+    const uriPart = track.uri.split("/").pop() || ""
+    if (!uriPart) {
+      return t("library.unknownFile")
+    }
+
+    try {
+      return decodeURIComponent(uriPart)
+    } catch {
+      return uriPart
+    }
+  })()
+  const filePath = (() => {
+    if (!track.uri) {
+      return t("library.unknownFile")
+    }
+
+    const uri = resolvedFileUri || track.uri
+    const normalizedPath = uri.startsWith("file://") ? uri.slice("file://".length) : uri
+
+    try {
+      return decodeURIComponent(normalizedPath)
+    } catch {
+      return normalizedPath
+    }
+  })()
+  const lastPlayed = (() => {
+    if (!track.lastPlayedAt || !Number.isFinite(track.lastPlayedAt)) {
+      return t("track.never")
+    }
+
+    const date = new Date(track.lastPlayedAt)
+    if (Number.isNaN(date.getTime())) {
+      return t("track.never")
+    }
+
+    return date.toLocaleString()
+  })()
+  const codecLabel = normalizeCodecLabel(track.audioCodec)
+  const formatLabel = resolveAudioFormat(track.audioFormat, fileName, codecLabel)
+  const qualityLabel = formatQualityLabel(track.audioSampleRate, track.audioBitrate)
+  const durationLabel = formatDuration(track.duration || 0)
+
+  function dedupeValues(values: string[]) {
+    const seen = new Set<string>()
+    return values.filter((value) => {
+      const key = value.toLowerCase()
+      if (seen.has(key)) {
+        return false
+      }
+
+      seen.add(key)
+      return true
+    })
+  }
+
+  const artistNames = (() => {
+    const relationNames = [
+      fullTrackData?.artist?.name?.trim(),
+      ...(fullTrackData?.featuredArtists?.map((entry) => entry.artist?.name?.trim()) ?? []),
+    ].filter((value): value is string => Boolean(value))
+
+    if (relationNames.length > 0) {
+      return dedupeValues(relationNames)
+    }
+
+    const fallbackNames = splitArtistsValue(track.artist, splitMultipleValueConfig)
+    return fallbackNames.length > 0 ? dedupeValues(fallbackNames) : []
+  })()
+
+  const albumNames = (() => {
+    const relationAlbumName = fullTrackData?.album?.title?.trim()
+    if (relationAlbumName) {
+      return [relationAlbumName]
+    }
+
+    const fallbackAlbumName = track.album?.trim()
+    return fallbackAlbumName ? [fallbackAlbumName] : []
+  })()
+
+  const genreNames = (() => {
+    const names =
+      fullTrackData?.genres
+        ?.map((entry) => entry.genre?.name?.trim())
+        .filter((value): value is string => Boolean(value))
+        .filter((value, index, all) => all.indexOf(value) === index) ?? []
+
+    if (names.length > 0) {
+      return names
+    }
+
+    const fallbackGenreNames = splitGenresValue(track.genre, splitMultipleValueConfig)
+    if (fallbackGenreNames.length > 0) {
+      return dedupeValues(fallbackGenreNames)
+    }
+
+    return []
+  })()
+
+  const quickFacts = [
+    { label: t("track.metadata.quality"), value: qualityLabel },
+    { label: t("track.metadata.codec"), value: codecLabel || unknownValue },
+    { label: t("track.metadata.format"), value: formatLabel },
+  ]
+
+  const metadataItems: Array<{
+    label: string
+    segments: MetadataValueSegment[]
+    fullWidth?: boolean
+  }> = [
+    {
+      label: t("track.metadata.artist"),
+      segments:
+        artistNames.length > 0
+          ? splitMultipleValueConfig.artistSplitMode === "original" && track.artist?.trim()
+            ? [
+                {
+                  value: track.artist.trim(),
+                  onPress: () => handleOpenArtistSelection(artistNames),
+                },
+              ]
+            : artistNames.map((name) => ({
+                value: name,
+                onPress: () => handleOpenArtistSelection(artistNames),
+              }))
+          : [{ value: t("library.unknownArtist") }],
+      fullWidth:
+        (artistNames.length > 0 ? artistNames.join(", ") : t("library.unknownArtist")).length > 24,
+    },
+    {
+      label: t("track.metadata.album"),
+      segments:
+        albumNames.length > 0
+          ? albumNames.map((name) => ({
+              value: name,
+              onPress: () => handleOpenAlbum(name),
+            }))
+          : [{ value: t("library.unknownAlbum") }],
+      fullWidth:
+        (albumNames.length > 0 ? albumNames.join(", ") : t("library.unknownAlbum")).length > 24,
+    },
+    {
+      label: t("track.metadata.genre"),
+      segments:
+        genreNames.length > 0
+          ? genreNames.map((genreName) => ({
+              value: genreName,
+              onPress: () => handleOpenGenreSelection(genreNames),
+            }))
+          : [{ value: unknownValue }],
+      fullWidth: (genreNames.length > 0 ? genreNames.join(", ") : unknownValue).length > 24,
+    },
+    {
+      label: t("track.metadata.year"),
+      segments: [{ value: track.year ? String(track.year) : unknownValue }],
+    },
+    {
+      label: t("track.metadata.trackDisc"),
+      segments: [
+        {
+          value:
+            track.trackNumber || track.discNumber
+              ? `${track.trackNumber ?? "?"} / ${track.discNumber ?? "?"}`
+              : unknownValue,
+        },
+      ],
+    },
+    {
+      label: t("track.metadata.duration"),
+      segments: [{ value: durationLabel }],
+    },
+    {
+      label: t("track.metadata.playCount"),
+      segments: [{ value: String(track.playCount || 0) }],
+    },
+    {
+      label: t("track.metadata.lastPlayed"),
+      segments: [{ value: lastPlayed }],
+      fullWidth: true,
+    },
+    {
+      label: t("track.metadata.file"),
+      segments: [
+        {
+          value: filePath,
+          onPress: track.uri
+            ? () => {
+                void handleOpenFile()
+              }
+            : undefined,
+        },
+      ],
+      fullWidth: true,
+    },
+  ]
+
+  const metadataLayoutItems = metadataItems.map((item) => ({
+    ...item,
+    displayValue: item.segments.map((segment) => segment.value).join(", "),
+    isFullWidth: Boolean(item.fullWidth),
+  }))
+
+  let pendingHalfWidthIndex: number | null = null
+  for (let i = 0; i < metadataLayoutItems.length; i += 1) {
+    const currentItem = metadataLayoutItems[i]
+    if (!currentItem) {
+      continue
+    }
+
+    if (currentItem.isFullWidth) {
+      pendingHalfWidthIndex = null
+      continue
+    }
+
+    if (pendingHalfWidthIndex !== null) {
+      pendingHalfWidthIndex = null
+      continue
+    }
+
+    const nextItem = metadataLayoutItems[i + 1]
+    const nextCanPairInSameRow = Boolean(nextItem && !nextItem.isFullWidth)
+
+    if (!nextCanPairInSameRow) {
+      currentItem.isFullWidth = true
+      pendingHalfWidthIndex = null
+      continue
+    }
+
+    pendingHalfWidthIndex = i
+  }
+
+  return (
+    <>
+      <BottomSheet isOpen={isOpen} onOpenChange={onOpenChange}>
+        <BottomSheet.Portal>
+          <BottomSheet.Overlay />
+          <BottomSheet.Content
+            snapPoints={["62%", "92%"]}
+            enableDynamicSizing={false}
+            contentContainerClassName="px-5 pt-2 pb-5"
+            backgroundClassName="bg-surface"
+          >
+            <View className="mb-5 flex-row items-center gap-4">
+              <Text className="text-xl font-bold text-foreground">{t("track.viewMetadata")}</Text>
+            </View>
+
+            <View className="mb-3 flex-row flex-wrap gap-2">
+              {quickFacts.map((fact) => (
+                <Chip key={fact.label} size="sm" variant="secondary" color="default">
+                  <Chip.Label className="text-xs">{`${fact.label}: ${fact.value}`}</Chip.Label>
+                </Chip>
+              ))}
+            </View>
+
+            <ScrollView className="flex-1">
+              <View className="flex-row flex-wrap gap-2">
+                {metadataLayoutItems.map((item) => {
+                  const containerClassName = item.isFullWidth ? "w-full" : "w-[48.5%]"
+                  const hasNavigableValues = item.segments.some((segment) =>
+                    Boolean(segment.onPress)
+                  )
+                  const navigableTextStyle = hasNavigableValues
+                    ? {
+                        textDecorationLine: "underline" as const,
+                        textDecorationStyle: "dotted" as const,
+                      }
+                    : undefined
+
+                  const content = (
+                    <Card className="rounded-lg border border-border/40 bg-background/40 px-3 py-2">
+                      <Text className="mb-1 text-xs font-medium text-muted uppercase">
+                        {item.label}
+                      </Text>
+                      {hasNavigableValues ? (
+                        <Text className="text-sm leading-5 text-foreground" numberOfLines={1}>
+                          {item.segments.map((segment, segmentIndex) => (
+                            <React.Fragment
+                              key={`${item.label}-${segment.value}-${segment.onPress ? "link" : "text"}`}
+                            >
+                              {segment.onPress ? (
+                                <Text
+                                  className="text-sm leading-5 text-foreground"
+                                  suppressHighlighting
+                                  style={navigableTextStyle}
+                                  onPress={() => {
+                                    onOpenChange(false)
+                                    segment.onPress?.()
+                                  }}
+                                >
+                                  {segment.value}
+                                </Text>
+                              ) : (
+                                <Text className="text-sm leading-5 text-foreground">
+                                  {segment.value}
+                                </Text>
+                              )}
+                              {segmentIndex < item.segments.length - 1 ? (
+                                <Text className="text-sm leading-5 text-foreground">{", "}</Text>
+                              ) : null}
+                            </React.Fragment>
+                          ))}
+                        </Text>
+                      ) : (
+                        <MarqueeText
+                          text={item.displayValue}
+                          className="text-sm leading-5 text-foreground"
+                        />
+                      )}
+                    </Card>
+                  )
+
+                  return (
+                    <View key={item.label} className={containerClassName}>
+                      {content}
+                    </View>
+                  )
+                })}
+              </View>
+            </ScrollView>
+          </BottomSheet.Content>
+        </BottomSheet.Portal>
+      </BottomSheet>
+
+      <ArtistPickerSheet
+        isOpen={isArtistSelectionOpen}
+        title={t("track.metadata.artist")}
+        items={artistSelectionItems}
+        onOpenChange={setIsArtistSelectionOpen}
+        onSelectValue={handleOpenArtist}
+      />
+
+      <ValueNavigationSheet
+        isOpen={isGenreSelectionOpen}
+        title={t("track.metadata.genre")}
+        values={genreSelectionValues}
+        onOpenChange={setIsGenreSelectionOpen}
+        onSelectValue={handleOpenGenre}
+      />
+    </>
+  )
+}
