@@ -226,7 +226,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 17 [Partially Done] — Finish Indexer Repository Decomposition
+# Phase 17 [Completed] — Finish Indexer Repository Decomposition
 
 ## Why
 `src/modules/indexer/repository.ts` remains 1136 lines after count extraction. It still mixes scanning, batching, metadata preparation, relation rebuild, DB upsert, transient commit retry, deletion cleanup, and lookup cache handling.
@@ -266,7 +266,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 18 [Partially Done] — Metadata Parser Module Split
+# Phase 18 [Completed] — Metadata Parser Module Split
 
 ## Why
 `src/modules/indexer/metadata.ts` remains 648 lines and mixes ID3 parsing, MP4 atom parsing, native metadata extraction, artwork cache, and cache cleanup.
