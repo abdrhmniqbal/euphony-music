@@ -1,5 +1,6 @@
 {
   "common": {
+    "appName": "Startune Music",
     "cancel": "Annuler",
     "clear": "Effacer",
     "clearAll": "Tout effacer",
@@ -9,7 +10,34 @@
     "shuffle": "Mélanger",
     "reset": "Réinitialiser",
     "seeMore": "Voir plus",
-    "unknown": "Inconnu"
+    "unknown": "Inconnu",
+    "next": "Next",
+    "finish": "Finish",
+    "feedback": {
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "failedToUpdateFavorite": "Failed to update favorite",
+      "playlistCreated": "Playlist created",
+      "playlistUpdated": "Playlist updated",
+      "playlistDeleted": "Playlist deleted",
+      "failedToCreatePlaylist": "Failed to create playlist",
+      "failedToUpdatePlaylist": "Failed to update playlist",
+      "failedToDeletePlaylist": "Failed to delete playlist",
+      "addedToPlaylist": "Added to playlist",
+      "removedFromPlaylist": "Removed from playlist",
+      "failedToAddToPlaylist": "Failed to add to playlist",
+      "failedToRemoveFromPlaylist": "Failed to remove from playlist",
+      "playlistReordered": "Playlist order updated",
+      "failedToReorderPlaylist": "Failed to update playlist order",
+      "trackDeleted": "Track deleted",
+      "failedToDeleteTrack": "Failed to delete track",
+      "addedToQueue": "Added to queue: {{name}}",
+      "libraryReindexStarted": "Library reindex started",
+      "trackDurationUpdated": "Track duration filter updated",
+      "folderFiltersApplied": "Folder filters applied",
+      "folderAdded": "Folder added",
+      "mediaGranted": "Media access granted"
+    }
   },
   "term": {
     "track": "titre",
@@ -334,6 +362,22 @@
       "external": "Lecture depuis Fichier"
     }
   },
+  "onboarding": {
+    "welcomePrefix": "Welcome to",
+    "welcomeDescription": "Set up theme, folders, and permissions before first scan.",
+    "permissions": {
+      "title": "Permissions",
+      "description": "Grant required permissions to start listening.",
+      "grant": "Grant Access",
+      "granted": "Access Granted",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "fileAccess": "File access",
+      "fileAccessDescription": "Allow Startune to read your music files.",
+      "notifications": "Notifications",
+      "notificationsDescription": "Allow progress updates and alerts."
+    }
+  },
   "settings": {
     "routes": {
       "index": {
@@ -375,7 +419,7 @@
         "description": "Choisissez la langue d'affichage de l'application."
       },
       "folderFilters": {
-        "title": "Filtres de dossiers"
+        "title": "Folder filters"
       },
       "trackDurationFilter": {
         "title": "$t(term.trackDurationFilterLabel)"
@@ -388,6 +432,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "onboarding": {
+        "title": "Onboarding"
       }
     },
     "appearance": {
@@ -440,7 +487,9 @@
       "indexing": "Indexation...",
       "selectFilterMode": "Sélectionnez le mode de filtrage",
       "whitelist": "Liste blanche",
+      "whitelistDescription": "Scan only folders you choose.",
       "blacklist": "Liste noire",
+      "blacklistDescription": "Skip folders you choose.",
       "folderFiltersDescription": "Liste blanche ou liste noire de dossiers spécifiques.",
       "trackDurationFilter": "$t(term.trackDurationFilterLabel)",
       "autoScan": "Analyse automatique",
@@ -554,6 +603,7 @@
         "logs": "Logs",
         "history": "History",
         "background": "Background",
+        "onboarding": "Onboarding",
         "updates": "Updates"
       },
       "logExtraDescription": "Extra : capturez le débogage, les informations, les avertissements et les erreurs.",
@@ -581,6 +631,8 @@
       "historyResetUnableTitle": "Impossible de réinitialiser l'historique",
       "batteryAlreadyDisabledTitle": "L'optimisation de la batterie est déjà désactivée",
       "batteryAlreadyDisabledDescription": "Aucune action supplémentaire n’est nécessaire.",
+      "restartOnboarding": "Restart onboarding",
+      "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
       "unableToOpenLinkTitle": "Impossible d'ouvrir le lien"
     },
     "about": {
