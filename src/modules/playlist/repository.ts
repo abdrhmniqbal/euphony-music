@@ -12,6 +12,7 @@ import { db } from "@/db/client"
 import { playlists, playlistTracks, tracks } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
 import { generateId } from "@/utils/common"
+import { trackHydrationRelations } from "@/db/track-relations"
 
 function normalizeDescription(description?: string | null): string | null {
   const value = description?.trim()
@@ -118,20 +119,7 @@ export async function listPlaylists() {
         orderBy: [asc(playlistTracks.position)],
         with: {
           track: {
-            with: {
-              artist: true,
-              featuredArtists: {
-                with: {
-                  artist: true,
-                },
-              },
-              album: true,
-              genres: {
-                with: {
-                  genre: true,
-                },
-              },
-            },
+            with: trackHydrationRelations,
           },
         },
       },
@@ -176,20 +164,7 @@ export async function getPlaylistById(id: string) {
         orderBy: [asc(playlistTracks.position)],
         with: {
           track: {
-            with: {
-              artist: true,
-              featuredArtists: {
-                with: {
-                  artist: true,
-                },
-              },
-              album: true,
-              genres: {
-                with: {
-                  genre: true,
-                },
-              },
-            },
+            with: trackHydrationRelations,
           },
         },
       },

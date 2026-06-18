@@ -21,6 +21,10 @@ import {
 } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
 import { transformDBTrackToTrack } from "@/utils/transformers"
+import {
+  trackHydrationRelationsWithAlbumArtist,
+  trackHydrationRelationsWithoutAlbum,
+} from "@/db/track-relations"
 import { collectPlaylistImages } from "@/modules/playlist/repository"
 import { getDominantAlbumArtworkMap, selectDominantArtwork } from "./artwork"
 
@@ -407,24 +411,7 @@ export async function getArtistById(id: string) {
       },
       tracks: {
         where: eq(tracks.isDeleted, 0),
-        with: {
-          artist: true,
-          featuredArtists: {
-            with: {
-              artist: true,
-            },
-          },
-          album: {
-            with: {
-              artist: true,
-            },
-          },
-          genres: {
-            with: {
-              genre: true,
-            },
-          },
-        },
+        with: trackHydrationRelationsWithAlbumArtist,
       },
     },
   })
@@ -513,19 +500,7 @@ export async function getAlbumById(id: string) {
           asc(tracks.trackNumber),
           asc(sql`lower(coalesce(${tracks.title}, ''))`),
         ],
-        with: {
-          artist: true,
-          featuredArtists: {
-            with: {
-              artist: true,
-            },
-          },
-          genres: {
-            with: {
-              genre: true,
-            },
-          },
-        },
+        with: trackHydrationRelationsWithoutAlbum,
       },
     },
   })
@@ -563,24 +538,7 @@ export async function getTracksByAlbumName(albumName: string): Promise<Track[]> 
   if (matchingAlbumIds.length === 0) {
     const fallbackTracks = await db.query.tracks.findMany({
       where: eq(tracks.isDeleted, 0),
-      with: {
-        artist: true,
-        featuredArtists: {
-          with: {
-            artist: true,
-          },
-        },
-        album: {
-          with: {
-            artist: true,
-          },
-        },
-        genres: {
-          with: {
-            genre: true,
-          },
-        },
-      },
+      with: trackHydrationRelationsWithAlbumArtist,
       orderBy: [
         asc(tracks.discNumber),
         asc(tracks.trackNumber),
@@ -595,24 +553,7 @@ export async function getTracksByAlbumName(albumName: string): Promise<Track[]> 
 
   const results = await db.query.tracks.findMany({
     where: and(eq(tracks.isDeleted, 0), inArray(tracks.albumId, matchingAlbumIds)),
-    with: {
-      artist: true,
-      featuredArtists: {
-        with: {
-          artist: true,
-        },
-      },
-      album: {
-        with: {
-          artist: true,
-        },
-      },
-      genres: {
-        with: {
-          genre: true,
-        },
-      },
-    },
+    with: trackHydrationRelationsWithAlbumArtist,
     orderBy: [
       asc(tracks.discNumber),
       asc(tracks.trackNumber),
@@ -639,24 +580,7 @@ export async function getTracksByArtistName(artistName: string): Promise<Track[]
   if (matchingArtistIds.length === 0) {
     const fallbackTracks = await db.query.tracks.findMany({
       where: eq(tracks.isDeleted, 0),
-      with: {
-        artist: true,
-        featuredArtists: {
-          with: {
-            artist: true,
-          },
-        },
-        album: {
-          with: {
-            artist: true,
-          },
-        },
-        genres: {
-          with: {
-            genre: true,
-          },
-        },
-      },
+      with: trackHydrationRelationsWithAlbumArtist,
       orderBy: [asc(sql`lower(coalesce(${tracks.title}, ''))`)],
     })
 
@@ -686,24 +610,7 @@ export async function getTracksByArtistName(artistName: string): Promise<Track[]
         )`
       )
     ),
-    with: {
-      artist: true,
-      featuredArtists: {
-        with: {
-          artist: true,
-        },
-      },
-      album: {
-        with: {
-          artist: true,
-        },
-      },
-      genres: {
-        with: {
-          genre: true,
-        },
-      },
-    },
+    with: trackHydrationRelationsWithAlbumArtist,
   })
 
   return results.map(transformDBTrackToTrack)
@@ -777,24 +684,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
           eq(tracks.isDeleted, 0),
           or(like(tracks.title, searchTerm), inArray(tracks.id, featuredArtistTrackMatchIds))
         ),
-        with: {
-          artist: true,
-          featuredArtists: {
-            with: {
-              artist: true,
-            },
-          },
-          album: {
-            with: {
-              artist: true,
-            },
-          },
-          genres: {
-            with: {
-              genre: true,
-            },
-          },
-        },
+        with: trackHydrationRelationsWithAlbumArtist,
         orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
         limit: 20,
       }),
@@ -834,24 +724,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
     const relationTrackResults = relationTrackFilter
       ? await db.query.tracks.findMany({
           where: and(eq(tracks.isDeleted, 0), relationTrackFilter),
-          with: {
-            artist: true,
-            featuredArtists: {
-              with: {
-                artist: true,
-              },
-            },
-            album: {
-              with: {
-                artist: true,
-              },
-            },
-            genres: {
-              with: {
-                genre: true,
-              },
-            },
-          },
+          with: trackHydrationRelationsWithAlbumArtist,
           orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
           limit: 40,
         })
