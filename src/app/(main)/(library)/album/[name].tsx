@@ -153,10 +153,12 @@ export default function AlbumDetailsScreen() {
     )
   }
 
+  const activeAlbumInfo = albumInfo
+
   function playSelectedTrack(track: Track) {
     playTrack(track, sortedTracks, {
       type: "album",
-      title: albumInfo.title,
+      title: activeAlbumInfo.title,
     })
   }
 
@@ -164,7 +166,7 @@ export default function AlbumDetailsScreen() {
     if (sortedTracks.length > 0) {
       playTrack(sortedTracks[0], sortedTracks, {
         type: "album",
-        title: albumInfo.title,
+        title: activeAlbumInfo.title,
       })
     }
   }
@@ -173,7 +175,7 @@ export default function AlbumDetailsScreen() {
     if (sortedTracks.length > 0) {
       playTrack(sortedTracks[getRandomIndex(sortedTracks.length)], sortedTracks, {
         type: "album",
-        title: albumInfo.title,
+        title: activeAlbumInfo.title,
       })
     }
   }
