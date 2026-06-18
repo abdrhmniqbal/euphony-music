@@ -4,10 +4,6 @@ import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
 import { initializeTrackPlayer, registerPlaybackService } from "@/core/audio/track-player-service"
-import {
-  getMediaLibraryPermission,
-  requestMediaLibraryPermission,
-} from "@/core/storage/media-library-service"
 import { db } from "@/db/client"
 import migrations from "@/db/migrations/migrations"
 import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup"
@@ -36,6 +32,7 @@ import AudioBrowser from "react-native-audio-browser"
 import { addPlayedTrack } from "@/modules/history/repository"
 import { queryClient } from "@/lib/tanstack-query"
 import { invalidateTrackQueries } from "@/modules/tracks/keys"
+import { canStartIndexingNow } from "@/modules/bootstrap/utils"
 import { playbackStore, usePlaybackStore } from "@/stores/playback/store"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useViewPreferenceStore } from "@/stores/view-preference/store"
@@ -57,40 +54,14 @@ async function preloadSettings() {
   ])
 }
 
-async function resolveMediaPermission() {
-  const permission = await getMediaLibraryPermission()
-  if (
-    preferenceStore.getState().completedOnboarding &&
-    permission.status === "undetermined" &&
-    permission.canAskAgain
-  ) {
-    return requestMediaLibraryPermission()
-  }
-
-  return permission
-}
-
 async function runStartupScan() {
-  if (!preferenceStore.getState().completedOnboarding) {
-    logInfo("Startup scan skipped because onboarding is not completed")
-    return
-  }
-
   if (!preferenceStore.getState().rescanOnLaunch) {
     return
   }
 
-  const permission = await resolveMediaPermission()
-  if (permission.status !== "granted") {
-    logInfo("Startup scan skipped because media permission is not granted", {
-      status: permission.status,
-    })
-    return
-  }
-
-  const config = await ensureAutoScanConfigLoaded()
-  if (!config.autoScanEnabled || !config.initialScanEnabled) {
-    logInfo("Startup scan skipped by scan config", config)
+  const canScan = await canStartIndexingNow({ initialScanOnly: true })
+  if (!canScan) {
+    logInfo("Startup scan skipped because conditions are not met")
     return
   }
 

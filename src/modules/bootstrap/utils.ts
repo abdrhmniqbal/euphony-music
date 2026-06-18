@@ -52,6 +52,29 @@ async function preloadLocalSettings() {
   })
 }
 
+export async function canStartIndexingNow(options?: { initialScanOnly?: boolean }) {
+  if (!preferenceStore.getState().completedOnboarding) {
+    return false
+  }
+
+  const indexerScanConfig = await ensureAutoScanConfigLoaded()
+  if (!indexerScanConfig.autoScanEnabled) {
+    return false
+  }
+
+  if (options?.initialScanOnly && !indexerScanConfig.initialScanEnabled) {
+    return false
+  }
+
+  const permission = await getMediaLibraryPermission()
+  const status =
+    permission.status === "undetermined" && permission.canAskAgain
+      ? (await requestMediaLibraryPermission()).status
+      : permission.status
+
+  return status === "granted"
+}
+
 export async function bootstrapApp(): Promise<void> {
   try {
     logInfo("Registering playback service")
@@ -79,33 +102,9 @@ export async function bootstrapApp(): Promise<void> {
       await resumeTrack()
     }
 
-    logInfo("Resolving media library permission during bootstrap")
-    const permission = await getMediaLibraryPermission()
-    const status =
-      permission.status === "undetermined" && permission.canAskAgain
-        ? (await requestMediaLibraryPermission()).status
-        : permission.status
-    logInfo("Media library permission resolved during bootstrap", { status })
-    if (status !== "granted") {
-      logInfo("Skipping bootstrap index run due to media permission status", {
-        status,
-      })
-      return
-    }
-
-    if (!preferenceStore.getState().completedOnboarding) {
-      logInfo("Initial scan skipped because onboarding is not completed")
-      return
-    }
-
-    const indexerScanConfig = await ensureAutoScanConfigLoaded()
-    if (!indexerScanConfig.autoScanEnabled) {
-      logInfo("Initial scan skipped because auto-scan is disabled")
-      return
-    }
-
-    if (!indexerScanConfig.initialScanEnabled) {
-      logInfo("Initial scan disabled during bootstrap")
+    const canStartIndexing = await canStartIndexingNow({ initialScanOnly: true })
+    if (!canStartIndexing) {
+      logInfo("Initial scan skipped during bootstrap")
       return
     }
 

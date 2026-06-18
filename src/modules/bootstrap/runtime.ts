@@ -6,13 +6,10 @@
  * Side Effects: Initializes logging/bootstrap workflow, updates in-memory readiness state, may start media indexing.
  */
 
-import { getMediaLibraryPermission } from "@/core/storage/media-library-service"
-import { bootstrapApp } from "@/modules/bootstrap/utils"
-import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"
+import { bootstrapApp, canStartIndexingNow } from "@/modules/bootstrap/utils"
 import { startIndexing } from "@/modules/indexer/service"
 import { isIndexerRunActive } from "@/modules/indexer/runtime"
 import { initializeLogging, logError, logInfo, logWarn } from "@/modules/logging/service"
-import { preferenceStore } from "@/stores/preference/store"
 
 type DatabaseStatus = "pending" | "ready" | "error"
 
@@ -132,22 +129,9 @@ export async function runAutoScan(options?: { bypassThrottle?: boolean }) {
   }
 
   try {
-    if (!preferenceStore.getState().completedOnboarding) {
-      logInfo("Auto scan skipped because onboarding is not completed", { bypassThrottle })
-      return
-    }
-
-    const indexerScanConfig = await ensureAutoScanConfigLoaded()
-    if (!indexerScanConfig.autoScanEnabled) {
-      return
-    }
-
-    const { status } = await getMediaLibraryPermission()
-    if (status !== "granted") {
-      logInfo("Auto scan skipped because media permission is not granted", {
-        status,
-        bypassThrottle,
-      })
+    const canScan = await canStartIndexingNow()
+    if (!canScan) {
+      logInfo("Auto scan skipped because scan conditions are not met", { bypassThrottle })
       return
     }
 

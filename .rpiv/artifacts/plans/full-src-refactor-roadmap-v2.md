@@ -643,7 +643,7 @@ Settings screens repeat ListGroup/Card/section header patterns. Duplication make
 
 ---
 
-# Phase 31 — Runtime Bootstrap Flow Boundary
+# Phase 31 [Completed] — Runtime Bootstrap Flow Boundary
 ## Why
 Bootstrap, onboarding gate, auto-scan, playback restore, notification setup, and app runtime are tightly coupled. First-open indexing was recently gated; this area needs clearer orchestration to prevent future regressions.
 
@@ -654,16 +654,10 @@ Bootstrap, onboarding gate, auto-scan, playback restore, notification setup, and
 - `src/app/_layout.tsx`
 - `src/components/providers/root-providers.tsx`
 
-## Actions
-1. Document startup phases:
-   - hydration
-   - onboarding decision
-   - database ready
-   - playback restore
-   - scan scheduling
-2. Extract startup decision helper for onboarding/indexing gate.
-3. Add a single function for “can start indexing now”.
-4. Avoid scattered checks against `completedOnboarding`.
+## Actions Taken
+1. Added single `canStartIndexingNow` checking helper mapping `completedOnboarding`, `autoScanEnabled`, permissions, and optional `initialScanEnabled`.
+2. Refactored `bootstrapApp` (bootstrap/utils), `runAutoScan` (bootstrap/runtime) and `runStartupScan` (app-runtime) to use the helper.
+3. Cleaned up dead media permission wrappers and scattered checks.
 
 ## Success Criteria
 - Future onboarding changes cannot accidentally start indexing early.
@@ -752,7 +746,7 @@ Some files appear in technically valid but semantically weak locations. Over tim
 8. Phase 17 — Finish indexer repository decomposition
 9. Phase 18 — Metadata parser module split
 10. Phase 19 — Player session service split
-11. Phase 31 — Runtime bootstrap flow boundary
+11. Phase 31 [Completed] — Runtime bootstrap flow boundary
 
 ## UI maintainability
 12. Phase 20 — Player action sheet decomposition
