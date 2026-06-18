@@ -51,6 +51,7 @@ interface TrackListProps {
   refreshControl?: React.ReactElement<RefreshControlProps> | null
   resetScrollKey?: string
   currentTrackId?: string
+  playlistId?: string
   renderItemPrefix?: (track: Track, index: number, data: Track[]) => React.ReactNode
 }
 
@@ -74,6 +75,7 @@ export const TrackList: React.FC<TrackListProps> = ({
   refreshControl,
   resetScrollKey,
   currentTrackId,
+  playlistId,
   renderItemPrefix,
 }) => {
   const theme = useThemeColors()
@@ -175,6 +177,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         isOpen={isSheetOpen}
         onClose={handleSheetClose}
         tracks={data}
+        playlistId={playlistId}
       />
     </View>
   )

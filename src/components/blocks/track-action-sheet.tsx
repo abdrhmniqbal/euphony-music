@@ -14,7 +14,7 @@ import * as React from "react"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
-import { Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { DeleteTrackDialog } from "@/components/blocks/delete-track-dialog"
 import {
@@ -25,12 +25,17 @@ import { buildArtistPickerItems } from "@/components/blocks/artist-picker.utils"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
 import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import LocalAddIcon from "@/components/icons/local/add"
+import LocalCancelIcon from "@/components/icons/local/cancel"
+import LocalDeleteSolidIcon from "@/components/icons/local/delete-solid"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
 import LocalNextSolidIcon from "@/components/icons/local/next-solid"
 import LocalPlaySolidIcon from "@/components/icons/local/play-solid"
 import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import LocalSlidersVerticalIcon from "@/components/icons/local/sliders-vertical"
+import LocalUserIcon from "@/components/icons/local/user"
+import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
 import { MarqueeText } from "@/components/ui/marquee-text"
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { openDeviceFile } from "@/modules/device/file-viewer"
@@ -39,6 +44,7 @@ import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useIsFavorite } from "@/modules/favorites/queries"
 import { playTrack } from "@/modules/player/service"
 import { addToQueue, queueTrackNext } from "@/modules/player/queue"
+import { useRemoveTrackFromPlaylist } from "@/modules/playlist/mutations"
 import { usePlaylistPickerSelection } from "@/modules/playlist/picker-selection.hook"
 import { showAppToast } from "@/modules/ui/toast"
 import {
@@ -52,7 +58,6 @@ import { useSettingsStore } from "@/modules/settings/store"
 import { splitArtistsValue, splitGenresValue } from "@/modules/settings/split-multiple-values"
 import { resolvePlayableFileUri } from "@/utils/file-path"
 import { formatDuration } from "@/utils/format"
-import LocalDeleteSolidIcon from "../icons/local/delete-solid"
 
 interface MetadataValueSegment {
   value: string
@@ -64,7 +69,26 @@ interface TrackActionSheetProps {
   isOpen: boolean
   onClose: () => void
   tracks?: Track[]
+  playlistId?: string
   onAddToPlaylist?: (track: Track) => void
+}
+
+interface MenuRowProps {
+  icon: React.ReactNode
+  label: string
+  onPress: () => void
+  colorClassName?: string
+}
+
+function MenuRow({ icon, label, onPress, colorClassName = "text-foreground" }: MenuRowProps) {
+  return (
+    <Button variant="ghost" onPress={onPress} className="h-13 w-full justify-start px-0">
+      <View className="flex-row items-center gap-4 px-1">
+        <View className="w-6 items-center justify-center">{icon}</View>
+        <Text className={`text-base font-medium ${colorClassName}`}>{label}</Text>
+      </View>
+    </Button>
+  )
 }
 
 export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
@@ -72,6 +96,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   isOpen,
   onClose,
   tracks,
+  playlistId,
   onAddToPlaylist,
 }) => {
   const router = useRouter()
@@ -79,6 +104,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const { t } = useTranslation()
   const theme = useThemeColors()
   const toggleFavoriteMutation = useToggleFavorite()
+  const removeTrackFromPlaylistMutation = useRemoveTrackFromPlaylist()
   const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [favoriteOverrides, setFavoriteOverrides] = useState<Record<string, boolean>>({})
@@ -100,6 +126,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const [genreSelectionValues, setGenreSelectionValues] = useState<string[]>([])
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const [isGenreSelectionOpen, setIsGenreSelectionOpen] = useState(false)
+  const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false)
 
   const handlePlay = async () => {
     if (track) {
@@ -149,6 +176,18 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
     }
 
     setIsPlaylistPickerOpen(true)
+  }
+
+  const handleRemoveFromPlaylist = async () => {
+    if (!track || !playlistId) {
+      return
+    }
+
+    await removeTrackFromPlaylistMutation.mutateAsync({
+      playlistId,
+      trackId: track.id,
+    })
+    onClose()
   }
 
   const handleOpenDeleteDialog = () => {
@@ -553,8 +592,8 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
         <BottomSheet.Portal>
           <BottomSheet.Overlay />
           <BottomSheet.Content
-            snapPoints={["62%", "92%"]}
-            enableDynamicSizing={false}
+            snapPoints={["70%"]}
+            enableDynamicSizing={true}
             contentContainerClassName="px-5 pt-2 pb-5"
             backgroundClassName="bg-surface"
           >
@@ -586,70 +625,102 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               </View>
             </View>
 
-            <View className="mb-2 flex-row gap-2">
-              <Button variant="primary" onPress={handlePlay} className="h-12 flex-1">
-                <View className="flex-row items-center gap-2">
-                  <LocalPlaySolidIcon fill="none" width={24} height={24} color="white" />
-                  <Text className="font-semibold text-white">{t("common.play")}</Text>
-                </View>
-              </Button>
-              <Button
-                variant="secondary"
+            <View className="gap-1">
+              <MenuRow
+                icon={<LocalPlaySolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                label={t("common.play")}
+                onPress={handlePlay}
+              />
+              <MenuRow
+                icon={
+                  isFavorite ? (
+                    <LocalFavouriteSolidIcon fill="none" width={22} height={22} color="#ef4444" />
+                  ) : (
+                    <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.foreground} />
+                  )
+                }
+                label={isFavorite ? t("track.removeFromFavorites") : t("track.addToFavorites")}
                 onPress={handleToggleFavorite}
-                className="h-12 px-4"
-                isIconOnly
-              >
-                {isFavorite ? (
-                  <LocalFavouriteSolidIcon fill="none" width={28} height={28} color="#ef4444" />
-                ) : (
-                  <LocalFavouriteIcon fill="none" width={28} height={28} color={theme.foreground} />
-                )}
-              </Button>
-            </View>
-
-            <View className="mb-2 flex-row gap-2">
-              <Button variant="secondary" onPress={handleAddToQueue} className="h-11 flex-1">
-                <View className="flex-row items-center gap-2">
-                  <LocalAddIcon fill="none" width={20} height={20} color={theme.foreground} />
-                  <Text className="font-semibold text-foreground">{t("track.addToQueue")}</Text>
-                </View>
-              </Button>
-              <Button variant="secondary" onPress={handlePlayNext} className="h-11 flex-1">
-                <View className="flex-row items-center gap-2">
-                  <LocalNextSolidIcon fill="none" width={20} height={20} color={theme.foreground} />
-                  <Text className="font-semibold text-foreground">{t("track.playNext")}</Text>
-                </View>
-              </Button>
-            </View>
-
-            <Button variant="secondary" onPress={handleAddToPlaylist} className="mb-2 h-11 w-full">
-              <View className="flex-row items-center gap-2">
-                <LocalPlaylistSolidIcon
-                  fill="none"
-                  width={20}
-                  height={20}
-                  color={theme.foreground}
+              />
+              <MenuRow
+                icon={<LocalAddIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                label={t("track.addToQueue")}
+                onPress={handleAddToQueue}
+              />
+              <MenuRow
+                icon={<LocalNextSolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                label={t("track.playNext")}
+                onPress={handlePlayNext}
+              />
+              <MenuRow
+                icon={<LocalPlaylistSolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                label={t("track.addToPlaylist")}
+                onPress={handleAddToPlaylist}
+              />
+              {playlistId ? (
+                <MenuRow
+                  icon={<LocalCancelIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                  label={t("track.removeFromPlaylist")}
+                  onPress={() => {
+                    void handleRemoveFromPlaylist()
+                  }}
                 />
-                <Text className="font-semibold text-foreground">{t("track.addToPlaylist")}</Text>
-              </View>
-            </Button>
+              ) : null}
+              <MenuRow
+                icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                label={t("player.menu.goToArtist")}
+                onPress={() => handleOpenArtistSelection(artistNames)}
+              />
+              <MenuRow
+                icon={<LocalVynilSolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                label={t("player.menu.goToAlbum")}
+                onPress={() => {
+                  if (albumNames.length > 0 && albumNames[0]) {
+                    handleOpenAlbum(albumNames[0])
+                  }
+                }}
+              />
+              <MenuRow
+                icon={<LocalSlidersVerticalIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                label={t("track.viewMetadata")}
+                onPress={() => setIsMetadataSheetOpen(true)}
+              />
+              <MenuRow
+                icon={<LocalDeleteSolidIcon fill="none" width={22} height={22} color="red" />}
+                label={t("track.deleteFromDevice")}
+                onPress={handleOpenDeleteDialog}
+                colorClassName="text-danger"
+              />
+            </View>
+          </BottomSheet.Content>
+        </BottomSheet.Portal>
+      </BottomSheet>
 
-            <Button variant="danger" onPress={handleOpenDeleteDialog} className="mb-2 h-11 w-full">
-              <View className="flex-row items-center gap-2">
-                <LocalDeleteSolidIcon fill="none" width={20} height={20} color="white" />
-                <Text className="font-semibold text-white">{t("track.deleteFromDevice")}</Text>
-              </View>
-            </Button>
+      <BottomSheet
+        isOpen={isMetadataSheetOpen}
+        onOpenChange={setIsMetadataSheetOpen}
+      >
+        <BottomSheet.Portal>
+          <BottomSheet.Overlay />
+          <BottomSheet.Content
+            snapPoints={["62%", "92%"]}
+            enableDynamicSizing={false}
+            contentContainerClassName="px-5 pt-2 pb-5"
+            backgroundClassName="bg-surface"
+          >
+            <View className="mb-5 flex-row items-center gap-4">
+              <Text className="text-xl font-bold text-foreground">{t("track.viewMetadata")}</Text>
+            </View>
 
-            <View className="mt-2 border-t border-border/60 pt-3">
-              <View className="mb-3 flex-row flex-wrap gap-2">
-                {quickFacts.map((fact) => (
-                  <Chip key={fact.label} size="sm" variant="secondary" color="default">
-                    <Chip.Label className="text-xs">{`${fact.label}: ${fact.value}`}</Chip.Label>
-                  </Chip>
-                ))}
-              </View>
+            <View className="mb-3 flex-row flex-wrap gap-2">
+              {quickFacts.map((fact) => (
+                <Chip key={fact.label} size="sm" variant="secondary" color="default">
+                  <Chip.Label className="text-xs">{`${fact.label}: ${fact.value}`}</Chip.Label>
+                </Chip>
+              ))}
+            </View>
 
+            <ScrollView className="flex-1">
               <View className="flex-row flex-wrap gap-2">
                 {metadataLayoutItems.map((item) => {
                   const containerClassName = item.isFullWidth ? "w-full" : "w-[48.5%]"
@@ -679,7 +750,10 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                                   className="text-sm leading-5 text-foreground"
                                   suppressHighlighting
                                   style={navigableTextStyle}
-                                  onPress={segment.onPress}
+                                  onPress={() => {
+                                    setIsMetadataSheetOpen(false)
+                                    segment.onPress?.()
+                                  }}
                                 >
                                   {segment.value}
                                 </Text>
@@ -710,7 +784,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                   )
                 })}
               </View>
-            </View>
+            </ScrollView>
           </BottomSheet.Content>
         </BottomSheet.Portal>
       </BottomSheet>

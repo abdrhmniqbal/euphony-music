@@ -283,6 +283,10 @@
     "addToQueue": "Add to Queue",
     "playNext": "Play Next",
     "addToPlaylist": "Add to Playlist",
+    "removeFromPlaylist": "Remove from Playlist",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+    "viewMetadata": "View Metadata",
     "metadata": {
       "quality": "Quality",
       "codec": "Codec",

@@ -278,6 +278,7 @@ export default function PlaylistDetailsScreen() {
           showNumbers={false}
           hideCover={false}
           hideArtist={false}
+          playlistId={playlistId}
           onTrackPress={(track) => playFromPlaylist(track.id)}
           resetScrollKey={`${sortField}-${sortOrder}`}
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
