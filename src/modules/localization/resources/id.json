@@ -1,5 +1,6 @@
 {
   "common": {
+    "appName": "Startune Music",
     "cancel": "Batal",
     "clear": "Hapus",
     "clearAll": "Hapus Semua",
@@ -9,7 +10,34 @@
     "shuffle": "Acak",
     "reset": "Atur Ulang",
     "seeMore": "Lihat lainnya",
-    "unknown": "Tidak diketahui"
+    "unknown": "Tidak diketahui",
+    "next": "Next",
+    "finish": "Finish",
+    "feedback": {
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "failedToUpdateFavorite": "Failed to update favorite",
+      "playlistCreated": "Playlist created",
+      "playlistUpdated": "Playlist updated",
+      "playlistDeleted": "Playlist deleted",
+      "failedToCreatePlaylist": "Failed to create playlist",
+      "failedToUpdatePlaylist": "Failed to update playlist",
+      "failedToDeletePlaylist": "Failed to delete playlist",
+      "addedToPlaylist": "Added to playlist",
+      "removedFromPlaylist": "Removed from playlist",
+      "failedToAddToPlaylist": "Failed to add to playlist",
+      "failedToRemoveFromPlaylist": "Failed to remove from playlist",
+      "playlistReordered": "Playlist order updated",
+      "failedToReorderPlaylist": "Failed to update playlist order",
+      "trackDeleted": "Track deleted",
+      "failedToDeleteTrack": "Failed to delete track",
+      "addedToQueue": "Added to queue: {{name}}",
+      "libraryReindexStarted": "Library reindex started",
+      "trackDurationUpdated": "Track duration filter updated",
+      "folderFiltersApplied": "Folder filters applied",
+      "folderAdded": "Folder added",
+      "mediaGranted": "Media access granted"
+    }
   },
   "term": {
     "track": "lagu",
@@ -334,6 +362,22 @@
       "external": "Diputar dari File"
     }
   },
+  "onboarding": {
+    "welcomePrefix": "Welcome to",
+    "welcomeDescription": "Set up theme, folders, and permissions before first scan.",
+    "permissions": {
+      "title": "Permissions",
+      "description": "Grant required permissions to start listening.",
+      "grant": "Grant Access",
+      "granted": "Access Granted",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "fileAccess": "File access",
+      "fileAccessDescription": "Allow Startune to read your music files.",
+      "notifications": "Notifications",
+      "notificationsDescription": "Allow progress updates and alerts."
+    }
+  },
   "settings": {
     "routes": {
       "index": {
@@ -375,7 +419,7 @@
         "description": "Pilih bahasa tampilan aplikasi."
       },
       "folderFilters": {
-        "title": "Filter Folder"
+        "title": "Folder filters"
       },
       "trackDurationFilter": {
         "title": "$t(term.trackDurationFilterLabel)"
@@ -388,6 +432,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "onboarding": {
+        "title": "Onboarding"
       }
     },
     "appearance": {
@@ -440,7 +487,9 @@
       "indexing": "Mengindeks...",
       "selectFilterMode": "Pilih Mode Filter",
       "whitelist": "Daftar Izin",
+      "whitelistDescription": "Scan only folders you choose.",
       "blacklist": "Daftar Blokir",
+      "blacklistDescription": "Skip folders you choose.",
       "folderFiltersDescription": "Izinkan atau blokir folder tertentu.",
       "trackDurationFilter": "$t(term.trackDurationFilterLabel)",
       "autoScan": "Pindai Otomatis",
@@ -554,6 +603,7 @@
         "logs": "Logs",
         "history": "History",
         "background": "Background",
+        "onboarding": "Onboarding",
         "updates": "Updates"
       },
       "logExtraDescription": "Ekstra: catat debug, info, peringatan, dan error.",
@@ -581,6 +631,8 @@
       "historyResetUnableTitle": "Tidak dapat mengatur ulang riwayat",
       "batteryAlreadyDisabledTitle": "Optimasi baterai sudah dinonaktifkan",
       "batteryAlreadyDisabledDescription": "Tidak perlu tindakan tambahan.",
+      "restartOnboarding": "Restart onboarding",
+      "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
       "unableToOpenLinkTitle": "Tidak dapat membuka tautan"
     },
     "about": {
