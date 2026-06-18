@@ -4,7 +4,7 @@ import { useStore } from "zustand"
 
 import { db } from "@/db"
 import { playlistTracks } from "@/db/schema"
-import { getTrack } from "@/data/track/api"
+import { getTrack } from "@/modules/tracks/repository"
 
 import { createPersistedStore } from "@/lib/zustand"
 import { resetWidgets } from "@/modules/widget/utils"

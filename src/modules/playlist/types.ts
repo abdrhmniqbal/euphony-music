@@ -3,3 +3,11 @@ export interface PlaylistPickerSelection {
   name: string
   hasTrack: boolean
 }
+
+export type Playlist = {
+  id: string
+  name: string
+  artwork: string | null
+  isFavorite: boolean
+  trackCount: number
+}

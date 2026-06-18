@@ -1,7 +1,7 @@
 import AudioBrowser from "react-native-audio-browser"
 
-import { removePlayedMediaList, updatePlayedMediaList } from "@/data/recent/api"
-import { getTrack } from "@/data/track/api"
+import { removePlayedMediaList, updatePlayedMediaList } from "@/modules/history/repository"
+import { getTrack } from "@/modules/tracks/repository"
 import type { PlayFromSource } from "../types"
 import { arePlaybackSourceEqual, getSourceName } from "../utils"
 import { playbackStore } from "../store"

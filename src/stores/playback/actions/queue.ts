@@ -2,7 +2,7 @@ import { showAppToast } from "@/modules/ui/toast"
 import { createId } from "@paralleldrive/cuid2"
 import AudioBrowser from "react-native-audio-browser"
 
-import type { Track } from "@/data/track/types"
+import type { Track } from "@/modules/tracks/types"
 import { i18n } from "@/modules/localization/i18n"
 import { preferenceStore } from "@/stores/preference/store"
 import { playbackStore } from "../store"

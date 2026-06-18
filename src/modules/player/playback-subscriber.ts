@@ -1,4 +1,4 @@
-import type { Track as DataTrack } from "@/data/track/types"
+import type { Track as DataTrack } from "@/modules/tracks/types"
 import { updateColorsForImage } from "@/modules/player/colors"
 import { usePlayerStore } from "@/modules/player/store"
 import { playbackStore } from "@/stores/playback/store"

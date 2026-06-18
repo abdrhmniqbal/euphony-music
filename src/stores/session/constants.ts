@@ -1,5 +1,5 @@
-import type { Track } from "@/data/track/types"
-import type { Artist } from "@/data/artist/types"
+import type { Track } from "@/modules/tracks/types"
+import type { Artist } from "@/modules/library/data-types"
 import type { PopStrategy } from "./types"
 
 export interface SessionStore {

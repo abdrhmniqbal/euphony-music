@@ -33,7 +33,7 @@ import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-m
 import { ensureTrackDurationFilterConfigLoaded } from "@/modules/settings/track-duration-filter"
 import AudioBrowser from "react-native-audio-browser"
 
-import { addPlayedTrack } from "@/data/recent/api"
+import { addPlayedTrack } from "@/modules/history/repository"
 import { queryClient } from "@/lib/tanstack-query"
 import { playbackStore, usePlaybackStore } from "@/stores/playback/store"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"

@@ -1,6 +1,6 @@
 import AudioBrowser from "react-native-audio-browser"
 
-import { addPlayedMediaList } from "@/data/recent/api"
+import { addPlayedMediaList } from "@/modules/history/repository"
 import { preferenceStore } from "@/stores/preference/store"
 import { RepeatModes } from "../constants"
 import type { PlayFromSource } from "../types"

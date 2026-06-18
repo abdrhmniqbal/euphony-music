@@ -447,3 +447,144 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
   }
 }
 
+
+function toDataAlbum(row: typeof albums.$inferSelect & { artist?: { name: string } | null }): import("@/modules/library/data-types").Album {
+  return {
+    id: row.id,
+    name: row.title,
+    artwork: row.artwork ?? null,
+    artists: row.artist?.name ? [row.artist.name] : [],
+    isFavorite: row.isFavorite === 1,
+    trackCount: row.trackCount ?? 0,
+  }
+}
+
+export type AlbumDetail = {
+  id: string
+  name: string
+  artwork: string | null
+  artists: string[]
+  isFavorite: boolean
+  trackCount: number
+  year: string | null
+}
+
+function toDataArtist(row: typeof artists.$inferSelect): import("@/modules/library/data-types").Artist {
+  return {
+    id: row.id,
+    name: row.name,
+    artwork: row.artwork ?? null,
+    isFavorite: row.isFavorite === 1,
+    trackCount: row.trackCount ?? 0,
+    albumCount: row.albumCount ?? 0,
+  }
+}
+
+export async function getAlbum(id: string) {
+  const row = await db.query.albums.findFirst({ where: eq(albums.id, id), with: { artist: true } })
+  if (!row) throw new Error("err.msg.noAlbums")
+  return toDataAlbum(row)
+}
+
+export async function getAlbumDetails(id: string): Promise<AlbumDetail> {
+  const row = await db.query.albums.findFirst({ where: eq(albums.id, id), with: { artist: true } })
+  if (!row) throw new Error("err.msg.noAlbums")
+  return { ...toDataAlbum(row), year: null }
+}
+
+export async function getAlbumsSummary() {
+  const rows = await db.query.albums.findMany({
+    with: { artist: true },
+    orderBy: asc(sql`lower(coalesce(${albums.title}, ''))`),
+  })
+  return rows.map(toDataAlbum)
+}
+
+export async function getAlbumTracks<TOnlyIds extends boolean | undefined = false>(
+  albumId: string,
+  onlyIds?: TOnlyIds
+) {
+  const rows = await db.query.tracks.findMany({
+    where: eq(tracks.albumId, albumId),
+    orderBy: asc(tracks.trackNumber),
+  })
+  if (onlyIds) {
+    return rows.map((r) => ({ id: r.id })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : typeof rows
+  }
+  return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
+}
+
+export async function getArtist(id: string) {
+  const row = await db.query.artists.findFirst({ where: eq(artists.id, id) })
+  if (!row) throw new Error("err.msg.noArtists")
+  return toDataArtist(row)
+}
+
+export async function getArtistsSummary() {
+  const rows = await db.query.artists.findMany({
+    orderBy: asc(sql`lower(coalesce(${artists.name}, ''))`),
+  })
+  return rows.map(toDataArtist)
+}
+
+export async function getSortedArtistTracks<TOnlyIds extends boolean | undefined = false>(
+  id: string,
+  onlyIds?: TOnlyIds
+) {
+  const rels = await db
+    .select({ trackId: trackArtists.trackId })
+    .from(trackArtists)
+    .innerJoin(artists, eq(trackArtists.artistId, artists.id))
+    .where(eq(artists.name, id))
+
+  const trackIds = rels.map((r) => r.trackId)
+  if (trackIds.length === 0) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]
+
+  if (onlyIds) {
+    return trackIds.map((tid) => ({ id: tid })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : never[]
+  }
+
+  const rows = await db.query.tracks.findMany({
+    where: inArray(tracks.id, trackIds),
+    with: { artist: true, album: { with: { artist: true } } },
+  })
+  return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
+}
+
+export async function getFoldersSummary() {
+  const rows = await db
+    .select({ uri: tracks.uri, count: sql<number>`count(*)` })
+    .from(tracks)
+    .groupBy(sql`rtrim(${tracks.uri}, replace(${tracks.uri}, '/', ''))`)
+    .orderBy(asc(tracks.uri))
+
+  return rows.map((row) => ({
+    path: row.uri.split("/").slice(0, -1).join("/"),
+    trackCount: row.count,
+  }))
+}
+
+export async function getSortedFolderTracks<TOnlyIds extends boolean | undefined = false>(
+  path: string | null | undefined,
+  onlyIds?: TOnlyIds
+) {
+  if (!path) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]
+
+  const prefix = `file:///${path}/`
+  const rows = await db.query.tracks.findMany({
+    where: and(eq(tracks.isDeleted, 0), like(tracks.uri, `${prefix}%`)),
+    orderBy: asc(tracks.uri),
+  })
+
+  if (onlyIds) {
+    return rows.map((r) => ({ id: r.id })) as TOnlyIds extends true
+      ? Array<{ id: string }>
+      : never[]
+  }
+
+  return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
+}

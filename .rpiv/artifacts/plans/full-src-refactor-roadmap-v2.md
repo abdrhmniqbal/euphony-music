@@ -476,31 +476,26 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 26 — Repository Naming Boundary Cleanup
+# Phase 26 [Completed] — Repository Naming Boundary Cleanup
 
 ## Why
-Repo has both `src/data/*` and `src/modules/*/repository.ts`. This creates unclear data-access ownership and possible duplicate query paths.
+Repo had both `src/data/*` and `src/modules/*/repository.ts`. This created unclear data-access ownership and duplicate query paths.
 
-## Files
-- `src/data/**`
-- `src/modules/**/repository.ts`
-- `src/db/schema.ts`
+## Decision
+- `src/modules/*/repository.ts` is now canonical for database access.
+- `src/data/**` removed.
+- Domain types used by former data APIs moved into module type files.
 
-## Actions
-1. Inventory all `src/data/*/api.ts` vs `src/modules/*/repository.ts` responsibilities.
-2. Decide one convention:
-   - `modules/<domain>/repository.ts` as canonical DB boundary, or
-   - `data/<domain>/api.ts` as canonical DB boundary.
-3. Move/alias gradually; do not big-bang rewrite.
-4. Leave compatibility exports until callers migrate.
-5. When a repository grows beyond one file, promote it to a folder:
-   - `src/modules/playlist/repository.ts` -> `src/modules/playlist/repository/index.ts` plus focused files if needed.
-   - `src/modules/indexer/counts.repository.ts` -> `src/modules/indexer/counts/repository.ts`.
+## Actions Taken
+1. Moved album, artist, folder, playlist, genre, track, recent, and favorite DB functions into module repositories.
+2. Moved shared data-layer types into `src/modules/library/data-types.ts`, `src/modules/tracks/types.ts`, and `src/modules/playlist/types.ts`.
+3. Updated consumers to import from module repositories/types.
+4. Deleted `src/data/**`.
 
 ## Success Criteria
-- New code has one obvious place for DB access.
+- One obvious place for DB access.
 - No duplicate artist/album/track query implementations.
-- Repository files no longer rely on dotted implementation names.
+- `src/data/**` removed.
 
 ---
 
@@ -771,7 +766,7 @@ Some files appear in technically valid but semantically weak locations. Over tim
 ## Cleanup / consistency
 18. Phase 27 [Completed] — Kebab-case filename convention pass
 19. Phase 23 — Lyrics module split
-20. Phase 26 — Repository naming boundary cleanup
+20. Phase 26 [Completed] — Repository naming boundary cleanup
 21. Phase 28 — Silent catch cleanup
 22. Phase 32 — Misplaced file reorganization pass
 23. Phase 29 — Query invalidation consolidation

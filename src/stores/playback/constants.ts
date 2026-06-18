@@ -1,4 +1,4 @@
-import type { Track } from "@/data/track/types"
+import type { Track } from "@/modules/tracks/types"
 
 import type { PlayFromSource } from "./types"
 
