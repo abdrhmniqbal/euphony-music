@@ -1,5 +1,6 @@
 {
   "common": {
+    "appName": "Startune Music",
     "cancel": "Annulla",
     "clear": "Chiaro",
     "clearAll": "Cancella tutto",
@@ -9,7 +10,34 @@
     "shuffle": "Mescola",
     "reset": "Ripristina",
     "seeMore": "Vedi di più",
-    "unknown": "Sconosciuto"
+    "unknown": "Sconosciuto",
+    "next": "Next",
+    "finish": "Finish",
+    "feedback": {
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "failedToUpdateFavorite": "Failed to update favorite",
+      "playlistCreated": "Playlist created",
+      "playlistUpdated": "Playlist updated",
+      "playlistDeleted": "Playlist deleted",
+      "failedToCreatePlaylist": "Failed to create playlist",
+      "failedToUpdatePlaylist": "Failed to update playlist",
+      "failedToDeletePlaylist": "Failed to delete playlist",
+      "addedToPlaylist": "Added to playlist",
+      "removedFromPlaylist": "Removed from playlist",
+      "failedToAddToPlaylist": "Failed to add to playlist",
+      "failedToRemoveFromPlaylist": "Failed to remove from playlist",
+      "playlistReordered": "Playlist order updated",
+      "failedToReorderPlaylist": "Failed to update playlist order",
+      "trackDeleted": "Track deleted",
+      "failedToDeleteTrack": "Failed to delete track",
+      "addedToQueue": "Added to queue: {{name}}",
+      "libraryReindexStarted": "Library reindex started",
+      "trackDurationUpdated": "Track duration filter updated",
+      "folderFiltersApplied": "Folder filters applied",
+      "folderAdded": "Folder added",
+      "mediaGranted": "Media access granted"
+    }
   },
   "term": {
     "track": "brano",
@@ -334,6 +362,22 @@
       "external": "Riproduzione da File"
     }
   },
+  "onboarding": {
+    "welcomePrefix": "Welcome to",
+    "welcomeDescription": "Set up theme, folders, and permissions before first scan.",
+    "permissions": {
+      "title": "Permissions",
+      "description": "Grant required permissions to start listening.",
+      "grant": "Grant Access",
+      "granted": "Access Granted",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "fileAccess": "File access",
+      "fileAccessDescription": "Allow Startune to read your music files.",
+      "notifications": "Notifications",
+      "notificationsDescription": "Allow progress updates and alerts."
+    }
+  },
   "settings": {
     "routes": {
       "index": {
@@ -375,7 +419,7 @@
         "description": "Scegli la lingua di visualizzazione dell'app."
       },
       "folderFilters": {
-        "title": "Filtri delle cartelle"
+        "title": "Folder filters"
       },
       "trackDurationFilter": {
         "title": "$t(term.trackDurationFilterLabel)"
@@ -388,6 +432,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "onboarding": {
+        "title": "Onboarding"
       }
     },
     "appearance": {
@@ -440,7 +487,9 @@
       "indexing": "Indicizzazione...",
       "selectFilterMode": "Seleziona la modalità filtro",
       "whitelist": "Lista bianca",
+      "whitelistDescription": "Scan only folders you choose.",
       "blacklist": "Lista nera",
+      "blacklistDescription": "Skip folders you choose.",
       "folderFiltersDescription": "Cartelle specifiche nella whitelist o nella blacklist.",
       "trackDurationFilter": "$t(term.trackDurationFilterLabel)",
       "autoScan": "Scansione automatica",
@@ -554,6 +603,7 @@
         "logs": "Logs",
         "history": "History",
         "background": "Background",
+        "onboarding": "Onboarding",
         "updates": "Updates"
       },
       "logExtraDescription": "Extra: cattura debug, informazioni, avvisi ed errori.",
@@ -581,6 +631,8 @@
       "historyResetUnableTitle": "Impossibile reimpostare la cronologia",
       "batteryAlreadyDisabledTitle": "Ottimizzazione della batteria già disabilitata",
       "batteryAlreadyDisabledDescription": "Non è necessaria alcuna azione aggiuntiva.",
+      "restartOnboarding": "Restart onboarding",
+      "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
       "unableToOpenLinkTitle": "Impossibile aprire il collegamento"
     },
     "about": {
