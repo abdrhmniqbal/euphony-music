@@ -34,7 +34,8 @@ export function ValueNavigationSheet({
   onOpenChange,
   onSelectValue,
 }: ValueNavigationSheetProps) {
-  const sheetItems = items ?? values.map((value) => ({ value }) satisfies ValueNavigationSheetItem)
+  const sheetItems: ValueNavigationSheetItem[] =
+    items ?? values.map((value) => ({ value }))
 
   return (
     <BottomSheet isOpen={isOpen} onOpenChange={onOpenChange}>
