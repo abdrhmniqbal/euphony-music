@@ -224,30 +224,16 @@ export async function getAlbumById(id: string) {
 export async function getTracksByAlbumName(albumName: string): Promise<Track[]> {
   const normalizedAlbumName = normalizeLookup(albumName)
   const matchingAlbums = await db.query.albums.findMany({
+    where: eq(sql`lower(coalesce(${albums.title}, ''))`, normalizedAlbumName),
     columns: {
       id: true,
-      title: true,
     },
   })
 
-  const matchingAlbumIds = matchingAlbums
-    .filter((album) => normalizeLookup(album.title) === normalizedAlbumName)
-    .map((album) => album.id)
+  const matchingAlbumIds = matchingAlbums.map((album) => album.id)
 
   if (matchingAlbumIds.length === 0) {
-    const fallbackTracks = await db.query.tracks.findMany({
-      where: eq(tracks.isDeleted, 0),
-      with: trackHydrationRelationsWithAlbumArtist,
-      orderBy: [
-        asc(tracks.discNumber),
-        asc(tracks.trackNumber),
-        asc(sql`lower(coalesce(${tracks.title}, ''))`),
-      ],
-    })
-
-    return fallbackTracks
-      .filter((track) => normalizeLookup(track.album?.title) === normalizedAlbumName)
-      .map(transformDBTrackToTrack)
+    return []
   }
 
   const results = await db.query.tracks.findMany({
@@ -266,32 +252,16 @@ export async function getTracksByAlbumName(albumName: string): Promise<Track[]> 
 export async function getTracksByArtistName(artistName: string): Promise<Track[]> {
   const normalizedArtistName = normalizeLookup(artistName)
   const matchingArtists = await db.query.artists.findMany({
+    where: eq(sql`lower(coalesce(${artists.name}, ''))`, normalizedArtistName),
     columns: {
       id: true,
-      name: true,
     },
   })
 
-  const matchingArtistIds = matchingArtists
-    .filter((artist) => normalizeLookup(artist.name) === normalizedArtistName)
-    .map((artist) => artist.id)
+  const matchingArtistIds = matchingArtists.map((artist) => artist.id)
 
   if (matchingArtistIds.length === 0) {
-    const fallbackTracks = await db.query.tracks.findMany({
-      where: eq(tracks.isDeleted, 0),
-      with: trackHydrationRelationsWithAlbumArtist,
-      orderBy: [asc(sql`lower(coalesce(${tracks.title}, ''))`)],
-    })
-
-    return fallbackTracks
-      .filter(
-        (track) =>
-          normalizeLookup(track.artist?.name) === normalizedArtistName ||
-          track.featuredArtists?.some(
-            (entry) => normalizeLookup(entry.artist?.name) === normalizedArtistName
-          )
-      )
-      .map(transformDBTrackToTrack)
+    return []
   }
 
   const results = await db.query.tracks.findMany({
