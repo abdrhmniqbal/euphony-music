@@ -1,0 +1,77 @@
+node_modules/react-native-screen-transitions/src/shared/providers/screen/gestures/pan/pan-activation.ts(51,18): error TS2749: 'GestureStateManager' refers to a value, but is being used as a type here. Did you mean 'typeof GestureStateManager'?
+node_modules/react-native-screen-transitions/src/shared/providers/screen/gestures/pan/pan-activation.ts(77,44): error TS2749: 'GestureStateManager' refers to a value, but is being used as a type here. Did you mean 'typeof GestureStateManager'?
+node_modules/react-native-screen-transitions/src/shared/providers/screen/gestures/pinch/pinch-activation.ts(23,18): error TS2749: 'GestureStateManager' refers to a value, but is being used as a type here. Did you mean 'typeof GestureStateManager'?
+node_modules/react-native-screen-transitions/src/shared/providers/screen/gestures/pinch/pinch-activation.ts(49,44): error TS2749: 'GestureStateManager' refers to a value, but is being used as a type here. Did you mean 'typeof GestureStateManager'?
+src/app/(main)/(library)/album/[name].tsx(159,14): error TS18047: 'albumInfo' is possibly 'null'.
+src/app/(main)/(library)/album/[name].tsx(167,16): error TS18047: 'albumInfo' is possibly 'null'.
+src/app/(main)/(library)/album/[name].tsx(176,16): error TS18047: 'albumInfo' is possibly 'null'.
+src/components/blocks/indexing-progress.tsx(97,5): error TS2322: Type 'ToastManager' is not assignable to type 'ToastAdapter'.
+  Types of property 'show' are incompatible.
+    Type '(options: string | ToastShowOptions) => string' is not assignable to type '(options: { id: string; duration: "persistent"; component: (props: ToastComponentProps) => ReactNode; }) => void'.
+      Types of parameters 'options' and 'options' are incompatible.
+        Type '{ id: string; duration: "persistent"; component: (props: ToastComponentProps) => ReactNode; }' is not assignable to type 'string | ToastShowOptions'.
+          Type '{ id: string; duration: "persistent"; component: (props: ToastComponentProps) => ReactNode; }' is not assignable to type 'ToastShowOptionsWithComponent | (ToastShowConfig & { component?: undefined; })'.
+            Type '{ id: string; duration: "persistent"; component: (props: ToastComponentProps) => ReactNode; }' is not assignable to type 'ToastShowConfig & { component?: undefined; }'.
+              Type '{ id: string; duration: "persistent"; component: (props: ToastComponentProps) => ReactNode; }' is not assignable to type '{ component?: undefined; }'.
+                Types of property 'component' are incompatible.
+                  Type '(props: ToastComponentProps) => ReactNode' is not assignable to type 'undefined'.
+src/components/blocks/mini-player.tsx(86,26): error TS2322: Type '(naturalProgression?: boolean) => Promise<void>' is not assignable to type '((event: GestureResponderEvent) => void) | SharedValue<((event: GestureResponderEvent) => void) | null | undefined> | null | undefined'.
+  Type '(naturalProgression?: boolean) => Promise<void>' is not assignable to type '(event: GestureResponderEvent) => void'.
+    Types of parameters 'naturalProgression' and 'event' are incompatible.
+      Type 'GestureResponderEvent' is not assignable to type 'boolean | undefined'.
+src/components/blocks/playlist-form/track-picker-sheet-content.tsx(70,44): error TS2322: Type '{ contentContainerStyle?: StyleProp<ViewStyle>; innerViewRef?: RefObject<View> | undefined; scrollViewRef?: RefObject<ScrollView> | undefined; ... 150 more ...; scrollsChildToFocus?: boolean | undefined; }' is not assignable to type '{ ref?: Ref<BottomSheetScrollViewMethods> | undefined; children: ReactNode | ReactNode[]; }'.
+  Property 'children' is optional in type '{ contentContainerStyle?: StyleProp<ViewStyle>; innerViewRef?: RefObject<View> | undefined; scrollViewRef?: RefObject<ScrollView> | undefined; ... 150 more ...; scrollsChildToFocus?: boolean | undefined; }' but required in type '{ ref?: Ref<BottomSheetScrollViewMethods> | undefined; children: ReactNode | ReactNode[]; }'.
+src/components/blocks/sort-sheet.tsx(99,23): error TS2344: Type 'NonNullable<((event: GestureResponderEvent) => void) | SharedValue<((event: GestureResponderEvent) => void) | null | undefined> | null | undefined>' does not satisfy the constraint '(...args: any) => any'.
+  Type 'SharedValue<((event: GestureResponderEvent) => void) | null | undefined>' is not assignable to type '(...args: any) => any'.
+    Type 'SharedValue<((event: GestureResponderEvent) => void) | null | undefined>' provides no match for the signature '(...args: any): any'.
+src/components/blocks/sort-sheet.tsx(101,5): error TS2349: This expression is not callable.
+  Not all constituents of type '((event: GestureResponderEvent) => void) | SharedValue<((event: GestureResponderEvent) => void) | null | undefined>' are callable.
+    Type 'SharedValue<((event: GestureResponderEvent) => void) | null | undefined>' has no call signatures.
+src/components/blocks/value-navigation-sheet.tsx(52,23): error TS2339: Property 'image' does not exist on type '{ value: string; }'.
+src/components/blocks/value-navigation-sheet.tsx(54,41): error TS2339: Property 'image' does not exist on type '{ value: string; }'.
+src/components/blocks/value-navigation-sheet.tsx(68,23): error TS2339: Property 'subtitle' does not exist on type '{ value: string; }'.
+src/components/blocks/value-navigation-sheet.tsx(68,77): error TS2339: Property 'subtitle' does not exist on type '{ value: string; }'.
+src/components/ui/media-item.tsx(76,36): error TS2322: Type 'string | SharedValue<string | undefined>' is not assignable to type 'BoundaryId'.
+  Type 'SharedValue<string | undefined>' is not assignable to type 'BoundaryId'.
+src/components/ui/media-item.tsx(188,8): error TS2769: No overload matches this call.
+  Overload 2 of 2, '(props: ViewProps, context: any): View', gave the following error.
+    Type 'string | SharedValue<string | undefined> | undefined' is not assignable to type 'string | undefined'.
+      Type 'SharedValue<string | undefined>' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: ViewProps, context: any): View', gave the following error.
+    Type 'string | SharedValue<string | undefined> | undefined' is not assignable to type 'string | undefined'.
+      Type 'SharedValue<string | undefined>' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: ViewProps, context: any): View', gave the following error.
+    Type 'AccessibilityRole | SharedValue<AccessibilityRole | undefined> | undefined' is not assignable to type 'AccessibilityRole | undefined'.
+      Type 'SharedValue<AccessibilityRole | undefined>' is not assignable to type 'AccessibilityRole | undefined'.
+  Overload 2 of 2, '(props: ViewProps, context: any): View', gave the following error.
+    Type 'StyleProp<AnimatedStyle<StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>)>>' is not assignable to type 'StyleProp<ViewStyle>'.
+      Type 'SharedValueDisableContravariance<"">' is not assignable to type 'StyleProp<ViewStyle>'.
+  Overload 2 of 2, '(props: ViewProps, context: any): View', gave the following error.
+    Type 'string | SharedValue<string | undefined> | undefined' is not assignable to type 'string | undefined'.
+      Type 'SharedValue<string | undefined>' is not assignable to type 'string'.
+src/modules/player/utils.ts(158,27): error TS2345: Argument of type '{ src: string; title: string | undefined; artist: string | undefined; album: string | undefined; artwork: string | undefined; duration: number | undefined; }' is not assignable to parameter of type 'Track'.
+  Types of property 'title' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/modules/player/utils.ts(194,32): error TS2345: Argument of type '{ android: { appKilledPlaybackBehavior: string; }; capabilities: { stop: boolean; jumpForward: boolean; jumpBackward: boolean; favorite: boolean; shuffleMode: boolean; repeatMode: boolean; playbackRate: boolean; }; progressUpdateEventInterval: number; }' is not assignable to parameter of type 'UpdateOptions'.
+  The types of 'android.appKilledPlaybackBehavior' are incompatible between these types.
+    Type 'string' is not assignable to type 'AppKilledPlaybackBehavior | undefined'.
+src/modules/player/utils.ts(283,39): error TS2339: Property 'position' does not exist on type 'Playback'.
+src/modules/player/utils.ts(287,39): error TS2339: Property 'duration' does not exist on type 'Playback'.
+src/modules/player/utils.ts(339,59): error TS2345: Argument of type 'RemoteSeekEvent' is not assignable to parameter of type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'RemoteSeekEvent'.
+src/modules/player/utils.ts(342,40): error TS2345: Argument of type 'NativeUpdatedValue<Playback>' is not assignable to parameter of type '{ addListener?: ((listener: (event: unknown) => void) => SubscriptionLike) | undefined; }'.
+  The types returned by 'addListener(...)' are incompatible between these types.
+    Type '() => void' has no properties in common with type 'SubscriptionLike'.
+src/modules/player/utils.ts(346,40): error TS2345: Argument of type 'NativeUpdatedValue<PlaybackProgressUpdatedEvent>' is not assignable to parameter of type '{ addListener?: ((listener: (event: unknown) => void) => SubscriptionLike) | undefined; }'.
+  The types returned by 'addListener(...)' are incompatible between these types.
+    Type '() => void' has no properties in common with type 'SubscriptionLike'.
+src/modules/player/utils.ts(351,40): error TS2345: Argument of type 'NativeUpdatedValue<PlaybackActiveTrackChangedEvent>' is not assignable to parameter of type '{ addListener?: ((listener: (event: unknown) => void) => SubscriptionLike) | undefined; }'.
+  The types returned by 'addListener(...)' are incompatible between these types.
+    Type '() => void' has no properties in common with type 'SubscriptionLike'.
+src/modules/player/utils.ts(356,40): error TS2345: Argument of type 'NativeUpdatedValue<PlaybackQueueEndedEvent>' is not assignable to parameter of type '{ addListener?: ((listener: (event: unknown) => void) => SubscriptionLike) | undefined; }'.
+  The types returned by 'addListener(...)' are incompatible between these types.
+    Type '() => void' has no properties in common with type 'SubscriptionLike'.
+src/modules/player/utils.ts(358,40): error TS2345: Argument of type 'NativeUpdatedValue<PlaybackErrorEvent>' is not assignable to parameter of type '{ addListener?: ((listener: (event: unknown) => void) => SubscriptionLike) | undefined; }'.
+  The types returned by 'addListener(...)' are incompatible between these types.
+    Type '() => void' has no properties in common with type 'SubscriptionLike'.
