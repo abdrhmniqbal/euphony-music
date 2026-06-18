@@ -91,7 +91,7 @@ let volumeMirror = 1
 function getAudioBrowserOptions() {
   return {
     android: {
-      appKilledPlaybackBehavior: "continue-playback",
+      appKilledPlaybackBehavior: "continue-playback" as const,
     },
     capabilities: {
       stop: false,
@@ -109,7 +109,7 @@ function getAudioBrowserOptions() {
 function mapInputToAudioBrowserTrack(track: TrackPlayerInput) {
   return {
     src: track.url ?? "",
-    title: track.title,
+    title: track.title ?? "",
     artist: track.artist,
     album: track.album,
     artwork: track.artwork,
@@ -159,11 +159,15 @@ async function loadActiveTrack() {
 }
 
 function addAudioBrowserListener(
-  source: { addListener?: (listener: (event: unknown) => void) => SubscriptionLike },
+  source: { addListener?: (listener: (event: unknown) => void) => (() => void) | SubscriptionLike },
   listener: Listener,
   mapEvent: (event: unknown) => Record<string, unknown>
 ) {
   const subscription = source.addListener?.((event) => listener(mapEvent(event)))
+  if (typeof subscription === "function") {
+    return { remove: subscription }
+  }
+
   return subscription ?? { remove: () => undefined }
 }
 
@@ -280,11 +284,11 @@ export const TrackPlayer = {
   },
 
   async getPosition() {
-    return AudioBrowser.getPlayback().position ?? 0
+    return AudioBrowser.getProgress().position ?? 0
   },
 
   async getDuration() {
-    return AudioBrowser.getPlayback().duration ?? queueMirror[activeIndexMirror]?.duration ?? 0
+    return AudioBrowser.getProgress().duration ?? queueMirror[activeIndexMirror]?.duration ?? 0
   },
 
   async getState() {
@@ -336,7 +340,7 @@ export const TrackPlayer = {
         AudioBrowser.handleRemotePrevious(() => listener({}))
         return { remove: () => undefined }
       case Event.RemoteSeek:
-        AudioBrowser.handleRemoteSeek((event) => listener(event))
+        AudioBrowser.handleRemoteSeek((event) => listener(event as unknown as Record<string, unknown>))
         return { remove: () => undefined }
       case Event.PlaybackState:
         return addAudioBrowserListener(AudioBrowser.onPlaybackChanged, listener, (event) => ({
@@ -355,7 +359,11 @@ export const TrackPlayer = {
       case Event.PlaybackQueueEnded:
         return addAudioBrowserListener(AudioBrowser.onQueueEnded, listener, () => ({}))
       case Event.PlaybackError:
-        return addAudioBrowserListener(AudioBrowser.onPlaybackError, listener, (event) => event)
+        return addAudioBrowserListener(
+          AudioBrowser.onPlaybackError,
+          listener,
+          (event) => event as Record<string, unknown>
+        )
       case Event.ServiceKilled:
         AudioBrowser.handleBeforeServiceKilled(() => listener({}))
         return { remove: () => undefined }
