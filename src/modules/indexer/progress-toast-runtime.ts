@@ -6,7 +6,7 @@
  * Side Effects: Shows and hides indexing progress toast.
  */
 
-import type { ReactNode } from "react"
+import type { ReactElement } from "react"
 import type { ToastComponentProps } from "heroui-native"
 
 import type { IndexerState } from "@/modules/indexer/store"
@@ -18,7 +18,7 @@ interface ToastAdapter {
   show: (options: {
     id: string
     duration: "persistent"
-    component: (props: ToastComponentProps) => ReactNode
+    component: (props: ToastComponentProps) => ReactElement
   }) => void
   hide: (id: string) => void
 }
@@ -26,7 +26,7 @@ interface ToastAdapter {
 interface IndexingProgressToastRuntimeOptions {
   state: IndexerState
   toast: ToastAdapter
-  component: (props: ToastComponentProps) => ReactNode
+  component: (props: ToastComponentProps) => ReactElement
 }
 
 let pendingOptions: IndexingProgressToastRuntimeOptions | null = null

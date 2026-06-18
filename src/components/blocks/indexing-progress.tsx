@@ -91,10 +91,22 @@ function IndexingProgressToast(props: ToastComponentProps) {
 export function IndexingProgress() {
   const state = useIndexerStore((store) => store.indexerState)
   const { toast } = useToast()
+  const toastAdapter = {
+    show: (options: {
+      id: string
+      duration: "persistent"
+      component: (props: ToastComponentProps) => React.ReactElement
+    }) => {
+      toast.show(options)
+    },
+    hide: (id: string) => {
+      toast.hide(id)
+    },
+  }
 
   scheduleIndexingProgressToastSync({
     state,
-    toast,
+    toast: toastAdapter,
     component: (props) => <IndexingProgressToast {...props} />,
   })
 
