@@ -141,7 +141,7 @@ jobs:
           echo "Tag: ${RELEASE_TAG}"
           echo "Version name: ${APP_VERSION_NAME}"
           echo "Version code: ${APP_VERSION_CODE}"
-          grep -n "versionCode\\|versionName" android/app/build.gradle
+          grep -n "versionCode\|versionName" android/app/build.gradle
 
       - name: Write Android signing config
         if: ${{ env.RELEASE_CRED != '' }}
@@ -154,7 +154,7 @@ jobs:
         with:
           fileName: keystore.jks
           fileDir: android/app
-          encodedString: ${{ env.KEYSTORE_BASE64 }}
+          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
 
       - name: Build release APKs
         run: |
