@@ -11,14 +11,7 @@ import { and, asc, desc, eq, inArray } from "drizzle-orm"
 import { db } from "@/db/client"
 import { playlists, playlistTracks, tracks } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
-
-function generateId(): string {
-  if (globalThis.crypto && globalThis.crypto.randomUUID) {
-    return globalThis.crypto.randomUUID()
-  }
-
-  return Date.now().toString(36) + Math.random().toString(36).substring(2)
-}
+import { generateId } from "@/utils/common"
 
 function normalizeDescription(description?: string | null): string | null {
   const value = description?.trim()
@@ -29,7 +22,7 @@ function normalizeDescription(description?: string | null): string | null {
   return value
 }
 
-function collectPlaylistImages(playlist: {
+export function collectPlaylistImages(playlist: {
   artwork?: string | null
   tracks: Array<{
     track?: {
@@ -103,14 +96,17 @@ async function resequencePlaylistTracks(playlistId: string) {
     orderBy: [asc(playlistTracks.position)],
   })
 
-  await Promise.all(
-    remainingTracks.map((playlistTrack, index) =>
-      db
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < remainingTracks.length; i++) {
+      const playlistTrack = remainingTracks[i]
+      if (!playlistTrack) continue
+
+      await tx
         .update(playlistTracks)
-        .set({ position: index })
+        .set({ position: i })
         .where(eq(playlistTracks.id, playlistTrack.id))
-    )
-  )
+    }
+  })
 }
 
 export async function listPlaylists() {
@@ -271,30 +267,32 @@ export async function updatePlaylist(
     const duration = await getPlaylistDurationByTrackIds(trackIds)
     const normalizedDescription = normalizeDescription(description)
 
-    await db
-      .update(playlists)
-      .set({
-        name,
-        description: normalizedDescription,
-        trackCount: trackIds.length,
-        duration,
-        updatedAt: now,
-      })
-      .where(eq(playlists.id, id))
+    await db.transaction(async (tx) => {
+      await tx
+        .update(playlists)
+        .set({
+          name,
+          description: normalizedDescription,
+          trackCount: trackIds.length,
+          duration,
+          updatedAt: now,
+        })
+        .where(eq(playlists.id, id))
 
-    await db.delete(playlistTracks).where(eq(playlistTracks.playlistId, id))
+      await tx.delete(playlistTracks).where(eq(playlistTracks.playlistId, id))
 
-    if (trackIds.length > 0) {
-      await db.insert(playlistTracks).values(
-        trackIds.map((trackId, index) => ({
-          id: generateId(),
-          playlistId: id,
-          trackId,
-          position: index,
-          addedAt: now,
-        }))
-      )
-    }
+      if (trackIds.length > 0) {
+        await tx.insert(playlistTracks).values(
+          trackIds.map((trackId, index) => ({
+            id: generateId(),
+            playlistId: id,
+            trackId,
+            position: index,
+            addedAt: now,
+          }))
+        )
+      }
+    })
   } catch (error) {
     logError("Failed to update playlist", error, {
       id,
@@ -388,12 +386,15 @@ export async function reorderPlaylistTracks({
   playlistId: string
   trackIds: string[]
 }) {
-  await Promise.all(
-    trackIds.map((trackId, index) =>
-      db
+  await db.transaction(async (tx) => {
+    for (let i = 0; i < trackIds.length; i++) {
+      const trackId = trackIds[i]
+      if (!trackId) continue
+
+      await tx
         .update(playlistTracks)
-        .set({ position: index })
+        .set({ position: i })
         .where(and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)))
-    )
-  )
+    }
+  })
 }

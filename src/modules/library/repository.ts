@@ -21,6 +21,7 @@ import {
 } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
 import { transformDBTrackToTrack } from "@/utils/transformers"
+import { collectPlaylistImages } from "@/modules/playlist/repository"
 import { getDominantAlbumArtworkMap, selectDominantArtwork } from "./artwork"
 
 import type { AddRecentSearchInput, RecentSearchEntry, SearchResults } from "./types"
@@ -305,25 +306,7 @@ async function hydrateRecentSearchEntry(item: RecentSearchEntry): Promise<Recent
       return item
     }
 
-    const nextImages = new Set<string>(item.images || [])
-
-    if (playlist.artwork) {
-      nextImages.add(playlist.artwork)
-    }
-
-    for (const playlistTrack of playlist.tracks) {
-      const artwork = playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork
-
-      if (!artwork) {
-        continue
-      }
-
-      nextImages.add(artwork)
-
-      if (nextImages.size >= 4) {
-        break
-      }
-    }
+    const nextImages = new Set<string>([...(item.images || []), ...collectPlaylistImages(playlist)])
 
     return {
       ...item,
@@ -908,34 +891,13 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
         isVerified: false,
         image: album.artwork || undefined,
       })),
-      playlists: playlistResults.map((playlist) => {
-        const images = new Set<string>()
-
-        if (playlist.artwork) {
-          images.add(playlist.artwork)
-        }
-
-        for (const playlistTrack of playlist.tracks) {
-          const image =
-            playlistTrack.track?.artwork || playlistTrack.track?.album?.artwork || undefined
-
-          if (image) {
-            images.add(image)
-          }
-
-          if (images.size >= 4) {
-            break
-          }
-        }
-
-        return {
-          id: playlist.id,
-          title: playlist.name,
-          trackCount: playlist.trackCount || 0,
-          image: playlist.artwork || undefined,
-          images: Array.from(images),
-        }
-      }),
+      playlists: playlistResults.map((playlist) => ({
+        id: playlist.id,
+        title: playlist.name,
+        trackCount: playlist.trackCount || 0,
+        image: playlist.artwork || undefined,
+        images: collectPlaylistImages(playlist),
+      })),
     }
   } catch (error) {
     logError("Search query failed", error, { query: normalizedQuery })

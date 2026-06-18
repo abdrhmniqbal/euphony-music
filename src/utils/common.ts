@@ -3,7 +3,10 @@ import { cn as twCn } from "tailwind-variants"
 export const cn = twCn
 
 export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
+    return globalThis.crypto.randomUUID()
+  }
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 export function formatDuration(seconds: number): string {
