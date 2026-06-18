@@ -426,7 +426,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 24 — Track Metadata Sheet Decomposition
+# Phase 24 [Completed] — Track Metadata Sheet Decomposition
 
 ## Why
 `src/components/blocks/track-metadata-sheet.tsx` is already extracted but still 522 lines. It mixes derivation, navigation, layout pairing, nested sheets, and rendering.
