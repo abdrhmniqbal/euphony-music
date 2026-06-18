@@ -10,6 +10,8 @@ import type { SortField } from "@/modules/library/sort.types"
 import type { Track } from "@/modules/player/store"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
+import { ArtistDetailHeader } from "./artist-detail-header"
+import { ArtistHeroSection } from "./artist-hero-section"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { Button, PressableFeedback } from "heroui-native"
@@ -362,47 +364,16 @@ export default function ArtistDetailsScreen() {
   }
 
   const renderHeroSection = () => (
-    <View style={{ height: screenWidth }} className="relative overflow-hidden">
-      <Transition.Boundary.View
-        id={artistTransitionId}
-        style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
-      >
-        <Animated.View
-          style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, heroArtworkStyle]}
-        >
-          {artistImage ? (
-            <Image
-              source={{ uri: artistImage }}
-              style={{ width: "100%", height: "100%" }}
-              contentFit="cover"
-            />
-          ) : (
-            <View className="h-full w-full items-center justify-center bg-surface-secondary">
-              <LocalUserSolidIcon fill="none" width={120} height={120} color={theme.muted} />
-            </View>
-          )}
-        </Animated.View>
-      </Transition.Boundary.View>
-
-      <LinearGradient
-        colors={["transparent", "rgba(0,0,0,0.7)", theme.background]}
-        locations={[0.3, 0.7, 1]}
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: "60%",
-        }}
-      />
-
-      <View className="absolute right-6 bottom-8 left-6">
-        <Text className="mb-2 text-4xl font-bold text-white">{artistName}</Text>
-        <Text className="text-base text-white/70">
-          {t("library.count.track", { count: artistTracks.length })}
-        </Text>
-      </View>
-    </View>
+    <ArtistHeroSection
+      screenWidth={screenWidth}
+      artistTransitionId={artistTransitionId}
+      heroArtworkStyle={heroArtworkStyle}
+      artistImage={artistImage}
+      mutedColor={theme.muted}
+      backgroundColor={theme.background}
+      artistName={artistName}
+      trackCountLabel={t("library.count.track", { count: artistTracks.length })}
+    />
   )
 
   return (
@@ -419,52 +390,18 @@ export default function ArtistDetailsScreen() {
             headerShown: false,
           }}
         />
-        <View
-          className="absolute right-0 left-0 flex-row items-end justify-between px-4 pb-2"
-          style={{
-            top: 0,
-            height: insets.top + 52,
-            zIndex: 100,
-            elevation: 100,
-            backgroundColor: isHeaderSolid ? theme.background : "transparent",
-          }}
-        >
-          <BackButton
-            className={cn("-ml-2", !isHeaderSolid && "bg-overlay/30")}
-            fallbackHref="/(main)/(library)"
-            iconColor={isHeaderSolid ? theme.foreground : "white"}
-            onPress={handleBack}
-          />
-          {isHeaderSolid ? (
-            <View pointerEvents="none" className="absolute right-16 bottom-4 left-16 items-center">
-              <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
-                {artistName}
-              </Text>
-            </View>
-          ) : null}
-          {artistId ? (
-            <Button
-              onPress={toggleArtistFavorite}
-              isDisabled={toggleFavoriteMutation.isPending}
-              variant="ghost"
-              className={cn("-mr-2", !isHeaderSolid && "bg-overlay/30")}
-              isIconOnly
-            >
-              {isArtistFavorite ? (
-                <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
-              ) : (
-                <LocalFavouriteIcon
-                  fill="none"
-                  width={24}
-                  height={24}
-                  color={isHeaderSolid ? theme.foreground : "white"}
-                />
-              )}
-            </Button>
-          ) : (
-            <View className="h-10 w-10" />
-          )}
-        </View>
+        <ArtistDetailHeader
+          topInset={insets.top}
+          isHeaderSolid={isHeaderSolid}
+          backgroundColor={theme.background}
+          foregroundColor={theme.foreground}
+          artistName={artistName}
+          artistId={artistId}
+          isArtistFavorite={isArtistFavorite}
+          isFavoritePending={toggleFavoriteMutation.isPending}
+          onBack={handleBack}
+          onToggleFavorite={toggleArtistFavorite}
+        />
 
         {activeView === "overview" ? (
           <ScrollView

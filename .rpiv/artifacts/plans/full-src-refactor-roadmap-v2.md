@@ -351,7 +351,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 21 [Partially Done] — Library Home Screen Decomposition
+# Phase 21 [Completed] — Library Home Screen Decomposition
 
 ## Why
 `src/app/(main)/(library)/index.tsx` is 753 lines. Large route screens are hard to change safely and tend to mix tabs, queries, sections, empty states, and actions.
