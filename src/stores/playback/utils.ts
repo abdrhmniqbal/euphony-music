@@ -1,3 +1,4 @@
+import { logWarn } from "@/modules/logging/service"
 import type { PlayFromSource } from "./types"
 
 import { getAlbumDetails, getAlbumTracks } from "@/modules/library/repository"
@@ -37,7 +38,9 @@ export async function getSourceName({ type, id }: PlayFromSource) {
     } else {
       name = (await getAlbumDetails(id)).name
     }
-  } catch {}
+  } catch (error) {
+    logWarn(`Failed to get source name for type: ${type}`, error)
+  }
   return name
 }
 
@@ -51,7 +54,9 @@ export async function getTrackIdsList({ type, id }: PlayFromSource) {
     else if (type === "genre") trackIds = await getSortedGenreTracks(id, true)
     else if (ReservedNames.has(id)) trackIds = await getSortedTracks(true)
     else trackIds = await getPlaylistTracks(id, true)
-  } catch {}
+  } catch (error) {
+    logWarn(`Failed to get track IDs list for type: ${type}`, error)
+  }
 
   return trackIds.map((t) => t.id)
 }

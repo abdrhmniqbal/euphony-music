@@ -574,7 +574,7 @@ Current source should use kebab-case filenames for consistency and AI-navigabili
 
 ---
 
-# Phase 28 — Store Error Handling / Silent Catch Cleanup
+# Phase 28 [Completed] — Store Error Handling / Silent Catch Cleanup
 
 ## Why
 Silent `catch {}` appears in playback store files and lyrics view. Silent failures hide broken persistence and recovery paths.
@@ -585,14 +585,14 @@ Silent `catch {}` appears in playback store files and lyrics view. Silent failur
 - `src/stores/playback/utils.ts`
 - `src/components/blocks/player/lyrics-view.tsx`
 
-## Actions
-1. Replace silent catches with `logWarn` or scoped comments only when ignoring is intentional.
-2. For storage hydration catches, log once not every render.
-3. Keep UX unchanged; do not surface toasts unless needed.
+## Actions Taken
+1. Replaced silent catches with `logWarn` to preserve error trace information for future recovery/diagnostics.
+2. Left intentional annotation comment on early AudioBrowser playback check catch block during hydration.
+3. Left UX unchanged and preserved all standard state recovery flows.
 
 ## Success Criteria
 - No unannotated `catch {}` in `src/stores/playback`.
-- Debugging future restore issues becomes possible.
+- Debugging future restore issues is now possible.
 
 ---
 
@@ -767,7 +767,7 @@ Some files appear in technically valid but semantically weak locations. Over tim
 18. Phase 27 [Completed] — Kebab-case filename convention pass
 19. Phase 23 — Lyrics module split
 20. Phase 26 [Completed] — Repository naming boundary cleanup
-21. Phase 28 — Silent catch cleanup
+21. Phase 28 [Completed] — Silent catch cleanup
 22. Phase 32 — Misplaced file reorganization pass
 23. Phase 29 — Query invalidation consolidation
 

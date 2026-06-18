@@ -7,6 +7,7 @@ import { arePlaybackSourceEqual, getSourceName } from "../utils"
 import { playbackStore } from "../store"
 
 import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
+import { logWarn } from "@/modules/logging/service"
 
 export async function onActiveTrack(args: { type: "album" | "track"; id: string }) {
   const { activeTrack } = playbackStore.getState()
@@ -21,7 +22,9 @@ export async function onActiveTrack(args: { type: "album" | "track"; id: string 
     const rnabTrack = AudioBrowser.getActiveTrack()
     if (!rnabTrack) return
     AudioBrowser.updateNowPlaying(await applyReplayGainToTrack(updatedTrackData, false))
-  } catch {}
+  } catch (error) {
+    logWarn("Failed to resynchronize active track metadata", error)
+  }
 }
 
 export async function onModifiedTracks(trackIds: string[]) {
@@ -40,7 +43,12 @@ export async function onRename({
 }) {
   try {
     await updatePlayedMediaList({ oldSource, newSource })
-  } catch {
+  } catch (error) {
+    logWarn("Failed to rename played media list, removing stale source instead", {
+      error,
+      oldSource,
+      newSource,
+    })
     await removePlayedMediaList(oldSource)
   }
 

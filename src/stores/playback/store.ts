@@ -9,6 +9,7 @@ import { getTrack } from "@/modules/tracks/repository"
 import { createPersistedStore } from "@/lib/zustand"
 import { resetWidgets } from "@/modules/widget/utils"
 
+import { logWarn } from "@/modules/logging/service"
 import type { PlaybackStore } from "./constants"
 import { PersistedFields, RepeatModes } from "./constants"
 import { extractTrackId } from "./utils"
@@ -25,7 +26,9 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
       let upToDateIsPlaying = false
       try {
         upToDateIsPlaying = AudioBrowser.getPlayingState().playing
-      } catch {}
+      } catch {
+        // Intentionally silent: AudioBrowser might not be initialized yet during early hydration.
+      }
       set({ _hasHydrated: true, isPlaying: upToDateIsPlaying, activeTrack })
     },
 
@@ -72,7 +75,9 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
         if (invalidTracks.length > 0) {
           await db.delete(playlistTracks).where(inArray(playlistTracks.trackId, invalidTracks))
         }
-      } catch {}
+      } catch (error) {
+        logWarn("Failed to reset queue database relationships on crash", error)
+      }
     },
 
     _hasRestoredPosition: false,
@@ -108,7 +113,7 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
       Object.fromEntries(Object.entries(state).filter(([key]) => PersistedFields.includes(key))),
     onRehydrateStorage: () => {
       return (state, error) => {
-        if (error) console.log("[Playback Store]", error)
+        if (error) logWarn("Failed to rehydrate playback store", error)
         else state?._init(state)
       }
     },

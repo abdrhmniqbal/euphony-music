@@ -56,6 +56,7 @@ import {
   setPlayerLyricsKaraokeEnabled,
   useUIStore,
 } from "@/modules/ui/store"
+import { logWarn } from "@/modules/logging/service"
 
 type LyricsMode = "static" | "synced" | "timedMarkup"
 
@@ -320,7 +321,12 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
             if (dbTrack?.lyrics) {
               sourceTrack = { ...sourceTrack, lyrics: dbTrack.lyrics }
             }
-          } catch {}
+          } catch (error) {
+            logWarn("Failed to hydrate lyrics from database fallback", {
+              error,
+              trackId: sourceTrack.id,
+            })
+          }
         }
 
         const source = await resolveTrackLyricsSource(sourceTrack)
