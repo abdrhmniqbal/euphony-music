@@ -596,7 +596,7 @@ Silent `catch {}` appears in playback store files and lyrics view. Silent failur
 
 ---
 
-# Phase 29 — Query Key / Invalidation Consolidation
+# Phase 29 [Completed] — Query Key / Invalidation Consolidation
 
 ## Why
 Query invalidation likely spans favorites, playlists, library, track metadata, indexing. Inconsistent invalidation causes stale UI after mutations.
@@ -608,14 +608,13 @@ Query invalidation likely spans favorites, playlists, library, track metadata, i
 - `src/modules/playlist/mutations.ts`
 - `src/modules/favorites/mutations.ts`
 
-## Actions
-1. Inventory all `queryClient.invalidateQueries` usages.
-2. Create domain invalidation helpers:
+## Actions Taken
+1. Added domain invalidation helpers:
    - `invalidateLibraryQueries`
    - `invalidatePlaylistQueries`
    - `invalidateTrackQueries`
-3. Update mutations to call helpers.
-4. Keep keys stable.
+2. Updated track, favorite, history, and runtime invalidation call sites to use helpers.
+3. Kept query keys stable.
 
 ## Success Criteria
 - Mutation invalidation logic is centralized.
@@ -769,7 +768,7 @@ Some files appear in technically valid but semantically weak locations. Over tim
 20. Phase 26 [Completed] — Repository naming boundary cleanup
 21. Phase 28 [Completed] — Silent catch cleanup
 22. Phase 32 — Misplaced file reorganization pass
-23. Phase 29 — Query invalidation consolidation
+23. Phase 29 [Completed] — Query invalidation consolidation
 
 ## Notes
 - Prior completed phases 1–9 remain valid and should not be redone unless review finds regression.

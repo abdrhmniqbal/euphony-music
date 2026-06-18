@@ -1,9 +1,8 @@
 import type { getTrackById } from "./repository"
 
 import { useMutation } from "@tanstack/react-query"
-import { invalidateQueryKeys } from "@/lib/query-invalidation"
 import { queryClient } from "@/lib/tanstack-query"
-import { SEARCH_KEY } from "@/modules/library/keys"
+import { invalidateLibraryQueries } from "@/modules/library/keys"
 import { i18n } from "@/modules/localization/i18n"
 import { showAppToast } from "@/modules/ui/toast"
 
@@ -11,7 +10,7 @@ import {
   deleteTrackFromDevice,
   type DeleteTrackFromDeviceInput,
 } from "./track-device-deletion-service"
-import { trackKeys } from "./keys"
+import { trackKeys, invalidateTrackQueries } from "./keys"
 import { incrementTrackPlayCount, setTrackFavoriteStatus } from "./repository"
 
 type TrackDetail = Awaited<ReturnType<typeof getTrackById>>
@@ -49,10 +48,7 @@ export function useToggleFavoriteTrack() {
         )
       },
       onSettled: async (_data, _error, variables) => {
-        await invalidateQueryKeys(queryClient, [
-          trackKeys.detail(variables.trackId),
-          [trackKeys.all()[0]],
-        ])
+        await invalidateTrackQueries(queryClient, { trackId: variables.trackId })
       },
     },
     queryClient
@@ -64,7 +60,7 @@ export function useIncrementTrackPlayCount() {
     {
       mutationFn: incrementTrackPlayCount,
       onSuccess: async (trackId) => {
-        await invalidateQueryKeys(queryClient, [trackKeys.detail(trackId)])
+        await invalidateTrackQueries(queryClient, { trackId })
       },
     },
     queryClient
@@ -80,11 +76,8 @@ export function useDeleteTrackFromDevice() {
           return
         }
 
-        await invalidateQueryKeys(queryClient, [
-          [trackKeys.all()[0]],
-          trackKeys.detail(variables.trackId),
-          [SEARCH_KEY],
-        ])
+        await invalidateTrackQueries(queryClient, { trackId: variables.trackId })
+        await invalidateLibraryQueries(queryClient)
       },
     },
     queryClient

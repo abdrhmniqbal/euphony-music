@@ -35,6 +35,7 @@ import AudioBrowser from "react-native-audio-browser"
 
 import { addPlayedTrack } from "@/modules/history/repository"
 import { queryClient } from "@/lib/tanstack-query"
+import { invalidateTrackQueries } from "@/modules/tracks/keys"
 import { playbackStore, usePlaybackStore } from "@/stores/playback/store"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useViewPreferenceStore } from "@/stores/view-preference/store"
@@ -123,8 +124,7 @@ function onActiveTrackChanged(e: {
       async () => {
         const trackId = await addPlayedTrack(activeTrackUri)
         if (trackId) {
-          await queryClient.invalidateQueries({ queryKey: ["tracks", trackId] })
-          await queryClient.invalidateQueries({ queryKey: ["tracks"] })
+          await invalidateTrackQueries(queryClient, { trackId })
           await queryClient.invalidateQueries({
             queryKey: ["history-recently-played"],
           })

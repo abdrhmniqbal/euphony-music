@@ -10,7 +10,7 @@ import { useMutation } from "@tanstack/react-query"
 
 import { invalidateQueryKeys } from "@/lib/query-invalidation"
 import { queryClient } from "@/lib/tanstack-query"
-import { trackKeys } from "@/modules/tracks/keys"
+import { invalidateTrackQueries } from "@/modules/tracks/keys"
 
 import { historyKeys } from "./keys"
 import { addTrackToHistory, incrementTrackPlayCount, resetListeningHistory } from "./repository"
@@ -41,7 +41,10 @@ export function useIncrementPlayCount() {
         return trackId
       },
       onSuccess: async () => {
-        await invalidateQueryKeys(queryClient, [trackKeys.all(), historyKeys.tracks()])
+        await Promise.all([
+          invalidateTrackQueries(queryClient),
+          invalidateQueryKeys(queryClient, [historyKeys.tracks()]),
+        ])
       },
     },
     queryClient
@@ -61,7 +64,7 @@ export function useResetListeningHistory() {
           queryClient.invalidateQueries({
             queryKey: [historyKeys.topTracks("all", 0)[0]],
           }),
-          queryClient.invalidateQueries({ queryKey: [trackKeys.all()[0]] }),
+          invalidateTrackQueries(queryClient),
         ])
       },
     },
