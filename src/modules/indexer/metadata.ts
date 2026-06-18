@@ -66,7 +66,28 @@ const ID3_HEADER_SIZE = 10
 const ID3_FRAME_HEADER_SIZE = 10
 const ID3_TIMESTAMP_FORMAT_MILLISECONDS = 2
 
+function hasByteRange(bytes: Uint8Array, offset: number, length: number) {
+  return offset >= 0 && length >= 0 && offset + length <= bytes.length
+}
+
+function isSyncSafeInteger(bytes: Uint8Array, offset: number) {
+  if (!hasByteRange(bytes, offset, 4)) {
+    return false
+  }
+
+  return (
+    ((bytes[offset] || 0) & 0x80) === 0 &&
+    ((bytes[offset + 1] || 0) & 0x80) === 0 &&
+    ((bytes[offset + 2] || 0) & 0x80) === 0 &&
+    ((bytes[offset + 3] || 0) & 0x80) === 0
+  )
+}
+
 function decodeSyncSafeInteger(bytes: Uint8Array, offset: number) {
+  if (!isSyncSafeInteger(bytes, offset)) {
+    return 0
+  }
+
   return (
     ((bytes[offset] || 0) << 21) |
     ((bytes[offset + 1] || 0) << 14) |
@@ -76,11 +97,16 @@ function decodeSyncSafeInteger(bytes: Uint8Array, offset: number) {
 }
 
 function decodeInteger(bytes: Uint8Array, offset: number) {
+  if (!hasByteRange(bytes, offset, 4)) {
+    return 0
+  }
+
   return (
-    ((bytes[offset] || 0) << 24) |
-    ((bytes[offset + 1] || 0) << 16) |
-    ((bytes[offset + 2] || 0) << 8) |
-    (bytes[offset + 3] || 0)
+    (((bytes[offset] || 0) << 24) |
+      ((bytes[offset + 1] || 0) << 16) |
+      ((bytes[offset + 2] || 0) << 8) |
+      (bytes[offset + 3] || 0)) >>>
+    0
   )
 }
 
@@ -142,8 +168,11 @@ function extractId3SyncedLyrics(frameBytes: Uint8Array) {
 
   const descriptorAndData = frameBytes.slice(6)
   const descriptorEnd = findEncodedTextTerminator(descriptorAndData, encoding)
-  const dataStart =
-    descriptorEnd >= 0 ? descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2) : 0
+  if (descriptorEnd < 0) {
+    return undefined
+  }
+
+  const dataStart = descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2)
   const payload = descriptorAndData.slice(dataStart)
   if (payload.length === 0) {
     return undefined
@@ -200,6 +229,10 @@ function extractId3Lyrics(bytes: Uint8Array) {
   }
 
   const version = bytes[3] || 0
+  if (!isSyncSafeInteger(bytes, 6)) {
+    return undefined
+  }
+
   const tagSize = decodeSyncSafeInteger(bytes, 6)
   const tagEnd = Math.min(bytes.length, ID3_HEADER_SIZE + tagSize)
   let offset = ID3_HEADER_SIZE
@@ -213,6 +246,10 @@ function extractId3Lyrics(bytes: Uint8Array) {
     ).replace(/\0/g, "")
 
     if (!frameId) {
+      break
+    }
+
+    if (version === 4 && !isSyncSafeInteger(bytes, offset + 4)) {
       break
     }
 
