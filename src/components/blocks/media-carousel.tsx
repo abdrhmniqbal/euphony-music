@@ -75,6 +75,7 @@ export function MediaCarousel<T>({
         contentContainerStyle={[{ paddingHorizontal }, contentContainerStyle]}
         className={cn("mb-8", className)}
         estimatedItemSize={220}
+        recycleItems
       />
     )
   }
