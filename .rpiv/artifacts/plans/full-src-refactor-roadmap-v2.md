@@ -324,7 +324,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 20 [Partially Done] — Player Action Sheet Decomposition
+# Phase 20 [Completed] — Player Action Sheet Decomposition
 
 ## Why
 `src/components/blocks/player/action-sheet.tsx` is 773 lines. It likely mixes player state, sleep timer, queue/track actions, navigation, and UI sections.
