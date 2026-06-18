@@ -29,6 +29,7 @@ import {
   normalizeFolderPath,
 } from "@/modules/settings/folder-filters"
 import { useSettingsStore } from "@/modules/settings/store"
+import { showAppToast } from "@/modules/ui/toast"
 import { useThemeColors } from "@/modules/ui/theme"
 
 interface FolderEntry {
@@ -192,6 +193,7 @@ export default function FolderFiltersScreen() {
         return { whitelist, blacklist }
       })
       setHasPendingChanges(true)
+      showAppToast(t("settings.library.addNewFolder"), t("common.feedback.folderAdded"))
     } catch {
       // User cancelled picker.
     }
@@ -235,6 +237,7 @@ export default function FolderFiltersScreen() {
     }
 
     await commitFolderFilterConfig(pendingConfig)
+    showAppToast(t("settings.routes.folderFilters.title"), t("common.feedback.folderFiltersApplied"))
     await startIndexing(false, true)
     setHasPendingChanges(false)
   }

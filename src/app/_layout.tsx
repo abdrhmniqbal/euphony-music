@@ -20,6 +20,7 @@ import { useUniwind } from "uniwind"
 
 import { RootProviders } from "@/components/providers/root-providers"
 import { AppUpdateSheet } from "@/components/blocks/app-update-sheet"
+import { AppToastRuntime } from "@/components/providers/app-toast-runtime"
 import { getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/constants/layout"
 import { Stack } from "@/layouts/stack"
 import {
@@ -173,6 +174,7 @@ export default function Layout() {
                     options={({ route }) => getHiddenPlayerScreenOptions(route.params)}
                   />
                 </Stack>
+                <AppToastRuntime />
                 <AppUpdateSheet />
               </View>
             </RootProviders>

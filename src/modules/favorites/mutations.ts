@@ -9,7 +9,9 @@
 import { useMutation } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/tanstack-query"
+import { i18n } from "@/modules/localization/i18n"
 import { logError, logInfo } from "@/modules/logging/service"
+import { showAppToast } from "@/modules/ui/toast"
 
 import { FAVORITES_KEY, invalidateFavoriteQueries } from "./keys"
 import { addFavorite, removeFavorite } from "./repository"
@@ -99,6 +101,7 @@ export function useAddFavorite() {
           type: variables.type,
           itemId: variables.itemId,
         })
+        showAppToast(i18n.t("common.feedback.addedToFavorites"), variables.name)
         await invalidateFavoriteQueries(queryClient)
       },
       onError: (error, variables) => {
@@ -106,6 +109,7 @@ export function useAddFavorite() {
           type: variables.type,
           itemId: variables.itemId,
         })
+        showAppToast(i18n.t("common.feedback.failedToUpdateFavorite"), variables.name)
       },
     },
     queryClient
@@ -130,6 +134,7 @@ export function useRemoveFavorite() {
           type: variables.type,
           itemId: variables.itemId,
         })
+        showAppToast(i18n.t("common.feedback.removedFromFavorites"))
         await invalidateFavoriteQueries(queryClient)
       },
       onError: (error, variables) => {
@@ -137,6 +142,7 @@ export function useRemoveFavorite() {
           type: variables.type,
           itemId: variables.itemId,
         })
+        showAppToast(i18n.t("common.feedback.failedToUpdateFavorite"))
       },
     },
     queryClient
@@ -230,6 +236,7 @@ export function useToggleFavorite() {
         context?.previousFavoriteLists?.forEach(([queryKey, value]) => {
           queryClient.setQueryData(queryKey, value)
         })
+        showAppToast(i18n.t("common.feedback.failedToUpdateFavorite"), variables.name)
       },
       onSuccess: (isFavorite, variables) => {
         logInfo("Toggled favorite", {
@@ -237,6 +244,12 @@ export function useToggleFavorite() {
           itemId: variables.itemId,
           isFavorite,
         })
+        showAppToast(
+          isFavorite
+            ? i18n.t("common.feedback.addedToFavorites")
+            : i18n.t("common.feedback.removedFromFavorites"),
+          variables.name
+        )
       },
       onSettled: async (_result, _error, variables) => {
         logInfo("Refreshing favorite queries after toggle", {

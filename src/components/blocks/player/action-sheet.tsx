@@ -14,15 +14,7 @@ import {
 } from "@gorhom/bottom-sheet"
 import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import {
-  BottomSheet,
-  Button,
-  PressableFeedback,
-  Slider,
-  Switch,
-  Toast,
-  useToast,
-} from "heroui-native"
+import { BottomSheet, Button, PressableFeedback, Slider, Switch } from "heroui-native"
 import { useQueries } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { Platform, Text, View } from "react-native"
@@ -43,6 +35,7 @@ import {
   setSleepTimerTrackEnd,
 } from "@/modules/player/sleep-timer"
 import { usePlaylistPickerSelection } from "@/modules/playlist/picker-selection.hook"
+import { showAppToast } from "@/modules/ui/toast"
 import { setPlaylistFormDraft } from "@/modules/playlist/form-draft.store"
 
 interface ArtistPickerSourceArtist {
@@ -239,7 +232,6 @@ export function PlayerActionSheet({
 }: PlayerActionSheetProps) {
   const { t } = useTranslation()
   const router = useRouter()
-  const { toast } = useToast()
   const queue = usePlayerQueue()
   const sleepTimer = useSleepTimerState()
   const canUseLibraryActions = Boolean(track && track.isExternal !== true)
@@ -365,17 +357,7 @@ export function PlayerActionSheet({
     : t("player.sleepTimer.customTimeDescription")
 
   const showPlaylistToast = (title: string, description?: string) => {
-    toast.show({
-      duration: 1800,
-      component: (props) => (
-        <Toast {...props} variant="accent" placement="bottom">
-          <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
-          {description ? (
-            <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
-          ) : null}
-        </Toast>
-      ),
-    })
+    showAppToast(title, description)
   }
 
   const handleOpenPlaylistPicker = () => {

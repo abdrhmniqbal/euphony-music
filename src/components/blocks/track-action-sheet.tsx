@@ -9,7 +9,7 @@
 import type { Track } from "@/modules/player/store"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { BottomSheet, Button, Card, Chip, Toast, useToast } from "heroui-native"
+import { BottomSheet, Button, Card, Chip } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
@@ -40,6 +40,7 @@ import { useIsFavorite } from "@/modules/favorites/queries"
 import { playTrack } from "@/modules/player/service"
 import { addToQueue, queueTrackNext } from "@/modules/player/queue"
 import { usePlaylistPickerSelection } from "@/modules/playlist/picker-selection.hook"
+import { showAppToast } from "@/modules/ui/toast"
 import {
   formatQualityLabel,
   normalizeCodecLabel,
@@ -74,7 +75,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   onAddToPlaylist,
 }) => {
   const router = useRouter()
-  const { toast } = useToast()
+
   const { t } = useTranslation()
   const theme = useThemeColors()
   const toggleFavoriteMutation = useToggleFavorite()
@@ -160,22 +161,8 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
     onClose()
   }
 
-  const showActionToast = (title: string, description?: string) => {
-    toast.show({
-      duration: 1800,
-      component: (props) => (
-        <Toast {...props} variant="accent" placement="bottom">
-          <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
-          {description ? (
-            <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
-          ) : null}
-        </Toast>
-      ),
-    })
-  }
-
   const showPlaylistToast = (title: string, description?: string) => {
-    showActionToast(title, description)
+    showAppToast(title, description)
   }
 
   const { isSelecting, handleSelectPlaylist } = usePlaylistPickerSelection({

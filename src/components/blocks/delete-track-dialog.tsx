@@ -1,9 +1,10 @@
 import type { Track } from "@/modules/player/store"
-import { Button, Dialog, Toast, useToast } from "heroui-native"
+import { Button, Dialog } from "heroui-native"
 
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useDeleteTrackFromDevice } from "@/modules/tracks/mutations"
+import { showAppToast } from "@/modules/ui/toast"
 
 interface DeleteTrackDialogProps {
   track: Track | null
@@ -18,24 +19,9 @@ export function DeleteTrackDialog({
   onOpenChange,
   onDeleted,
 }: DeleteTrackDialogProps) {
-  const { toast } = useToast()
   const { t } = useTranslation()
   const deleteTrackFromDeviceMutation = useDeleteTrackFromDevice()
   const isDeleting = deleteTrackFromDeviceMutation.isPending
-
-  function showToast(title: string, description?: string) {
-    toast.show({
-      duration: 1800,
-      component: (props) => (
-        <Toast {...props} variant="accent" placement="bottom">
-          <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
-          {description ? (
-            <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
-          ) : null}
-        </Toast>
-      ),
-    })
-  }
 
   async function handleConfirmDelete() {
     if (!track || isDeleting) {
@@ -49,20 +35,20 @@ export function DeleteTrackDialog({
       })
 
       if (result.status === "permission-denied") {
-        showToast(t("track.permissionRequiredTitle"), t("track.permissionRequiredDescription"))
+        showAppToast(t("track.permissionRequiredTitle"), t("track.permissionRequiredDescription"))
         return
       }
 
       if (result.status !== "deleted") {
-        showToast(t("track.deleteFailedTitle"))
+        showAppToast(t("track.deleteFailedTitle"))
         return
       }
 
       onOpenChange(false)
       onDeleted?.(track)
-      showToast(t("track.deletedTitle"), track.title)
+      showAppToast(t("track.deletedTitle"), track.title)
     } catch {
-      showToast(t("track.deleteFailedTitle"))
+      showAppToast(t("track.deleteFailedTitle"))
     }
   }
 

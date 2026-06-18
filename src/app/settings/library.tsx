@@ -19,6 +19,7 @@ import { setCountAsPlayedConfig } from "@/modules/settings/count-as-played"
 import type { IndexerScanConfig } from "@/modules/settings/types"
 import { getTrackDurationFilterLabel } from "@/modules/settings/track-duration-filter"
 import { useSettingsStore } from "@/modules/settings/store"
+import { showAppToast } from "@/modules/ui/toast"
 
 function getSliderNumericValue(value: number | number[]): number {
   return Array.isArray(value) ? (value[0] ?? 0) : value
@@ -62,6 +63,7 @@ export default function LibrarySettingsScreen() {
 
   function handleConfirmForceReindex() {
     setShowReindexDialog(false)
+    showAppToast(t("settings.library.reindexLibrary"), t("common.feedback.libraryReindexStarted"))
     void forceReindexLibrary(true)
   }
 
@@ -76,6 +78,7 @@ export default function LibrarySettingsScreen() {
       minimumPlayedPercent: value,
     })
     setCountAsPlayedSliderValue(null)
+    showAppToast(t("settings.library.countAsPlayed"), t("settings.library.countAsPlayedValue", { value }))
   }
 
   return (

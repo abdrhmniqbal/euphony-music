@@ -2,7 +2,9 @@ import { useMutation } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/tanstack-query"
 import { invalidateFavoriteQueries } from "@/modules/favorites/keys"
+import { i18n } from "@/modules/localization/i18n"
 import { logError, logInfo } from "@/modules/logging/service"
+import { showAppToast } from "@/modules/ui/toast"
 
 import { invalidatePlaylistQueries } from "./keys"
 import {
@@ -54,6 +56,7 @@ export function useCreatePlaylist() {
           name: variables.name,
           trackCount: variables.trackIds.length,
         })
+        showAppToast(i18n.t("common.feedback.playlistCreated"), variables.name)
         await invalidatePlaylistQueries(queryClient)
       },
       onError: (error, variables) => {
@@ -61,6 +64,7 @@ export function useCreatePlaylist() {
           name: variables.name,
           trackCount: variables.trackIds.length,
         })
+        showAppToast(i18n.t("common.feedback.failedToCreatePlaylist"), variables.name)
       },
     },
     queryClient
@@ -82,6 +86,7 @@ export function useUpdatePlaylist() {
         logInfo("Updated playlist metadata", {
           playlistId: variables.id,
         })
+        showAppToast(i18n.t("common.feedback.playlistUpdated"), variables.name)
         await invalidatePlaylistQueries(queryClient, {
           playlistId: variables.id,
         })
@@ -90,6 +95,7 @@ export function useUpdatePlaylist() {
         logError("Failed to update playlist metadata", error, {
           playlistId: variables.id,
         })
+        showAppToast(i18n.t("common.feedback.failedToUpdatePlaylist"), variables.name)
       },
     },
     queryClient
@@ -105,6 +111,7 @@ export function useDeletePlaylist() {
       },
       onSuccess: async (_result, deletedPlaylistId) => {
         logInfo("Deleted playlist", { playlistId: deletedPlaylistId })
+        showAppToast(i18n.t("common.feedback.playlistDeleted"))
         await Promise.all([
           invalidatePlaylistQueries(queryClient, {
             playlistId: deletedPlaylistId,
@@ -116,6 +123,7 @@ export function useDeletePlaylist() {
         logError("Failed to delete playlist", error, {
           playlistId: deletedPlaylistId,
         })
+        showAppToast(i18n.t("common.feedback.failedToDeletePlaylist"))
       },
     },
     queryClient
@@ -131,6 +139,7 @@ export function useAddTrackToPlaylist() {
       },
       onSuccess: async (_result, variables) => {
         logInfo("Added track to playlist", variables)
+        showAppToast(i18n.t("common.feedback.addedToPlaylist"))
         await invalidatePlaylistQueries(queryClient, {
           playlistId: variables.playlistId,
           trackId: variables.trackId,
@@ -138,6 +147,7 @@ export function useAddTrackToPlaylist() {
       },
       onError: (error, variables) => {
         logError("Failed to add track to playlist", error, variables)
+        showAppToast(i18n.t("common.feedback.failedToAddToPlaylist"))
       },
     },
     queryClient
@@ -153,6 +163,7 @@ export function useRemoveTrackFromPlaylist() {
       },
       onSuccess: async (_result, variables) => {
         logInfo("Removed track from playlist", variables)
+        showAppToast(i18n.t("common.feedback.removedFromPlaylist"))
         await invalidatePlaylistQueries(queryClient, {
           playlistId: variables.playlistId,
           trackId: variables.trackId,
@@ -160,6 +171,7 @@ export function useRemoveTrackFromPlaylist() {
       },
       onError: (error, variables) => {
         logError("Failed to remove track from playlist", error, variables)
+        showAppToast(i18n.t("common.feedback.failedToRemoveFromPlaylist"))
       },
     },
     queryClient
@@ -181,6 +193,7 @@ export function useReorderPlaylistTracks() {
           playlistId: variables.playlistId,
           trackCount: variables.trackIds.length,
         })
+        showAppToast(i18n.t("common.feedback.playlistReordered"))
         await invalidatePlaylistQueries(queryClient, {
           playlistId: variables.playlistId,
         })
@@ -190,6 +203,7 @@ export function useReorderPlaylistTracks() {
           playlistId: variables.playlistId,
           trackCount: variables.trackIds.length,
         })
+        showAppToast(i18n.t("common.feedback.failedToReorderPlaylist"))
       },
     },
     queryClient

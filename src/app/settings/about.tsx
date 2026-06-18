@@ -9,7 +9,7 @@
 import * as Application from "expo-application"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { ListGroup, Separator, Toast, useToast } from "heroui-native"
+import { ListGroup, Separator } from "heroui-native"
 import { Linking, ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
@@ -18,28 +18,16 @@ import appIcon from "@/assets/icon.png"
 import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
 import { checkForAppUpdate, getCurrentAppVersion } from "@/modules/updates/app-update.service"
 import { openAppUpdatePrompt } from "@/modules/updates/app-update.store"
+import { showAppToast } from "@/modules/ui/toast"
 
 export default function AboutSettingsScreen() {
   const router = useRouter()
   const { t } = useTranslation()
-  const { toast } = useToast()
   const [isCheckingForUpdates, setIsCheckingForUpdates] = useState(false)
   const appName = Application.applicationName || "Startune Music"
   const version = getCurrentAppVersion()
   const repositoryUrl = "https://github.com/abdrhmniqbal/startune-music"
   const crowdinUrl = "https://crowdin.com/project/startune-music/"
-
-  function showToast(title: string, description: string) {
-    toast.show({
-      duration: 2200,
-      component: (props) => (
-        <Toast {...props} variant="accent" placement="bottom">
-          <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
-          <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
-        </Toast>
-      ),
-    })
-  }
 
   async function handleCheckForUpdates() {
     if (isCheckingForUpdates) {
@@ -60,12 +48,12 @@ export default function AboutSettingsScreen() {
         return
       }
 
-      showToast(
+      showAppToast(
         t("settings.about.updateCheckUpToDateTitle"),
         t("settings.about.updateCheckUpToDateDescription")
       )
     } catch {
-      showToast(
+      showAppToast(
         t("settings.about.updateCheckFailedTitle"),
         t("settings.about.updateCheckFailedDescription")
       )

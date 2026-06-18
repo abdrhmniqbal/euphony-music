@@ -20,6 +20,7 @@ import {
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
 import { useSettingsStore } from "@/modules/settings/store"
+import { showAppToast } from "@/modules/ui/toast"
 
 interface DurationOption {
   labelKey: string
@@ -83,6 +84,7 @@ export default function TrackDurationFilterScreen() {
 
     if (mode !== "custom") {
       setCustomSliderValue(null)
+      showAppToast(t("settings.library.trackDurationFilter"), t("common.feedback.trackDurationUpdated"))
       await startIndexing(false, true)
     }
   }
@@ -92,6 +94,7 @@ export default function TrackDurationFilterScreen() {
       mode: "custom",
       customMinimumSeconds: value,
     })
+    showAppToast(t("settings.library.trackDurationFilter"), t("common.feedback.trackDurationUpdated"))
     await startIndexing(false, true)
   }
 

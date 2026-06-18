@@ -1,4 +1,4 @@
-import { toast } from "@missingcore/ui/toast"
+import { showAppToast } from "@/modules/ui/toast"
 import { createId } from "@paralleldrive/cuid2"
 import AudioBrowser from "react-native-audio-browser"
 
@@ -164,7 +164,7 @@ function insertIntoQueue({
   after,
 }: QueueInsertionProps & { after: number }) {
   const { queue, numQueuedNext } = playbackStore.getState()
-  toast(i18n.t("feat.queue.extra.toast", { name }))
+  showAppToast(i18n.t("common.feedback.addedToQueue", { name }))
 
   if (queue.length === 0) return
   const uniqueId = createId()

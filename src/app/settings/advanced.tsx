@@ -8,7 +8,7 @@
 
 import * as Application from "expo-application"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { Button, Dialog, ListGroup, Separator, Switch, Toast, useToast } from "heroui-native"
+import { Button, Dialog, ListGroup, Separator, Switch } from "heroui-native"
 import { useState } from "react"
 import { Linking, Platform, ScrollView, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -22,10 +22,10 @@ import { useResetListeningHistory } from "@/modules/history/mutations"
 import { shareCrashLogs } from "@/modules/logging/service"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { useSettingsStore } from "@/modules/settings/store"
+import { showAppToast } from "@/modules/ui/toast"
 
 export default function AdvancedSettingsScreen() {
   const router = useRouter()
-  const { toast } = useToast()
   const { t } = useTranslation()
   const loggingLevel = useSettingsStore((state) => state.loggingConfig.level)
   const includePrereleases = useSettingsStore((state) => state.appUpdateConfig.includePrereleases)
@@ -34,21 +34,9 @@ export default function AdvancedSettingsScreen() {
 
   const isResettingHistory = resetListeningHistoryMutation.isPending
 
-  function showToast(title: string, description: string) {
-    toast.show({
-      duration: 2200,
-      component: (props) => (
-        <Toast {...props} variant="accent" placement="bottom">
-          <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
-          <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
-        </Toast>
-      ),
-    })
-  }
-
   async function handleShareCrashLogs() {
     const result = await shareCrashLogs()
-    showToast(
+    showAppToast(
       result.shared
         ? t("settings.advanced.logsReadyTitle")
         : t("settings.advanced.logsUnableTitle"),
@@ -66,12 +54,12 @@ export default function AdvancedSettingsScreen() {
     try {
       await resetListeningHistoryMutation.mutateAsync()
       setIsResetHistoryDialogOpen(false)
-      showToast(
+      showAppToast(
         t("settings.advanced.historyResetTitle"),
         t("settings.advanced.historyResetDescription")
       )
     } catch {
-      showToast(
+      showAppToast(
         t("settings.advanced.historyResetUnableTitle"),
         t("settings.advanced.tryAgainDescription")
       )
@@ -89,7 +77,7 @@ export default function AdvancedSettingsScreen() {
       }
 
       if (await isIgnoringBatteryOptimizations(appPackage)) {
-        showToast(
+        showAppToast(
           t("settings.advanced.batteryAlreadyDisabledTitle"),
           t("settings.advanced.batteryAlreadyDisabledDescription")
         )
@@ -122,7 +110,7 @@ export default function AdvancedSettingsScreen() {
     try {
       await Linking.openURL("https://dontkillmyapp.com")
     } catch {
-      showToast(
+      showAppToast(
         t("settings.advanced.unableToOpenLinkTitle"),
         t("settings.advanced.tryAgainDescription")
       )

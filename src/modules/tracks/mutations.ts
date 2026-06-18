@@ -4,6 +4,8 @@ import { useMutation } from "@tanstack/react-query"
 import { invalidateQueryKeys } from "@/lib/query-invalidation"
 import { queryClient } from "@/lib/tanstack-query"
 import { SEARCH_KEY } from "@/modules/library/keys"
+import { i18n } from "@/modules/localization/i18n"
+import { showAppToast } from "@/modules/ui/toast"
 
 import {
   deleteTrackFromDevice,
@@ -37,6 +39,14 @@ export function useToggleFavoriteTrack() {
       },
       onError: (_error, variables, context) => {
         queryClient.setQueryData(trackKeys.detail(variables.trackId), context?.previousTrack)
+        showAppToast(i18n.t("common.feedback.failedToUpdateFavorite"))
+      },
+      onSuccess: (_result, variables) => {
+        showAppToast(
+          variables.isFavorite
+            ? i18n.t("common.feedback.addedToFavorites")
+            : i18n.t("common.feedback.removedFromFavorites")
+        )
       },
       onSettled: async (_data, _error, variables) => {
         await invalidateQueryKeys(queryClient, [

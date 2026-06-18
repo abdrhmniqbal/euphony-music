@@ -4,7 +4,9 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import * as React from "react"
 
 import { queryClient } from "@/lib/tanstack-query"
+import { i18n } from "@/modules/localization/i18n"
 import { logError } from "@/modules/logging/service"
+import { showAppToast } from "@/modules/ui/toast"
 import { getAllTracks } from "@/modules/player/repository"
 
 import { buildSelectedTracksList, buildTrackPickerResults, reorderTrackIds } from "./form"
@@ -63,10 +65,24 @@ export function usePlaylistFormEditor({
 
         await createPlaylist(payload.name, payload.description, payload.trackIds)
       },
-      onSuccess: async () => {
+      onSuccess: async (_result, variables) => {
+        showAppToast(
+          isEditMode
+            ? i18n.t("common.feedback.playlistUpdated")
+            : i18n.t("common.feedback.playlistCreated"),
+          variables.name
+        )
         await invalidatePlaylistQueries(queryClient, {
           playlistId: isEditMode ? (playlistId ?? null) : null,
         })
+      },
+      onError: (_error, variables) => {
+        showAppToast(
+          isEditMode
+            ? i18n.t("common.feedback.failedToUpdatePlaylist")
+            : i18n.t("common.feedback.failedToCreatePlaylist"),
+          variables.name
+        )
       },
     },
     queryClient
