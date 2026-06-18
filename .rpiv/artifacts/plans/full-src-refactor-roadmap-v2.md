@@ -450,7 +450,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 25 — Onboarding Wizard Decomposition
+# Phase 25 [Completed] — Onboarding Wizard Decomposition
 
 ## Why
 `src/app/onboarding/index.tsx` is 509 lines and likely mixes step state, theme selection, folder filters, permissions, and battery optimization.
