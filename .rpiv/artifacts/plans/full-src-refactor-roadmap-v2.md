@@ -58,7 +58,7 @@ Full-source audit of `src/` for structure, maintainability, future-risk logic, b
 
 ---
 
-# Phase 10 — Establish Verification Baseline
+# Phase 10 [Completed] — Establish Verification Baseline
 
 ## Why
 Full `tsc` is already red. Refactors are risky if current failures are not categorized. Existing errors include type mismatch in screens, toast adapter, Pressable handler typing, sheet prop typing, media-item animation props, and player native API wrapper.
@@ -85,7 +85,7 @@ Full `tsc` is already red. Refactors are risky if current failures are not categ
 
 ---
 
-# Phase 11 — Fix Route Nullability Before More UI Refactors
+# Phase 11 [Completed] — Fix Route Nullability Before More UI Refactors
 
 ## Why
 `src/app/(main)/(library)/album/[name].tsx` has known `albumInfo` possibly-null errors. This is both type debt and runtime-risk if album lookup fails mid-render.
@@ -105,7 +105,7 @@ Full `tsc` is already red. Refactors are risky if current failures are not categ
 
 ---
 
-# Phase 12 — Normalize Pressable Handler Typing
+# Phase 12 [Completed] — Normalize Pressable Handler Typing
 
 ## Why
 Multiple errors show event handler type mismatches:
@@ -129,7 +129,7 @@ Potential pattern: passing domain callbacks directly into Pressable-like `onPres
 
 ---
 
-# Phase 13 — Fix Sheet Adapter Typing
+# Phase 13 [Completed] — Fix Sheet Adapter Typing
 
 ## Why
 Sheet/scroll prop types are drifting from library expectations:
@@ -153,7 +153,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 14 — Value Navigation Sheet Type Model
+# Phase 14 [Completed] — Value Navigation Sheet Type Model
 
 ## Why
 `src/components/blocks/value-navigation-sheet.tsx` reads `image` and `subtitle` from values typed as `{ value: string }`. This is a type smell and likely why richer artist/genre picker data is awkward.
@@ -179,7 +179,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 15 — Media Item Animation Props Boundary
+# Phase 15 [Completed] — Media Item Animation Props Boundary
 
 ## Why
 `src/components/ui/media-item.tsx` accepts props that may be `SharedValue<T>` but passes them directly into React Native `View` props requiring plain strings/accessibility roles/styles. This is a boundary leak between Reanimated props and normal RN props.
@@ -199,7 +199,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 16 — Player Native API Type Boundary
+# Phase 16 [Completed] — Player Native API Type Boundary
 
 ## Why
 `src/modules/player/utils.ts` has many native API type mismatches. This file likely acts as compatibility adapter for `react-native-audio-browser`; type drift here leaks across player code.
@@ -226,7 +226,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 17 — Finish Indexer Repository Decomposition
+# Phase 17 [Partially Done] — Finish Indexer Repository Decomposition
 
 ## Why
 `src/modules/indexer/repository.ts` remains 1136 lines after count extraction. It still mixes scanning, batching, metadata preparation, relation rebuild, DB upsert, transient commit retry, deletion cleanup, and lookup cache handling.
@@ -266,7 +266,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 18 — Metadata Parser Module Split
+# Phase 18 [Partially Done] — Metadata Parser Module Split
 
 ## Why
 `src/modules/indexer/metadata.ts` remains 648 lines and mixes ID3 parsing, MP4 atom parsing, native metadata extraction, artwork cache, and cache cleanup.
@@ -293,7 +293,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 19 — Player Session Service Split
+# Phase 19 [Partially Done] — Player Session Service Split
 
 ## Why
 `src/modules/player/session.service.ts` is 814 lines and owns native reads, persisted session reads, queue ID resolution, active-index resolution, session application, and periodic persistence.
@@ -324,7 +324,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 20 — Player Action Sheet Decomposition
+# Phase 20 [Partially Done] — Player Action Sheet Decomposition
 
 ## Why
 `src/components/blocks/player/action-sheet.tsx` is 773 lines. It likely mixes player state, sleep timer, queue/track actions, navigation, and UI sections.
@@ -351,7 +351,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 21 — Library Home Screen Decomposition
+# Phase 21 [Partially Done] — Library Home Screen Decomposition
 
 ## Why
 `src/app/(main)/(library)/index.tsx` is 753 lines. Large route screens are hard to change safely and tend to mix tabs, queries, sections, empty states, and actions.
