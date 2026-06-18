@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { usePlayerColorsStore } from "@/modules/player/colors-store"
 
 import { AlbumArtView } from "./album-art-view"
-import { LyricsView } from "./lyrics-view"
+import { LyricsView } from "@/modules/lyrics/ui/lyrics-view"
 import { PlaybackControls } from "./playback-controls"
 import { PlayerFooter } from "./footer"
 import { PlayerHeader } from "./header"

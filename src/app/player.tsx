@@ -14,7 +14,7 @@ import {
   ArtistPickerSheet,
   type ArtistPickerSheetItem,
 } from "@/components/blocks/artist-picker-sheet"
-import { buildArtistPickerItems } from "@/components/blocks/artist-picker-utils"
+import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { FullPlayerContent } from "@/components/blocks/player/full-player-content"
 import { PlayerActionSheet } from "@/components/blocks/player/action-sheet"
 import { useCurrentTrack, useIsPlaying, usePlayerQueueContext } from "@/modules/player/selectors"

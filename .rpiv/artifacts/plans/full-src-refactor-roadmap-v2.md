@@ -665,7 +665,7 @@ Bootstrap, onboarding gate, auto-scan, playback restore, notification setup, and
 
 ---
 
-# Phase 32 — Misplaced File Reorganization Pass
+# Phase 32 [Completed] — Misplaced File Reorganization Pass
 
 ## Why
 Some files appear in technically valid but semantically weak locations. Over time this makes ownership unclear: app routes hold too much UI, components hold domain logic, modules hold UI-only concerns, and generic utils may contain domain-specific helpers.
@@ -706,6 +706,17 @@ Some files appear in technically valid but semantically weak locations. Over tim
 - Onboarding:
   - `src/modules/onboarding/ui/*`
   - `src/modules/onboarding/hooks/*`
+
+## Actions Taken
+1. Moved search route UI to `src/modules/search/ui/search-screen.tsx`.
+2. Moved playlist detail route UI to `src/modules/playlist/ui/playlist-detail-screen.tsx`.
+3. Moved onboarding screen and onboarding step/ui logic into `src/modules/onboarding/ui/*` and `src/modules/onboarding/hooks/*`.
+4. Rehomed library UI into folder-based submodules under `src/modules/library/ui/home/*`, `artist-detail/*`, and `album-detail/*`.
+5. Promoted lyrics, track metadata, and artist picker helpers into `src/modules/lyrics/ui`, `src/modules/tracks/ui`, and `src/modules/library/artist-picker-utils.ts`.
+
+## Success Criteria
+- Route-heavy screens are thinner.
+- Ownership of UI/domain helpers is clearer from folder location.
   - `src/modules/onboarding/flow.ts`
 - Player UI:
   - `src/modules/player/ui/action-sheet/*`
@@ -761,7 +772,7 @@ Some files appear in technically valid but semantically weak locations. Over tim
 19. Phase 23 — Lyrics module split
 20. Phase 26 [Completed] — Repository naming boundary cleanup
 21. Phase 28 [Completed] — Silent catch cleanup
-22. Phase 32 — Misplaced file reorganization pass
+22. Phase 32 [Completed] — Misplaced file reorganization pass
 23. Phase 29 [Completed] — Query invalidation consolidation
 
 ## Notes

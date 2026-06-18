@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { ArtistPickerSheetItem } from "./artist-picker-sheet"
+import type { ArtistPickerSheetItem } from "@/components/blocks/artist-picker-sheet"
 
 interface PickerArtistSource {
   name?: string | null

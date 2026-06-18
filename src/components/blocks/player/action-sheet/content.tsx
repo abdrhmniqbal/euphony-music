@@ -31,7 +31,7 @@ import {
   formatClockValue,
 } from "./sleep-timer-section"
 import { ArtistPickerSheet } from "@/components/blocks/artist-picker-sheet"
-import { buildArtistPickerItems } from "@/components/blocks/artist-picker-utils"
+import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"

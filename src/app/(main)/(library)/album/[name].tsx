@@ -6,4 +6,4 @@
  * Side Effects: None directly.
  */
 
-export { default } from "@/modules/library/ui/album-detail-screen"
+export { default } from "@/modules/library/ui/album-detail"

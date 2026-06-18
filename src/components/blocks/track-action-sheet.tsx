@@ -21,7 +21,7 @@ import {
   ArtistPickerSheet,
   type ArtistPickerSheetItem,
 } from "@/components/blocks/artist-picker-sheet"
-import { buildArtistPickerItems } from "@/components/blocks/artist-picker-utils"
+import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import LocalAddIcon from "@/components/icons/local/add"
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import LocalDeleteSolidIcon from "@/components/icons/local/delete-solid"
@@ -47,7 +47,7 @@ import { useThemeColors } from "@/modules/ui/theme"
 import { useSettingsStore } from "@/modules/settings/store"
 import { splitArtistsValue } from "@/modules/settings/split-multiple-values"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
-import { TrackMetadataSheet } from "./track-metadata-sheet"
+import { TrackMetadataSheet } from "@/modules/tracks/ui/track-metadata-sheet"
 
 interface TrackActionSheetProps {
   track: Track | null
