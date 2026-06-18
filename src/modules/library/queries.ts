@@ -17,13 +17,13 @@ import {
   getAlbumById,
   getArtistById,
   getArtistByName,
-  getRecentSearches,
   getTracksByAlbumName,
   getTracksByArtistName,
   listAlbums,
   listArtists,
   searchLibrary,
 } from "./repository"
+import { getRecentSearches } from "./recent-searches.repository"
 import type { RecentSearchEntry, SearchResults } from "./types"
 
 interface QueryOptions {
