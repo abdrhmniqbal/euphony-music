@@ -1,5 +1,6 @@
 {
   "common": {
+    "appName": "Startune Music",
     "cancel": "取消",
     "clear": "清除",
     "clearAll": "全部清除",
@@ -9,7 +10,34 @@
     "shuffle": "隨機播放",
     "reset": "重置",
     "seeMore": "看更多",
-    "unknown": "未知"
+    "unknown": "未知",
+    "next": "Next",
+    "finish": "Finish",
+    "feedback": {
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "failedToUpdateFavorite": "Failed to update favorite",
+      "playlistCreated": "Playlist created",
+      "playlistUpdated": "Playlist updated",
+      "playlistDeleted": "Playlist deleted",
+      "failedToCreatePlaylist": "Failed to create playlist",
+      "failedToUpdatePlaylist": "Failed to update playlist",
+      "failedToDeletePlaylist": "Failed to delete playlist",
+      "addedToPlaylist": "Added to playlist",
+      "removedFromPlaylist": "Removed from playlist",
+      "failedToAddToPlaylist": "Failed to add to playlist",
+      "failedToRemoveFromPlaylist": "Failed to remove from playlist",
+      "playlistReordered": "Playlist order updated",
+      "failedToReorderPlaylist": "Failed to update playlist order",
+      "trackDeleted": "Track deleted",
+      "failedToDeleteTrack": "Failed to delete track",
+      "addedToQueue": "Added to queue: {{name}}",
+      "libraryReindexStarted": "Library reindex started",
+      "trackDurationUpdated": "Track duration filter updated",
+      "folderFiltersApplied": "Folder filters applied",
+      "folderAdded": "Folder added",
+      "mediaGranted": "Media access granted"
+    }
   },
   "term": {
     "track": "首歌",
@@ -334,6 +362,22 @@
       "external": "正在播放檔案"
     }
   },
+  "onboarding": {
+    "welcomePrefix": "Welcome to",
+    "welcomeDescription": "Set up theme, folders, and permissions before first scan.",
+    "permissions": {
+      "title": "Permissions",
+      "description": "Grant required permissions to start listening.",
+      "grant": "Grant Access",
+      "granted": "Access Granted",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "fileAccess": "File access",
+      "fileAccessDescription": "Allow Startune to read your music files.",
+      "notifications": "Notifications",
+      "notificationsDescription": "Allow progress updates and alerts."
+    }
+  },
   "settings": {
     "routes": {
       "index": {
@@ -375,7 +419,7 @@
         "description": "選擇應用程式顯示語言。"
       },
       "folderFilters": {
-        "title": "資料夾過濾器"
+        "title": "Folder filters"
       },
       "trackDurationFilter": {
         "title": "$t(term.trackDurationFilterLabel)"
@@ -388,6 +432,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "onboarding": {
+        "title": "Onboarding"
       }
     },
     "appearance": {
@@ -440,7 +487,9 @@
       "indexing": "索引...",
       "selectFilterMode": "選擇濾鏡模式",
       "whitelist": "白名單",
+      "whitelistDescription": "Scan only folders you choose.",
       "blacklist": "黑名單",
+      "blacklistDescription": "Skip folders you choose.",
       "folderFiltersDescription": "將特定資料夾列入白名單或黑名單。",
       "trackDurationFilter": "$t(term.trackDurationFilterLabel)",
       "autoScan": "自動掃描",
@@ -554,6 +603,7 @@
         "logs": "Logs",
         "history": "History",
         "background": "Background",
+        "onboarding": "Onboarding",
         "updates": "Updates"
       },
       "logExtraDescription": "額外：捕獲調試、資訊、警告和錯誤。",
@@ -581,6 +631,8 @@
       "historyResetUnableTitle": "無法重置歷史記錄",
       "batteryAlreadyDisabledTitle": "電池優化已停用",
       "batteryAlreadyDisabledDescription": "無需採取任何額外措施。",
+      "restartOnboarding": "Restart onboarding",
+      "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
       "unableToOpenLinkTitle": "無法開啟連結"
     },
     "about": {
