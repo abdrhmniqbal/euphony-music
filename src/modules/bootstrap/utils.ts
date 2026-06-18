@@ -32,6 +32,7 @@ import { ensureFolderFilterConfigLoaded } from "@/modules/settings/folder-filter
 import { ensureIndexerNotificationsConfigLoaded } from "@/modules/settings/indexer-notifications"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import { ensureTrackDurationFilterConfigLoaded } from "@/modules/settings/track-duration-filter"
+import { preferenceStore } from "@/stores/preference/store"
 
 async function preloadLocalSettings() {
   logInfo("Preloading local settings")
@@ -89,6 +90,11 @@ export async function bootstrapApp(): Promise<void> {
       logInfo("Skipping bootstrap index run due to media permission status", {
         status,
       })
+      return
+    }
+
+    if (!preferenceStore.getState().completedOnboarding) {
+      logInfo("Initial scan skipped because onboarding is not completed")
       return
     }
 

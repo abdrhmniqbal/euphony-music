@@ -58,7 +58,11 @@ async function preloadSettings() {
 
 async function resolveMediaPermission() {
   const permission = await getMediaLibraryPermission()
-  if (permission.status === "undetermined" && permission.canAskAgain) {
+  if (
+    preferenceStore.getState().completedOnboarding &&
+    permission.status === "undetermined" &&
+    permission.canAskAgain
+  ) {
     return requestMediaLibraryPermission()
   }
 
@@ -66,6 +70,11 @@ async function resolveMediaPermission() {
 }
 
 async function runStartupScan() {
+  if (!preferenceStore.getState().completedOnboarding) {
+    logInfo("Startup scan skipped because onboarding is not completed")
+    return
+  }
+
   if (!preferenceStore.getState().rescanOnLaunch) {
     return
   }

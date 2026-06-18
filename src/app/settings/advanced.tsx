@@ -23,6 +23,7 @@ import { shareCrashLogs } from "@/modules/logging/service"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { useSettingsStore } from "@/modules/settings/store"
 import { showAppToast } from "@/modules/ui/toast"
+import { preferenceStore } from "@/stores/preference/store"
 
 export default function AdvancedSettingsScreen() {
   const router = useRouter()
@@ -117,6 +118,11 @@ export default function AdvancedSettingsScreen() {
     }
   }
 
+  function restartOnboarding() {
+    preferenceStore.setState({ completedOnboarding: false })
+    router.push("/onboarding")
+  }
+
   return (
     <>
       <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
@@ -202,6 +208,26 @@ export default function AdvancedSettingsScreen() {
                 <ListGroup.ItemTitle>{t("settings.advanced.dontKillMyApp")}</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.advanced.dontKillMyAppDescription")}
+                </ListGroup.ItemDescription>
+              </ListGroup.ItemContent>
+              <ListGroup.ItemSuffix />
+            </ListGroup.Item>
+          </ListGroup>
+
+          <Text className="px-1 text-xs font-semibold uppercase text-muted">
+            {t("settings.advanced.sections.onboarding", "Onboarding")}
+          </Text>
+          <ListGroup>
+            <ListGroup.Item onPress={restartOnboarding}>
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>
+                  {t("settings.advanced.restartOnboarding", "Restart onboarding")}
+                </ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>
+                  {t(
+                    "settings.advanced.restartOnboardingDescription",
+                    "Run theme, folder, permission, and battery setup again."
+                  )}
                 </ListGroup.ItemDescription>
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />

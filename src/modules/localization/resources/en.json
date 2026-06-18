@@ -1,5 +1,6 @@
 {
   "common": {
+    "appName": "Startune Music",
     "cancel": "Cancel",
     "clear": "Clear",
     "clearAll": "Clear All",
@@ -10,6 +11,8 @@
     "reset": "Reset",
     "seeMore": "See more",
     "unknown": "Unknown",
+    "next": "Next",
+    "finish": "Finish",
     "feedback": {
       "addedToFavorites": "Added to favorites",
       "removedFromFavorites": "Removed from favorites",
@@ -32,7 +35,8 @@
       "libraryReindexStarted": "Library reindex started",
       "trackDurationUpdated": "Track duration filter updated",
       "folderFiltersApplied": "Folder filters applied",
-      "folderAdded": "Folder added"
+      "folderAdded": "Folder added",
+      "mediaGranted": "Media access granted"
     }
   },
   "term": {
@@ -358,6 +362,22 @@
       "external": "Playing from File"
     }
   },
+  "onboarding": {
+    "welcomePrefix": "Welcome to",
+    "welcomeDescription": "Set up theme, folders, and permissions before first scan.",
+    "permissions": {
+      "title": "Permissions",
+      "description": "Grant required permissions to start listening.",
+      "grant": "Grant Access",
+      "granted": "Access Granted",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "fileAccess": "File access",
+      "fileAccessDescription": "Allow Startune to read your music files.",
+      "notifications": "Notifications",
+      "notificationsDescription": "Allow progress updates and alerts."
+    }
+  },
   "settings": {
     "routes": {
       "index": {
@@ -399,7 +419,7 @@
         "description": "Choose the app display language."
       },
       "folderFilters": {
-        "title": "Folder Filters"
+        "title": "Folder filters"
       },
       "trackDurationFilter": {
         "title": "$t(term.trackDurationFilterLabel)"
@@ -412,6 +432,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "onboarding": {
+        "title": "Onboarding"
       }
     },
     "appearance": {
@@ -464,7 +487,9 @@
       "indexing": "Indexing...",
       "selectFilterMode": "Select Filter Mode",
       "whitelist": "Whitelist",
+      "whitelistDescription": "Scan only folders you choose.",
       "blacklist": "Blacklist",
+      "blacklistDescription": "Skip folders you choose.",
       "folderFiltersDescription": "Whitelist or blacklist specific folders.",
       "trackDurationFilter": "$t(term.trackDurationFilterLabel)",
       "autoScan": "Auto Scan",
@@ -578,6 +603,7 @@
         "logs": "Logs",
         "history": "History",
         "background": "Background",
+        "onboarding": "Onboarding",
         "updates": "Updates"
       },
       "logExtraDescription": "Extra: capture debug, info, warnings, and errors.",
@@ -605,6 +631,8 @@
       "historyResetUnableTitle": "Unable to reset history",
       "batteryAlreadyDisabledTitle": "Battery optimization already disabled",
       "batteryAlreadyDisabledDescription": "No additional action is needed.",
+      "restartOnboarding": "Restart onboarding",
+      "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
       "unableToOpenLinkTitle": "Unable to open link"
     },
     "about": {

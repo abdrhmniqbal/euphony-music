@@ -11,7 +11,7 @@ import { useSegments } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import * as SplashScreen from "expo-splash-screen"
 import { HeroUINativeProvider } from "heroui-native"
-import { type ReactNode, useRef } from "react"
+import { type ReactNode, useEffect, useRef } from "react"
 import { View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from "react-native-reanimated"
@@ -36,6 +36,7 @@ import {
 import { useHasCurrentTrack } from "@/modules/player/selectors"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useUIStore } from "@/modules/ui/store"
+import { usePreferenceStore } from "@/stores/preference/store"
 
 import "../global.css"
 
@@ -112,7 +113,17 @@ export default function Layout() {
     handleBootstrapDatabaseError()
     hideSplash()
   }
+  const completedOnboarding = usePreferenceStore((state) => state.completedOnboarding)
+  const isHydrated = usePreferenceStore((state) => state._hasHydrated)
+
+  useEffect(() => {
+    if (isHydrated && !completedOnboarding) {
+      router.replace("/onboarding")
+    }
+  }, [isHydrated, completedOnboarding, router])
+
   const tabBarHeight = getTabBarHeight(insets.bottom)
+
   const isMainTabsRoute = segments[0] === "(main)"
   const isFolderFiltersRoute = segments[0] === "settings" && segments.at(1) === "folder-filters"
   const folderFiltersToastOffset = isFolderFiltersRoute
@@ -168,6 +179,7 @@ export default function Layout() {
                   }}
                 >
                   <Stack.Screen name="(main)" />
+                  <Stack.Screen name="onboarding" />
                   <Stack.Screen name="settings" options={ROOT_MODAL_SCREEN_OPTIONS} />
                   <Stack.Screen
                     name="player"

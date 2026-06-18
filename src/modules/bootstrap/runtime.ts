@@ -12,6 +12,7 @@ import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"
 import { startIndexing } from "@/modules/indexer/service"
 import { isIndexerRunActive } from "@/modules/indexer/runtime"
 import { initializeLogging, logError, logInfo, logWarn } from "@/modules/logging/service"
+import { preferenceStore } from "@/stores/preference/store"
 
 type DatabaseStatus = "pending" | "ready" | "error"
 
@@ -131,6 +132,11 @@ export async function runAutoScan(options?: { bypassThrottle?: boolean }) {
   }
 
   try {
+    if (!preferenceStore.getState().completedOnboarding) {
+      logInfo("Auto scan skipped because onboarding is not completed", { bypassThrottle })
+      return
+    }
+
     const indexerScanConfig = await ensureAutoScanConfigLoaded()
     if (!indexerScanConfig.autoScanEnabled) {
       return
