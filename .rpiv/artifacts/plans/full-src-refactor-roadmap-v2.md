@@ -293,7 +293,7 @@ Sheet/scroll prop types are drifting from library expectations:
 
 ---
 
-# Phase 19 [Partially Done] — Player Session Service Split
+# Phase 19 [Completed] — Player Session Service Split
 
 ## Why
 `src/modules/player/session.service.ts` is 814 lines and owns native reads, persisted session reads, queue ID resolution, active-index resolution, session application, and periodic persistence.
