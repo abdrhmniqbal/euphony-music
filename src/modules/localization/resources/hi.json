@@ -1,5 +1,6 @@
 {
   "common": {
+    "appName": "Startune Music",
     "cancel": "रद्द करें",
     "clear": "साफ़ करें",
     "clearAll": "सब साफ़ करें",
@@ -9,7 +10,34 @@
     "shuffle": "शफल",
     "reset": "रीसेट करें",
     "seeMore": "और देखें",
-    "unknown": "अज्ञात"
+    "unknown": "अज्ञात",
+    "next": "Next",
+    "finish": "Finish",
+    "feedback": {
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "failedToUpdateFavorite": "Failed to update favorite",
+      "playlistCreated": "Playlist created",
+      "playlistUpdated": "Playlist updated",
+      "playlistDeleted": "Playlist deleted",
+      "failedToCreatePlaylist": "Failed to create playlist",
+      "failedToUpdatePlaylist": "Failed to update playlist",
+      "failedToDeletePlaylist": "Failed to delete playlist",
+      "addedToPlaylist": "Added to playlist",
+      "removedFromPlaylist": "Removed from playlist",
+      "failedToAddToPlaylist": "Failed to add to playlist",
+      "failedToRemoveFromPlaylist": "Failed to remove from playlist",
+      "playlistReordered": "Playlist order updated",
+      "failedToReorderPlaylist": "Failed to update playlist order",
+      "trackDeleted": "Track deleted",
+      "failedToDeleteTrack": "Failed to delete track",
+      "addedToQueue": "Added to queue: {{name}}",
+      "libraryReindexStarted": "Library reindex started",
+      "trackDurationUpdated": "Track duration filter updated",
+      "folderFiltersApplied": "Folder filters applied",
+      "folderAdded": "Folder added",
+      "mediaGranted": "Media access granted"
+    }
   },
   "term": {
     "track": "गाना",
@@ -334,6 +362,22 @@
       "external": "फ़ाइल से चल रहा है"
     }
   },
+  "onboarding": {
+    "welcomePrefix": "Welcome to",
+    "welcomeDescription": "Set up theme, folders, and permissions before first scan.",
+    "permissions": {
+      "title": "Permissions",
+      "description": "Grant required permissions to start listening.",
+      "grant": "Grant Access",
+      "granted": "Access Granted",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "fileAccess": "File access",
+      "fileAccessDescription": "Allow Startune to read your music files.",
+      "notifications": "Notifications",
+      "notificationsDescription": "Allow progress updates and alerts."
+    }
+  },
   "settings": {
     "routes": {
       "index": {
@@ -375,7 +419,7 @@
         "description": "ऐप प्रदर्शन भाषा चुनें."
       },
       "folderFilters": {
-        "title": "फ़ोल्डर फ़िल्टर"
+        "title": "Folder filters"
       },
       "trackDurationFilter": {
         "title": "$t(term.trackDurationFilterLabel)"
@@ -388,6 +432,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "onboarding": {
+        "title": "Onboarding"
       }
     },
     "appearance": {
@@ -440,7 +487,9 @@
       "indexing": "अनुक्रमणिका...",
       "selectFilterMode": "फ़िल्टर मोड चुनें",
       "whitelist": "श्वेतसूची",
+      "whitelistDescription": "Scan only folders you choose.",
       "blacklist": "काली सूची",
+      "blacklistDescription": "Skip folders you choose.",
       "folderFiltersDescription": "विशिष्ट फ़ोल्डरों को श्वेतसूची या कालीसूची में डालें।",
       "trackDurationFilter": "$t(term.trackDurationFilterLabel)",
       "autoScan": "ऑटो स्कैन",
@@ -554,6 +603,7 @@
         "logs": "Logs",
         "history": "History",
         "background": "Background",
+        "onboarding": "Onboarding",
         "updates": "Updates"
       },
       "logExtraDescription": "अतिरिक्त: डिबग, जानकारी, चेतावनियाँ और त्रुटियाँ कैप्चर करें।",
@@ -581,6 +631,8 @@
       "historyResetUnableTitle": "इतिहास रीसेट करने में असमर्थ",
       "batteryAlreadyDisabledTitle": "बैटरी अनुकूलन पहले से ही अक्षम है",
       "batteryAlreadyDisabledDescription": "किसी अतिरिक्त कार्रवाई की आवश्यकता नहीं है.",
+      "restartOnboarding": "Restart onboarding",
+      "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
       "unableToOpenLinkTitle": "लिंक खोलने में असमर्थ"
     },
     "about": {
