@@ -6,12 +6,14 @@
  * Side Effects: Persists the selected Uniwind theme mode.
  */
 
-import { ListGroup, Separator } from "heroui-native"
-import * as React from "react"
-import { ScrollView, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 
+import {
+  SettingsListGroup,
+  SettingsNavigationRow,
+  SettingsScrollView,
+} from "@/components/blocks/settings"
 import { useSettingsStore } from "@/modules/settings/store"
 import { getLanguageOptions } from "@/modules/localization/language-settings"
 import { getDeviceLanguageCode } from "@/modules/localization/i18n"
@@ -30,30 +32,19 @@ export default function AppearanceSettingsScreen() {
       : languageLabel
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="gap-5 px-4 py-4">
-        <ListGroup>
-          <ListGroup.Item onPress={() => router.push("/settings/theme-mode")}>
-            <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>{t("settings.routes.themeMode.title")}</ListGroup.ItemTitle>
-              <ListGroup.ItemDescription>
-                {t("settings.routes.themeMode.description")}
-              </ListGroup.ItemDescription>
-            </ListGroup.ItemContent>
-            <ListGroup.ItemSuffix />
-          </ListGroup.Item>
-          <Separator className="mx-4" />
-          <ListGroup.Item onPress={() => router.push("/settings/language")}>
-            <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>{t("settings.routes.language.title")}</ListGroup.ItemTitle>
-              <ListGroup.ItemDescription>
-                {t("settings.appearance.languageDescription", { language: displayLanguage })}
-              </ListGroup.ItemDescription>
-            </ListGroup.ItemContent>
-            <ListGroup.ItemSuffix />
-          </ListGroup.Item>
-        </ListGroup>
-      </View>
-    </ScrollView>
+    <SettingsScrollView>
+      <SettingsListGroup>
+        <SettingsNavigationRow
+          title={t("settings.routes.themeMode.title")}
+          description={t("settings.routes.themeMode.description")}
+          onPress={() => router.push("/settings/theme-mode")}
+        />
+        <SettingsNavigationRow
+          title={t("settings.routes.language.title")}
+          description={t("settings.appearance.languageDescription", { language: displayLanguage })}
+          onPress={() => router.push("/settings/language")}
+        />
+      </SettingsListGroup>
+    </SettingsScrollView>
   )
 }

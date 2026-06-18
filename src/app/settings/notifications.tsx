@@ -6,14 +6,17 @@
  * Side Effects: Persists notification preferences and may dismiss active indexing notifications.
  */
 
-import { ListGroup, Separator, Switch } from "heroui-native"
-import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import { dismissIndexerProgressNotification } from "@/modules/indexer/notification"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { setIndexerNotificationsEnabled } from "@/modules/settings/indexer-notifications"
 import { useSettingsStore } from "@/modules/settings/store"
+import {
+  SettingsListGroup,
+  SettingsScrollView,
+  SettingsSwitchRow,
+} from "@/components/blocks/settings"
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation()
@@ -23,58 +26,39 @@ export default function NotificationSettingsScreen() {
   )
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="gap-5 px-4 py-4">
-        <ListGroup>
-          <ListGroup.Item>
-            <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>
-                {t("settings.notifications.appUpdateNotifications")}
-              </ListGroup.ItemTitle>
-              <ListGroup.ItemDescription>
-                {appUpdateNotificationsEnabled
-                  ? t("settings.notifications.appUpdateNotificationsEnabled")
-                  : t("settings.notifications.appUpdateNotificationsDisabled")}
-              </ListGroup.ItemDescription>
-            </ListGroup.ItemContent>
-            <ListGroup.ItemSuffix>
-              <Switch
-                isSelected={appUpdateNotificationsEnabled}
-                onSelectedChange={(isSelected) => {
-                  void setAppUpdateConfig({
-                    notificationsEnabled: isSelected,
-                  })
-                }}
-              />
-            </ListGroup.ItemSuffix>
-          </ListGroup.Item>
-          <Separator className="mx-4" />
-          <ListGroup.Item>
-            <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>
-                {t("settings.notifications.indexerNotifications")}
-              </ListGroup.ItemTitle>
-              <ListGroup.ItemDescription>
-                {indexerNotificationsEnabled
-                  ? t("settings.notifications.indexerNotificationsEnabled")
-                  : t("settings.notifications.indexerNotificationsDisabled")}
-              </ListGroup.ItemDescription>
-            </ListGroup.ItemContent>
-            <ListGroup.ItemSuffix>
-              <Switch
-                isSelected={indexerNotificationsEnabled}
-                onSelectedChange={(isSelected) => {
-                  void setIndexerNotificationsEnabled(isSelected)
+    <SettingsScrollView>
+      <SettingsListGroup>
+        <SettingsSwitchRow
+          title={t("settings.notifications.appUpdateNotifications")}
+          description={
+            appUpdateNotificationsEnabled
+              ? t("settings.notifications.appUpdateNotificationsEnabled")
+              : t("settings.notifications.appUpdateNotificationsDisabled")
+          }
+          isSelected={appUpdateNotificationsEnabled}
+          onSelectedChange={(isSelected) => {
+            void setAppUpdateConfig({
+              notificationsEnabled: isSelected,
+            })
+          }}
+        />
+        <SettingsSwitchRow
+          title={t("settings.notifications.indexerNotifications")}
+          description={
+            indexerNotificationsEnabled
+              ? t("settings.notifications.indexerNotificationsEnabled")
+              : t("settings.notifications.indexerNotificationsDisabled")
+          }
+          isSelected={indexerNotificationsEnabled}
+          onSelectedChange={(isSelected) => {
+            void setIndexerNotificationsEnabled(isSelected)
 
-                  if (!isSelected) {
-                    void dismissIndexerProgressNotification()
-                  }
-                }}
-              />
-            </ListGroup.ItemSuffix>
-          </ListGroup.Item>
-        </ListGroup>
-      </View>
-    </ScrollView>
+            if (!isSelected) {
+              void dismissIndexerProgressNotification()
+            }
+          }}
+        />
+      </SettingsListGroup>
+    </SettingsScrollView>
   )
 }

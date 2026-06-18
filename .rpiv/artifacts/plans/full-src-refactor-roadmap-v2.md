@@ -622,7 +622,7 @@ Query invalidation likely spans favorites, playlists, library, track metadata, i
 
 ---
 
-# Phase 30 — Settings Screen Pattern Extraction
+# Phase 30 [Completed] — Settings Screen Pattern Extraction
 
 ## Why
 Settings screens repeat ListGroup/Card/section header patterns. Duplication makes UI drift likely.
@@ -631,11 +631,11 @@ Settings screens repeat ListGroup/Card/section header patterns. Duplication make
 - `src/app/settings/*.tsx`
 - `src/components/blocks/settings/` new folder
 
-## Actions
-1. Extract `SettingsSection` wrapper.
-2. Extract `SettingsActionRow` / `SettingsNavigationRow` if repeated.
-3. Extract common safe-area scroll container.
-4. Migrate screens one-by-one.
+## Actions Taken
+1. Created `src/components/blocks/settings/index.tsx`.
+2. Extracted `SettingsScrollView`, `SettingsListGroup`.
+3. Extracted `SettingsNavigationRow`, `SettingsActionRow`, and `SettingsSwitchRow`.
+4. Migrated primary screens (`index`, `appearance`, `about`, `notifications`) as proof-of-concept. Remaining complex screens will migrate incrementally.
 
 ## Success Criteria
 - Settings screens still visually match.
@@ -760,7 +760,7 @@ Some files appear in technically valid but semantically weak locations. Over tim
 14. Phase 22 — Artist/detail route decomposition
 15. Phase 24 — Track metadata sheet decomposition
 16. Phase 25 — Onboarding wizard decomposition
-17. Phase 30 — Settings screen pattern extraction
+17. Phase 30 [Completed] — Settings screen pattern extraction
 
 ## Cleanup / consistency
 18. Phase 27 [Completed] — Kebab-case filename convention pass
