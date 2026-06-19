@@ -309,7 +309,7 @@ export const TrackPlayer = {
 
   async setRepeatMode(mode: RepeatMode) {
     repeatModeMirror = mode
-    AudioBrowser.setRepeatMode(mode === RepeatMode.Track ? "track" : "off")
+    AudioBrowser.setRepeatMode(mode === RepeatMode.Track ? "track" : mode === RepeatMode.Queue ? "queue" : "off")
   },
 
   async getRepeatMode() {

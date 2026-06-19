@@ -154,7 +154,6 @@ async function startRuntime() {
   AudioBrowser.onActiveTrackChanged.addListener(onActiveTrackChanged)
   AudioBrowser.onProgressUpdated.addListener(onProgressUpdated)
   AudioBrowser.onPlaybackChanged.addListener(onPlaybackChanged)
-  AudioBrowser.onQueueEnded.addListener(advanceToNextTrackOnce)
   await preloadSettings()
   await loadInitialDatabaseState()
   await runStartupScan()

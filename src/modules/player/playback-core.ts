@@ -78,12 +78,15 @@ export async function setPlaybackRepeatMode(mode: RepeatModeType) {
   repeatMode: switch (mode) {
     case "off":
       playbackStore.setState({ repeat: "no-repeat" })
+      AudioBrowser.setRepeatMode("off")
       break
     case "queue":
       playbackStore.setState({ repeat: "repeat" })
+      AudioBrowser.setRepeatMode("off")
       break
     case "track":
       playbackStore.setState({ repeat: "repeat-one" })
+      AudioBrowser.setRepeatMode("track")
       break
   }
 }

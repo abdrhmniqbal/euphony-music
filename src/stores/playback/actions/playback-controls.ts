@@ -1,7 +1,6 @@
 import AudioBrowser from "react-native-audio-browser"
 
 import { addPlayedMediaList } from "@/modules/history/repository"
-import { preferenceStore } from "@/stores/preference/store"
 import { RepeatModes } from "../constants"
 import type { PlayFromSource } from "../types"
 import {
@@ -85,7 +84,6 @@ export async function prev() {
       activeTrack: prevTrack,
       queuePosition: prevIndex,
       numQueuedNext: 0,
-      ...getNewRepeatState(),
     })
   } else {
     playbackStore.setState({ lastPosition: 0 })
@@ -95,21 +93,37 @@ export async function prev() {
 }
 
 export async function next(naturalProgression = false) {
+  const { activeKey, activeTrack, queue, queuePosition, repeat } = playbackStore.getState()
+
+  if (naturalProgression && repeat === RepeatModes.REPEAT_ONE && activeKey && activeTrack) {
+    playbackStore.setState({
+      lastPosition: 0,
+      activeKey,
+      activeTrack,
+    })
+    await loadCurrentTrack()
+    await play({ noRevalidation: true })
+    return
+  }
+
+  const isAtQueueEnd = queuePosition === queue.length - 1
+  if (naturalProgression && isAtQueueEnd && repeat === RepeatModes.NO_REPEAT) {
+    await stop()
+    return
+  }
+
   const nextTrackContext = await getNextTrack()
   if (!nextTrackContext) return
 
   playbackStore.setState({
     ...nextTrackContext,
-    ...(naturalProgression ? {} : getNewRepeatState()),
   })
 
-  if (
-    nextTrackContext.queuePosition === 0 &&
-    playbackStore.getState().repeat === RepeatModes.NO_REPEAT
-  ) {
-    await pause()
-  }
   await loadCurrentTrack()
+
+  if (naturalProgression) {
+    await play({ noRevalidation: true })
+  }
 }
 
 export async function seekTo(position: number) {
@@ -132,7 +146,6 @@ export async function playAtIndex(index: number) {
     activeTrack: nextTrack,
     queuePosition: index,
     numQueuedNext: index < queuePosition ? 0 : Math.max(0, numQueuedNext - (index - queuePosition)),
-    ...getNewRepeatState(),
   })
 
   await loadCurrentTrack()
@@ -192,16 +205,6 @@ export async function playFromList({
   await AudioBrowser.play()
 
   addPlayedMediaList(source)
-}
-
-function getNewRepeatState() {
-  const { repeat } = playbackStore.getState()
-  const { repeatOnSkip } = preferenceStore.getState()
-  if (repeat === RepeatModes.REPEAT_ONE && !repeatOnSkip) {
-    return { repeat: RepeatModes.REPEAT } as const
-  } else {
-    return {}
-  }
 }
 
 export async function getNextTrack() {
