@@ -18,9 +18,9 @@ import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import Animated from "react-native-reanimated"
 
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { DeletePlaylistDialog } from "@/components/blocks/delete-playlist-dialog"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
-import { PlaylistActionsSheet } from "@/components/blocks/playlist-actions-sheet"
 import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
@@ -347,17 +347,38 @@ export default function PlaylistDetailsScreen() {
           }
         />
 
-        <PlaylistActionsSheet
+        <CollectionActionSheet
           visible={showActionSheet}
           onOpenChange={setShowActionSheet}
-          onEdit={() =>
-            router.push({
-              pathname: "/playlist/form",
-              params: { id: playlist.id },
-            })
-          }
-          onDelete={() => setShowDeleteDialog(true)}
-        />
+          type="playlist"
+          id={playlist.id}
+          favoriteId={playlist.id}
+          name={playlist.name}
+          subtitle={formatDuration(totalDuration)}
+          image={playlist.artwork || undefined}
+          trackCount={playlist.trackCount || 0}
+        >
+          <Button
+            variant="ghost"
+            className="h-14 w-full justify-start px-0"
+            onPress={() => {
+              setShowActionSheet(false)
+              router.push({ pathname: "/playlist/form", params: { id: playlist.id } })
+            }}
+          >
+            <Text className="text-base font-medium text-foreground">{t("playlist.editPlaylist")}</Text>
+          </Button>
+          <Button
+            variant="ghost"
+            className="h-14 w-full justify-start px-0"
+            onPress={() => {
+              setShowActionSheet(false)
+              setShowDeleteDialog(true)
+            }}
+          >
+            <Text className="text-base font-medium text-danger">{t("playlist.deletePlaylist")}</Text>
+          </Button>
+        </CollectionActionSheet>
         <DeletePlaylistDialog
           isOpen={showDeleteDialog}
           onOpenChange={setShowDeleteDialog}

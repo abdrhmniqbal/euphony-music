@@ -11,11 +11,13 @@ import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import Animated from "react-native-reanimated"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
 import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -71,6 +73,7 @@ export default function AlbumDetailsScreen() {
   const toggleFavoriteMutation = useToggleFavorite()
   const [sortModalVisible, setSortModalVisible] = useState(false)
   const [showHeaderTitle, setShowHeaderTitle] = useState(false)
+  const [showActionSheet, setShowActionSheet] = useState(false)
   const allSortConfigs = useLibrarySortStore((state) => state.sortConfig)
   const allTracks = usePlayerTracks()
   const parsedAlbumRouteName = React.useMemo(() => getSafeRouteName(name), [name])
@@ -200,39 +203,54 @@ export default function AlbumDetailsScreen() {
             headerBackVisible: false,
             headerLeft: () => <BackButton className="-ml-2" onPress={handleBack} />,
             headerRight: () =>
-              albumId && (
-                <Button
-                  onPress={() => {
-                    if (!albumId) {
-                      return
-                    }
+              albumId ? (
+                <View className="-mr-2 flex-row gap-4">
+                  <Button
+                    onPress={() => {
+                      if (!albumId) {
+                        return
+                      }
 
-                    void toggleFavoriteMutation.mutateAsync({
-                      type: "album",
-                      itemId: albumId,
-                      isCurrentlyFavorite: isAlbumFavorite,
-                      name: albumInfo.title,
-                      subtitle: albumInfo.artist,
-                      image: albumInfo.image,
-                    })
-                  }}
-                  isDisabled={toggleFavoriteMutation.isPending}
-                  variant="ghost"
-                  className="-mr-2"
-                  isIconOnly
-                >
-                  {isAlbumFavorite ? (
-                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
-                  ) : (
-                    <LocalFavouriteIcon
+                      void toggleFavoriteMutation.mutateAsync({
+                        type: "album",
+                        itemId: albumId,
+                        isCurrentlyFavorite: isAlbumFavorite,
+                        name: albumInfo.title,
+                        subtitle: albumInfo.artist,
+                        image: albumInfo.image,
+                      })
+                    }}
+                    isDisabled={toggleFavoriteMutation.isPending}
+                    variant="ghost"
+                    className="-mr-2"
+                    isIconOnly
+                  >
+                    {isAlbumFavorite ? (
+                      <LocalFavouriteSolidIcon
+                        fill="none"
+                        width={24}
+                        height={24}
+                        color="#ef4444"
+                      />
+                    ) : (
+                      <LocalFavouriteIcon
+                        fill="none"
+                        width={24}
+                        height={24}
+                        color={theme.foreground}
+                      />
+                    )}
+                  </Button>
+                  <Button variant="ghost" isIconOnly onPress={() => setShowActionSheet(true)}>
+                    <LocalMoreHorizontalCircleSolidIcon
                       fill="none"
                       width={24}
                       height={24}
                       color={theme.foreground}
                     />
-                  )}
-                </Button>
-              ),
+                  </Button>
+                </View>
+              ) : null,
           }}
         />
         <TrackList
@@ -338,6 +356,19 @@ export default function AlbumDetailsScreen() {
           }
         />
 
+        {albumId ? (
+          <CollectionActionSheet
+            visible={showActionSheet}
+            onOpenChange={setShowActionSheet}
+            type="album"
+            id={albumId}
+            favoriteId={albumId}
+            name={albumInfo.title}
+            subtitle={albumInfo.artist}
+            image={albumInfo.image}
+            trackCount={sortedTracks.length}
+          />
+        ) : null}
         <SortSheet.Content options={ALBUM_TRACK_SORT_OPTIONS} />
       </View>
     </SortSheet>

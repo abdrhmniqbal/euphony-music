@@ -26,6 +26,8 @@ import {
   type ViewStyle,
 } from "react-native"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
@@ -73,6 +75,7 @@ interface FavoritesListProps {
 interface FavoriteRowProps {
   favorite: FavoriteEntry
   onPress: (favorite: FavoriteEntry) => void
+  onLongPress: (favorite: FavoriteEntry) => void
   onRemove: (favorite: FavoriteEntry) => void
 }
 
@@ -167,10 +170,14 @@ const TypeBadge: React.FC<{ type: FavoriteType }> = ({ type }) => {
   )
 }
 
-function FavoriteRow({ favorite, onPress, onRemove }: FavoriteRowProps) {
+function FavoriteRow({ favorite, onPress, onLongPress, onRemove }: FavoriteRowProps) {
   const handlePress = useCallback(() => {
     onPress(favorite)
   }, [favorite, onPress])
+
+  const handleLongPress = useCallback(() => {
+    onLongPress(favorite)
+  }, [favorite, onLongPress])
 
   const handleRemove = useCallback(
     (event: { stopPropagation: () => void }) => {
@@ -181,7 +188,7 @@ function FavoriteRow({ favorite, onPress, onRemove }: FavoriteRowProps) {
   )
 
   return (
-    <Item onPress={handlePress}>
+    <Item onPress={handlePress} onLongPress={handleLongPress}>
       <FavoriteItemImage favorite={favorite} />
       <ItemContent>
         <ItemTitle>{favorite.name}</ItemTitle>
@@ -236,6 +243,8 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   const toggleFavoriteMutation = useToggleFavorite()
   const router = useRouter()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
+  const [selectedFavorite, setSelectedFavorite] = React.useState<FavoriteEntry | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
   const visibleFavoriteTypes = FAVORITE_TYPE_FILTERS.filter((type) => availableTypes.includes(type))
   const orderedFavoriteTypes = [
     ...selectedTypes.filter((type) => visibleFavoriteTypes.includes(type)),
@@ -305,6 +314,11 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
     [onTrackPress, router, tracks]
   )
 
+  const handleLongPress = useCallback((favorite: FavoriteEntry) => {
+    setSelectedFavorite(favorite)
+    setIsSheetOpen(true)
+  }, [])
+
   const handleRemoveFavorite = useCallback(
     (favorite: FavoriteEntry) => {
       void toggleFavoriteMutation.mutateAsync({
@@ -321,10 +335,27 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
 
   const renderFavoriteItem = useCallback(
     ({ item }: LegendListRenderItemProps<FavoriteEntry>) => (
-      <MemoizedFavoriteRow favorite={item} onPress={handlePress} onRemove={handleRemoveFavorite} />
+      <MemoizedFavoriteRow favorite={item} onPress={handlePress} onLongPress={handleLongPress} onRemove={handleRemoveFavorite} />
     ),
-    [handlePress, handleRemoveFavorite]
+    [handlePress, handleLongPress, handleRemoveFavorite]
   )
+
+  const isTrackType = selectedFavorite?.type === "track"
+
+  const mappedTrack = React.useMemo(() => {
+    if (!selectedFavorite || selectedFavorite.type !== "track") return null
+    const realTrack = tracks.find((t) => t.id === selectedFavorite.id)
+    if (realTrack) return realTrack
+    
+    return {
+      id: selectedFavorite.id,
+      title: selectedFavorite.name,
+      artist: selectedFavorite.subtitle,
+      image: selectedFavorite.image,
+      duration: 0,
+      uri: "",
+    } as any
+  }, [selectedFavorite, tracks])
 
   return (
     <View style={{ flex: 1, minHeight: 1 }}>
@@ -378,6 +409,26 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
         }
         {...LEGEND_LIST_ROW_CONFIG}
         style={{ flex: 1, minHeight: 1 }}
+      />
+      <CollectionActionSheet
+        visible={isSheetOpen && !isTrackType && Boolean(selectedFavorite)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsSheetOpen(false)
+          }
+        }}
+        type={selectedFavorite?.type as any}
+        id={selectedFavorite?.id ?? ""}
+        name={selectedFavorite?.name ?? ""}
+        subtitle={selectedFavorite?.subtitle}
+        image={selectedFavorite?.image}
+        images={selectedFavorite?.images}
+      />
+      <TrackActionSheet
+        track={mappedTrack}
+        isOpen={isSheetOpen && isTrackType}
+        onClose={() => setIsSheetOpen(false)}
+        tracks={tracks}
       />
     </View>
   )

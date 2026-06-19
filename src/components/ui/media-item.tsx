@@ -11,7 +11,7 @@ import { Image } from "expo-image"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { createContext, use } from "react"
-import { Text, type TextProps, View, type ViewProps } from "react-native"
+import { Text, type TextProps, View, type ViewProps, type GestureResponderEvent } from "react-native"
 import Animated from "react-native-reanimated"
 import Transition from "react-native-screen-transitions"
 import { cn, tv, type VariantProps } from "tailwind-variants"
@@ -68,14 +68,104 @@ function MediaItemRoot({
   boundaryId,
   children,
   id,
+  onLongPress,
+  onPress,
+  onPressIn,
+  onPressOut,
+  delayLongPress = 500,
   ...props
 }: MediaItemProps) {
   const { base } = mediaItemStyles({ variant })
+  const didLongPressRef = React.useRef(false)
+  const longPressTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const resolvedDelayLongPress = typeof delayLongPress === "number" ? delayLongPress : 500
+
+  const clearLongPressTimer = React.useCallback(() => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current)
+      longPressTimerRef.current = null
+    }
+  }, [])
+
+  const triggerLongPress = React.useCallback(
+    (event: GestureResponderEvent) => {
+      if (didLongPressRef.current) {
+        return
+      }
+      didLongPressRef.current = true
+      if (typeof onLongPress === "function") {
+        onLongPress(event)
+      }
+    },
+    [onLongPress]
+  )
+
+  const handlePressIn = React.useCallback(
+    (event: GestureResponderEvent) => {
+      didLongPressRef.current = false
+      if (typeof onPressIn === "function") {
+        onPressIn(event)
+      }
+      if (typeof onLongPress !== "function") {
+        return
+      }
+      clearLongPressTimer()
+      longPressTimerRef.current = setTimeout(() => {
+        triggerLongPress(event)
+      }, resolvedDelayLongPress)
+    },
+    [clearLongPressTimer, onLongPress, onPressIn, resolvedDelayLongPress, triggerLongPress]
+  )
+
+  const handlePressOut = React.useCallback(
+    (event: GestureResponderEvent) => {
+      clearLongPressTimer()
+      if (typeof onPressOut === "function") {
+        onPressOut(event)
+      }
+    },
+    [clearLongPressTimer, onPressOut]
+  )
+
+  const handlePress = React.useCallback(
+    (event: GestureResponderEvent) => {
+      if (didLongPressRef.current) {
+        didLongPressRef.current = false
+        return
+      }
+      if (typeof onPress === "function") {
+        onPress(event)
+      }
+    },
+    [onPress]
+  )
+
+  const handleLongPress = React.useCallback(
+    (event: GestureResponderEvent) => {
+      clearLongPressTimer()
+      triggerLongPress(event)
+    },
+    [clearLongPressTimer, triggerLongPress]
+  )
+
+  React.useEffect(() => clearLongPressTimer, [clearLongPressTimer])
+
+  const interactionProps = {
+    ...props,
+    onPress: handlePress,
+    onLongPress: handleLongPress,
+    onPressIn: handlePressIn,
+    onPressOut: handlePressOut,
+  }
 
   if (boundaryId) {
     return (
       <MediaItemContext value={{ variant }}>
-        <BoundaryPressableFeedback id={boundaryId} className={cn(base(), className)} {...props}>
+        <BoundaryPressableFeedback
+          id={boundaryId}
+          className={cn(base(), className)}
+          {...interactionProps}
+        >
           {children}
         </BoundaryPressableFeedback>
       </MediaItemContext>
@@ -84,7 +174,7 @@ function MediaItemRoot({
 
   return (
     <MediaItemContext value={{ variant }}>
-      <PressableFeedback className={cn(base(), className)} {...props}>
+      <PressableFeedback className={cn(base(), className)} {...interactionProps}>
         {children}
       </PressableFeedback>
     </MediaItemContext>

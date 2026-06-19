@@ -12,7 +12,7 @@ import {
 } from "react-native"
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
-
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalAddIcon from "@/components/icons/local/add"
@@ -47,6 +47,7 @@ type PlaylistListRow = { id: string; rowType: "create" } | (Playlist & { rowType
 interface PlaylistListProps {
   data: Playlist[]
   onPlaylistPress?: (playlist: Playlist) => void
+  onPlaylistLongPress?: (playlist: Playlist) => void
   onCreatePlaylist?: () => void
   scrollEnabled?: boolean
   contentContainerStyle?: StyleProp<ViewStyle>
@@ -61,6 +62,7 @@ interface PlaylistListProps {
 export const PlaylistList: React.FC<PlaylistListProps> = ({
   data,
   onPlaylistPress,
+  onPlaylistLongPress,
   onCreatePlaylist,
   scrollEnabled = true,
   contentContainerStyle,
@@ -74,6 +76,8 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
+  const [selectedPlaylist, setSelectedPlaylist] = React.useState<Playlist | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
   const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
 
   const handlePress = useCallback(
@@ -88,6 +92,15 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   }, [onCreatePlaylist])
 
   const formatTrackCount = useCallback((count: number) => t("library.count.track", { count }), [t])
+
+  const handleLongPress = useCallback((playlist: Playlist) => {
+    setSelectedPlaylist(playlist)
+    setIsSheetOpen(true)
+  }, [])
+
+  const closeSheet = useCallback(() => {
+    setIsSheetOpen(false)
+  }, [])
 
   const renderCreateButton = useCallback(
     () => (
@@ -107,16 +120,14 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     (item: Playlist) => (
       <Item
         key={item.id}
-        boundaryId={resolvePlaylistTransitionId({
-          id: item.id,
-          title: item.title,
-        })}
+        boundaryId={resolvePlaylistTransitionId({ id: item.id, title: item.title })}
         onPress={() => handlePress(item)}
+        onLongPress={() => handleLongPress(item)}
       >
         <Transition.Boundary.Target>
-          <ItemImage className="items-center justify-center overflow-hidden bg-default">
-            <PlaylistArtwork images={resolvePlaylistArtworkImages(item.images, item.image)} />
-          </ItemImage>
+        <ItemImage className="items-center justify-center overflow-hidden bg-default">
+          <PlaylistArtwork images={resolvePlaylistArtworkImages(item.images, item.image)} />
+        </ItemImage>
         </Transition.Boundary.Target>
         <ItemContent>
           <ItemTitle>{item.title}</ItemTitle>
@@ -127,7 +138,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         </ItemAction>
       </Item>
     ),
-    [formatTrackCount, handlePress, theme.muted]
+    [formatTrackCount, handleLongPress, handlePress, theme.muted]
   )
 
   const listData: PlaylistListRow[] = useMemo(
@@ -184,6 +195,21 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         ListFooterComponent={emptyFooter}
         style={{ flex: 1, minHeight: 1 }}
       />
+      <CollectionActionSheet
+          visible={isSheetOpen && Boolean(selectedPlaylist)}
+          onOpenChange={(open) => {
+            if (!open) {
+              closeSheet()
+            }
+          }}
+          type="playlist"
+          id={selectedPlaylist?.id ?? ""}
+          name={selectedPlaylist?.title ?? ""}
+          subtitle={selectedPlaylist ? formatTrackCount(selectedPlaylist.trackCount) : undefined}
+          image={selectedPlaylist?.image}
+          images={selectedPlaylist?.images}
+          trackCount={selectedPlaylist?.trackCount ?? 0}
+        />
     </View>
   )
 }

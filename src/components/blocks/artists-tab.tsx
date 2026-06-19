@@ -34,6 +34,7 @@ function getArtistOrderByField(field: SortConfig["field"]): ArtistOrderByField {
 
 interface ArtistsTabProps {
   onArtistPress?: (artist: Artist) => void
+  onArtistLongPress?: (artist: Artist) => void
   sortConfig?: SortConfig
   contentBottomPadding?: number
   refreshControl?: React.ReactElement<RefreshControlProps> | null
@@ -45,6 +46,7 @@ interface ArtistsTabProps {
 
 export const ArtistsTab: React.FC<ArtistsTabProps> = ({
   onArtistPress,
+  onArtistLongPress,
   sortConfig,
   contentBottomPadding = 0,
   refreshControl,
@@ -101,6 +103,7 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
       <ArtistGrid
         data={sortedArtists}
         onArtistPress={handleArtistPress}
+        onArtistLongPress={onArtistLongPress}
         contentContainerStyle={{ paddingBottom: contentBottomPadding }}
         resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
         refreshControl={refreshControl}

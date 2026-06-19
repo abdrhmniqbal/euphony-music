@@ -11,13 +11,14 @@ import type { DBTrack } from "@/types/database"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 
 import { Input, PressableFeedback } from "heroui-native"
-import { useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { ContentSection } from "@/components/blocks/content-section"
 import { MediaCarousel } from "@/components/blocks/media-carousel"
 import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
 import LocalSearchIcon from "@/components/icons/local/search"
+import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { useCurrentTrackId } from "@/modules/player/selectors"
@@ -34,6 +35,8 @@ export default function SearchScreen() {
   const { t } = useTranslation()
   const router = useRouter()
   const currentTrackId = useCurrentTrackId()
+  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
+  const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const { data: dbTracks = [] } = useTracks({
     sortBy: "dateAdded",
     sortOrder: "desc",
@@ -45,6 +48,11 @@ export default function SearchScreen() {
   )
   const recentlyAddedPreviewTracks = recentlyAddedTracks.slice(0, RECENTLY_ADDED_LIMIT)
 
+  const openTrackSheet = useCallback((track: Track) => {
+    setSelectedTrack(track)
+    setIsTrackSheetOpen(true)
+  }, [])
+
   const renderRecentlyAddedItem = (item: Track) => (
     <TrackRow
       track={item}
@@ -55,6 +63,7 @@ export default function SearchScreen() {
           title: t("search.recentlyAdded"),
         })
       }
+      onLongPress={() => openTrackSheet(item)}
       titleClassName={currentTrackId === item.id ? "text-accent" : undefined}
       imageOverlay={currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined}
     />
@@ -65,6 +74,7 @@ export default function SearchScreen() {
   }
 
   return (
+    <>
     <ScrollView
       className="flex-1 bg-background"
       contentContainerStyle={{ paddingBottom: 220 }}
@@ -116,5 +126,12 @@ export default function SearchScreen() {
         )}
       />
     </ScrollView>
+    <TrackActionSheet
+      track={selectedTrack}
+      isOpen={isTrackSheetOpen}
+      onClose={() => setIsTrackSheetOpen(false)}
+      tracks={recentlyAddedTracks}
+    />
+    </>
   )
 }

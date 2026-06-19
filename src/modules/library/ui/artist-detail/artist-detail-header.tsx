@@ -3,6 +3,7 @@ import { Button } from "heroui-native"
 import { BackButton } from "@/components/patterns/back-button"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
 import { cn } from "@/utils/common"
 
 interface ArtistDetailHeaderProps {
@@ -16,6 +17,7 @@ interface ArtistDetailHeaderProps {
   isFavoritePending: boolean
   onBack: () => void
   onToggleFavorite: () => void
+  onOpenActions: () => void
 }
 
 export function ArtistDetailHeader({
@@ -29,6 +31,7 @@ export function ArtistDetailHeader({
   isFavoritePending,
   onBack,
   onToggleFavorite,
+  onOpenActions,
 }: ArtistDetailHeaderProps) {
   return (
     <View
@@ -55,24 +58,39 @@ export function ArtistDetailHeader({
         </View>
       ) : null}
       {artistId ? (
-        <Button
-          onPress={onToggleFavorite}
-          isDisabled={isFavoritePending}
-          variant="ghost"
-          className={cn("-mr-2", !isHeaderSolid && "bg-overlay/30")}
-          isIconOnly
-        >
-          {isArtistFavorite ? (
-            <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
-          ) : (
-            <LocalFavouriteIcon
+        <View className="flex-row gap-4">
+          <Button
+            onPress={onToggleFavorite}
+            isDisabled={isFavoritePending}
+            variant="ghost"
+            className={cn("-mr-2", !isHeaderSolid && "bg-overlay/30")}
+            isIconOnly
+          >
+            {isArtistFavorite ? (
+              <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
+            ) : (
+              <LocalFavouriteIcon
+                fill="none"
+                width={24}
+                height={24}
+                color={isHeaderSolid ? foregroundColor : "white"}
+              />
+            )}
+          </Button>
+          <Button
+            onPress={onOpenActions}
+            variant="ghost"
+            className={cn("-mr-2", !isHeaderSolid && "bg-overlay/30")}
+            isIconOnly
+          >
+            <LocalMoreHorizontalCircleSolidIcon
               fill="none"
               width={24}
               height={24}
               color={isHeaderSolid ? foregroundColor : "white"}
             />
-          )}
-        </Button>
+          </Button>
+        </View>
       ) : (
         <View className="h-10 w-10" />
       )}

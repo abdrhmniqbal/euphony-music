@@ -38,6 +38,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 import { type Album, AlbumGrid } from "@/components/blocks/album-grid"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
@@ -147,6 +148,9 @@ export default function ArtistDetailsScreen() {
     "overview"
   )
   const [sortModalVisible, setSortModalVisible] = useState(false)
+  const [showActionSheet, setShowActionSheet] = useState(false)
+  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
+  const [isAlbumSheetOpen, setIsAlbumSheetOpen] = useState(false)
   const scrollY = useSharedValue(0)
   const currentTrack = useCurrentTrack()
   const allTracks = usePlayerTracks()
@@ -401,6 +405,7 @@ export default function ArtistDetailsScreen() {
           isFavoritePending={toggleFavoriteMutation.isPending}
           onBack={handleBack}
           onToggleFavorite={toggleArtistFavorite}
+          onOpenActions={() => setShowActionSheet(true)}
         />
 
         {activeView === "overview" ? (
@@ -450,7 +455,15 @@ export default function ArtistDetailsScreen() {
                     title={t("library.albums")}
                     onViewMore={() => navigateTo("albums")}
                   />
-                  <AlbumGrid horizontal data={sortedAlbums} onAlbumPress={openAlbum} />
+                  <AlbumGrid
+                    horizontal
+                    data={sortedAlbums}
+                    onAlbumPress={openAlbum}
+                    onAlbumLongPress={(album) => {
+                      setSelectedAlbum(album)
+                      setIsAlbumSheetOpen(true)
+                    }}
+                  />
                 </View>
               )}
 
@@ -460,7 +473,15 @@ export default function ArtistDetailsScreen() {
                     title={t("library.featuredOn")}
                     onViewMore={() => navigateTo("featuredOn")}
                   />
-                  <AlbumGrid horizontal data={sortedFeaturedOnAlbums} onAlbumPress={openAlbum} />
+                  <AlbumGrid
+                    horizontal
+                    data={sortedFeaturedOnAlbums}
+                    onAlbumPress={openAlbum}
+                    onAlbumLongPress={(album) => {
+                      setSelectedAlbum(album)
+                      setIsAlbumSheetOpen(true)
+                    }}
+                  />
                 </View>
               )}
             </Animated.View>
@@ -520,6 +541,10 @@ export default function ArtistDetailsScreen() {
           <AlbumGrid
             data={displayedAlbums}
             onAlbumPress={openAlbum}
+            onAlbumLongPress={(album) => {
+              setSelectedAlbum(album)
+              setIsAlbumSheetOpen(true)
+            }}
             resetScrollKey={`${artistId || artistName}-${activeView}-${sortConfig.field}-${sortConfig.order}`}
             contentContainerStyle={{
               paddingBottom: 200,
@@ -567,6 +592,20 @@ export default function ArtistDetailsScreen() {
           <View className="flex-1 bg-background" />
         )}
 
+        {artistId ? (
+          <CollectionActionSheet
+            visible={showActionSheet}
+            onOpenChange={setShowActionSheet}
+            type="artist"
+            id={artistName}
+            favoriteId={artistId}
+            name={artistName}
+            subtitle={t("library.count.track", { count: sortedArtistTracks.length })}
+            image={artistImage}
+            trackCount={sortedArtistTracks.length}
+          />
+        ) : null}
+
         <SortSheet.Content
           options={
             activeView === "tracks"
@@ -577,6 +616,25 @@ export default function ArtistDetailsScreen() {
           }
         />
       </View>
+      {selectedAlbum && (
+        <CollectionActionSheet
+          visible={isAlbumSheetOpen}
+          onOpenChange={(visible) => {
+            if (!visible) {
+              setIsAlbumSheetOpen(false)
+              setSelectedAlbum(null)
+              return
+            }
+            setIsAlbumSheetOpen(visible)
+          }}
+          type="album"
+          id={selectedAlbum.id}
+          name={selectedAlbum.title}
+          subtitle={selectedAlbum.artist}
+          image={selectedAlbum.image}
+          trackCount={selectedAlbum.trackCount}
+        />
+      )}
     </SortSheet>
   )
 }

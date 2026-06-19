@@ -1,4 +1,7 @@
+import * as React from "react"
 import { ScrollView, View } from "react-native"
+import { useTranslation } from "react-i18next"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
 import { GenreCard } from "@/components/patterns/genre-card"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
@@ -18,6 +21,7 @@ interface LibraryGenresSectionProps {
   genresEmptyTitle: string
   genresEmptyMessage: string
   onGenrePress: (genreName: string) => void
+  onGenreLongPress?: (genreName: string) => void
 }
 
 export function LibraryGenresSection({
@@ -29,8 +33,23 @@ export function LibraryGenresSection({
   genresEmptyTitle,
   genresEmptyMessage,
   onGenrePress,
+  onGenreLongPress,
 }: LibraryGenresSectionProps) {
+  const { t } = useTranslation()
+  const [selectedGenre, setSelectedGenre] = React.useState<GenreCategory | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+
+  const handleLongPress = (genre: GenreCategory) => {
+    setSelectedGenre(genre)
+    setIsSheetOpen(true)
+  }
+
+  const closeSheet = () => {
+    setIsSheetOpen(false)
+  }
+
   return (
+    <>
     <ScrollView
       className="flex-1"
       contentContainerStyle={listContentContainerStyle}
@@ -50,6 +69,7 @@ export function LibraryGenresSection({
               color={genre.color}
               pattern={genre.pattern}
               onPress={() => onGenrePress(genre.title)}
+              onLongPress={() => handleLongPress(genre)}
             />
           ))}
         </View>
@@ -62,5 +82,20 @@ export function LibraryGenresSection({
         />
       )}
     </ScrollView>
+    <CollectionActionSheet
+        visible={isSheetOpen && Boolean(selectedGenre)}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeSheet()
+          }
+        }}
+        type="genre"
+        id={selectedGenre?.title ?? ""}
+        name={selectedGenre?.title ?? ""}
+        subtitle={t("library.genre")}
+        trackCount={selectedGenre?.trackCount ?? 0}
+        hideFavoriteAction
+      />
+    </>
   )
 }

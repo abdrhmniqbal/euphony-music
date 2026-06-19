@@ -17,6 +17,7 @@ import Animated, { FadeInUp, runOnJS } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
 
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { RecentSearches, type RecentSearchItem } from "@/components/blocks/recent-searches"
 import {
   type SearchAlbumResult,
@@ -25,6 +26,7 @@ import {
   SearchResults,
   type SearchTab,
 } from "@/components/blocks/search-results"
+import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import { Stack } from "@/layouts/stack"
@@ -125,6 +127,18 @@ export default function SearchInteractionScreen() {
   const [activeSearchTab, setActiveSearchTab] = useState<SearchTab>("All")
   const [headerInputKey, setHeaderInputKey] = useState(0)
   const [canAutoFocusInput, setCanAutoFocusInput] = useState(false)
+  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
+  const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
+  const [actionSheetConfig, setActionSheetConfig] = useState<{
+    visible: boolean
+    type: "album" | "artist" | "playlist"
+    id: string
+    name: string
+    subtitle?: string
+    image?: string
+    images?: string[]
+    trackCount?: number
+  } | null>(null)
 
   const { data: searchResults, isLoading, isFetching } = useSearch(searchQuery)
   const { data: recentSearches = [] } = useRecentSearches()
@@ -281,6 +295,25 @@ export default function SearchInteractionScreen() {
     })
   }
 
+  function handleTrackLongPress(track: Track) {
+    dismissKeyboard()
+    setSelectedTrack(track)
+    setIsTrackSheetOpen(true)
+  }
+
+  function handleArtistLongPress(artist: SearchArtistResult) {
+    dismissKeyboard()
+    setActionSheetConfig({
+      visible: true,
+      type: "artist",
+      id: artist.id,
+      name: artist.name,
+      subtitle: t("library.count.track", { count: artist.trackCount }),
+      image: artist.image,
+      trackCount: artist.trackCount,
+    })
+  }
+
   function handleArtistPress(artist: SearchArtistResult) {
     dismissKeyboard()
     pushRecentSearch({
@@ -304,6 +337,18 @@ export default function SearchInteractionScreen() {
     })
   }
 
+  function handleAlbumLongPress(album: SearchAlbumResult) {
+    dismissKeyboard()
+    setActionSheetConfig({
+      visible: true,
+      type: "album",
+      id: album.id,
+      name: album.title,
+      subtitle: album.artist || t("library.unknownArtist"),
+      image: album.image,
+    })
+  }
+
   function handleAlbumPress(album: SearchAlbumResult) {
     dismissKeyboard()
     pushRecentSearch({
@@ -324,6 +369,20 @@ export default function SearchInteractionScreen() {
           title: album.title,
         }),
       },
+    })
+  }
+
+  function handlePlaylistLongPress(playlist: SearchPlaylistResult) {
+    dismissKeyboard()
+    setActionSheetConfig({
+      visible: true,
+      type: "playlist",
+      id: playlist.id,
+      name: playlist.title,
+      subtitle: t("library.count.track", { count: playlist.trackCount }),
+      image: playlist.image,
+      images: playlist.images,
+      trackCount: playlist.trackCount,
     })
   }
 
@@ -390,9 +449,13 @@ export default function SearchInteractionScreen() {
           activeTab={activeSearchTab}
           onActiveTabChange={setActiveSearchTab}
           onTrackPress={handleTrackPress}
+          onTrackLongPress={handleTrackLongPress}
           onArtistPress={handleArtistPress}
+          onArtistLongPress={handleArtistLongPress}
           onAlbumPress={handleAlbumPress}
+          onAlbumLongPress={handleAlbumLongPress}
           onPlaylistPress={handlePlaylistPress}
+          onPlaylistLongPress={handlePlaylistLongPress}
         />
       ) : (
         <ScrollView
@@ -410,6 +473,30 @@ export default function SearchInteractionScreen() {
           />
         </ScrollView>
       )}
+      <CollectionActionSheet
+        visible={actionSheetConfig?.visible ?? false}
+        onOpenChange={(visible) => {
+          if (!visible) {
+            setActionSheetConfig(null)
+            return
+          }
+
+          setActionSheetConfig((prev) => (prev ? { ...prev, visible } : prev))
+        }}
+        type={actionSheetConfig?.type ?? "album"}
+        id={actionSheetConfig?.id ?? ""}
+        name={actionSheetConfig?.name ?? ""}
+        subtitle={actionSheetConfig?.subtitle}
+        image={actionSheetConfig?.image}
+        images={actionSheetConfig?.images}
+        trackCount={actionSheetConfig?.trackCount ?? 0}
+      />
+      <TrackActionSheet
+        track={selectedTrack}
+        isOpen={isTrackSheetOpen}
+        onClose={() => setIsTrackSheetOpen(false)}
+        tracks={tracks}
+      />
     </View>
   )
 }

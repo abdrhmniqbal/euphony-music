@@ -15,6 +15,7 @@ import {
   type ViewStyle,
 } from "react-native"
 import { useTranslation } from "react-i18next"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
@@ -88,6 +89,8 @@ export const FolderList: React.FC<FolderListProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
+  const [selectedFolder, setSelectedFolder] = React.useState<Folder | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
   const listContentContainerStyle = StyleSheet.flatten([
     { gap: 8, paddingBottom: 16 },
     contentContainerStyle,
@@ -97,6 +100,15 @@ export const FolderList: React.FC<FolderListProps> = ({
     onFolderPress?.(folder)
   }
 
+  const handleFolderLongPress = (folder: Folder) => {
+    setSelectedFolder(folder)
+    setIsSheetOpen(true)
+  }
+
+  const closeFolderSheet = () => {
+    setIsSheetOpen(false)
+  }
+
   const handleTrackPress = (track: Track) => {
     onTrackPress?.(track)
   }
@@ -104,7 +116,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   const formatItemCount = (count: number) => t("library.count.item", { count })
 
   const renderFolderItem = (item: Folder) => (
-    <Item key={item.id} onPress={() => handlePress(item)}>
+    <Item key={item.id} onPress={() => handlePress(item)} onLongPress={() => handleFolderLongPress(item)}>
       <ItemImage
         icon={
           <LocalFolderSolidIcon
@@ -244,6 +256,20 @@ export const FolderList: React.FC<FolderListProps> = ({
             </View>
           ) : null
         }
+      />
+      <CollectionActionSheet
+        visible={isSheetOpen && Boolean(selectedFolder)}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeFolderSheet()
+          }
+        }}
+        type="folder"
+        id={selectedFolder?.path ?? selectedFolder?.id ?? ""}
+        name={selectedFolder?.name ?? ""}
+        subtitle={selectedFolder ? formatItemCount(selectedFolder.fileCount) : undefined}
+        trackCount={selectedFolder?.fileCount ?? 0}
+        hideFavoriteAction
       />
     </View>
   )

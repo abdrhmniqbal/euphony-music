@@ -41,9 +41,13 @@ interface SearchResultsProps {
   activeTab?: SearchTab
   onActiveTabChange?: (tab: SearchTab) => void
   onArtistPress?: (artist: SearchArtistResult) => void
+  onArtistLongPress?: (artist: SearchArtistResult) => void
   onAlbumPress?: (album: SearchAlbumResult) => void
+  onAlbumLongPress?: (album: SearchAlbumResult) => void
   onPlaylistPress?: (playlist: SearchPlaylistResult) => void
+  onPlaylistLongPress?: (playlist: SearchPlaylistResult) => void
   onTrackPress?: (track: Track) => void
+  onTrackLongPress?: (track: Track) => void
   onSeeMoreTracks?: () => void
 }
 
@@ -98,9 +102,13 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   activeTab: activeTabProp,
   onActiveTabChange,
   onArtistPress,
+  onArtistLongPress,
   onAlbumPress,
+  onAlbumLongPress,
   onPlaylistPress,
+  onPlaylistLongPress,
   onTrackPress,
+  onTrackLongPress,
   onSeeMoreTracks,
 }) => {
   const { t } = useTranslation()
@@ -234,14 +242,29 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             <MemoizedSearchResultRow
               item={item}
               onArtistPress={onArtistPress}
+              onArtistLongPress={onArtistLongPress}
               onAlbumPress={onAlbumPress}
+              onAlbumLongPress={onAlbumLongPress}
               onPlaylistPress={onPlaylistPress}
+              onPlaylistLongPress={onPlaylistLongPress}
               onTrackPress={onTrackPress}
+              onTrackLongPress={onTrackLongPress}
             />
           )
       }
     },
-    [onAlbumPress, onArtistPress, onPlaylistPress, onSeeMoreTracks, onTrackPress, t]
+    [
+      onAlbumPress,
+      onAlbumLongPress,
+      onArtistPress,
+      onArtistLongPress,
+      onPlaylistPress,
+      onPlaylistLongPress,
+      onSeeMoreTracks,
+      onTrackPress,
+      onTrackLongPress,
+      t,
+    ]
   )
 
   return (

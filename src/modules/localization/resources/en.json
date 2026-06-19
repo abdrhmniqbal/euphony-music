@@ -259,6 +259,7 @@
     "createPlaylist": "Create Playlist",
     "saveQueueToPlaylist": "Save Queue to Playlist",
     "editPlaylist": "Edit Playlist",
+    "deletePlaylist": "Delete Playlist",
     "createNewPlaylist": "Create New Playlist",
     "name": "Playlist Name",
     "namePlaceholder": "Playlist name",

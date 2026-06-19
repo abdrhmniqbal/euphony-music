@@ -12,7 +12,7 @@ import {
 } from "react-native"
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
-
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { LEGEND_LIST_GRID_CONFIG } from "@/components/blocks/legend-list-config"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
@@ -39,6 +39,7 @@ export interface Artist {
 interface ArtistGridProps {
   data: Artist[]
   onArtistPress?: (artist: Artist) => void
+  onArtistLongPress?: (artist: Artist) => void
   scrollEnabled?: boolean
   contentContainerStyle?: StyleProp<ViewStyle>
   resetScrollKey?: string
@@ -56,6 +57,7 @@ const HORIZONTAL_PADDING = 32
 export const ArtistGrid: React.FC<ArtistGridProps> = ({
   data,
   onArtistPress,
+  onArtistLongPress,
   scrollEnabled = true,
   contentContainerStyle,
   resetScrollKey,
@@ -67,6 +69,8 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
+  const [selectedArtist, setSelectedArtist] = React.useState<Artist | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const { width: windowWidth } = useWindowDimensions()
   const itemWidth = (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
@@ -79,7 +83,33 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
     onArtistPress?.(artist)
   }
 
+  const handleLongPress = (artist: Artist) => {
+    setSelectedArtist(artist)
+    setIsSheetOpen(true)
+  }
+
+  const closeSheet = () => {
+    setIsSheetOpen(false)
+  }
+
   const formatTrackCount = (count: number) => t("library.count.track", { count })
+
+  const sheet = (
+    <CollectionActionSheet
+      visible={isSheetOpen && Boolean(selectedArtist)}
+      onOpenChange={(open) => {
+        if (!open) {
+          closeSheet()
+        }
+      }}
+      type="artist"
+      id={selectedArtist?.id ?? ""}
+      name={selectedArtist?.name ?? ""}
+      subtitle={selectedArtist ? formatTrackCount(selectedArtist.trackCount) : undefined}
+      image={selectedArtist?.image}
+      trackCount={selectedArtist?.trackCount ?? 0}
+    />
+  )
 
   if (data.length === 0) {
     return (
@@ -110,30 +140,28 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
             <Item
               key={item.id}
               variant="grid"
-              boundaryId={resolveArtistTransitionId({
-                id: item.id,
-                name: item.name,
-              })}
+              boundaryId={resolveArtistTransitionId({ id: item.id, name: item.name })}
               style={{
                 width: itemWidth,
                 marginRight: column < NUM_COLUMNS - 1 ? GAP : 0,
                 marginBottom: GAP,
               }}
               onPress={() => handlePress(item)}
+              onLongPress={() => handleLongPress(item)}
             >
               <Transition.Boundary.Target>
-                <ItemImage
-                  icon={
-                    <LocalUserSolidIcon
-                      fill="none"
-                      width={ICON_SIZES.gridFallback}
-                      height={ICON_SIZES.gridFallback}
-                      color={theme.muted}
-                    />
-                  }
-                  image={item.image}
-                  className="aspect-square w-full rounded-full bg-default"
-                />
+              <ItemImage
+                icon={
+                  <LocalUserSolidIcon
+                    fill="none"
+                    width={ICON_SIZES.gridFallback}
+                    height={ICON_SIZES.gridFallback}
+                    color={theme.muted}
+                  />
+                }
+                image={item.image}
+                className="aspect-square w-full rounded-full bg-default"
+              />
               </Transition.Boundary.Target>
               <ItemContent className="mt-1 items-center">
                 <ItemTitle className="text-center text-sm normal-case" numberOfLines={1}>
@@ -160,6 +188,7 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
         {...LEGEND_LIST_GRID_CONFIG}
         estimatedItemSize={estimatedArtistItemHeight}
       />
+      {sheet}
     </View>
   )
 }

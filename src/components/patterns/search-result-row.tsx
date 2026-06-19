@@ -50,17 +50,25 @@ export type SearchResultEntityItem =
 interface SearchResultRowProps {
   item: SearchResultEntityItem
   onArtistPress?: (artist: SearchArtistResult) => void
+  onArtistLongPress?: (artist: SearchArtistResult) => void
   onAlbumPress?: (album: SearchAlbumResult) => void
+  onAlbumLongPress?: (album: SearchAlbumResult) => void
   onPlaylistPress?: (playlist: SearchPlaylistResult) => void
+  onPlaylistLongPress?: (playlist: SearchPlaylistResult) => void
   onTrackPress?: (track: Track) => void
+  onTrackLongPress?: (track: Track) => void
 }
 
 function SearchResultRow({
   item,
   onArtistPress,
+  onArtistLongPress,
   onAlbumPress,
+  onAlbumLongPress,
   onPlaylistPress,
+  onPlaylistLongPress,
   onTrackPress,
+  onTrackLongPress,
 }: SearchResultRowProps) {
   const theme = useThemeColors()
   const { t } = useTranslation()
@@ -75,6 +83,7 @@ function SearchResultRow({
           name: item.artist.name,
         })}
         onPress={() => onArtistPress?.(item.artist)}
+        onLongPress={() => onArtistLongPress?.(item.artist)}
       >
         <Transition.Boundary.Target>
           <ItemImage
@@ -106,6 +115,7 @@ function SearchResultRow({
           title: item.album.title,
         })}
         onPress={() => onAlbumPress?.(item.album)}
+        onLongPress={() => onAlbumLongPress?.(item.album)}
       >
         <Transition.Boundary.Target>
           <ItemImage
@@ -147,6 +157,7 @@ function SearchResultRow({
           title: item.playlist.title,
         })}
         onPress={() => onPlaylistPress?.(item.playlist)}
+        onLongPress={() => onPlaylistLongPress?.(item.playlist)}
       >
         <Transition.Boundary.Target>
           <ItemImage className="items-center justify-center overflow-hidden bg-default">
@@ -172,6 +183,7 @@ function SearchResultRow({
       onPress={() => {
         onTrackPress?.(item.track)
       }}
+      onLongPress={() => onTrackLongPress?.(item.track)}
     >
       <ItemImage
         icon={

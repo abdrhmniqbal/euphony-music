@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next"
 import { ContentSection } from "@/components/blocks/content-section"
 import { MediaCarousel } from "@/components/blocks/media-carousel"
 import { RankedTrackCarousel } from "@/components/blocks/ranked-track-carousel"
+import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
 import { SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
@@ -41,6 +42,8 @@ export default function HomeScreen() {
   const { t } = useTranslation()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const currentTrackId = useCurrentTrackId()
+  const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
+  const [isTrackSheetOpen, setIsTrackSheetOpen] = React.useState(false)
   const {
     data: recentlyPlayedTracksData,
     isLoading: isRecentlyPlayedLoading,
@@ -71,6 +74,11 @@ export default function HomeScreen() {
     await Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()])
   }
 
+  const openTrackSheet = React.useCallback((track: Track) => {
+    setSelectedTrack(track)
+    setIsTrackSheetOpen(true)
+  }, [])
+
   function renderRecentlyPlayedItem(item: Track) {
     return (
       <TrackRow
@@ -82,6 +90,7 @@ export default function HomeScreen() {
             title: t("home.recentlyPlayed"),
           })
         }
+        onLongPress={() => openTrackSheet(item)}
         titleClassName={currentTrackId === item.id ? "text-accent" : undefined}
         imageOverlay={currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined}
       />
@@ -144,10 +153,17 @@ export default function HomeScreen() {
                   title: t("home.topTracks"),
                 })
               }
+              onItemLongPress={openTrackSheet}
             />
           )}
         />
       </View>
+      <TrackActionSheet
+        track={selectedTrack}
+        isOpen={isTrackSheetOpen}
+        onClose={() => setIsTrackSheetOpen(false)}
+        tracks={recentlyPlayedTracks}
+      />
     </ScrollView>
   )
 }

@@ -15,14 +15,15 @@ interface MusicCardProps {
   image?: string
   icon?: ReactNode
   onPress?: () => void
+  onLongPress?: () => void
   className?: string
 }
 
-export function MusicCard({ title, subtitle, image, icon, onPress, className }: MusicCardProps) {
+export function MusicCard({ title, subtitle, image, icon, onPress, onLongPress, className }: MusicCardProps) {
   const theme = useThemeColors()
 
   return (
-    <PressableFeedback onPress={onPress} className={cn("w-36 active:opacity-70", className)}>
+    <PressableFeedback onPress={onPress} onLongPress={onLongPress} className={cn("w-36 active:opacity-70", className)}>
       <Card
         tone="default"
         padding="none"

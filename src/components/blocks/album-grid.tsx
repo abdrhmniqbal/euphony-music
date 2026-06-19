@@ -12,7 +12,7 @@ import {
 } from "react-native"
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
-
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import {
   LEGEND_LIST_GRID_CONFIG,
   LEGEND_LIST_GRID_HORIZONTAL_CONFIG,
@@ -46,6 +46,7 @@ export interface Album {
 interface AlbumGridProps {
   data: Album[]
   onAlbumPress?: (album: Album) => void
+  onAlbumLongPress?: (album: Album) => void
   horizontal?: boolean
   containerClassName?: string
   scrollEnabled?: boolean
@@ -70,6 +71,7 @@ const HORIZONTAL_ROW_HEIGHT = 208
 export const AlbumGrid: React.FC<AlbumGridProps> = ({
   data,
   onAlbumPress,
+  onAlbumLongPress,
   horizontal,
   containerClassName = "",
   scrollEnabled = true,
@@ -87,6 +89,8 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
+  const [selectedAlbum, setSelectedAlbum] = React.useState<Album | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const { width: windowWidth } = useWindowDimensions()
   const itemWidth = (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
@@ -99,6 +103,32 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
     onAlbumPress?.(album)
   }
 
+  const handleLongPress = (album: Album) => {
+    setSelectedAlbum(album)
+    setIsSheetOpen(true)
+  }
+
+  const closeSheet = () => {
+    setIsSheetOpen(false)
+  }
+
+  const sheet = (
+    <CollectionActionSheet
+      visible={isSheetOpen && Boolean(selectedAlbum)}
+      onOpenChange={(open) => {
+        if (!open) {
+          closeSheet()
+        }
+      }}
+      type="album"
+      id={selectedAlbum?.id ?? ""}
+      name={selectedAlbum?.title ?? ""}
+      subtitle={selectedAlbum?.artist}
+      image={selectedAlbum?.image}
+      trackCount={selectedAlbum?.trackCount ?? 0}
+    />
+  )
+
   function getAlbumMetaText(item: Album) {
     return mergeText([
       item.albumArtist || item.artist,
@@ -110,25 +140,23 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
     <Item
       variant="grid"
       className="w-full"
-      boundaryId={resolveAlbumTransitionId({
-        id: item.id,
-        title: item.title,
-      })}
+      boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
       onPress={() => handlePress(item)}
+      onLongPress={() => handleLongPress(item)}
     >
       <Transition.Boundary.Target>
-        <ItemImage
-          icon={
-            <LocalVynilSolidIcon
-              fill="none"
-              width={ICON_SIZES.largeCardFallback}
-              height={ICON_SIZES.largeCardFallback}
-              color={theme.muted}
-            />
-          }
-          image={item.image}
-          className="aspect-square w-full rounded-md"
-        />
+      <ItemImage
+        icon={
+          <LocalVynilSolidIcon
+            fill="none"
+            width={ICON_SIZES.largeCardFallback}
+            height={ICON_SIZES.largeCardFallback}
+            color={theme.muted}
+          />
+        }
+        image={item.image}
+        className="aspect-square w-full rounded-md"
+      />
       </Transition.Boundary.Target>
       <ItemContent className="mt-1">
         <ItemTitle className="text-sm normal-case" numberOfLines={1}>
@@ -158,8 +186,9 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
 
   if (horizontal) {
     return (
-      <LegendList
-        ref={listRef}
+      <>
+        <LegendList
+          ref={listRef}
         {...listBehaviorProps}
         horizontal
         data={data}
@@ -171,25 +200,23 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
           >
             <Item
               variant="grid"
-              boundaryId={resolveAlbumTransitionId({
-                id: item.id,
-                title: item.title,
-              })}
+              boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
               onPress={() => handlePress(item)}
+              onLongPress={() => handleLongPress(item)}
             >
               <Transition.Boundary.Target>
-                <ItemImage
-                  icon={
-                    <LocalVynilSolidIcon
-                      fill="none"
-                      width={ICON_SIZES.mediumCardFallback}
-                      height={ICON_SIZES.mediumCardFallback}
-                      color={theme.muted}
-                    />
-                  }
-                  image={item.image}
-                  className="aspect-square w-full rounded-md"
-                />
+              <ItemImage
+                icon={
+                  <LocalVynilSolidIcon
+                    fill="none"
+                    width={ICON_SIZES.mediumCardFallback}
+                    height={ICON_SIZES.mediumCardFallback}
+                    color={theme.muted}
+                  />
+                }
+                image={item.image}
+                className="aspect-square w-full rounded-md"
+              />
               </Transition.Boundary.Target>
               <ItemContent className="mt-1">
                 <ItemTitle className="text-sm normal-case" numberOfLines={1}>
@@ -206,8 +233,10 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
         style={{ minHeight: HORIZONTAL_ROW_HEIGHT }}
         className={containerClassName}
         {...LEGEND_LIST_GRID_HORIZONTAL_CONFIG}
-        estimatedItemSize={144}
-      />
+          estimatedItemSize={144}
+        />
+        {sheet}
+      </>
     )
   }
 
@@ -249,6 +278,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
         {...LEGEND_LIST_GRID_CONFIG}
         estimatedItemSize={estimatedAlbumItemHeight}
       />
+      {sheet}
     </View>
   )
 }

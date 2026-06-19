@@ -22,6 +22,7 @@ interface RankedTrackCarouselProps {
   chunkSize?: number
   emptyState?: EmptyStateConfig
   onItemPress?: (track: Track) => void
+  onItemLongPress?: (track: Track) => void
   className?: string
 }
 
@@ -31,6 +32,7 @@ interface RankedTrackChunkProps {
   chunkSize: number
   currentTrackId?: string
   onTrackPress: (track: Track) => void
+  onTrackLongPress?: (track: Track) => void
 }
 
 function RankedTrackChunk({
@@ -39,6 +41,7 @@ function RankedTrackChunk({
   chunkSize,
   currentTrackId,
   onTrackPress,
+  onTrackLongPress,
 }: RankedTrackChunkProps) {
   return (
     <View className="w-75">
@@ -48,6 +51,7 @@ function RankedTrackChunk({
           track={track}
           rank={chunkIndex * chunkSize + index + 1}
           onPress={() => onTrackPress(track)}
+          onLongPress={() => onTrackLongPress?.(track)}
           titleClassName={currentTrackId === track.id ? "text-accent" : undefined}
           imageOverlay={currentTrackId === track.id ? <ScaleLoader size={16} /> : undefined}
         />
@@ -63,6 +67,7 @@ export function RankedTrackCarousel({
   chunkSize = 5,
   emptyState,
   onItemPress,
+  onItemLongPress,
   className,
 }: RankedTrackCarouselProps) {
   const currentTrackId = useCurrentTrackId()
@@ -80,6 +85,13 @@ export function RankedTrackCarousel({
     [data, onItemPress]
   )
 
+  const handleLongPress = React.useCallback(
+    (track: Track) => {
+      onItemLongPress?.(track)
+    },
+    [onItemLongPress]
+  )
+
   return (
     <MediaCarousel
       data={chunks}
@@ -94,6 +106,7 @@ export function RankedTrackCarousel({
           chunkSize={chunkSize}
           currentTrackId={currentTrackId}
           onTrackPress={handlePress}
+          onTrackLongPress={handleLongPress}
         />
       )}
     />

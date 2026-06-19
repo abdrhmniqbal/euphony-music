@@ -28,6 +28,7 @@ function getAlbumOrderByField(field: SortConfig["field"]): AlbumOrderByField {
 
 interface AlbumsTabProps {
   onAlbumPress?: (album: Album) => void
+  onAlbumLongPress?: (album: Album) => void
   sortConfig?: SortConfig
   contentBottomPadding?: number
   refreshControl?: React.ReactElement<RefreshControlProps> | null
@@ -39,6 +40,7 @@ interface AlbumsTabProps {
 
 export const AlbumsTab: React.FC<AlbumsTabProps> = ({
   onAlbumPress,
+  onAlbumLongPress,
   sortConfig,
   contentBottomPadding = 0,
   refreshControl,
@@ -98,6 +100,7 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
       <AlbumGrid
         data={sortedAlbums}
         onAlbumPress={handleAlbumPress}
+        onAlbumLongPress={onAlbumLongPress}
         contentContainerStyle={{ paddingBottom: contentBottomPadding }}
         resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
         refreshControl={refreshControl}
