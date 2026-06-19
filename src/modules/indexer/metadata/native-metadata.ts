@@ -106,7 +106,7 @@ export async function extractMetadata(
   const album = metadata?.albumTitle?.trim() || undefined
   const composer = metadata?.composer?.trim() || undefined
   const comment = metadata?.description?.trim() || undefined
-  const year = metadata?.year ? parseInt(String(metadata.year), 10) : undefined
+  const year = parseMetadataYear(metadata?.year)
 
   return {
     title,
@@ -131,6 +131,59 @@ export async function extractMetadata(
     lyrics,
     artwork: artwork || undefined,
   }
+}
+
+function parseMetadataYear(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isInteger(value)) {
+    return normalizeMetadataYear(value)
+  }
+
+  const text = String(value || "").trim()
+  if (!text) {
+    return undefined
+  }
+
+  const fourDigitMatch = text.match(/\b(\d{4})\b/)
+  if (fourDigitMatch?.[1]) {
+    return normalizeMetadataYear(Number.parseInt(fourDigitMatch[1], 10))
+  }
+
+  const parts = text.split(/[\/\-\.]/)
+  if (parts.length >= 2) {
+    const lastPart = parts[parts.length - 1].trim()
+    const numeric = Number.parseInt(lastPart, 10)
+    if (!Number.isNaN(numeric)) {
+      return normalizeMetadataYear(numeric)
+    }
+  }
+
+  const twoDigitMatch = text.match(/\b(\d{2})\b/)
+  if (twoDigitMatch?.[1]) {
+    return normalizeMetadataYear(Number.parseInt(twoDigitMatch[1], 10))
+  }
+
+  const rawParsed = Number.parseInt(text, 10)
+  if (!Number.isNaN(rawParsed)) {
+    return normalizeMetadataYear(rawParsed)
+  }
+
+  return undefined
+}
+
+function normalizeMetadataYear(value: number): number | undefined {
+  if (!Number.isInteger(value) || value <= 0) {
+    return undefined
+  }
+
+  if (value >= 1000) {
+    return value
+  }
+
+  if (value < 100) {
+    return value >= 70 ? 1900 + value : 2000 + value
+  }
+
+  return undefined
 }
 
 function cleanFilename(filename: string): string {
