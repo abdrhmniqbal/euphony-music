@@ -48,7 +48,7 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="acme"/>
+        <data android:scheme="startune-music"/>
         <data android:scheme="exp+startune-music"/>
       </intent-filter>
       <intent-filter>
