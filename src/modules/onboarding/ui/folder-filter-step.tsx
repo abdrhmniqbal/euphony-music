@@ -77,7 +77,12 @@ export function FolderFilterStep({
                   <ListGroup.ItemDescription numberOfLines={2}>{path}</ListGroup.ItemDescription>
                 </ListGroup.ItemContent>
                 <ListGroup.ItemSuffix>
-                  <Button variant="ghost" onPress={() => onRemoveFolder(path)} isIconOnly hitSlop={8}>
+                  <Button
+                    variant="ghost"
+                    onPress={() => onRemoveFolder(path)}
+                    isIconOnly
+                    hitSlop={8}
+                  >
                     <LocalCancelIcon fill="none" width={18} height={18} color={mutedColor} />
                   </Button>
                 </ListGroup.ItemSuffix>

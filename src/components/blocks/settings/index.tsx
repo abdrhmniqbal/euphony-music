@@ -47,9 +47,7 @@ export function SettingsNavigationRow({
     <ListGroup.Item onPress={onPress} disabled={disabled}>
       <ListGroup.ItemContent>
         <ListGroup.ItemTitle>{title}</ListGroup.ItemTitle>
-        {description ? (
-          <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription>
-        ) : null}
+        {description ? <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription> : null}
       </ListGroup.ItemContent>
       <ListGroup.ItemSuffix />
     </ListGroup.Item>
@@ -74,9 +72,7 @@ export function SettingsActionRow({
     <ListGroup.Item onPress={onPress} disabled={disabled}>
       <ListGroup.ItemContent>
         <ListGroup.ItemTitle>{title}</ListGroup.ItemTitle>
-        {description ? (
-          <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription>
-        ) : null}
+        {description ? <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription> : null}
       </ListGroup.ItemContent>
       <ListGroup.ItemSuffix />
     </ListGroup.Item>
@@ -100,9 +96,7 @@ export function SettingsSwitchRow({
     <ListGroup.Item disabled={disabled}>
       <ListGroup.ItemContent>
         <ListGroup.ItemTitle>{title}</ListGroup.ItemTitle>
-        {description ? (
-          <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription>
-        ) : null}
+        {description ? <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription> : null}
       </ListGroup.ItemContent>
       <ListGroup.ItemSuffix>
         <Switch isSelected={isSelected} onSelectedChange={onSelectedChange} isDisabled={disabled} />

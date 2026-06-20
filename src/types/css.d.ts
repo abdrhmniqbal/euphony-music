@@ -7,7 +7,7 @@
  */
 
 declare module "*.css" {
-	const css: string
+  const css: string
 
-	export default css
+  export default css
 }

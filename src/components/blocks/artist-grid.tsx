@@ -150,18 +150,18 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
               onLongPress={() => handleLongPress(item)}
             >
               <Transition.Boundary.Target>
-              <ItemImage
-                icon={
-                  <LocalUserSolidIcon
-                    fill="none"
-                    width={ICON_SIZES.gridFallback}
-                    height={ICON_SIZES.gridFallback}
-                    color={theme.muted}
-                  />
-                }
-                image={item.image}
-                className="aspect-square w-full rounded-full bg-default"
-              />
+                <ItemImage
+                  icon={
+                    <LocalUserSolidIcon
+                      fill="none"
+                      width={ICON_SIZES.gridFallback}
+                      height={ICON_SIZES.gridFallback}
+                      color={theme.muted}
+                    />
+                  }
+                  image={item.image}
+                  className="aspect-square w-full rounded-full bg-default"
+                />
               </Transition.Boundary.Target>
               <ItemContent className="mt-1 items-center">
                 <ItemTitle className="text-center text-sm normal-case" numberOfLines={1}>

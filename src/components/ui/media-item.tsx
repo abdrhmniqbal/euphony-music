@@ -11,7 +11,13 @@ import { Image } from "expo-image"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { createContext, use } from "react"
-import { Text, type TextProps, View, type ViewProps, type GestureResponderEvent } from "react-native"
+import {
+  Text,
+  type TextProps,
+  View,
+  type ViewProps,
+  type GestureResponderEvent,
+} from "react-native"
 import Animated from "react-native-reanimated"
 import Transition from "react-native-screen-transitions"
 import { cn, tv, type VariantProps } from "tailwind-variants"

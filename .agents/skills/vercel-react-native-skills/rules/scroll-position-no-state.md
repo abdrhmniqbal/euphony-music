@@ -14,12 +14,8 @@ for animations or a ref for non-reactive tracking.
 **Incorrect (useState causes jank):**
 
 ```tsx
-import { useState } from 'react'
-import {
-  ScrollView,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native'
+import { useState } from "react"
+import { ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native"
 
 function Feed() {
   const [scrollY, setScrollY] = useState(0)
@@ -35,10 +31,7 @@ function Feed() {
 **Correct (Reanimated for animations):**
 
 ```tsx
-import Animated, {
-  useSharedValue,
-  useAnimatedScrollHandler,
-} from 'react-native-reanimated'
+import Animated, { useSharedValue, useAnimatedScrollHandler } from "react-native-reanimated"
 
 function Feed() {
   const scrollY = useSharedValue(0)
@@ -63,12 +56,8 @@ function Feed() {
 **Correct (ref for non-reactive tracking):**
 
 ```tsx
-import { useRef } from 'react'
-import {
-  ScrollView,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-} from 'react-native'
+import { useRef } from "react"
+import { ScrollView, NativeSyntheticEvent, NativeScrollEvent } from "react-native"
 
 function Feed() {
   const scrollY = useRef(0)

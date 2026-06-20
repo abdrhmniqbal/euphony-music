@@ -309,7 +309,9 @@ export const TrackPlayer = {
 
   async setRepeatMode(mode: RepeatMode) {
     repeatModeMirror = mode
-    AudioBrowser.setRepeatMode(mode === RepeatMode.Track ? "track" : mode === RepeatMode.Queue ? "queue" : "off")
+    AudioBrowser.setRepeatMode(
+      mode === RepeatMode.Track ? "track" : mode === RepeatMode.Queue ? "queue" : "off"
+    )
   },
 
   async getRepeatMode() {
@@ -340,7 +342,9 @@ export const TrackPlayer = {
         AudioBrowser.handleRemotePrevious(() => listener({}))
         return { remove: () => undefined }
       case Event.RemoteSeek:
-        AudioBrowser.handleRemoteSeek((event) => listener(event as unknown as Record<string, unknown>))
+        AudioBrowser.handleRemoteSeek((event) =>
+          listener(event as unknown as Record<string, unknown>)
+        )
         return { remove: () => undefined }
       case Event.PlaybackState:
         return addAudioBrowserListener(AudioBrowser.onPlaybackChanged, listener, (event) => ({

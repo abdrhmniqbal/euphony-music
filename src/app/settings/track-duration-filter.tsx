@@ -84,7 +84,10 @@ export default function TrackDurationFilterScreen() {
 
     if (mode !== "custom") {
       setCustomSliderValue(null)
-      showAppToast(t("settings.library.trackDurationFilter"), t("common.feedback.trackDurationUpdated"))
+      showAppToast(
+        t("settings.library.trackDurationFilter"),
+        t("common.feedback.trackDurationUpdated")
+      )
       await startIndexing(false, true)
     }
   }
@@ -94,7 +97,10 @@ export default function TrackDurationFilterScreen() {
       mode: "custom",
       customMinimumSeconds: value,
     })
-    showAppToast(t("settings.library.trackDurationFilter"), t("common.feedback.trackDurationUpdated"))
+    showAppToast(
+      t("settings.library.trackDurationFilter"),
+      t("common.feedback.trackDurationUpdated")
+    )
     await startIndexing(false, true)
   }
 

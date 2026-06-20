@@ -1,5 +1,5 @@
 /**
- * Purpose: Renders the Library hub with tabbed views for tracks, albums, artists, genres, playlists, folders, and filtered favorites playback.
+ * Purpose: Renders the Library hub with tabbed views for tracks, albums, artists, album artists, genres, playlists, folders, and filtered favorites playback.
  * Caller: Library tab route.
  * Dependencies: library queries and sorts, indexer refresh flow, themed refresh control, theme colors.
  * Main Functions: LibraryScreen()
@@ -30,7 +30,7 @@ import { LibraryGenresSection } from "./library-genres-section"
 export default function LibraryScreen() {
   const { t } = useTranslation()
   const theme = useThemeColors()
-  
+
   const state = useLibraryHomeState()
 
   const [actionSheetConfig, setActionSheetConfig] = React.useState<{
@@ -134,7 +134,7 @@ export default function LibraryScreen() {
             genresEmptyMessage={t("home.empty.recentlyPlayedMessage")}
             onGenrePress={state.openGenre}
             onGenreLongPress={(genreName) => {
-              const genreObj = state.sortedGenres.find(g => g.title === genreName)
+              const genreObj = state.sortedGenres.find((g) => g.title === genreName)
               setActionSheetConfig({
                 visible: true,
                 type: "genre",
@@ -213,60 +213,64 @@ export default function LibraryScreen() {
 
   return (
     <>
-    <SortSheet
-      visible={state.sortModalVisible}
-      onOpenChange={(open) => (open ? state.setSortModalVisible(true) : state.closeSortModal())}
-      currentField={state.sortConfig.field}
-      currentOrder={state.sortConfig.order}
-      onSelect={state.handleSortSelect}
-    >
-      <View className="flex-1 bg-background">
-        <LibraryTabBar
-          activeTab={state.activeTab}
-          onActiveTabChange={state.setActiveTab}
-          getLibraryTabLabel={state.getLibraryTabLabel}
-        />
+      <SortSheet
+        visible={state.sortModalVisible}
+        onOpenChange={(open) => (open ? state.setSortModalVisible(true) : state.closeSortModal())}
+        currentField={state.sortConfig.field}
+        currentOrder={state.sortConfig.order}
+        onSelect={state.handleSortSelect}
+      >
+        <View className="flex-1 bg-background">
+          <LibraryTabBar
+            activeTab={state.activeTab}
+            onActiveTabChange={state.setActiveTab}
+            getLibraryTabLabel={state.getLibraryTabLabel}
+          />
 
-        <LibraryHeader
-          activeTab={state.activeTab}
-          itemCount={state.itemCount}
-          getLibraryTabLabel={state.getLibraryTabLabel}
-          currentSortOptions={state.currentSortOptions}
-          sortLabel={state.sortLabel}
-        />
+          <LibraryHeader
+            activeTab={state.activeTab}
+            itemCount={state.itemCount}
+            getLibraryTabLabel={state.getLibraryTabLabel}
+            currentSortOptions={state.currentSortOptions}
+            sortLabel={state.sortLabel}
+          />
 
-        <View className="flex-1 px-4">
-          {state.showPlayButtons && (
-            <View className="mb-4">
-              <PlaybackActionsRow onPlay={state.playAll} onShuffle={state.shuffle} className="mb-0" />
-            </View>
-          )}
-          <View className="flex-1">{renderTabContent()}</View>
+          <View className="flex-1 px-4">
+            {state.showPlayButtons && (
+              <View className="mb-4">
+                <PlaybackActionsRow
+                  onPlay={state.playAll}
+                  onShuffle={state.shuffle}
+                  className="mb-0"
+                />
+              </View>
+            )}
+            <View className="flex-1">{renderTabContent()}</View>
+          </View>
         </View>
-      </View>
 
-      <SortSheet.Content options={state.currentSortOptions} />
-    </SortSheet>
+        <SortSheet.Content options={state.currentSortOptions} />
+      </SortSheet>
 
-    {actionSheetConfig && (
-      <CollectionActionSheet
-        visible={actionSheetConfig.visible}
-        onOpenChange={(visible) => {
-          if (!visible) {
-            setActionSheetConfig(null)
-            return
-          }
-          setActionSheetConfig((prev) => (prev ? { ...prev, visible } : prev))
-        }}
-        type={actionSheetConfig.type}
-        id={actionSheetConfig.id}
-        name={actionSheetConfig.name}
-        subtitle={actionSheetConfig.subtitle}
-        image={actionSheetConfig.image}
-        trackCount={actionSheetConfig.trackCount}
-        hideFavoriteAction={actionSheetConfig.hideFavoriteAction}
-      />
-    )}
+      {actionSheetConfig && (
+        <CollectionActionSheet
+          visible={actionSheetConfig.visible}
+          onOpenChange={(visible) => {
+            if (!visible) {
+              setActionSheetConfig(null)
+              return
+            }
+            setActionSheetConfig((prev) => (prev ? { ...prev, visible } : prev))
+          }}
+          type={actionSheetConfig.type}
+          id={actionSheetConfig.id}
+          name={actionSheetConfig.name}
+          subtitle={actionSheetConfig.subtitle}
+          image={actionSheetConfig.image}
+          trackCount={actionSheetConfig.trackCount}
+          hideFavoriteAction={actionSheetConfig.hideFavoriteAction}
+        />
+      )}
     </>
   )
 }

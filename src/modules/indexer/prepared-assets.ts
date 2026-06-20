@@ -1,7 +1,10 @@
 import * as MediaLibrary from "expo-media-library/legacy"
 import { logError } from "@/modules/logging/service"
 import { waitForIndexerResume } from "@/modules/indexer/runtime"
-import { ensureSplitMultipleValueConfigLoaded, type SplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
+import {
+  ensureSplitMultipleValueConfigLoaded,
+  type SplitMultipleValueConfig,
+} from "@/modules/settings/split-multiple-values"
 import { extractMetadata, saveArtworkToCache } from "./metadata"
 import { generateAssetHash } from "./file-identity"
 import { normalizeMetadata } from "./normalization"

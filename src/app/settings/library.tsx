@@ -78,7 +78,10 @@ export default function LibrarySettingsScreen() {
       minimumPlayedPercent: value,
     })
     setCountAsPlayedSliderValue(null)
-    showAppToast(t("settings.library.countAsPlayed"), t("settings.library.countAsPlayedValue", { value }))
+    showAppToast(
+      t("settings.library.countAsPlayed"),
+      t("settings.library.countAsPlayedValue", { value })
+    )
   }
 
   return (

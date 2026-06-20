@@ -1,3 +1,11 @@
+/**
+ * Purpose: Defines typings for library sorts across all tabs, including tracks, album-artists, albums, artists, playlists, folders, and favorites.
+ * Caller: Sort store, library repositories, and library home state.
+ * Dependencies: None.
+ * Main Functions: Types only.
+ * Side Effects: None.
+ */
+
 export type TrackSortField =
   | "title"
   | "artist"

@@ -116,7 +116,11 @@ export const FolderList: React.FC<FolderListProps> = ({
   const formatItemCount = (count: number) => t("library.count.item", { count })
 
   const renderFolderItem = (item: Folder) => (
-    <Item key={item.id} onPress={() => handlePress(item)} onLongPress={() => handleFolderLongPress(item)}>
+    <Item
+      key={item.id}
+      onPress={() => handlePress(item)}
+      onLongPress={() => handleFolderLongPress(item)}
+    >
       <ItemImage
         icon={
           <LocalFolderSolidIcon

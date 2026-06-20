@@ -1,3 +1,11 @@
+/**
+ * Purpose: Defines stable React Query keys and invalidation groups for library, album-artist, search, and recent-search data.
+ * Caller: Library query hooks, mutations, and cache update flows.
+ * Dependencies: TanStack Query client and shared query invalidation helper.
+ * Main Functions: libraryKeys, invalidateLibraryQueries()
+ * Side Effects: Invalidates cached React Query data.
+ */
+
 import type { QueryClient } from "@tanstack/react-query"
 import { invalidateQueryKeys } from "@/lib/query-invalidation"
 
@@ -22,9 +30,5 @@ export const libraryKeys = {
 }
 
 export async function invalidateLibraryQueries(queryClient: QueryClient) {
-  await invalidateQueryKeys(queryClient, [
-    [ARTISTS_KEY],
-    [ALBUMS_KEY],
-    [SEARCH_KEY],
-  ])
+  await invalidateQueryKeys(queryClient, [[ARTISTS_KEY], [ALBUMS_KEY], [SEARCH_KEY]])
 }

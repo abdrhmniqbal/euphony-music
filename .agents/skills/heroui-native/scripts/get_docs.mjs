@@ -12,8 +12,7 @@
  * Note: For component docs, use get_component_docs.mjs instead.
  */
 
-const API_BASE =
-  process.env.HEROUI_NATIVE_API_BASE || "https://native-mcp-api.heroui.com"
+const API_BASE = process.env.HEROUI_NATIVE_API_BASE || "https://native-mcp-api.heroui.com"
 const FALLBACK_BASE = "https://v3.heroui.com"
 const APP_PARAM = "app=native-skills"
 
@@ -99,9 +98,7 @@ async function main() {
 
   if (args.length === 0) {
     console.error("Usage: node get_docs.mjs <path>")
-    console.error(
-      "Example: node get_docs.mjs /docs/native/getting-started/theming"
-    )
+    console.error("Example: node get_docs.mjs /docs/native/getting-started/theming")
     console.error()
     console.error("Available paths include:")
     console.error("  /docs/native/getting-started/theming")
@@ -109,9 +106,7 @@ async function main() {
     console.error("  /docs/native/getting-started/styling")
     console.error("  /docs/native/releases/beta-12")
     console.error()
-    console.error(
-      "Note: For component docs, use get_component_docs.mjs instead."
-    )
+    console.error("Note: For component docs, use get_component_docs.mjs instead.")
     process.exit(1)
   }
 
@@ -119,21 +114,16 @@ async function main() {
 
   // Check if user is trying to get component docs
   if (path.includes("/components/")) {
-    console.error(
-      "# Warning: Use get_component_docs.mjs for component documentation."
-    )
+    console.error("# Warning: Use get_component_docs.mjs for component documentation.")
     const componentName = path.split("/").pop().replace(".mdx", "")
-    const titleCase =
-      componentName.charAt(0).toUpperCase() + componentName.slice(1)
+    const titleCase = componentName.charAt(0).toUpperCase() + componentName.slice(1)
 
     console.error(`# Example: node get_component_docs.mjs ${titleCase}`)
   }
 
   // Validate Native path
   if (!path.startsWith("/docs/native/")) {
-    console.error(
-      "# Warning: Native documentation paths should start with /docs/native/"
-    )
+    console.error("# Warning: Native documentation paths should start with /docs/native/")
     console.error(`# Provided path: ${path}`)
   }
 

@@ -30,13 +30,13 @@ export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
 }) => {
   const { t } = useTranslation()
   const trackUri = track.uri ?? ""
-  
+
   const { data: resolvedFileUri = null } = useQuery({
     queryKey: ["tracks", "resolved-file-uri", track.id, trackUri] as const,
     enabled: trackUri.length > 0,
     queryFn: async () => await resolvePlayableFileUri(trackUri),
   })
-  
+
   const { data: fullTrackData } = useTrack(track.id)
   const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
 
@@ -113,9 +113,9 @@ export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
               ))}
             </View>
 
-            <MetadataGrid 
-              layoutItems={metadataLayoutItems} 
-              onSheetClose={() => onOpenChange(false)} 
+            <MetadataGrid
+              layoutItems={metadataLayoutItems}
+              onSheetClose={() => onOpenChange(false)}
             />
           </BottomSheet.Content>
         </BottomSheet.Portal>

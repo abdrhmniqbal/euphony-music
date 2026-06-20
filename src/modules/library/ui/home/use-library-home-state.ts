@@ -1,3 +1,11 @@
+/**
+ * Purpose: Coordinates library home tabs, sort state, tab labels, playback actions, and navigation for tracks, artists, playlists, folders, genres, and favorites.
+ * Caller: Library home screen.
+ * Dependencies: Library queries, sort store, favorites queries, player service, playlist repository, genre queries, navigation helpers, and indexer service.
+ * Main Functions: useLibraryHomeState()
+ * Side Effects: Starts indexing refreshes, updates local tab/filter state, and triggers playback/navigation.
+ */
+
 import { useMemo, useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -137,10 +145,7 @@ export function useLibraryHomeState() {
   const { data: playlistsData = [] } = usePlaylistsWithOptions(shouldLoadPlaylists)
   const { data: genresData = [], refetch: refetchGenres } = useGenres()
 
-  const genres = useMemo<GenreCategory[]>(
-    () => mapGenresToCategories(genresData),
-    [genresData]
-  )
+  const genres = useMemo<GenreCategory[]>(() => mapGenresToCategories(genresData), [genresData])
 
   const sortedGenres = useMemo<GenreCategory[]>(() => {
     const { field, order } = allSortConfigs.Genres
@@ -460,6 +465,7 @@ export function useLibraryHomeState() {
         return albumsData.length
       case "Artists":
         return artistsData.length
+
       case "Genres":
         return sortedGenres.length
       case "Favorites":

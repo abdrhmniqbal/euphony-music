@@ -35,51 +35,51 @@ async function walkDir(dir) {
 
 function isValidFilename(filePath) {
   const parts = filePath.split(path.sep)
-  
+
   // Find index of 'src' folder
   const srcIndex = parts.lastIndexOf("src")
   if (srcIndex === -1) return true
-  
+
   // Check each part after 'src'
   for (let i = srcIndex + 1; i < parts.length; i++) {
     const part = parts[i]
-    
+
     if (EXCEPTIONS.has(part)) continue
     if (part.endsWith(".d.ts")) continue
     if (part.endsWith(".sql")) continue
     if (part.endsWith(".json")) continue
     if (part.endsWith(".png")) continue
-    
+
     // Check Expo Router folders: (main), (library), (search)
     if (part.startsWith("(") && part.endsWith(")")) {
       const inner = part.slice(1, -1)
       if (KEBAB_CASE_PATTERN.test(inner)) continue
     }
-    
+
     // Check Expo Router files: [name].tsx, [id].tsx, etc
     if (part.startsWith("[") && part.includes("]")) {
       const inner = part.slice(1, part.indexOf("]"))
       if (KEBAB_CASE_PATTERN.test(inner)) continue
     }
-    
+
     let namePart = part
     // Extract base name without final extension for checking
     if (part.includes(".")) {
       const split = part.split(".")
       // only take the first part, because we forbid dotted suffixes (e.g. name.service.ts -> name.service is invalid)
       namePart = split[0]
-      // wait, what if it's name.tsx? it's valid kebab-case. 
+      // wait, what if it's name.tsx? it's valid kebab-case.
       // if it has multiple dots, split[0] gets the primary name, but actually we want to test if the name minus extension is valid.
       // Kebab case allows `my-file.ts` -> name is `my-file`.
       const extIndex = part.lastIndexOf(".")
       namePart = part.slice(0, extIndex)
     }
-    
+
     if (!KEBAB_CASE_PATTERN.test(namePart)) {
       return { valid: false, culprit: part }
     }
   }
-  
+
   return { valid: true, culprit: null }
 }
 
@@ -98,7 +98,9 @@ async function main() {
   for (const file of files) {
     const { valid, culprit } = isValidFilename(file)
     if (!valid) {
-      console.error(`Invalid filename convention: ${path.relative(process.cwd(), file)} (culprit: '${culprit}')`)
+      console.error(
+        `Invalid filename convention: ${path.relative(process.cwd(), file)} (culprit: '${culprit}')`
+      )
       hasErrors = true
     }
   }

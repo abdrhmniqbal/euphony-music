@@ -1,3 +1,11 @@
+/**
+ * Purpose: Defines default sort configurations and available sort options for every library tab.
+ * Caller: Sort store, sort action sheet, and library home state.
+ * Dependencies: Sort types.
+ * Main Functions: Constants export.
+ * Side Effects: None.
+ */
+
 import type {
   AlbumSortField,
   AlbumTrackSortField,

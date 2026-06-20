@@ -1,8 +1,8 @@
 /**
  * Purpose: Repositories for library browsing, artist lookup, recent-search persistence, and global search results.
- * Caller: Search screens, artist/album detail routes, recent-search mutations, and library query hooks.
+ * Caller: Search screens, artist/album detail routes, collection action sheets, recent-search mutations, and library query hooks.
  * Dependencies: Drizzle DB client, artist/album/track tables, recent-search settings storage, and track transformers.
- * Main Functions: listArtists(), listAlbums(), getArtistByName(), getTracksByArtistName(), getTracksByAlbumName(), searchLibrary(), addRecentSearch(), getRecentSearches()
+ * Main Functions: listArtists(), listAlbums(), getArtistByName(), getTracksByArtistName(), getTracksByAlbumName(), searchLibrary(), getRecentSearches()
  * Side Effects: Reads/writes SQLite rows and app-settings JSON stored in SQLite, updates recent-search persistence, and stores artist artwork and track counts on search result rows.
  */
 
@@ -359,7 +359,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
       }),
     ])
 
-    const matchedArtistIds = artistResults.map((artist) => artist.id)
+    const matchedArtistIds = Array.from(new Set([...artistResults.map((artist) => artist.id)]))
     const matchedAlbumIds = albumResults.map((album) => album.id)
 
     const relationTrackFilter =
@@ -447,8 +447,9 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
   }
 }
 
-
-function toDataAlbum(row: typeof albums.$inferSelect & { artist?: { name: string } | null }): import("@/modules/library/data-types").Album {
+function toDataAlbum(
+  row: typeof albums.$inferSelect & { artist?: { name: string } | null }
+): import("@/modules/library/data-types").Album {
   return {
     id: row.id,
     name: row.title,
@@ -469,7 +470,9 @@ export type AlbumDetail = {
   year: string | null
 }
 
-function toDataArtist(row: typeof artists.$inferSelect): import("@/modules/library/data-types").Artist {
+function toDataArtist(
+  row: typeof artists.$inferSelect
+): import("@/modules/library/data-types").Artist {
   return {
     id: row.id,
     name: row.name,
@@ -537,7 +540,7 @@ export async function getSortedArtistTracks<TOnlyIds extends boolean | undefined
     .select({ trackId: trackArtists.trackId })
     .from(trackArtists)
     .innerJoin(artists, eq(trackArtists.artistId, artists.id))
-    .where(eq(artists.name, id))
+    .where(or(eq(artists.id, id), eq(artists.name, id)))
 
   const trackIds = rels.map((r) => r.trackId)
   if (trackIds.length === 0) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]

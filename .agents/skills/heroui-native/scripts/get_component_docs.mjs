@@ -10,8 +10,7 @@
  *   MDX documentation including imports, usage, variants, props, examples
  */
 
-const API_BASE =
-  process.env.HEROUI_NATIVE_API_BASE || "https://native-mcp-api.heroui.com"
+const API_BASE = process.env.HEROUI_NATIVE_API_BASE || "https://native-mcp-api.heroui.com"
 const FALLBACK_BASE = "https://v3.heroui.com"
 const APP_PARAM = "app=native-skills"
 
@@ -96,9 +95,7 @@ async function main() {
   const args = process.argv.slice(2)
 
   if (args.length === 0) {
-    console.error(
-      "Usage: node get_component_docs.mjs <Component1> [Component2] ..."
-    )
+    console.error("Usage: node get_component_docs.mjs <Component1> [Component2] ...")
     console.error("Example: node get_component_docs.mjs Button Card")
     process.exit(1)
   }

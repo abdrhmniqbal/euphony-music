@@ -7,10 +7,7 @@ import {
   type PersistedPlaybackQueueSnapshot,
 } from "@/modules/player/session-repository"
 import type { Track } from "@/modules/player/types"
-import {
-  areStringArraysEqual,
-  dedupeTrackIds,
-} from "../session-comparison"
+import { areStringArraysEqual, dedupeTrackIds } from "../session-comparison"
 import {
   getCurrentTrackState,
   getImmediateQueueTrackIdsState,
@@ -25,11 +22,7 @@ import {
 } from "../store"
 import { mapNativeQueueToTracks } from "./native-reader"
 import type { PersistPlaybackSessionOptions, ResolvedPlaybackSession } from "./types"
-import {
-  MAX_TRACKMAP_SIZE,
-  MIN_SESSION_SAVE_INTERVAL_MS,
-  TRACKMAP_ACTIVE_WINDOW,
-} from "./types"
+import { MAX_TRACKMAP_SIZE, MIN_SESSION_SAVE_INTERVAL_MS, TRACKMAP_ACTIVE_WINDOW } from "./types"
 
 let lastPlaybackCursorSavedAt = 0
 

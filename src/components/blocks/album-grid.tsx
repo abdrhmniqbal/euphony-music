@@ -145,18 +145,18 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
       onLongPress={() => handleLongPress(item)}
     >
       <Transition.Boundary.Target>
-      <ItemImage
-        icon={
-          <LocalVynilSolidIcon
-            fill="none"
-            width={ICON_SIZES.largeCardFallback}
-            height={ICON_SIZES.largeCardFallback}
-            color={theme.muted}
-          />
-        }
-        image={item.image}
-        className="aspect-square w-full rounded-md"
-      />
+        <ItemImage
+          icon={
+            <LocalVynilSolidIcon
+              fill="none"
+              width={ICON_SIZES.largeCardFallback}
+              height={ICON_SIZES.largeCardFallback}
+              color={theme.muted}
+            />
+          }
+          image={item.image}
+          className="aspect-square w-full rounded-md"
+        />
       </Transition.Boundary.Target>
       <ItemContent className="mt-1">
         <ItemTitle className="text-sm normal-case" numberOfLines={1}>
@@ -189,50 +189,50 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
       <>
         <LegendList
           ref={listRef}
-        {...listBehaviorProps}
-        horizontal
-        data={data}
-        renderItem={({ item, index }: LegendListRenderItemProps<Album>) => (
-          <View
-            key={item.id}
-            className="w-36"
-            style={{ marginRight: index === data.length - 1 ? 0 : 16 }}
-          >
-            <Item
-              variant="grid"
-              boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
-              onPress={() => handlePress(item)}
-              onLongPress={() => handleLongPress(item)}
+          {...listBehaviorProps}
+          horizontal
+          data={data}
+          renderItem={({ item, index }: LegendListRenderItemProps<Album>) => (
+            <View
+              key={item.id}
+              className="w-36"
+              style={{ marginRight: index === data.length - 1 ? 0 : 16 }}
             >
-              <Transition.Boundary.Target>
-              <ItemImage
-                icon={
-                  <LocalVynilSolidIcon
-                    fill="none"
-                    width={ICON_SIZES.mediumCardFallback}
-                    height={ICON_SIZES.mediumCardFallback}
-                    color={theme.muted}
+              <Item
+                variant="grid"
+                boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
+                onPress={() => handlePress(item)}
+                onLongPress={() => handleLongPress(item)}
+              >
+                <Transition.Boundary.Target>
+                  <ItemImage
+                    icon={
+                      <LocalVynilSolidIcon
+                        fill="none"
+                        width={ICON_SIZES.mediumCardFallback}
+                        height={ICON_SIZES.mediumCardFallback}
+                        color={theme.muted}
+                      />
+                    }
+                    image={item.image}
+                    className="aspect-square w-full rounded-md"
                   />
-                }
-                image={item.image}
-                className="aspect-square w-full rounded-md"
-              />
-              </Transition.Boundary.Target>
-              <ItemContent className="mt-1">
-                <ItemTitle className="text-sm normal-case" numberOfLines={1}>
-                  {item.title}
-                </ItemTitle>
-                <ItemDescription numberOfLines={1}>{getAlbumMetaText(item)}</ItemDescription>
-              </ItemContent>
-            </Item>
-          </View>
-        )}
-        keyExtractor={(item) => item.id}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: 2, paddingBottom: 6 }}
-        style={{ minHeight: HORIZONTAL_ROW_HEIGHT }}
-        className={containerClassName}
-        {...LEGEND_LIST_GRID_HORIZONTAL_CONFIG}
+                </Transition.Boundary.Target>
+                <ItemContent className="mt-1">
+                  <ItemTitle className="text-sm normal-case" numberOfLines={1}>
+                    {item.title}
+                  </ItemTitle>
+                  <ItemDescription numberOfLines={1}>{getAlbumMetaText(item)}</ItemDescription>
+                </ItemContent>
+              </Item>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 2, paddingBottom: 6 }}
+          style={{ minHeight: HORIZONTAL_ROW_HEIGHT }}
+          className={containerClassName}
+          {...LEGEND_LIST_GRID_HORIZONTAL_CONFIG}
           estimatedItemSize={144}
         />
         {sheet}

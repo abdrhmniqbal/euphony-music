@@ -366,7 +366,9 @@ export default function PlaylistDetailsScreen() {
               router.push({ pathname: "/playlist/form", params: { id: playlist.id } })
             }}
           >
-            <Text className="text-base font-medium text-foreground">{t("playlist.editPlaylist")}</Text>
+            <Text className="text-base font-medium text-foreground">
+              {t("playlist.editPlaylist")}
+            </Text>
           </Button>
           <Button
             variant="ghost"
@@ -376,7 +378,9 @@ export default function PlaylistDetailsScreen() {
               setShowDeleteDialog(true)
             }}
           >
-            <Text className="text-base font-medium text-danger">{t("playlist.deletePlaylist")}</Text>
+            <Text className="text-base font-medium text-danger">
+              {t("playlist.deletePlaylist")}
+            </Text>
           </Button>
         </CollectionActionSheet>
         <DeletePlaylistDialog

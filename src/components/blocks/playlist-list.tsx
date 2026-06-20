@@ -125,9 +125,9 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         onLongPress={() => handleLongPress(item)}
       >
         <Transition.Boundary.Target>
-        <ItemImage className="items-center justify-center overflow-hidden bg-default">
-          <PlaylistArtwork images={resolvePlaylistArtworkImages(item.images, item.image)} />
-        </ItemImage>
+          <ItemImage className="items-center justify-center overflow-hidden bg-default">
+            <PlaylistArtwork images={resolvePlaylistArtworkImages(item.images, item.image)} />
+          </ItemImage>
         </Transition.Boundary.Target>
         <ItemContent>
           <ItemTitle>{item.title}</ItemTitle>
@@ -196,20 +196,20 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         style={{ flex: 1, minHeight: 1 }}
       />
       <CollectionActionSheet
-          visible={isSheetOpen && Boolean(selectedPlaylist)}
-          onOpenChange={(open) => {
-            if (!open) {
-              closeSheet()
-            }
-          }}
-          type="playlist"
-          id={selectedPlaylist?.id ?? ""}
-          name={selectedPlaylist?.title ?? ""}
-          subtitle={selectedPlaylist ? formatTrackCount(selectedPlaylist.trackCount) : undefined}
-          image={selectedPlaylist?.image}
-          images={selectedPlaylist?.images}
-          trackCount={selectedPlaylist?.trackCount ?? 0}
-        />
+        visible={isSheetOpen && Boolean(selectedPlaylist)}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeSheet()
+          }
+        }}
+        type="playlist"
+        id={selectedPlaylist?.id ?? ""}
+        name={selectedPlaylist?.title ?? ""}
+        subtitle={selectedPlaylist ? formatTrackCount(selectedPlaylist.trackCount) : undefined}
+        image={selectedPlaylist?.image}
+        images={selectedPlaylist?.images}
+        trackCount={selectedPlaylist?.trackCount ?? 0}
+      />
     </View>
   )
 }

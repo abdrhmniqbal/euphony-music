@@ -62,7 +62,9 @@ export async function extractEmbeddedLyrics(uri: string) {
   } catch {}
 
   const nativeLyrics = await getLyric(uri).catch(() => null)
-  const sanitizedNativeLyrics = nativeLyrics ? stripMalformedUtf16LyricsPrefix(nativeLyrics).trim() : null
+  const sanitizedNativeLyrics = nativeLyrics
+    ? stripMalformedUtf16LyricsPrefix(nativeLyrics).trim()
+    : null
   if (sanitizedNativeLyrics) {
     return sanitizedNativeLyrics
   }
@@ -80,12 +82,8 @@ export async function extractMetadata(
   const artwork = await getArtwork(uri).catch(() => null)
   const lyrics = await extractEmbeddedLyrics(uri).catch(() => undefined)
 
-  const bitrate = metadata?.bitrate
-    ? Math.round(Number(metadata.bitrate) / 1000)
-    : undefined
-  const sampleRate = metadata?.sampleRate
-    ? Number(metadata.sampleRate)
-    : undefined
+  const bitrate = metadata?.bitrate ? Math.round(Number(metadata.bitrate) / 1000) : undefined
+  const sampleRate = metadata?.sampleRate ? Number(metadata.sampleRate) : undefined
   const codec = metadata?.codecs || undefined
   const format = metadata?.sampleMimeType || undefined
 

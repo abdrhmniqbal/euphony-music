@@ -335,7 +335,12 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
 
   const renderFavoriteItem = useCallback(
     ({ item }: LegendListRenderItemProps<FavoriteEntry>) => (
-      <MemoizedFavoriteRow favorite={item} onPress={handlePress} onLongPress={handleLongPress} onRemove={handleRemoveFavorite} />
+      <MemoizedFavoriteRow
+        favorite={item}
+        onPress={handlePress}
+        onLongPress={handleLongPress}
+        onRemove={handleRemoveFavorite}
+      />
     ),
     [handlePress, handleLongPress, handleRemoveFavorite]
   )
@@ -346,7 +351,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
     if (!selectedFavorite || selectedFavorite.type !== "track") return null
     const realTrack = tracks.find((t) => t.id === selectedFavorite.id)
     if (realTrack) return realTrack
-    
+
     return {
       id: selectedFavorite.id,
       title: selectedFavorite.name,

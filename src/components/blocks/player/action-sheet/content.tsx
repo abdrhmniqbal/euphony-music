@@ -62,7 +62,6 @@ interface PlayerActionSheetProps {
   onNavigate?: () => void
 }
 
-
 export function PlayerActionSheet({
   visible,
   onOpenChange,

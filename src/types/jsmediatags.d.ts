@@ -9,12 +9,7 @@ declare module "jsmediatags" {
     data: string
   }
 
-  type TagValue =
-    | string
-    | PictureData
-    | TextFrameData
-    | { text?: string }
-    | undefined
+  type TagValue = string | PictureData | TextFrameData | { text?: string } | undefined
 
   interface TagData {
     title?: string

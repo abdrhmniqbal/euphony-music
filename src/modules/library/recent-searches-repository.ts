@@ -310,7 +310,6 @@ async function hydrateRecentSearches(items: RecentSearchEntry[]): Promise<Recent
   return hydrated
 }
 
-
 export async function getRecentSearches() {
   const existing = await readRecentSearches()
   const hydrated = await hydrateRecentSearches(existing)

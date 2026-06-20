@@ -231,7 +231,12 @@ export function SleepTimerSection({
   setSleepTimerTrackEnd,
 }: SleepTimerSectionProps) {
   const renderSleepTimerFooter = (props: BottomSheetFooterProps) => (
-    <SleepTimerFooter {...props} clearSleepTimer={clearSleepTimer} onClose={() => onOpenChange(false)} label={labels.cancelTimer} />
+    <SleepTimerFooter
+      {...props}
+      clearSleepTimer={clearSleepTimer}
+      onClose={() => onOpenChange(false)}
+      label={labels.cancelTimer}
+    />
   )
 
   return (
@@ -265,7 +270,9 @@ export function SleepTimerSection({
                 <View className="flex-row items-center justify-between">
                   <Text className="text-sm font-medium text-foreground">{labels.timerValue}</Text>
                   <Text className="text-sm text-muted">
-                    {timerMinutes > 0 ? labels.timerValueMinutes.replace('{{count}}', String(timerMinutes)) : labels.off}
+                    {timerMinutes > 0
+                      ? labels.timerValueMinutes.replace("{{count}}", String(timerMinutes))
+                      : labels.off}
                   </Text>
                 </View>
                 <Slider
@@ -274,7 +281,10 @@ export function SleepTimerSection({
                   step={1}
                   value={timerMinutes}
                   onChange={(value) => {
-                    setSleepTimerDraft((draft) => ({ ...draft, timerMinutes: getSliderNumericValue(value) }))
+                    setSleepTimerDraft((draft) => ({
+                      ...draft,
+                      timerMinutes: getSliderNumericValue(value),
+                    }))
                   }}
                   onChangeEnd={(value) => {
                     const nextMinutes = getSliderNumericValue(value)
@@ -304,9 +314,13 @@ export function SleepTimerSection({
             >
               <View className="gap-2">
                 <View className="flex-row items-center justify-between">
-                  <Text className="text-sm font-medium text-foreground">{labels.playCountValueLabel}</Text>
+                  <Text className="text-sm font-medium text-foreground">
+                    {labels.playCountValueLabel}
+                  </Text>
                   <Text className="text-sm text-muted">
-                    {playCount > 0 ? labels.playCountValue.replace('{{count}}', String(playCount)) : labels.off}
+                    {playCount > 0
+                      ? labels.playCountValue.replace("{{count}}", String(playCount))
+                      : labels.off}
                   </Text>
                 </View>
                 <Slider
@@ -315,7 +329,10 @@ export function SleepTimerSection({
                   step={1}
                   value={playCount}
                   onChange={(value) => {
-                    setSleepTimerDraft((draft) => ({ ...draft, playCount: getSliderNumericValue(value) }))
+                    setSleepTimerDraft((draft) => ({
+                      ...draft,
+                      playCount: getSliderNumericValue(value),
+                    }))
                   }}
                   onChangeEnd={(value) => {
                     const nextPlayCount = getSliderNumericValue(value)

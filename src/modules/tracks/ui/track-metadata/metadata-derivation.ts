@@ -1,3 +1,11 @@
+/**
+ * Purpose: Derives metadata labels, values, and navigation targets for track metadata sheet, including album artist display.
+ * Caller: Track metadata sheet UI.
+ * Dependencies: Localization, track model, artist picker helpers, split-value settings, and track metadata utilities.
+ * Main Functions: dedupeValues(), buildArtistSelectionItems(), deriveTrackMetadata(), buildMetadataLayoutItems()
+ * Side Effects: None.
+ */
+
 import type { TFunction } from "i18next"
 import type { ArtistPickerSheetItem } from "@/components/blocks/artist-picker-sheet"
 import type { Track } from "@/modules/player/store"
@@ -25,7 +33,6 @@ export interface MetadataLayoutItem extends MetadataItem {
   isFullWidth: boolean
 }
 
-
 export function dedupeValues(values: string[]) {
   const seen = new Set<string>()
   return values.filter((value) => {
@@ -41,7 +48,11 @@ export function dedupeValues(values: string[]) {
 
 interface FullTrackData {
   artwork?: string | null
-  album?: { artwork?: string | null; title?: string | null } | null
+  album?: {
+    artwork?: string | null
+    title?: string | null
+    artist?: { name?: string | null } | null
+  } | null
   artist?: { name?: string | null } | null
   featuredArtists?: Array<{ artist?: { name?: string | null } | null }> | null
   genres?: Array<{ genre?: { name?: string | null } | null }> | null
@@ -78,9 +89,7 @@ export function buildArtistSelectionItems({
     trackCountLabel
   )
 
-  return richArtistItems.length > 0
-    ? richArtistItems
-    : artistNames.map((value) => ({ value }))
+  return richArtistItems.length > 0 ? richArtistItems : artistNames.map((value) => ({ value }))
 }
 
 export function deriveTrackMetadata({
@@ -130,6 +139,14 @@ export function deriveTrackMetadata({
       ? [track.album.trim()]
       : []
 
+  const relationAlbumArtistNames = fullTrackData?.album?.artist?.name?.trim()
+    ? [fullTrackData.album.artist.name.trim()]
+    : []
+  const albumArtistNames =
+    relationAlbumArtistNames.length > 0
+      ? dedupeValues(relationAlbumArtistNames)
+      : dedupeValues(splitArtistsValue(track.albumArtist, splitMultipleValueConfig))
+
   const relationGenreNames =
     fullTrackData?.genres
       ?.map((entry) => entry.genre?.name?.trim())
@@ -165,8 +182,7 @@ export function deriveTrackMetadata({
               }))
           : [{ value: t("library.unknownArtist") }],
       fullWidth:
-        (artistNames.length > 0 ? artistNames.join(", ") : t("library.unknownArtist")).length >
-        24,
+        (artistNames.length > 0 ? artistNames.join(", ") : t("library.unknownArtist")).length > 24,
     },
     {
       label: t("track.metadata.album"),
@@ -179,6 +195,19 @@ export function deriveTrackMetadata({
           : [{ value: t("library.unknownAlbum") }],
       fullWidth:
         (albumNames.length > 0 ? albumNames.join(", ") : t("library.unknownAlbum")).length > 24,
+    },
+    {
+      label: t("track.metadata.albumArtist"),
+      segments:
+        albumArtistNames.length > 0
+          ? albumArtistNames.map((name) => ({
+              value: name,
+              onPress: () => onOpenArtistSelection(albumArtistNames),
+            }))
+          : [{ value: t("library.unknownArtist") }],
+      fullWidth:
+        (albumArtistNames.length > 0 ? albumArtistNames.join(", ") : t("library.unknownArtist"))
+          .length > 24,
     },
     {
       label: t("track.metadata.genre"),
@@ -233,6 +262,7 @@ export function deriveTrackMetadata({
 
   return {
     artistNames,
+    albumArtistNames,
     genreNames,
     quickFacts,
     metadataItems,

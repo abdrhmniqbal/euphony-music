@@ -237,7 +237,10 @@ export default function FolderFiltersScreen() {
     }
 
     await commitFolderFilterConfig(pendingConfig)
-    showAppToast(t("settings.routes.folderFilters.title"), t("common.feedback.folderFiltersApplied"))
+    showAppToast(
+      t("settings.routes.folderFilters.title"),
+      t("common.feedback.folderFiltersApplied")
+    )
     await startIndexing(false, true)
     setHasPendingChanges(false)
   }

@@ -72,6 +72,14 @@ function normalizeGenres(genres: string[]): string[] {
   return normalized
 }
 
+/**
+ * Purpose: Normalizes scanner metadata into database-ready values, including album-artist fallback from track artist.
+ * Caller: Indexer metadata preparation and external track indexing.
+ * Dependencies: Text normalization helpers, fallback title extraction, genre normalization, and malformed lyric cleanup.
+ * Main Functions: normalizeMetadata()
+ * Side Effects: None.
+ */
+
 export function normalizeMetadata<T extends NormalizableMetadata>(
   metadata: T,
   filename: string
@@ -97,7 +105,7 @@ export function normalizeMetadata<T extends NormalizableMetadata>(
     artist: normalizedArtist,
     artists: normalizedArtists,
     album: normalizeText(metadata.album),
-    albumArtist: normalizeText(metadata.albumArtist),
+    albumArtist: normalizeText(metadata.albumArtist) || normalizedArtist,
     genres: normalizedGenres,
     rawArtist: normalizeText(metadata.rawArtist),
     rawAlbumArtist: normalizeText(metadata.rawAlbumArtist),

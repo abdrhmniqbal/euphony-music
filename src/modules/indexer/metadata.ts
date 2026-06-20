@@ -12,7 +12,4 @@ export {
   extractMetadata,
 } from "./metadata/native-metadata"
 
-export {
-  saveArtworkToCache,
-  cleanupUnusedArtworkCache,
-} from "./metadata/artwork-cache-repository"
+export { saveArtworkToCache, cleanupUnusedArtworkCache } from "./metadata/artwork-cache-repository"

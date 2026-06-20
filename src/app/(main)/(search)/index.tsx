@@ -75,63 +75,63 @@ export default function SearchScreen() {
 
   return (
     <>
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 220 }}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      contentInsetAdjustmentBehavior="automatic"
-      onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-      onScrollBeginDrag={handleScrollStart}
-      onMomentumScrollEnd={handleScrollStop}
-      onScrollEndDrag={handleScrollStop}
-      scrollEventThrottle={16}
-    >
-      <View className="relative my-6 px-3">
-        <View className="absolute top-1/2 left-7 z-10 -translate-y-1/2">
-          <LocalSearchIcon fill="none" width={24} height={24} color={theme.muted} />
-        </View>
-        <Input
-          value=""
-          editable={false}
-          showSoftInputOnFocus={false}
-          placeholder={t("search.landingPlaceholder")}
-          className="pl-12"
-        />
-        <PressableFeedback
-          onPress={handleSearchPress}
-          className="absolute inset-0 z-20"
-          accessibilityRole="button"
-          accessibilityLabel={t("search.openSearch")}
-        />
-      </View>
-
-      <ContentSection
-        title={t("search.recentlyAdded")}
-        data={recentlyAddedPreviewTracks}
-        onViewMore={() => router.push("/(main)/(search)/recently-added")}
-        emptyState={{
-          icon: <LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
-          title: t("search.empty.recentlyAddedTitle"),
-          message: t("search.empty.recentlyAddedMessage"),
-        }}
-        renderContent={(data) => (
-          <MediaCarousel
-            data={data}
-            renderItem={renderRecentlyAddedItem}
-            keyExtractor={(item, index) => `${item.id}-${index}`}
-            gap={10}
-            dataVersionKey={currentTrackId ?? undefined}
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerStyle={{ paddingBottom: 220 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentInsetAdjustmentBehavior="automatic"
+        onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
+        onScrollBeginDrag={handleScrollStart}
+        onMomentumScrollEnd={handleScrollStop}
+        onScrollEndDrag={handleScrollStop}
+        scrollEventThrottle={16}
+      >
+        <View className="relative my-6 px-3">
+          <View className="absolute top-1/2 left-7 z-10 -translate-y-1/2">
+            <LocalSearchIcon fill="none" width={24} height={24} color={theme.muted} />
+          </View>
+          <Input
+            value=""
+            editable={false}
+            showSoftInputOnFocus={false}
+            placeholder={t("search.landingPlaceholder")}
+            className="pl-12"
           />
-        )}
+          <PressableFeedback
+            onPress={handleSearchPress}
+            className="absolute inset-0 z-20"
+            accessibilityRole="button"
+            accessibilityLabel={t("search.openSearch")}
+          />
+        </View>
+
+        <ContentSection
+          title={t("search.recentlyAdded")}
+          data={recentlyAddedPreviewTracks}
+          onViewMore={() => router.push("/(main)/(search)/recently-added")}
+          emptyState={{
+            icon: <LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
+            title: t("search.empty.recentlyAddedTitle"),
+            message: t("search.empty.recentlyAddedMessage"),
+          }}
+          renderContent={(data) => (
+            <MediaCarousel
+              data={data}
+              renderItem={renderRecentlyAddedItem}
+              keyExtractor={(item, index) => `${item.id}-${index}`}
+              gap={10}
+              dataVersionKey={currentTrackId ?? undefined}
+            />
+          )}
+        />
+      </ScrollView>
+      <TrackActionSheet
+        track={selectedTrack}
+        isOpen={isTrackSheetOpen}
+        onClose={() => setIsTrackSheetOpen(false)}
+        tracks={recentlyAddedTracks}
       />
-    </ScrollView>
-    <TrackActionSheet
-      track={selectedTrack}
-      isOpen={isTrackSheetOpen}
-      onClose={() => setIsTrackSheetOpen(false)}
-      tracks={recentlyAddedTracks}
-    />
     </>
   )
 }

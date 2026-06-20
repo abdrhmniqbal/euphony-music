@@ -43,7 +43,7 @@ export default function OnboardingScreen() {
   const theme = useThemeColors()
   const folderFilterConfig = useSettingsStore((state) => state.folderFilterConfig)
   const [step, setStep] = React.useState<Step>(0)
-  
+
   const [pendingConfig, setPendingConfig] = React.useState<FolderFilterConfig>({
     whitelist: Array.isArray(folderFilterConfig?.whitelist) ? folderFilterConfig.whitelist : [],
     blacklist: Array.isArray(folderFilterConfig?.blacklist) ? folderFilterConfig.blacklist : [],
@@ -54,7 +54,8 @@ export default function OnboardingScreen() {
   const [isModeSheetOpen, setIsModeSheetOpen] = React.useState(false)
 
   const currentMode: ThemeValue = hasAdaptiveThemes ? "system" : (currentTheme as ThemeValue)
-  const activeFolders = selectedMode === "whitelist" ? pendingConfig.whitelist : pendingConfig.blacklist
+  const activeFolders =
+    selectedMode === "whitelist" ? pendingConfig.whitelist : pendingConfig.blacklist
 
   const appName = Application.applicationName || t("common.appName")
 
@@ -119,10 +120,7 @@ export default function OnboardingScreen() {
         }
         return { whitelist, blacklist }
       })
-      showAppToast(
-        t("settings.library.addNewFolder"),
-        t("common.feedback.folderAdded")
-      )
+      showAppToast(t("settings.library.addNewFolder"), t("common.feedback.folderAdded"))
     } catch {
       // User cancelled picker.
     }
@@ -166,7 +164,10 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={["top", "bottom"]}>
-      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40, paddingTop: 32 }}>
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerStyle={{ paddingBottom: 40, paddingTop: 32 }}
+      >
         <View className="gap-6 px-4 py-4">
           <OnboardingWelcome step={step} appName={appName} />
 
@@ -216,9 +217,7 @@ export default function OnboardingScreen() {
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
         <Button size="lg" className="w-full rounded-full" onPress={nextStep}>
-          <Button.Label>
-            {step === 2 ? t("common.finish") : t("common.next")}
-          </Button.Label>
+          <Button.Label>{step === 2 ? t("common.finish") : t("common.next")}</Button.Label>
         </Button>
         {step > 0 ? (
           <Button variant="ghost" className="w-full rounded-full" onPress={previousStep}>

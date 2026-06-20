@@ -50,39 +50,39 @@ export function LibraryGenresSection({
 
   return (
     <>
-    <ScrollView
-      className="flex-1"
-      contentContainerStyle={listContentContainerStyle}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      contentInsetAdjustmentBehavior="automatic"
-      refreshControl={refreshControl}
-      {...sharedListEvents}
-    >
-      {genres.length > 0 ? (
-        <View className="flex-row flex-wrap justify-between gap-y-4">
-          {genres.map((genre) => (
-            <GenreCard
-              key={genre.id}
-              title={genre.title}
-              trackCount={genre.trackCount}
-              color={genre.color}
-              pattern={genre.pattern}
-              onPress={() => onGenrePress(genre.title)}
-              onLongPress={() => handleLongPress(genre)}
-            />
-          ))}
-        </View>
-      ) : (
-        <EmptyState
-          icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={mutedColor} />}
-          title={genresEmptyTitle}
-          message={genresEmptyMessage}
-          className="mt-8"
-        />
-      )}
-    </ScrollView>
-    <CollectionActionSheet
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={listContentContainerStyle}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentInsetAdjustmentBehavior="automatic"
+        refreshControl={refreshControl}
+        {...sharedListEvents}
+      >
+        {genres.length > 0 ? (
+          <View className="flex-row flex-wrap justify-between gap-y-4">
+            {genres.map((genre) => (
+              <GenreCard
+                key={genre.id}
+                title={genre.title}
+                trackCount={genre.trackCount}
+                color={genre.color}
+                pattern={genre.pattern}
+                onPress={() => onGenrePress(genre.title)}
+                onLongPress={() => handleLongPress(genre)}
+              />
+            ))}
+          </View>
+        ) : (
+          <EmptyState
+            icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={mutedColor} />}
+            title={genresEmptyTitle}
+            message={genresEmptyMessage}
+            className="mt-8"
+          />
+        )}
+      </ScrollView>
+      <CollectionActionSheet
         visible={isSheetOpen && Boolean(selectedGenre)}
         onOpenChange={(open) => {
           if (!open) {

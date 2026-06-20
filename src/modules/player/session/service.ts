@@ -56,8 +56,16 @@ import {
 } from "../store"
 
 import { applyResolvedPlaybackSession } from "./apply"
-import { readNativePlaybackSession, readNativePlaybackStatus, mapNativeQueueToTracks } from "./native-reader"
-import { persistPlaybackCursorSnapshot, persistPlaybackQueueSnapshot, readStoredPlaybackSession } from "./persistence"
+import {
+  readNativePlaybackSession,
+  readNativePlaybackStatus,
+  mapNativeQueueToTracks,
+} from "./native-reader"
+import {
+  persistPlaybackCursorSnapshot,
+  persistPlaybackQueueSnapshot,
+  readStoredPlaybackSession,
+} from "./persistence"
 export async function persistPlaybackSession(
   options?: PersistPlaybackSessionOptions
 ): Promise<void> {

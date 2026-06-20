@@ -38,7 +38,11 @@ export function createEmptyGenreVisualLookup(): GenreVisualLookup {
   }
 }
 
-export function registerGenreVisual(visualLookup: GenreVisualLookup, color: string, shape: GenreShape) {
+export function registerGenreVisual(
+  visualLookup: GenreVisualLookup,
+  color: string,
+  shape: GenreShape
+) {
   visualLookup.usedCombinations.add(`${color}::${shape}`)
   visualLookup.colorUsage.set(color, (visualLookup.colorUsage.get(color) ?? 0) + 1)
   visualLookup.shapeUsage.set(shape, (visualLookup.shapeUsage.get(shape) ?? 0) + 1)
@@ -109,7 +113,10 @@ export async function preloadIndexingLookupCache(): Promise<IndexingLookupCache>
   }
 }
 
-export async function getOrCreateArtist(name: string, lookupCache?: IndexingLookupCache): Promise<string> {
+export async function getOrCreateArtist(
+  name: string,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
   const cachedArtistId = lookupCache?.artistIdsByName.get(name)
   if (cachedArtistId) {
     return cachedArtistId
@@ -177,7 +184,10 @@ export async function getOrCreateAlbum(
   return id
 }
 
-export async function getOrCreateGenre(name: string, lookupCache?: IndexingLookupCache): Promise<string> {
+export async function getOrCreateGenre(
+  name: string,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
   const cachedGenreId = lookupCache?.genreIdsByName.get(name)
   if (cachedGenreId) {
     return cachedGenreId

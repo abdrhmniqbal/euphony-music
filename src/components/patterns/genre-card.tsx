@@ -29,7 +29,14 @@ const GRID_PATTERN_KEYS = [
   "grid-12",
 ]
 
-export function GenreCard({ title, trackCount, color, pattern, onPress, onLongPress }: GenreCardProps) {
+export function GenreCard({
+  title,
+  trackCount,
+  color,
+  pattern,
+  onPress,
+  onLongPress,
+}: GenreCardProps) {
   const { t } = useTranslation()
   const normalizedTrackCount = Number.isFinite(trackCount)
     ? Math.max(0, Math.trunc(trackCount))

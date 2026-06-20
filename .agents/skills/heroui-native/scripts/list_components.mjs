@@ -9,8 +9,7 @@
  *   JSON with components array, latestVersion, and count
  */
 
-const API_BASE =
-  process.env.HEROUI_NATIVE_API_BASE || "https://native-mcp-api.heroui.com"
+const API_BASE = process.env.HEROUI_NATIVE_API_BASE || "https://native-mcp-api.heroui.com"
 const APP_PARAM = "app=native-skills"
 const LLMS_TXT_URL = "https://v3.heroui.com/native/llms.txt"
 

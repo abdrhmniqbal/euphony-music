@@ -35,6 +35,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+codedb.snapshot
 app-example
-SYSTEM_MAP.md
 .tmp/

@@ -19,9 +19,7 @@ export function OnboardingWelcome({ step, appName }: OnboardingWelcomeProps) {
         <Text className="text-2xl font-bold text-foreground">
           {t("onboarding.welcomePrefix")} {appName}
         </Text>
-        <Text className="text-center text-sm text-muted">
-          {t("onboarding.welcomeDescription")}
-        </Text>
+        <Text className="text-center text-sm text-muted">{t("onboarding.welcomeDescription")}</Text>
       </View>
     </View>
   )

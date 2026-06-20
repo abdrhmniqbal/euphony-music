@@ -363,7 +363,9 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
 
             <View className="gap-1">
               <MenuRow
-                icon={<LocalPlaySolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                icon={
+                  <LocalPlaySolidIcon fill="none" width={22} height={22} color={theme.foreground} />
+                }
                 label={t("common.play")}
                 onPress={handlePlay}
               />
@@ -372,7 +374,12 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                   isFavorite ? (
                     <LocalFavouriteSolidIcon fill="none" width={22} height={22} color="#ef4444" />
                   ) : (
-                    <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.foreground} />
+                    <LocalFavouriteIcon
+                      fill="none"
+                      width={22}
+                      height={22}
+                      color={theme.foreground}
+                    />
                   )
                 }
                 label={isFavorite ? t("track.removeFromFavorites") : t("track.addToFavorites")}
@@ -384,18 +391,29 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 onPress={handleAddToQueue}
               />
               <MenuRow
-                icon={<LocalNextSolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                icon={
+                  <LocalNextSolidIcon fill="none" width={22} height={22} color={theme.foreground} />
+                }
                 label={t("track.playNext")}
                 onPress={handlePlayNext}
               />
               <MenuRow
-                icon={<LocalPlaylistSolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                icon={
+                  <LocalPlaylistSolidIcon
+                    fill="none"
+                    width={22}
+                    height={22}
+                    color={theme.foreground}
+                  />
+                }
                 label={t("track.addToPlaylist")}
                 onPress={handleAddToPlaylist}
               />
               {playlistId ? (
                 <MenuRow
-                  icon={<LocalCancelIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                  icon={
+                    <LocalCancelIcon fill="none" width={22} height={22} color={theme.foreground} />
+                  }
                   label={t("track.removeFromPlaylist")}
                   onPress={() => {
                     void handleRemoveFromPlaylist()
@@ -408,7 +426,14 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 onPress={() => handleOpenArtistSelection(artistNames)}
               />
               <MenuRow
-                icon={<LocalVynilSolidIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                icon={
+                  <LocalVynilSolidIcon
+                    fill="none"
+                    width={22}
+                    height={22}
+                    color={theme.foreground}
+                  />
+                }
                 label={t("player.menu.goToAlbum")}
                 onPress={() => {
                   if (albumNames.length > 0 && albumNames[0]) {
@@ -417,7 +442,14 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 }}
               />
               <MenuRow
-                icon={<LocalSlidersVerticalIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                icon={
+                  <LocalSlidersVerticalIcon
+                    fill="none"
+                    width={22}
+                    height={22}
+                    color={theme.foreground}
+                  />
+                }
                 label={t("track.viewMetadata")}
                 onPress={() => setIsMetadataSheetOpen(true)}
               />

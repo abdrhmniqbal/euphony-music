@@ -1,3 +1,11 @@
+/**
+ * Purpose: Renders shared collection action sheet controls for albums, artists, album artists, folders, genres, and playlists.
+ * Caller: Library, search, and collection surfaces that expose context menus.
+ * Dependencies: HeroUI bottom sheet, favorites queries/mutations, playback queue helpers, toast runtime, playlist artwork, and theme colors.
+ * Main Functions: CollectionActionSheet()
+ * Side Effects: Toggles favorites, queues tracks for playback, and shows empty-state toasts.
+ */
+
 import { BottomSheet, Button } from "heroui-native"
 import { Image } from "expo-image"
 import { Text, View } from "react-native"
@@ -9,7 +17,10 @@ import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalNextSolidIcon from "@/components/icons/local/next-solid"
 import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
-import { PlaylistArtwork, resolvePlaylistArtworkImages } from "@/components/patterns/playlist-artwork"
+import {
+  PlaylistArtwork,
+  resolvePlaylistArtworkImages,
+} from "@/components/patterns/playlist-artwork"
 
 import { useIsFavorite } from "@/modules/favorites/queries"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
@@ -68,7 +79,7 @@ export function CollectionActionSheet({
   const { t } = useTranslation()
   const theme = useThemeColors()
   const toggleFavoriteMutation = useToggleFavorite()
-  
+
   const favoriteType: FavoriteType = type === "genre" || type === "folder" ? "track" : type
   const resolvedFavoriteId = favoriteId || id
   const favoriteItemId = hideFavoriteAction ? "" : resolvedFavoriteId
@@ -143,12 +154,7 @@ export function CollectionActionSheet({
               <MenuRow
                 icon={
                   isFavorite ? (
-                    <LocalFavouriteSolidIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color="#ef4444"
-                    />
+                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
                   ) : (
                     <LocalFavouriteIcon
                       fill="none"

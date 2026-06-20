@@ -38,8 +38,14 @@ import { saveIndexerRunSnapshot } from "./run-snapshot"
 import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
 import { chunkArray, wait, yieldToEventLoop } from "./batch-utils"
 import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts-repository"
-import { processDeletedTracksInScopes, hardDeleteSoftDeletedTracksInScopes } from "./deleted-tracks-repository"
-export { rebuildSplitMetadataRelations, type SplitRelationRebuildResult } from "./relation-rebuild-repository"
+import {
+  processDeletedTracksInScopes,
+  hardDeleteSoftDeletedTracksInScopes,
+} from "./deleted-tracks-repository"
+export {
+  rebuildSplitMetadataRelations,
+  type SplitRelationRebuildResult,
+} from "./relation-rebuild-repository"
 import { processBatch } from "./batch-processor"
 import {
   type IndexingLookupCache,
@@ -50,11 +56,9 @@ import {
   getOrCreateGenre,
 } from "./lookup-cache-repository"
 
-
 export { getLastIndexerRunSnapshot } from "./run-snapshot"
 
 const BATCH_SIZE = 24
-
 
 interface BatchProcessingResult {
   preparedCount: number
@@ -67,16 +71,6 @@ interface IncrementalCommitResult {
   processedAssets: number
   totalAssets: number
 }
-
-
-
-
-
-
-
-
-
-
 
 export async function scanMediaLibrary(
   onProgress?: (progress: IndexerScanProgress) => void,
@@ -270,4 +264,3 @@ export async function scanMediaLibrary(
     failedAssets: failedAssetsCount,
   })
 }
-

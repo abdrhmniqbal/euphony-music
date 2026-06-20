@@ -1,7 +1,9 @@
 # Metadata & Lyrics Parsing
+
 This module extracts structural metadata, embedded lyrics, and artwork from local media files.
 
 ## Edge Vectors & Validation Bounds
+
 Since binary parsing is unsafe and reliant on untrusted media, specific defensive edge vectors are considered:
 
 1. **ID3 Parsing (`id3-lyrics.ts`)**

@@ -34,7 +34,6 @@ import { Button } from "@heroui/react"
 import "./styles.css"
 
 // CSS files don't work in React Native
-
 ;<Button className="bg-blue-500">Click me</Button>
 ```
 
@@ -43,7 +42,6 @@ import "./styles.css"
 ```tsx
 // DO THIS - Native pattern (Uniwind, React Native components)
 import { Button } from "heroui-native"
-
 ;<Button variant="primary" onPress={() => console.log("Pressed!")}>
   Click me
 </Button>

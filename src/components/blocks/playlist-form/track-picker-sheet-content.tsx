@@ -68,9 +68,7 @@ export function TrackPickerSheetContent({
           paddingHorizontal: 4,
         }}
         renderScrollComponent={(props) => (
-          <BottomSheetScrollView {...props}>
-            {props.children}
-          </BottomSheetScrollView>
+          <BottomSheetScrollView {...props}>{props.children}</BottomSheetScrollView>
         )}
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}

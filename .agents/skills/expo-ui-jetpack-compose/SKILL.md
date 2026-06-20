@@ -23,15 +23,14 @@ A native rebuild is required after installation (`npx expo run:android`).
 - Every Jetpack Compose tree must be wrapped in `Host`. Use `<Host matchContents>` for intrinsic sizing, or `<Host style={{ flex: 1 }}>` when you need explicit size (e.g. as a parent of `LazyColumn`). Example:
 
 ```jsx
-import { Host, Column, Button, Text } from "@expo/ui/jetpack-compose";
-import { fillMaxWidth, paddingAll } from "@expo/ui/jetpack-compose/modifiers";
-
-<Host matchContents>
+import { Host, Column, Button, Text } from "@expo/ui/jetpack-compose"
+import { fillMaxWidth, paddingAll } from "@expo/ui/jetpack-compose/modifiers"
+;<Host matchContents>
   <Column verticalArrangement={{ spacedBy: 8 }} modifiers={[fillMaxWidth(), paddingAll(16)]}>
     <Text style={{ typography: "titleLarge" }}>Hello</Text>
     <Button onPress={() => alert("Pressed!")}>Press me</Button>
   </Column>
-</Host>;
+</Host>
 ```
 
 ## Key Components

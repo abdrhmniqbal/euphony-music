@@ -9,7 +9,11 @@ import {
   requestIgnoreBatteryOptimizations,
 } from "@/modules/device/battery-optimization"
 
-export function useOnboardingPermissions({ showToast }: { showToast: (title: string, message: string) => void }) {
+export function useOnboardingPermissions({
+  showToast,
+}: {
+  showToast: (title: string, message: string) => void
+}) {
   const [mediaPermission, setMediaPermission] = useState<boolean | null>(null)
   const [notificationPermissionGranted, setNotificationPermissionGranted] = useState(false)
   const [batteryOptimizationDisabled, setBatteryOptimizationDisabled] = useState(false)

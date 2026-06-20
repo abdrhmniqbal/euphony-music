@@ -1,8 +1,19 @@
+/**
+ * Purpose: Resolves playback source names and track-id lists for albums, artists, album artists, folders, genres, playlists, and library playlists.
+ * Caller: Playback queue actions and collection action sheets.
+ * Dependencies: Library repositories, genre repository, playlist repository, track repository, media constants, localization, and logging.
+ * Main Functions: arePlaybackSourceEqual(), extractTrackId(), getSourceName(), getTrackIdsList(), getUpdatedLists()
+ * Side Effects: Reads library data for queue construction and logs lookup failures.
+ */
+
 import { logWarn } from "@/modules/logging/service"
 import type { PlayFromSource } from "./types"
 
-import { getAlbumDetails, getAlbumTracks } from "@/modules/library/repository"
-import { getSortedArtistTracks } from "@/modules/library/repository"
+import {
+  getAlbumDetails,
+  getAlbumTracks,
+  getSortedArtistTracks,
+} from "@/modules/library/repository"
 import { getSortedFolderTracks } from "@/modules/library/repository"
 import { getSortedGenreTracks } from "@/modules/genres/repository"
 import { getPlaylistTracks } from "@/modules/playlist/repository"

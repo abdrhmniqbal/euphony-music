@@ -1,5 +1,5 @@
 /**
- * Purpose: Builds and renders tabbed search result sections for tracks, artists, albums, and playlists.
+ * Purpose: Builds and renders tabbed search result sections for tracks, artists, album artists, albums, and playlists.
  * Caller: Search interaction route.
  * Dependencies: LegendList, search result row, HeroUI chips, localization, library/player result types.
  * Main Functions: SearchResults()
