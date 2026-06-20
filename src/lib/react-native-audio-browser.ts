@@ -13,7 +13,9 @@ type AdditionalConfig = {
   continuePlaybackOnDismiss?: boolean
 }
 
-const previousOptions: AdditionalConfig = {}
+const previousOptions: AdditionalConfig = {
+  continuePlaybackOnDismiss: true,
+}
 
 export function getAudioBrowserOptions(options?: AdditionalConfig): UpdateOptions {
   if (options) {

@@ -3,6 +3,7 @@ import AudioBrowser from "react-native-audio-browser"
 import type { PlayerQueueContext, RepeatModeType, Track } from "@/modules/player/types"
 import { PlaybackControls, PlaybackSettings, Queue } from "@/stores/playback/actions"
 import { playbackStore } from "@/stores/playback/store"
+import { preferenceStore } from "@/stores/preference/store"
 import { getUpdatedLists } from "@/stores/playback/utils"
 
 import { getAudioBrowserOptions } from "@/lib/react-native-audio-browser"
@@ -14,7 +15,11 @@ export async function setupPlaybackCore() {
       downsamplingProcessor: true,
     },
   })
-  AudioBrowser.updateOptions(getAudioBrowserOptions())
+  AudioBrowser.updateOptions(
+    getAudioBrowserOptions({
+      continuePlaybackOnDismiss: preferenceStore.getState().continuePlaybackOnDismiss,
+    })
+  )
 }
 
 export function isPlaybackCoreSetUp() {

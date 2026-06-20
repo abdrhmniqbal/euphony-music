@@ -8,13 +8,11 @@
 
 import AudioBrowser from "react-native-audio-browser"
 
+import { getAudioBrowserOptions } from "@/lib/react-native-audio-browser"
+import { preferenceStore } from "@/stores/preference/store"
+
 export const AndroidAudioContentType = {
   Music: "music",
-} as const
-
-export const AppKilledPlaybackBehavior = {
-  ContinuePlayback: "continue-playback",
-  StopPlaybackAndRemoveNotification: "stop-playback-and-remove-notification",
 } as const
 
 export const Capability = {
@@ -88,22 +86,12 @@ let activeIndexMirror = 0
 let repeatModeMirror: RepeatMode = RepeatMode.Off
 let volumeMirror = 1
 
-function getAudioBrowserOptions() {
-  return {
-    android: {
-      appKilledPlaybackBehavior: "continue-playback" as const,
-    },
-    capabilities: {
-      stop: false,
-      jumpForward: false,
-      jumpBackward: false,
-      favorite: false,
-      shuffleMode: false,
-      repeatMode: false,
-      playbackRate: false,
-    },
-    progressUpdateEventInterval: 0.5,
-  }
+function updateAudioBrowserOptionsFromPreferences() {
+  AudioBrowser.updateOptions(
+    getAudioBrowserOptions({
+      continuePlaybackOnDismiss: preferenceStore.getState().continuePlaybackOnDismiss,
+    })
+  )
 }
 
 function mapInputToAudioBrowserTrack(track: TrackPlayerInput) {
@@ -192,10 +180,11 @@ function readEventString(event: unknown, key: string) {
 export const TrackPlayer = {
   async setupPlayer() {
     await AudioBrowser.setupPlayer({})
+    updateAudioBrowserOptionsFromPreferences()
   },
 
   async updateOptions() {
-    AudioBrowser.updateOptions(getAudioBrowserOptions())
+    updateAudioBrowserOptionsFromPreferences()
   },
 
   async add(tracks: TrackPlayerInput[] | TrackPlayerInput, insertBeforeIndex?: number) {
