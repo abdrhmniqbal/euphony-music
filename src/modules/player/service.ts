@@ -33,6 +33,9 @@ import { resolvePlayableFileUri } from "@/utils/file-path"
 import { generateId } from "@/utils/common"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
+import type { Track as DataTrack } from "@/modules/tracks/types"
+import { updateNowPlaying } from "react-native-audio-browser"
+
 import { playFromTracks, setupPlaybackCore } from "@/modules/player/playback-core"
 import { playbackStore } from "@/stores/playback/store"
 import { preferenceStore } from "@/stores/preference/store"
@@ -576,28 +579,80 @@ export async function playExternalFileUri(uri: string) {
     })
   }
 
-  try {
-    const indexedExternalTrack = await indexExternalFileTrack(externalUri, resolvedUri)
-    const currentTracks = getTracksState()
-    if (!currentTracks.some((track) => track.id === indexedExternalTrack.id)) {
-      setTracksState([...currentTracks, indexedExternalTrack])
-    }
-    logInfo("Playing newly indexed external file", {
-      trackId: indexedExternalTrack.id,
-    })
-    return await playTrack(indexedExternalTrack, [indexedExternalTrack], {
-      type: "external",
-      title: indexedExternalTrack.title,
-    })
-  } catch (error) {
-    logWarn("Failed to index external file before playback", {
-      uri: externalUri,
-      error: error instanceof Error ? error.message : String(error),
-    })
-    const externalTrack = await buildExternalTrack(externalUri, resolvedUri)
-    return await playTrack(externalTrack, [externalTrack], {
-      type: "external",
-      title: externalTrack.title,
-    })
+  // Play immediately with a fallback track
+  const fallbackTitle = getExternalTrackTitle(externalUri)
+  const fallbackTrack: Track = {
+    id: `${EXTERNAL_TRACK_ID_PREFIX}${Date.now()}:${resolvedUri || externalUri}`,
+    title: fallbackTitle,
+    duration: 0,
+    uri: resolvedUri || externalUri,
+    isExternal: true,
   }
+
+  logInfo("Dispatching immediate external playback with fallback track", {
+    uri: externalUri,
+  })
+
+  const playPromise = playTrack(fallbackTrack, [fallbackTrack], {
+    type: "external",
+    title: fallbackTrack.title,
+  })
+
+  // Index and update metadata in the background
+  void (async () => {
+    try {
+      let indexedExternalTrack: Track
+      try {
+        indexedExternalTrack = await indexExternalFileTrack(externalUri, resolvedUri)
+      } catch (err) {
+        logWarn("Failed to fully index external file, using partial metadata", err)
+        indexedExternalTrack = await buildExternalTrack(externalUri, resolvedUri)
+      }
+
+      const currentTracks = getTracksState()
+      const updatedTracks = currentTracks.map((t) => {
+        if (t.uri === fallbackTrack.uri || t.id === fallbackTrack.id) {
+          return indexedExternalTrack
+        }
+        return t
+      })
+
+      if (!updatedTracks.some((t) => t.id === indexedExternalTrack.id)) {
+        updatedTracks.push(indexedExternalTrack)
+      }
+      setTracksState(updatedTracks)
+
+      const activeTrack = playbackStore.getState().activeTrack
+      if (
+        activeTrack &&
+        (activeTrack.id === fallbackTrack.id || activeTrack.uri === fallbackTrack.uri)
+      ) {
+        const updatedActiveTrack: DataTrack = {
+          id: indexedExternalTrack.id,
+          name: indexedExternalTrack.title,
+          artwork: indexedExternalTrack.image ?? indexedExternalTrack.albumArtwork ?? null,
+          artists: indexedExternalTrack.artist ? [indexedExternalTrack.artist] : null,
+          albumName: indexedExternalTrack.album ?? null,
+          uri: indexedExternalTrack.uri,
+          duration: indexedExternalTrack.duration ?? 0,
+          artistName: indexedExternalTrack.artist ?? null,
+          discoverTime: null,
+          modificationTime: null,
+          rawArtistName: indexedExternalTrack.artist ?? null,
+          albumId: indexedExternalTrack.albumId ?? null,
+          parentFolder: null,
+        }
+
+        playbackStore.setState({ activeTrack: updatedActiveTrack })
+        updateNowPlaying({
+          title: indexedExternalTrack.title,
+          artist: indexedExternalTrack.artist,
+        })
+      }
+    } catch (error) {
+      logError("Background external track processing failed", error)
+    }
+  })()
+
+  return await playPromise
 }

@@ -1,10 +1,11 @@
 import AudioBrowser from "react-native-audio-browser"
 
 import type { PlayerQueueContext, RepeatModeType, Track } from "@/modules/player/types"
+import type { Track as DataTrack } from "@/modules/tracks/types"
 import { PlaybackControls, PlaybackSettings, Queue } from "@/stores/playback/actions"
 import { playbackStore } from "@/stores/playback/store"
 import { preferenceStore } from "@/stores/preference/store"
-import { getUpdatedLists } from "@/stores/playback/utils"
+import { getUpdatedLists, extractTrackId } from "@/stores/playback/utils"
 
 import { getAudioBrowserOptions } from "@/lib/react-native-audio-browser"
 
@@ -35,7 +36,28 @@ export async function playFromTracks(options: {
   const trackIds = options.tracks.map((t) => t.id)
   const listInfo = getUpdatedLists(trackIds, options.shuffle, options.track.id)
   const activeKey = listInfo.queue[0]
-  const activeTrack = await playbackStore.getState().getTrack(activeKey!)
+
+  let activeTrack: DataTrack | undefined
+  if (options.track.isExternal && options.track.id === extractTrackId(activeKey!)) {
+    activeTrack = {
+      id: options.track.id,
+      name: options.track.title,
+      artwork: options.track.image ?? options.track.albumArtwork ?? null,
+      artists: options.track.artist ? [options.track.artist] : null,
+      albumName: options.track.album ?? null,
+      uri: options.track.uri,
+      duration: options.track.duration ?? 0,
+      artistName: options.track.artist ?? null,
+      discoverTime: null,
+      modificationTime: null,
+      rawArtistName: options.track.artist ?? null,
+      albumId: options.track.albumId ?? null,
+      parentFolder: null,
+    }
+  } else {
+    activeTrack = await playbackStore.getState().getTrack(activeKey!)
+  }
+
   if (!activeTrack) return false
 
   playbackStore.setState({

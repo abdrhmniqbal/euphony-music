@@ -28,6 +28,7 @@ import { splitArtistsValue } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
 import { type PlayerExpandedView, setPlayerExpandedView, useUIStore } from "@/modules/ui/store"
 import { useTranslation } from "react-i18next"
+import { ActivityIndicator, View } from "react-native"
 
 function isPlayerExpandedView(value: string): value is PlayerExpandedView {
   return value === "artwork" || value === "lyrics" || value === "queue"
@@ -108,7 +109,11 @@ export default function PlayerRoute() {
   )
 
   if (externalUriValue && (intentSnapshot.isHandlingExternalUri || !currentTrack)) {
-    return null
+    return (
+      <View className="flex-1 items-center justify-center bg-background px-6">
+        <ActivityIndicator size="large" />
+      </View>
+    )
   }
 
   if (!currentTrack) {
