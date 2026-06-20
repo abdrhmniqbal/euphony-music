@@ -73,7 +73,7 @@ export const genres = sqliteTable(
   {
     id: text("id").primaryKey(),
     name: text("name").notNull().unique(),
-    color: text("color").notNull().default("bg-rainbow-lime"),
+    color: text("color").notNull().default("0"),
     shape: text("shape").notNull().default("circles"),
     trackCount: integer("track_count").default(0),
     createdAt: integer("created_at")

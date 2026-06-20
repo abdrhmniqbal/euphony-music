@@ -32,6 +32,8 @@ import { ensureFolderFilterConfigLoaded } from "@/modules/settings/folder-filter
 import { ensureIndexerNotificationsConfigLoaded } from "@/modules/settings/indexer-notifications"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import { ensureTrackDurationFilterConfigLoaded } from "@/modules/settings/track-duration-filter"
+import { ensureThemeConfigLoaded } from "@/modules/settings/theme"
+import { updateSettingsState } from "@/modules/settings/store"
 import AudioBrowser from "react-native-audio-browser"
 
 import { addPlayedTrack } from "@/modules/history/repository"
@@ -55,8 +57,10 @@ async function preloadSettings() {
     ensureIndexerNotificationsConfigLoaded(),
     ensureLoggingConfigLoaded(),
     ensureSplitMultipleValueConfigLoaded(),
+    ensureThemeConfigLoaded(),
     ensureTrackDurationFilterConfigLoaded(),
   ])
+  updateSettingsState({ _hasHydrated: true })
 }
 
 async function runStartupScan() {
@@ -248,9 +252,13 @@ export function AppRuntime({
     return (
       <View className="flex-1 items-center justify-center bg-background p-4">
         <Text className="mb-2 text-center text-danger">{t("database.errorTitle")}</Text>
-        <Text className="text-muted-foreground text-center text-sm">{message}</Text>
+        <Text className="text-center text-sm text-muted-foreground">{message}</Text>
       </View>
     )
+  }
+
+  if (status === "loading") {
+    return <View style={{ flex: 1, backgroundColor: "transparent" }} />
   }
 
   return <View className="flex-1 bg-background">{children}</View>

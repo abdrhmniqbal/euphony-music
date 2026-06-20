@@ -58,5 +58,6 @@ export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
   "open-source-licenses": "settings.routes.about.title",
   "whats-new": "settings.routes.whatsNew.title",
   "theme-mode": "settings.routes.themeMode.title",
+  theme: "settings.routes.theme.title",
   onboarding: "settings.routes.onboarding.title",
 }

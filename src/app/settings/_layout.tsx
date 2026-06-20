@@ -37,6 +37,7 @@ const DETAIL_SETTINGS_SCREENS = [
   "open-source-licenses",
   "whats-new",
   "theme-mode",
+  "theme",
 ] as const
 
 export default function SettingsLayout() {

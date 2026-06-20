@@ -6,24 +6,14 @@ import { db } from "@/db/client"
 import { genres, trackGenres, tracks } from "@/db/schema"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
-import { GENRE_COLORS, GENRE_SHAPES } from "./constants"
+import { getGenreRainbowColor, getGenreShape } from "./constants"
 import type { GenreAlbumInfo, GenreVisual } from "./types"
 
-function hashString(value: string): number {
-  let hash = 0
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
-  }
-  return hash
-}
-
 function getFallbackGenreVisual(name: string): GenreVisual {
-  const hash = hashString(name)
-
   return {
     name,
-    color: GENRE_COLORS[hash % GENRE_COLORS.length],
-    shape: GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length],
+    color: getGenreRainbowColor(name),
+    shape: getGenreShape(name),
     trackCount: 0,
   }
 }
@@ -132,7 +122,7 @@ export async function getAllGenreVisuals(): Promise<GenreVisual[]> {
 
       return {
         name: genre.name,
-        color: visuals?.color || fallback.color,
+        color: getGenreRainbowColor(genre.name),
         shape: visuals?.shape || fallback.shape,
         trackCount: genre.trackCount,
       }
@@ -146,7 +136,7 @@ export async function getAllGenreVisuals(): Promise<GenreVisual[]> {
 
         return {
           name: genre.name,
-          color: fallback.color,
+          color: getGenreRainbowColor(genre.name),
           shape: fallback.shape,
           trackCount: genre.trackCount,
         }

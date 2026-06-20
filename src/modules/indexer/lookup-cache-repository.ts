@@ -1,8 +1,14 @@
 import { and, eq } from "drizzle-orm"
 import { db } from "@/db/client"
 import { albums, artists, genres } from "@/db/schema"
-import { GENRE_COLORS, GENRE_SHAPES, type GenreShape } from "@/modules/genres/constants"
-import { generateId, generateSortName, hashString } from "./file-identity"
+import {
+  GENRE_COLORS,
+  GENRE_SHAPES,
+  getGenreRainbowColor,
+  getGenreShape,
+  type GenreShape,
+} from "@/modules/genres/constants"
+import { generateId, generateSortName } from "./file-identity"
 
 export interface IndexingLookupCache {
   artistIdsByName: Map<string, string>
@@ -232,35 +238,29 @@ export function selectGenreVisuals(
   name: string,
   lookupCache?: IndexingLookupCache
 ): { color: string; shape: GenreShape } {
+  const color = getGenreRainbowColor(name)
+
   if (!lookupCache?.genreVisuals.supportsVisualColumns) {
-    const hash = hashString(name)
     return {
-      color: GENRE_COLORS[hash % GENRE_COLORS.length],
-      shape: GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length],
+      color,
+      shape: getGenreShape(name),
     }
   }
 
-  const { colorUsage, shapeUsage, usedCombinations } = lookupCache.genreVisuals
-
-  const colorsByUsage = [...GENRE_COLORS].sort(
-    (a, b) => (colorUsage.get(a) ?? 0) - (colorUsage.get(b) ?? 0)
-  )
+  const { shapeUsage, usedCombinations } = lookupCache.genreVisuals
   const shapesByUsage = [...GENRE_SHAPES].sort(
     (a, b) => (shapeUsage.get(a) ?? 0) - (shapeUsage.get(b) ?? 0)
   )
 
-  for (const color of colorsByUsage) {
-    for (const shape of shapesByUsage) {
-      const key = `${color}::${shape}`
-      if (!usedCombinations.has(key)) {
-        return { color, shape }
-      }
+  for (const shape of shapesByUsage) {
+    const key = `${color}::${shape}`
+    if (!usedCombinations.has(key)) {
+      return { color, shape }
     }
   }
 
-  const hash = hashString(name)
-  const color = GENRE_COLORS[hash % GENRE_COLORS.length]
-  const shape = GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length]
-
-  return { color, shape }
+  return {
+    color,
+    shape: getGenreShape(name),
+  }
 }

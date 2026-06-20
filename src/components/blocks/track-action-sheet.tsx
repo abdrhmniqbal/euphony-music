@@ -372,7 +372,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               <MenuRow
                 icon={
                   isFavorite ? (
-                    <LocalFavouriteSolidIcon fill="none" width={22} height={22} color="#ef4444" />
+                    <LocalFavouriteSolidIcon fill="none" width={22} height={22} color={theme.danger} />
                   ) : (
                     <LocalFavouriteIcon
                       fill="none"

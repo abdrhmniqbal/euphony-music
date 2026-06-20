@@ -16,7 +16,7 @@ import { View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useUniwind } from "uniwind"
+import { useUniwind, ScopedTheme } from "uniwind"
 
 import { RootProviders } from "@/components/providers/root-providers"
 import { AppUpdateSheet } from "@/components/blocks/app-update-sheet"
@@ -35,7 +35,9 @@ import {
 } from "@/modules/notifications/notification-runtime"
 import { useHasCurrentTrack } from "@/modules/player/selectors"
 import { useThemeColors } from "@/modules/ui/theme"
+import { getAppThemeDefinition } from "@/modules/ui/theme-registry"
 import { useUIStore } from "@/modules/ui/store"
+import { useSettingsStore } from "@/modules/settings/store"
 import { usePreferenceStore } from "@/stores/preference/store"
 
 import "../global.css"
@@ -80,66 +82,23 @@ void SplashScreen.preventAutoHideAsync().catch(() => {
   // Splash screen might be already prevented by native/runtime.
 })
 
-export default function Layout() {
-  const router = useRouter()
-  const { theme: currentTheme } = useUniwind()
+function ThemedAppShell({
+  currentTheme,
+  notifyDatabaseReady,
+  notifyDatabaseError,
+  toastExtraBottomOffset,
+}: {
+  currentTheme: string
+  notifyDatabaseReady: () => Promise<void>
+  notifyDatabaseError: () => void
+  toastExtraBottomOffset: number
+}) {
   const theme = useThemeColors()
-  const segments = useSegments()
-  const insets = useSafeAreaInsets()
-  const barsVisible = useUIStore((state) => state.barsVisible)
-  const hasMiniPlayer = useHasCurrentTrack()
-  const hasHiddenSplashRef = useRef(false)
-  setNotificationRouteHandler((route) => {
-    router.push(route as never)
-  })
-  ensureNotificationRuntimeStarted()
-
-  const hideSplash = () => {
-    if (hasHiddenSplashRef.current) {
-      return
-    }
-
-    hasHiddenSplashRef.current = true
-    void SplashScreen.hideAsync().catch(() => {
-      // Ignore hide race if splash is already hidden.
-    })
-  }
-  const notifyDatabaseReady = async () => {
-    await handleBootstrapDatabaseReady()
-    void checkStartupAppUpdate()
-    hideSplash()
-  }
-  const notifyDatabaseError = () => {
-    handleBootstrapDatabaseError()
-    hideSplash()
-  }
-  const completedOnboarding = usePreferenceStore((state) => state.completedOnboarding)
-  const isHydrated = usePreferenceStore((state) => state._hasHydrated)
-
-  useEffect(() => {
-    if (isHydrated && !completedOnboarding) {
-      router.replace("/onboarding")
-    }
-  }, [isHydrated, completedOnboarding, router])
-
-  const tabBarHeight = getTabBarHeight(insets.bottom)
-
-  const isMainTabsRoute = segments[0] === "(main)"
-  const isFolderFiltersRoute = segments[0] === "settings" && segments.at(1) === "folder-filters"
-  const folderFiltersToastOffset = isFolderFiltersRoute
-    ? SETTINGS_FOLDER_FILTERS_ACTION_HEIGHT +
-      Math.max(insets.bottom, SETTINGS_FOLDER_FILTERS_ACTION_TOP_PADDING)
-    : 0
-  const toastExtraBottomOffset = isMainTabsRoute
-    ? barsVisible
-      ? tabBarHeight + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) + TOAST_VISIBLE_BOTTOM_GAP
-      : TOAST_HIDDEN_BOTTOM_GAP
-    : folderFiltersToastOffset
-
+  const isDark = currentTheme === "dark" || currentTheme.endsWith("-dark")
   const navigationTheme = {
-    ...(currentTheme === "dark" ? DarkTheme : DefaultTheme),
+    ...(isDark ? DarkTheme : DefaultTheme),
     colors: {
-      ...(currentTheme === "dark" ? DarkTheme.colors : DefaultTheme.colors),
+      ...(isDark ? DarkTheme.colors : DefaultTheme.colors),
       background: theme.background,
       card: theme.background,
       text: theme.foreground,
@@ -194,5 +153,83 @@ export default function Layout() {
         </View>
       </ThemeProvider>
     </GestureHandlerRootView>
+  )
+}
+
+export default function Layout() {
+  const router = useRouter()
+  const { theme: currentTheme } = useUniwind()
+  const segments = useSegments()
+  const themeId = useSettingsStore((state) => state.themeConfig.themeId)
+  const insets = useSafeAreaInsets()
+  const barsVisible = useUIStore((state) => state.barsVisible)
+  const hasMiniPlayer = useHasCurrentTrack()
+  const hasHiddenSplashRef = useRef(false)
+  setNotificationRouteHandler((route) => {
+    router.push(route as never)
+  })
+  ensureNotificationRuntimeStarted()
+
+  const hideSplash = () => {
+    if (hasHiddenSplashRef.current) {
+      return
+    }
+
+    hasHiddenSplashRef.current = true
+    void SplashScreen.hideAsync().catch(() => {
+      // Ignore hide race if splash is already hidden.
+    })
+  }
+  const notifyDatabaseReady = async () => {
+    await handleBootstrapDatabaseReady()
+    void checkStartupAppUpdate()
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        hideSplash()
+      })
+    })
+  }
+  const notifyDatabaseError = () => {
+    handleBootstrapDatabaseError()
+    hideSplash()
+  }
+  const completedOnboarding = usePreferenceStore((state) => state.completedOnboarding)
+  const isHydrated = usePreferenceStore((state) => state._hasHydrated)
+
+  useEffect(() => {
+    if (isHydrated && !completedOnboarding) {
+      router.replace("/onboarding")
+    }
+  }, [isHydrated, completedOnboarding, router])
+
+  const appTheme = getAppThemeDefinition(themeId)
+  const tabBarHeight = getTabBarHeight(insets.bottom)
+
+  const isMainTabsRoute = segments[0] === "(main)"
+  const isFolderFiltersRoute = segments[0] === "settings" && segments.at(1) === "folder-filters"
+  const folderFiltersToastOffset = isFolderFiltersRoute
+    ? SETTINGS_FOLDER_FILTERS_ACTION_HEIGHT +
+      Math.max(insets.bottom, SETTINGS_FOLDER_FILTERS_ACTION_TOP_PADDING)
+    : 0
+  const toastExtraBottomOffset = isMainTabsRoute
+    ? barsVisible
+      ? tabBarHeight + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) + TOAST_VISIBLE_BOTTOM_GAP
+      : TOAST_HIDDEN_BOTTOM_GAP
+    : folderFiltersToastOffset
+
+  const isDark = currentTheme === "dark" || currentTheme.endsWith("-dark")
+  const activeThemeName = isDark
+    ? `${appTheme.rootClassName}-dark`
+    : `${appTheme.rootClassName}-light`
+
+  return (
+    <ScopedTheme theme={activeThemeName as any}>
+      <ThemedAppShell
+        currentTheme={currentTheme}
+        notifyDatabaseReady={notifyDatabaseReady}
+        notifyDatabaseError={notifyDatabaseError}
+        toastExtraBottomOffset={toastExtraBottomOffset}
+      />
+    </ScopedTheme>
   )
 }

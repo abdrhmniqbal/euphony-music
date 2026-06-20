@@ -1,9 +1,11 @@
 import type { PatternType } from "@/modules/genres/types"
 import { Card, PressableFeedback } from "heroui-native"
+import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import { cn } from "tailwind-variants"
+import { useThemeColors } from "@/modules/ui/theme"
+import { resolveRainbowColor } from "@/modules/ui/theme-registry"
 
 interface GenreCardProps {
   title: string
@@ -38,6 +40,11 @@ export function GenreCard({
   onLongPress,
 }: GenreCardProps) {
   const { t } = useTranslation()
+  const theme = useThemeColors()
+  const resolvedColor = React.useMemo(() => {
+    return resolveRainbowColor(theme.rainbow, color)
+  }, [color, theme.rainbow])
+
   const normalizedTrackCount = Number.isFinite(trackCount)
     ? Math.max(0, Math.trunc(trackCount))
     : Math.max(0, Math.trunc(Number(trackCount) || 0))
@@ -51,7 +58,10 @@ export function GenreCard({
       onLongPress={onLongPress}
       className="w-[47.5%] active:opacity-80"
     >
-      <Card className={cn("relative h-24 justify-between overflow-hidden border-none p-4", color)}>
+      <Card
+        className="relative h-24 justify-between overflow-hidden border-none p-4"
+        style={{ backgroundColor: resolvedColor }}
+      >
         <Text className="z-10 text-[17px] leading-tight font-bold text-white">{title}</Text>
         <Text className="z-10 text-xs font-medium text-white/80">{trackCountLabel}</Text>
         <View pointerEvents="none" className="absolute inset-0">

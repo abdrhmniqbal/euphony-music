@@ -5,6 +5,7 @@ import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
 import { cn } from "@/utils/common"
+import { useThemeColors } from "@/modules/ui/theme"
 
 interface ArtistDetailHeaderProps {
   topInset: number
@@ -33,6 +34,8 @@ export function ArtistDetailHeader({
   onToggleFavorite,
   onOpenActions,
 }: ArtistDetailHeaderProps) {
+  const theme = useThemeColors()
+
   return (
     <View
       className="absolute right-0 left-0 flex-row items-end justify-between px-4 pb-2"
@@ -47,7 +50,7 @@ export function ArtistDetailHeader({
       <BackButton
         className={cn("-ml-2", !isHeaderSolid && "bg-overlay/30")}
         fallbackHref="/(main)/(library)"
-        iconColor={isHeaderSolid ? foregroundColor : "white"}
+        iconColor={isHeaderSolid ? foregroundColor : theme.accentForeground}
         onPress={onBack}
       />
       {isHeaderSolid ? (
@@ -67,13 +70,13 @@ export function ArtistDetailHeader({
             isIconOnly
           >
             {isArtistFavorite ? (
-              <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
+              <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
             ) : (
               <LocalFavouriteIcon
                 fill="none"
                 width={24}
                 height={24}
-                color={isHeaderSolid ? foregroundColor : "white"}
+                color={isHeaderSolid ? foregroundColor : theme.accentForeground}
               />
             )}
           </Button>
@@ -87,7 +90,7 @@ export function ArtistDetailHeader({
               fill="none"
               width={24}
               height={24}
-              color={isHeaderSolid ? foregroundColor : "white"}
+              color={isHeaderSolid ? foregroundColor : theme.accentForeground}
             />
           </Button>
         </View>

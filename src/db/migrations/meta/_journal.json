@@ -15,6 +15,13 @@
       "when": 1774253254141,
       "tag": "0001_raw_split_metadata",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1781947284571,
+      "tag": "0002_genre_color_index_default",
+      "breakpoints": true
     }
   ]
 }

@@ -398,6 +398,10 @@
         "title": "Theme Mode",
         "description": "Choose the app theme mode (Light, Dark, or System)."
       },
+      "theme": {
+        "title": "Color Scheme",
+        "description": "Current scheme: {{theme}}"
+      },
       "audio": {
         "title": "Audio",
         "description": "Playback transitions and audio behavior."
@@ -447,6 +451,18 @@
     "appearance": {
       "languageDescription": "Current language: {{language}}.",
       "systemSuffix": "(System)",
+      "theme": {
+        "options": {
+          "default": {
+            "title": "Default",
+            "description": "The standard minimalist Startune interface."
+          },
+          "nord": {
+            "title": "Nord",
+            "description": "An arctic, north-bluish color palette."
+          }
+        }
+      },
       "options": {
         "light": "Light",
         "dark": "Dark",

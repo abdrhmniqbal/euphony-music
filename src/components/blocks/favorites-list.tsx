@@ -171,6 +171,7 @@ const TypeBadge: React.FC<{ type: FavoriteType }> = ({ type }) => {
 }
 
 function FavoriteRow({ favorite, onPress, onLongPress, onRemove }: FavoriteRowProps) {
+  const theme = useThemeColors()
   const handlePress = useCallback(() => {
     onPress(favorite)
   }, [favorite, onPress])
@@ -199,7 +200,7 @@ function FavoriteRow({ favorite, onPress, onLongPress, onRemove }: FavoriteRowPr
       </ItemContent>
       <ItemAction>
         <PressableFeedback onPress={handleRemove} className="p-2 active:opacity-50">
-          <LocalFavouriteSolidIcon fill="none" width={22} height={22} color="#ef4444" />
+          <LocalFavouriteSolidIcon fill="none" width={22} height={22} color={theme.danger} />
         </PressableFeedback>
       </ItemAction>
     </Item>
@@ -238,6 +239,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   onScrollEndDrag,
   onMomentumScrollEnd,
 }) => {
+  const theme = useThemeColors()
   const tracks = usePlayerTracks()
   const { t } = useTranslation()
   const toggleFavoriteMutation = useToggleFavorite()
@@ -405,7 +407,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
                 fill="none"
                 width={ICON_SIZES.emptyState}
                 height={ICON_SIZES.emptyState}
-                color="#ef4444"
+                color={theme.danger}
               />
             }
             title={t("library.empty.favoritesTitle")}

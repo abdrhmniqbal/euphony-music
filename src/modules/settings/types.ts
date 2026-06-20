@@ -24,6 +24,7 @@ export type SettingsRouteName =
   | "artist-split-mode"
   | "open-source-licenses"
   | "whats-new"
+  | "theme"
 
 export interface SettingsRouteDefinition {
   name: SettingsRouteName
@@ -94,4 +95,8 @@ export interface SplitMultipleValueConfig {
   unsplitArtists: string[]
   artistSplitMode: ArtistSplitMode
   genreSplitSymbols: string[]
+}
+
+export interface ThemeConfig {
+  themeId: string
 }

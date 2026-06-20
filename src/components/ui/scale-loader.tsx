@@ -58,10 +58,12 @@ function Bar({ delay, maxHeight }: { delay: number; maxHeight: number }) {
 }
 
 export function ScaleLoader({ size = 20 }: ScaleLoaderProps) {
+  const theme = useThemeColors()
+
   return (
     <View
       className="absolute inset-0 items-center justify-center rounded-lg"
-      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      style={{ backgroundColor: theme.backdrop }}
     >
       <View
         style={{

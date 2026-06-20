@@ -4,6 +4,9 @@ import Transition from "react-native-screen-transitions"
 import Animated from "react-native-reanimated"
 import { Text, View } from "react-native"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
+import { useThemeColors } from "@/modules/ui/theme"
+
+import { adjustOpacity } from "@/utils/colors"
 
 interface ArtistHeroSectionProps {
   screenWidth: number
@@ -26,6 +29,8 @@ export function ArtistHeroSection({
   artistName,
   trackCountLabel,
 }: ArtistHeroSectionProps) {
+  const theme = useThemeColors()
+
   return (
     <View style={{ height: screenWidth }} className="relative overflow-hidden">
       <Transition.Boundary.View
@@ -50,7 +55,7 @@ export function ArtistHeroSection({
       </Transition.Boundary.View>
 
       <LinearGradient
-        colors={["transparent", "rgba(0,0,0,0.7)", backgroundColor]}
+        colors={["transparent", adjustOpacity(theme.background, 0.7), backgroundColor]}
         locations={[0.3, 0.7, 1]}
         style={{
           position: "absolute",
@@ -62,8 +67,12 @@ export function ArtistHeroSection({
       />
 
       <View className="absolute right-6 bottom-8 left-6">
-        <Text className="mb-2 text-4xl font-bold text-white">{artistName}</Text>
-        <Text className="text-base text-white/70">{trackCountLabel}</Text>
+        <Text style={{ color: theme.accentForeground }} className="mb-2 text-4xl font-bold">
+          {artistName}
+        </Text>
+        <Text style={{ color: theme.accentForeground, opacity: 0.7 }} className="text-base">
+          {trackCountLabel}
+        </Text>
       </View>
     </View>
   )

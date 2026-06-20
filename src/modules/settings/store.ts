@@ -20,6 +20,7 @@ import type {
   LoggingConfig,
   SplitMultipleValueConfig,
   TrackDurationFilterConfig,
+  ThemeConfig,
 } from "./types"
 
 const DEFAULT_LANGUAGE_CODE: LanguageCode = "en"
@@ -71,7 +72,12 @@ const DEFAULT_SPLIT_MULTIPLE_VALUE_CONFIG: SplitMultipleValueConfig = {
   genreSplitSymbols: [";", "/", ","],
 }
 
+const DEFAULT_THEME_CONFIG: ThemeConfig = {
+  themeId: "default",
+}
+
 interface SettingsState {
+  _hasHydrated: boolean
   languageCode: LanguageCode
   indexerScanConfig: IndexerScanConfig
   indexerNotificationsEnabled: boolean
@@ -83,9 +89,11 @@ interface SettingsState {
   trackDurationFilterConfig: TrackDurationFilterConfig
   countAsPlayedConfig: CountAsPlayedConfig
   splitMultipleValueConfig: SplitMultipleValueConfig
+  themeConfig: ThemeConfig
 }
 
 export const useSettingsStore = create<SettingsState>(() => ({
+  _hasHydrated: false,
   languageCode: DEFAULT_LANGUAGE_CODE,
   indexerScanConfig: DEFAULT_INDEXER_SCAN_CONFIG,
   indexerNotificationsEnabled: DEFAULT_INDEXER_NOTIFICATIONS_ENABLED,
@@ -97,6 +105,7 @@ export const useSettingsStore = create<SettingsState>(() => ({
   trackDurationFilterConfig: DEFAULT_TRACK_DURATION_FILTER,
   countAsPlayedConfig: DEFAULT_COUNT_AS_PLAYED_CONFIG,
   splitMultipleValueConfig: DEFAULT_SPLIT_MULTIPLE_VALUE_CONFIG,
+  themeConfig: DEFAULT_THEME_CONFIG,
 }))
 
 export function getDefaultLanguageCode() {
@@ -149,4 +158,8 @@ export function updateSettingsState(updates: Partial<SettingsState>) {
 
 export function getDefaultSplitMultipleValueConfig() {
   return DEFAULT_SPLIT_MULTIPLE_VALUE_CONFIG
+}
+
+export function getDefaultThemeConfig() {
+  return DEFAULT_THEME_CONFIG
 }

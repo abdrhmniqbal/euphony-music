@@ -10,7 +10,7 @@ import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
-import { Uniwind, useUniwind } from "uniwind"
+import { Uniwind } from "uniwind"
 
 import LocalTickIcon from "@/components/icons/local/tick"
 import { startIndexing } from "@/modules/indexer/service"
@@ -24,7 +24,7 @@ import {
 import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
 import { showAppToast } from "@/modules/ui/toast"
-import { preferenceStore } from "@/stores/preference/store"
+import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 
 import { useOnboardingPermissions } from "../hooks/use-onboarding-permissions"
 import { OnboardingWelcome } from "./onboarding-welcome"
@@ -39,7 +39,7 @@ export default function OnboardingScreen() {
   const router = useRouter()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
-  const { theme: currentTheme, hasAdaptiveThemes } = useUniwind()
+  const currentMode = usePreferenceStore((state) => state.theme) as ThemeValue
   const theme = useThemeColors()
   const folderFilterConfig = useSettingsStore((state) => state.folderFilterConfig)
   const [step, setStep] = React.useState<Step>(0)
@@ -53,7 +53,6 @@ export default function OnboardingScreen() {
   )
   const [isModeSheetOpen, setIsModeSheetOpen] = React.useState(false)
 
-  const currentMode: ThemeValue = hasAdaptiveThemes ? "system" : (currentTheme as ThemeValue)
   const activeFolders =
     selectedMode === "whitelist" ? pendingConfig.whitelist : pendingConfig.blacklist
 

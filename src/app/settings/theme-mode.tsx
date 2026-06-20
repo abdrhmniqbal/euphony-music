@@ -10,9 +10,10 @@ import { ListGroup, Separator } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { Uniwind, useUniwind } from "uniwind"
+import { Uniwind } from "uniwind"
 
 import LocalTickIcon from "@/components/icons/local/tick"
+import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
 type ThemeValue = "light" | "dark" | "system"
@@ -29,14 +30,13 @@ const APPEARANCE_OPTIONS: AppearanceOption[] = [
 ]
 
 export default function ThemeModeSettingsScreen() {
-  const { theme: currentTheme, hasAdaptiveThemes } = useUniwind()
+  const currentMode = usePreferenceStore((state) => state.theme) as ThemeValue
   const theme = useThemeColors()
   const { t } = useTranslation()
 
-  const currentMode: ThemeValue = hasAdaptiveThemes ? "system" : (currentTheme as ThemeValue)
-
   function handleThemeChange(value: ThemeValue) {
     Uniwind.setTheme(value)
+    preferenceStore.setState({ theme: value })
   }
 
   return (

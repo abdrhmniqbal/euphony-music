@@ -19,6 +19,7 @@ import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import { MarqueeText } from "@/components/ui/marquee-text"
 import { useIsFavorite } from "@/modules/favorites/queries"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
+import { useThemeColors } from "@/modules/ui/theme"
 
 interface TrackInfoProps {
   track: Track
@@ -27,6 +28,7 @@ interface TrackInfoProps {
 }
 
 export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false, onPressArtist }) => {
+  const theme = useThemeColors()
   const { t } = useTranslation()
   const canFavoriteTrack = track.isExternal !== true
   const { data: isFavoriteQuery = track.isFavorite ?? false } = useIsFavorite(
@@ -69,7 +71,7 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false, on
           }}
         >
           {isFavorite ? (
-            <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
+            <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
           ) : (
             <LocalFavouriteIcon fill="none" width={24} height={24} color="white" />
           )}

@@ -154,7 +154,7 @@ export function CollectionActionSheet({
               <MenuRow
                 icon={
                   isFavorite ? (
-                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color="#ef4444" />
+                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
                   ) : (
                     <LocalFavouriteIcon
                       fill="none"
