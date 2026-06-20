@@ -318,6 +318,150 @@
       --color-border: var(--border);
       --color-link: var(--link);
     }
+
+    @variant theme-dracula-light {
+      --radius: 0.5rem;
+      --surface-shadow:
+        0 2px 4px 0 rgba(31, 31, 31, 0.05), 0 1px 2px 0 rgba(31, 31, 31, 0.08),
+        0 0 1px 0 rgba(31, 31, 31, 0.08);
+      --overlay-shadow:
+        0 2px 8px 0 rgba(31, 31, 31, 0.04), 0 -6px 12px 0 rgba(31, 31, 31, 0.02),
+        0 14px 28px 0 rgba(31, 31, 31, 0.04);
+      --field-shadow:
+        0 2px 4px 0 rgba(31, 31, 31, 0.05), 0 1px 2px 0 rgba(31, 31, 31, 0.08),
+        0 0 1px 0 rgba(31, 31, 31, 0.08);
+
+      /* Base Colors */
+      --background: #fffbeb;
+      --foreground: #1f1f1f;
+
+      /* Surface */
+      --surface: #dedccf;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #ece9df;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ceccc0;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #efeddc;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(31, 31, 31, 0.45);
+
+      --muted: #6c664b;
+
+      --default: #e2deca;
+      --default-foreground: #1f1f1f;
+
+      --accent: #644ac9;
+      --accent-foreground: #fffbeb;
+
+      /* Form Fields */
+      --field-background: #ece9df;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #14710a;
+      --success-foreground: #fffbeb;
+
+      --warning: #a34d14;
+      --warning-foreground: #fffbeb;
+
+      --danger: #cb3a2a;
+      --danger-foreground: #fffbeb;
+
+      /* Component Colors */
+      --segment: #ece9df;
+      --segment-foreground: #1f1f1f;
+
+      /* Misc Colors */
+      --border: #bcbab3;
+      --separator: #dcdeef;
+      --focus: #644ac9;
+      --link: #036a96;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+    }
+
+    @variant theme-dracula-dark {
+      --radius: 0.5rem;
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(248, 248, 242, 0.18) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base Colors */
+      --background: #282a36;
+      --foreground: #f8f8f2;
+
+      /* Surface */
+      --surface: #343746;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #424450;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #21222c;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #343746;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(0, 0, 0, 0.45);
+
+      --muted: #6272a4;
+
+      --default: #353747;
+      --default-foreground: #f8f8f2;
+
+      --accent: #bd93f9;
+      --accent-foreground: #282a36;
+
+      /* Form Fields */
+      --field-background: #21222c;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #50fa7b;
+      --success-foreground: #282a36;
+
+      --warning: #ffb86c;
+      --warning-foreground: #282a36;
+
+      --danger: #ff5555;
+      --danger-foreground: #f8f8f2;
+
+      /* Component Colors */
+      --segment: #343746;
+      --segment-foreground: var(--foreground);
+
+      /* Misc Colors */
+      --border: #44475a;
+      --separator: #3e404a;
+      --focus: #d6acff;
+      --link: #8be9fd;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+    }
   }
 }
 

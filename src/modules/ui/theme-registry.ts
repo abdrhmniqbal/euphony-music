@@ -1,6 +1,6 @@
 export const DEFAULT_APP_THEME_ID = "default"
 
-export type AppThemeId = "default" | "nord"
+export type AppThemeId = "default" | "nord" | "dracula"
 
 export interface AppThemeTokensVariant {
   background: string
@@ -28,7 +28,7 @@ export interface AppThemeDefinition {
   id: AppThemeId
   labelKey: string
   descriptionKey: string
-  rootClassName: "theme-default" | "theme-nord"
+  rootClassName: "theme-default" | "theme-nord" | "theme-dracula"
   tokens: AppThemeTokens
 }
 
@@ -144,6 +144,46 @@ export const APP_THEMES: AppThemeDefinition[] = [
         accentForeground: "#2e3440",
         backdrop: "rgba(0, 0, 0, 0.3)",
         rainbow: ["#bf616a", "#d08770", "#ebcb8b", "#a3be8c", "#b48ead"],
+      },
+    },
+  },
+  {
+    id: "dracula",
+    labelKey: "settings.appearance.theme.options.dracula.title",
+    descriptionKey: "settings.appearance.theme.options.dracula.description",
+    rootClassName: "theme-dracula",
+    tokens: {
+      light: {
+        background: "#FFFBEB",
+        surface: "#DEDCCF",
+        foreground: "#1F1F1F",
+        muted: "#6C664B",
+        accent: "#644AC9",
+        border: "#BCBAB3",
+        default: "#E2DECA",
+        link: "#036A96",
+        danger: "#CB3A2A",
+        success: "#14710A",
+        warning: "#A34D14",
+        accentForeground: "#FFFBEB",
+        backdrop: "rgba(31, 31, 31, 0.45)",
+        rainbow: ["#CB3A2A", "#A34D14", "#846E15", "#14710A", "#036A96", "#644AC9", "#A3144D"],
+      },
+      dark: {
+        background: "#282A36",
+        surface: "#343746",
+        foreground: "#F8F8F2",
+        muted: "#6272A4",
+        accent: "#BD93F9",
+        border: "#44475A",
+        default: "#21222C",
+        link: "#8BE9FD",
+        danger: "#FF5555",
+        success: "#50FA7B",
+        warning: "#FFB86C",
+        accentForeground: "#282A36",
+        backdrop: "rgba(0, 0, 0, 0.45)",
+        rainbow: ["#FF5555", "#FFB86C", "#F1FA8C", "#50FA7B", "#8BE9FD", "#BD93F9", "#FF79C6"],
       },
     },
   },

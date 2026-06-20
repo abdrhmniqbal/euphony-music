@@ -460,6 +460,10 @@
           "nord": {
             "title": "Nord",
             "description": "An arctic, north-bluish color palette."
+          },
+          "dracula": {
+            "title": "Dracula",
+            "description": "A dark theme for vampires."
           }
         }
       },

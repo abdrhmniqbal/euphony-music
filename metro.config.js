@@ -23,7 +23,14 @@ config.resolver.sourceExts.push("sql")
 const uniwindConfig = withUniwindConfig(config, {
   cssEntryFile: "./src/global.css",
   dtsFile: "./src/uniwind-types.d.ts",
-  extraThemes: ["theme-default-light", "theme-default-dark", "theme-nord-light", "theme-nord-dark"],
+  extraThemes: [
+    "theme-default-light",
+    "theme-default-dark",
+    "theme-nord-light",
+    "theme-nord-dark",
+    "theme-dracula-light",
+    "theme-dracula-dark",
+  ],
 })
 
 const moniconConfig = withMonicon(uniwindConfig)
