@@ -13,6 +13,11 @@ import { logError, logInfo } from "@/modules/logging/service"
 import { ensureLoggingConfigLoaded } from "@/modules/logging/store"
 import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-subscriber"
 import { playNext, pauseTrack, resumeTrack, playPrevious, seekTo } from "@/modules/player/controls"
+import {
+  evaluateSleepTimerOnProgress,
+  handleSleepTimerPlaybackEnded,
+  handleSleepTimerTrackChanged,
+} from "@/modules/player/sleep-timer"
 import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
 import { ensureCrossfadeConfigLoaded } from "@/modules/settings/audio-crossfade"
 import {
@@ -70,6 +75,7 @@ async function runStartupScan() {
 
 let playCountTimeout: ReturnType<typeof setTimeout> | null = null
 let lastAutoAdvanceAt = 0
+let lastSleepTimerTrackId: string | null = null
 
 function advanceToNextTrackOnce() {
   const now = Date.now()
@@ -87,6 +93,9 @@ function onActiveTrackChanged(e: {
 }) {
   if (e.index === undefined || e.track?.src === undefined) return
   const activeTrackUri = decodeURIComponent(e.track.src)
+  const currentTrackId = playbackStore.getState().activeTrack?.id ?? null
+  handleSleepTimerTrackChanged(lastSleepTimerTrackId, currentTrackId)
+  lastSleepTimerTrackId = currentTrackId
 
   const { lastPosition } = playbackStore.getState()
   if (playCountTimeout !== null) clearTimeout(playCountTimeout)
@@ -114,6 +123,7 @@ function onActiveTrackChanged(e: {
 function onProgressUpdated(e: { position: number; duration: number }) {
   if (e.duration === 0) return
   playbackStore.setState({ lastPosition: e.position })
+  evaluateSleepTimerOnProgress(e.position, e.duration)
   void handleCrossfadeProgress(e.position, e.duration)
 }
 
@@ -121,7 +131,12 @@ function onPlaybackChanged(e: { state: string }) {
   if (e.state === "paused") {
     playbackStore.setState({ isPlaying: false })
   } else if (e.state === "ended") {
-    advanceToNextTrackOnce()
+    const currentTrackId = playbackStore.getState().activeTrack?.id ?? null
+    void handleSleepTimerPlaybackEnded(currentTrackId).then((hasStopped) => {
+      if (!hasStopped) {
+        advanceToNextTrackOnce()
+      }
+    })
   }
 
   void handleCrossfadePlaybackState(e.state as any)
@@ -133,6 +148,7 @@ async function startRuntime() {
   registerPlaybackService()
   await initializeTrackPlayer()
   subscribePlaybackStoreToPlayerStore()
+  lastSleepTimerTrackId = playbackStore.getState().activeTrack?.id ?? null
 
   // Register remote media control listeners
   AudioBrowser.handleRemotePlay(() => {

@@ -16,8 +16,6 @@ import {
   setSleepTimerState,
 } from "./store"
 
-const TRACK_END_EPSILON_SECONDS = 0.35
-
 let isStoppingForSleepTimer = false
 
 function resetSleepTimerState() {
@@ -132,7 +130,7 @@ function shouldStopForTimestamp(state: SleepTimerState) {
   return Boolean(state.targetTimestamp && Date.now() >= state.targetTimestamp)
 }
 
-export function evaluateSleepTimerOnProgress(positionSeconds: number, durationSeconds: number) {
+export function evaluateSleepTimerOnProgress(_positionSeconds: number, _durationSeconds: number) {
   const state = getSleepTimerState()
   if (state.mode === "off") {
     return
@@ -140,48 +138,45 @@ export function evaluateSleepTimerOnProgress(positionSeconds: number, durationSe
 
   if ((state.mode === "minutes" || state.mode === "clock") && shouldStopForTimestamp(state)) {
     void stopPlaybackForSleepTimer()
-    return
+  }
+}
+
+export async function handleSleepTimerPlaybackEnded(currentTrackId: string | null) {
+  const state = getSleepTimerState()
+  if (state.mode === "off") {
+    return false
   }
 
-  if (!Number.isFinite(durationSeconds) || durationSeconds <= 0) {
-    return
+  if ((state.mode === "minutes" || state.mode === "clock") && shouldStopForTimestamp(state)) {
+    await stopPlaybackForSleepTimer()
+    return true
   }
 
-  const currentTrack = getCurrentTrackState()
-  if (!currentTrack) {
-    return
-  }
-
-  const isNearTrackEnd = positionSeconds >= Math.max(durationSeconds - TRACK_END_EPSILON_SECONDS, 0)
-
-  if (!isNearTrackEnd) {
-    return
-  }
-
-  if (state.mode === "trackEnd" && currentTrack.id === state.targetTrackId) {
-    void stopPlaybackForSleepTimer()
-    return
+  if (state.mode === "trackEnd" && state.targetTrackId && currentTrackId === state.targetTrackId) {
+    await stopPlaybackForSleepTimer()
+    return true
   }
 
   if (state.mode !== "playCount") {
-    return
+    return false
   }
 
-  if (state.lastCompletedTrackId === currentTrack.id) {
-    return
+  if (state.lastCompletedTrackId === currentTrackId) {
+    return false
   }
 
   const remainingPlayCount = state.playCount - 1
   if (remainingPlayCount <= 0) {
-    void stopPlaybackForSleepTimer()
-    return
+    await stopPlaybackForSleepTimer()
+    return true
   }
 
   updateSleepTimer({
     ...state,
     playCount: remainingPlayCount,
-    lastCompletedTrackId: currentTrack.id,
+    lastCompletedTrackId: currentTrackId,
   })
+  return false
 }
 
 export function handleSleepTimerTrackChanged(
@@ -205,5 +200,26 @@ export function handleSleepTimerTrackChanged(
     currentTrackId !== state.targetTrackId
   ) {
     void stopPlaybackForSleepTimer()
+    return
   }
+
+  if (state.mode !== "playCount" || !previousTrackId || previousTrackId === currentTrackId) {
+    return
+  }
+
+  if (state.lastCompletedTrackId === previousTrackId) {
+    return
+  }
+
+  const remainingPlayCount = state.playCount - 1
+  if (remainingPlayCount <= 0) {
+    void stopPlaybackForSleepTimer()
+    return
+  }
+
+  updateSleepTimer({
+    ...state,
+    playCount: remainingPlayCount,
+    lastCompletedTrackId: previousTrackId,
+  })
 }

@@ -254,7 +254,6 @@ export function SleepTimerSection({
         >
           <View className="flex-row items-center justify-between gap-4 px-4 pb-2">
             <BottomSheet.Title className="flex-1 text-xl">{labels.title}</BottomSheet.Title>
-            <BottomSheet.Close />
           </View>
 
           <BottomSheetScrollView
