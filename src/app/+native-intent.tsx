@@ -122,10 +122,19 @@ export function redirectSystemPath({ path }: { path: string; initial: boolean })
   }
 
   const decodedPathname = decodePathRecursively(parsedUrl.pathname)
+  const decodedHost = decodePathRecursively(parsedUrl.host)
   const firstSegment = decodedPathname.replace(/^\/+/, "").split("/")[0] ?? ""
+
+  if (decodedHost === "notification" && (!decodedPathname || decodedPathname === "/")) {
+    return "/notification/click"
+  }
 
   if (ROUTE_PREFIXES.has(firstSegment)) {
     return `${decodedPathname}${parsedUrl.search}${parsedUrl.hash}`
+  }
+
+  if (ROUTE_PREFIXES.has(decodedHost)) {
+    return `/${decodedHost}${decodedPathname}${parsedUrl.search}${parsedUrl.hash}`
   }
 
   const reconstructedPath = `${parsedUrl.host}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`
