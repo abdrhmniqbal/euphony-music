@@ -67,10 +67,10 @@ export function ArtistHeroSection({
       />
 
       <View className="absolute right-6 bottom-8 left-6">
-        <Text style={{ color: theme.accentForeground }} className="mb-2 text-4xl font-bold">
+        <Text style={{ color: theme.foreground }} className="mb-2 text-4xl font-bold">
           {artistName}
         </Text>
-        <Text style={{ color: theme.accentForeground, opacity: 0.7 }} className="text-base">
+        <Text style={{ color: theme.foreground, opacity: 0.72 }} className="text-base">
           {trackCountLabel}
         </Text>
       </View>

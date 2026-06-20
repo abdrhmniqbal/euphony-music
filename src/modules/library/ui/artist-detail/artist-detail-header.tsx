@@ -48,9 +48,9 @@ export function ArtistDetailHeader({
       }}
     >
       <BackButton
-        className={cn("-ml-2", !isHeaderSolid && "bg-overlay/30")}
+        className={cn("-ml-2", !isHeaderSolid && "rounded-full bg-black/35")}
         fallbackHref="/(main)/(library)"
-        iconColor={isHeaderSolid ? foregroundColor : theme.accentForeground}
+        iconColor={isHeaderSolid ? foregroundColor : "#ffffff"}
         onPress={onBack}
       />
       {isHeaderSolid ? (
@@ -66,7 +66,7 @@ export function ArtistDetailHeader({
             onPress={onToggleFavorite}
             isDisabled={isFavoritePending}
             variant="ghost"
-            className={cn("-mr-2", !isHeaderSolid && "bg-overlay/30")}
+            className={cn("-mr-2", !isHeaderSolid && "rounded-full bg-black/35")}
             isIconOnly
           >
             {isArtistFavorite ? (
@@ -76,21 +76,21 @@ export function ArtistDetailHeader({
                 fill="none"
                 width={24}
                 height={24}
-                color={isHeaderSolid ? foregroundColor : theme.accentForeground}
+                color={isHeaderSolid ? foregroundColor : "#ffffff"}
               />
             )}
           </Button>
           <Button
             onPress={onOpenActions}
             variant="ghost"
-            className={cn("-mr-2", !isHeaderSolid && "bg-overlay/30")}
+            className={cn("-mr-2", !isHeaderSolid && "rounded-full bg-black/35")}
             isIconOnly
           >
             <LocalMoreHorizontalCircleSolidIcon
               fill="none"
               width={24}
               height={24}
-              color={isHeaderSolid ? foregroundColor : theme.accentForeground}
+              color={isHeaderSolid ? foregroundColor : "#ffffff"}
             />
           </Button>
         </View>
