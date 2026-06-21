@@ -397,6 +397,14 @@
         "light": "Lumière",
         "dark": "Sombre",
         "system": "Système"
+      },
+      "theme": {
+        "options": {
+          "catppuccin": {
+            "title": "Catppuccin",
+            "description": "Catppuccin palette with Latte light mode and Mocha dark mode."
+          }
+        }
       }
     },
     "language": {

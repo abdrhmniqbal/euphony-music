@@ -462,6 +462,149 @@
       --color-border: var(--border);
       --color-link: var(--link);
     }
+    @variant theme-catppuccin-light {
+      --radius: 0.5rem;
+      --surface-shadow:
+        0 2px 4px 0 rgba(76, 79, 105, 0.05), 0 1px 2px 0 rgba(76, 79, 105, 0.08),
+        0 0 1px 0 rgba(76, 79, 105, 0.08);
+      --overlay-shadow:
+        0 2px 8px 0 rgba(76, 79, 105, 0.04), 0 -6px 12px 0 rgba(76, 79, 105, 0.02),
+        0 14px 28px 0 rgba(76, 79, 105, 0.04);
+      --field-shadow:
+        0 2px 4px 0 rgba(76, 79, 105, 0.05), 0 1px 2px 0 rgba(76, 79, 105, 0.08),
+        0 0 1px 0 rgba(76, 79, 105, 0.08);
+
+      /* Base Colors */
+      --background: #eff1f5;
+      --foreground: #4c4f69;
+
+      /* Surface */
+      --surface: #e6e9ef;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #dce0e8;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ccd0da;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #e6e9ef;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(76, 79, 105, 0.2);
+
+      --muted: #9ca0b0;
+
+      --default: #ccd0da;
+      --default-foreground: #4c4f69;
+
+      --accent: #8839ef;
+      --accent-foreground: #eff1f5;
+
+      /* Form Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #40a02b;
+      --success-foreground: #eff1f5;
+
+      --warning: #df8e1d;
+      --warning-foreground: #eff1f5;
+
+      --danger: #d20f39;
+      --danger-foreground: #eff1f5;
+
+      /* Component Colors */
+      --segment: #ffffff;
+      --segment-foreground: #4c4f69;
+
+      /* Misc Colors */
+      --border: #bcc0cc;
+      --separator: #dce0e8;
+      --focus: #8839ef;
+      --link: #1e66f5;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+    }
+
+    @variant theme-catppuccin-dark {
+      --radius: 0.5rem;
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(205, 214, 244, 0.18) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base Colors */
+      --background: #1e1e2e;
+      --foreground: #cdd6f4;
+
+      /* Surface */
+      --surface: #181825;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #313244;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #45475a;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #181825;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(0, 0, 0, 0.3);
+
+      --muted: #6c7086;
+
+      --default: #313244;
+      --default-foreground: #cdd6f4;
+
+      --accent: #cba6f7;
+      --accent-foreground: #1e1e2e;
+
+      /* Form Fields */
+      --field-background: #11111b;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #a6e3a1;
+      --success-foreground: #1e1e2e;
+
+      --warning: #f9e2af;
+      --warning-foreground: #1e1e2e;
+
+      --danger: #f38ba8;
+      --danger-foreground: #1e1e2e;
+
+      /* Component Colors */
+      --segment: #11111b;
+      --segment-foreground: var(--foreground);
+
+      /* Misc Colors */
+      --border: #45475a;
+      --separator: #313244;
+      --focus: #cba6f7;
+      --link: #89b4fa;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+    }
   }
 }
 

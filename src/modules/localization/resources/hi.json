@@ -397,6 +397,14 @@
         "light": "रोशनी",
         "dark": "अंधेरा",
         "system": "सिस्टम"
+      },
+      "theme": {
+        "options": {
+          "catppuccin": {
+            "title": "Catppuccin",
+            "description": "Catppuccin palette with Latte light mode and Mocha dark mode."
+          }
+        }
       }
     },
     "language": {

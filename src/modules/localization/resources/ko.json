@@ -397,6 +397,14 @@
         "light": "빛",
         "dark": "어둠",
         "system": "시스템"
+      },
+      "theme": {
+        "options": {
+          "catppuccin": {
+            "title": "Catppuccin",
+            "description": "Catppuccin palette with Latte light mode and Mocha dark mode."
+          }
+        }
       }
     },
     "language": {

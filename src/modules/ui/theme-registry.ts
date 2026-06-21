@@ -1,6 +1,6 @@
 export const DEFAULT_APP_THEME_ID = "default"
 
-export type AppThemeId = "default" | "nord" | "dracula"
+export type AppThemeId = "default" | "nord" | "dracula" | "catppuccin"
 
 export interface AppThemeTokensVariant {
   background: string
@@ -28,7 +28,7 @@ export interface AppThemeDefinition {
   id: AppThemeId
   labelKey: string
   descriptionKey: string
-  rootClassName: "theme-default" | "theme-nord" | "theme-dracula"
+  rootClassName: "theme-default" | "theme-nord" | "theme-dracula" | "theme-catppuccin"
   tokens: AppThemeTokens
 }
 
@@ -184,6 +184,46 @@ export const APP_THEMES: AppThemeDefinition[] = [
         accentForeground: "#282A36",
         backdrop: "rgba(0, 0, 0, 0.45)",
         rainbow: ["#FF5555", "#FFB86C", "#F1FA8C", "#50FA7B", "#8BE9FD", "#BD93F9", "#FF79C6"],
+      },
+    },
+  },
+  {
+    id: "catppuccin",
+    labelKey: "settings.appearance.theme.options.catppuccin.title",
+    descriptionKey: "settings.appearance.theme.options.catppuccin.description",
+    rootClassName: "theme-catppuccin",
+    tokens: {
+      light: {
+        background: "#eff1f5",
+        surface: "#e6e9ef",
+        foreground: "#4c4f69",
+        muted: "#9ca0b0",
+        accent: "#8839ef",
+        border: "#bcc0cc",
+        default: "#ccd0da",
+        link: "#1e66f5",
+        danger: "#d20f39",
+        success: "#40a02b",
+        warning: "#df8e1d",
+        accentForeground: "#eff1f5",
+        backdrop: "rgba(76, 79, 105, 0.2)",
+        rainbow: ["#d20f39", "#fe640b", "#df8e1d", "#40a02b", "#179299", "#8839ef", "#ea76cb"],
+      },
+      dark: {
+        background: "#1e1e2e",
+        surface: "#181825",
+        foreground: "#cdd6f4",
+        muted: "#6c7086",
+        accent: "#cba6f7",
+        border: "#45475a",
+        default: "#313244",
+        link: "#89b4fa",
+        danger: "#f38ba8",
+        success: "#a6e3a1",
+        warning: "#f9e2af",
+        accentForeground: "#1e1e2e",
+        backdrop: "rgba(0, 0, 0, 0.3)",
+        rainbow: ["#f38ba8", "#fab387", "#f9e2af", "#a6e3a1", "#94e2d5", "#cba6f7", "#f5c2e7"],
       },
     },
   },

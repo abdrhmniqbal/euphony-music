@@ -397,6 +397,14 @@
         "light": "Terang",
         "dark": "Gelap",
         "system": "Sistem"
+      },
+      "theme": {
+        "options": {
+          "catppuccin": {
+            "title": "Catppuccin",
+            "description": "Catppuccin palette with Latte light mode and Mocha dark mode."
+          }
+        }
       }
     },
     "language": {

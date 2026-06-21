@@ -464,6 +464,10 @@
           "dracula": {
             "title": "Dracula",
             "description": "A dark theme for vampires."
+          },
+          "catppuccin": {
+            "title": "Catppuccin",
+            "description": "Catppuccin palette with Latte light mode and Mocha dark mode."
           }
         }
       },
