@@ -1,18 +1,15 @@
-import { ListGroup, Separator, Slider, Switch } from "heroui-native"
+import { ListGroup, Separator, Slider } from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalTickIcon from "@/components/icons/local/tick"
-import { useThemeColors } from "@/modules/ui/theme"
-import { showAppToast } from "@/modules/ui/toast"
-import {
-  runAutoBackupCheck,
-  setAutoBackupConfig,
-} from "@/modules/settings/auto-backup"
+import { setAutoBackupConfig } from "@/modules/settings/auto-backup"
 import { useSettingsStore } from "@/modules/settings/store"
+import { useThemeColors } from "@/modules/ui/theme"
 
 const INTERVAL_OPTIONS = [
+  { labelKey: "settings.autoBackup.off", value: 0 },
   { labelKey: "settings.autoBackup.every12Hours", value: 12 },
   { labelKey: "settings.autoBackup.every24Hours", value: 24 },
   { labelKey: "settings.autoBackup.every3Days", value: 72 },
@@ -33,50 +30,16 @@ export default function AutoBackupSettingsScreen() {
 
   React.useEffect(() => setCustomHours(config.intervalHours), [config.intervalHours])
 
-  async function handleToggle(enabled: boolean) {
-    await setAutoBackupConfig({ enabled })
-  }
-
   async function handleIntervalSelect(intervalHours: number) {
-    await setAutoBackupConfig({ intervalHours, enabled: true })
-    showAppToast(t("settings.autoBackup.title"), t("common.saved"))
-  }
-
-  async function handleTargetFolderPick() {
-    const { Directory } = await import("expo-file-system")
-    const result = await Directory.pickDirectoryAsync()
-    if (!result?.uri) return
-    await setAutoBackupConfig({ targetDirectoryUri: result.uri, enabled: true })
-    showAppToast(t("settings.autoBackup.title"), t("common.saved"))
+    await setAutoBackupConfig({
+      enabled: intervalHours > 0,
+      intervalHours: intervalHours > 0 ? intervalHours : config.intervalHours,
+    })
   }
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
-        <ListGroup>
-          <ListGroup.Item>
-            <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>{t("settings.autoBackup.enableAutoBackup")}</ListGroup.ItemTitle>
-              <ListGroup.ItemDescription>{t("settings.autoBackup.enableAutoBackupDescription")}</ListGroup.ItemDescription>
-            </ListGroup.ItemContent>
-            <ListGroup.ItemSuffix>
-              <Switch isSelected={config.enabled} onSelectedChange={handleToggle} />
-            </ListGroup.ItemSuffix>
-          </ListGroup.Item>
-        </ListGroup>
-
-        <ListGroup>
-          <ListGroup.Item onPress={handleTargetFolderPick}>
-            <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>{t("settings.autoBackup.targetFolder")}</ListGroup.ItemTitle>
-              <ListGroup.ItemDescription>
-                {config.targetDirectoryUri ? t("settings.autoBackup.folderSet") : t("settings.autoBackup.folderUnset")}
-              </ListGroup.ItemDescription>
-            </ListGroup.ItemContent>
-            <ListGroup.ItemSuffix />
-          </ListGroup.Item>
-        </ListGroup>
-
         <ListGroup>
           {INTERVAL_OPTIONS.map((opt, idx) => (
             <React.Fragment key={opt.value}>
@@ -85,7 +48,7 @@ export default function AutoBackupSettingsScreen() {
                 <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>{t(opt.labelKey)}</ListGroup.ItemTitle>
                 </ListGroup.ItemContent>
-                {config.intervalHours === opt.value ? (
+                {(config.enabled ? config.intervalHours : 0) === opt.value ? (
                   <ListGroup.ItemSuffix>
                     <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>

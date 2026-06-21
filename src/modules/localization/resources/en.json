@@ -461,14 +461,14 @@
         "title": "Integrations",
         "description": "Connected services and accounts."
       },
+      "lastfm": {
+        "title": "Last.fm",
+        "description": "Scrobbling and Last.fm account connection."
+      },
       "backup": {
         "title": "Backup & Restore",
         "description": "Export and import app settings and preferences."
       },
-      "autoBackup": {
-        "title": "Automatic Backup",
-        "description": "Schedule backups to Startune/Music/AutoBackup."
-      }
     },
     "appearance": {
       "languageDescription": "Current language: {{language}}.",
@@ -718,13 +718,27 @@
       "openSourceLicensesEmpty": "No generated licenses yet. Run generate:licenses script.",
       "licenseTextUnavailable": "License text unavailable."
     },
+    "backup": {
+      "backup": "Backup",
+      "backupDescription": "Export app settings to a file.",
+      "backupDialogDescription": "Export all settings to a file.",
+      "backupFailed": "Backup failed",
+      "restore": "Restore",
+      "restoreDescription": "Import settings from backup file.",
+      "restoreDialogDescription": "Import settings from a backup file. This will override current settings.",
+      "restoreSuccessful": "Restore successful",
+      "restoreSuccessfulDescription": "Settings restored.",
+      "restoreFailed": "Restore failed",
+      "restoreFailedDescription": "Invalid backup file."
+    },
     "autoBackup": {
       "title": "Automatic Backup",
-      "enableAutoBackup": "Automatic Backup",
-      "enableAutoBackupDescription": "Back up preferences automatically on the selected schedule.",
+      "off": "Off",
+      "enabledDescription": "Backups run on the selected schedule.",
+      "disabledDescription": "Automatic backups are off.",
       "targetFolder": "Backup Folder",
       "folderSet": "Folder selected. Backups save inside that folder.",
-      "folderUnset": "Choose Startune/Music/AutoBackup.",
+      "folderUnset": "Choose Startune/Music/Backup.",
       "every12Hours": "Every 12 hours",
       "every24Hours": "Every day",
       "every3Days": "Every 3 days",

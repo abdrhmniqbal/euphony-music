@@ -86,7 +86,7 @@ export async function runAutoBackupCheck(force = false): Promise<boolean> {
     // Write to document tree
     const targetDir = new Directory(config.targetDirectoryUri)
     
-    const filename = `startune-backup-${now}.json`
+    const filename = `autobackup-${now}.json`
     const createdFile = targetDir.createFile(filename, "application/json")
     await createdFile.write(content, { encoding: "utf8" })
     

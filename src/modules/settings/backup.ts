@@ -1,9 +1,9 @@
-import { File, Paths } from "expo-file-system"
+import { Directory, File, Paths } from "expo-file-system"
 
 import { getSettingsState } from "@/modules/settings/store"
 import { preferenceStore } from "@/stores/preference/store"
 
-export async function backupPreferencesToFile(): Promise<string> {
+export async function backupPreferencesToFile(targetDirectoryUri?: string | null): Promise<string> {
   const settingsState = getSettingsState()
   const prefState = preferenceStore.getState()
   
@@ -29,13 +29,15 @@ export async function backupPreferencesToFile(): Promise<string> {
   }
 
   const fileName = `startune-backup-${Date.now()}.json`
-  const file = new File(Paths.cache, fileName)
+  const file = targetDirectoryUri
+    ? new Directory(targetDirectoryUri).createFile(fileName, "application/json")
+    : new File(Paths.cache, fileName)
   
   if (!file.exists) {
     file.create({ intermediates: true })
   }
   
-  file.write(JSON.stringify(backupData, null, 2), { encoding: "utf8" })
+  await file.write(JSON.stringify(backupData, null, 2), { encoding: "utf8" })
   return file.uri
 }
 
