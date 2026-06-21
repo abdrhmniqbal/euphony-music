@@ -129,15 +129,20 @@ export async function rebuildSplitMetadataRelations(
                 lookupCache
               )
             : track.albumId
-        const relationArtistNames = dedupeNormalizedValues(
-          splitArtistsValue(artistSource, splitConfig)
-        )
+        const relationArtistNames =
+          splitConfig.artistSplitMode === "original"
+            ? primaryArtistName
+              ? [primaryArtistName]
+              : []
+            : artistNames.length > 0
+              ? artistNames
+              : primaryArtistName
+                ? [primaryArtistName]
+                : []
         const relationArtistIds = Array.from(
           new Set(
             await Promise.all(
-              [...relationArtistNames, primaryArtistName ?? ""]
-                .filter((artist): artist is string => Boolean(artist))
-                .map((artist) => getOrCreateArtist(artist, lookupCache))
+              relationArtistNames.map((artist) => getOrCreateArtist(artist, lookupCache))
             )
           )
         )

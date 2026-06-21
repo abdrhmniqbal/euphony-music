@@ -19,19 +19,17 @@ export async function upsertPreparedAsset(
     return
   }
 
-  const artistId = metadata.artist ? await getOrCreateArtist(metadata.artist, lookupCache) : null
   const relationArtistNames = metadata.artists.length
     ? metadata.artists
     : metadata.artist
       ? [metadata.artist]
       : []
+  const artistId = relationArtistNames[0]
+    ? await getOrCreateArtist(relationArtistNames[0], lookupCache)
+    : null
   const relationArtistIds = Array.from(
     new Set(
-      await Promise.all(
-        [...relationArtistNames, metadata.artist ?? ""]
-          .filter((artist): artist is string => Boolean(artist))
-          .map((artist) => getOrCreateArtist(artist, lookupCache))
-      )
+      await Promise.all(relationArtistNames.map((artist) => getOrCreateArtist(artist, lookupCache)))
     )
   )
 

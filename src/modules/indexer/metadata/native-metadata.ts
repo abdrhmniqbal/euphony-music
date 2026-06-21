@@ -91,10 +91,12 @@ export async function extractMetadata(
   const rawAlbumArtist = metadata?.albumArtist?.trim()
   const rawGenre = metadata?.genre?.trim()
 
-  const artist = rawArtist || undefined
+  const splitArtists = rawArtist ? splitArtistsValue(rawArtist, splitConfig) : []
+  const artist =
+    splitConfig.artistSplitMode === "split" ? splitArtists[0] || undefined : rawArtist || undefined
   const albumArtist = rawAlbumArtist || undefined
 
-  const artists = artist ? splitArtistsValue(artist, splitConfig) : []
+  const artists = splitConfig.artistSplitMode === "split" ? splitArtists : artist ? [artist] : []
   const genres = rawGenre ? splitGenresValue(rawGenre, splitConfig) : []
 
   const trackNumber = metadata?.trackNumber ? parseInt(String(metadata.trackNumber), 10) : undefined
