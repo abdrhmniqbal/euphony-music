@@ -1,5 +1,5 @@
 import * as SecureStore from "expo-secure-store"
-import { gt, sql } from "drizzle-orm"
+import { and, gt, isNull, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { artists } from "@/db/schema"
 
@@ -110,9 +110,16 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
   }
 }
 
-export async function refreshLastFmArtistMetadataForIndexedArtists(signal?: AbortSignal) {
+export async function refreshLastFmArtistMetadataForIndexedArtists(
+  forceRefresh = false,
+  signal?: AbortSignal
+) {
+  const whereClause = forceRefresh
+    ? gt(artists.trackCount, 0)
+    : and(gt(artists.trackCount, 0), or(isNull(artists.artwork), isNull(artists.bio)))
+
   const rows = await db.query.artists.findMany({
-    where: gt(artists.trackCount, 0),
+    where: whereClause,
     columns: {
       id: true,
       name: true,

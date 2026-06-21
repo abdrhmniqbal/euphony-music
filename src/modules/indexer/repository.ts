@@ -234,7 +234,7 @@ export async function scanMediaLibrary(
   await updateGenreCounts()
   if (signal?.aborted) return
 
-  await refreshLastFmArtistMetadataForIndexedArtists(signal)
+  await refreshLastFmArtistMetadataForIndexedArtists(forceFullScan, signal)
   if (signal?.aborted) return
 
   onProgress?.({
