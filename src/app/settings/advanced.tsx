@@ -13,6 +13,7 @@ import { useState } from "react"
 import { Linking, Platform, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
 import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
+import { queryClient } from "@/lib/tanstack-query"
 
 import {
   isIgnoringBatteryOptimizations,
@@ -20,6 +21,8 @@ import {
   requestIgnoreBatteryOptimizations,
 } from "@/modules/device/battery-optimization"
 import { useResetListeningHistory } from "@/modules/history/mutations"
+import { libraryKeys } from "@/modules/library/keys"
+import { clearRecentSearches } from "@/modules/library/recent-searches-repository"
 import { shareCrashLogs } from "@/modules/logging/service"
 
 import { useSettingsStore } from "@/modules/settings/store"
@@ -33,6 +36,8 @@ export default function AdvancedSettingsScreen() {
 
   const resetListeningHistoryMutation = useResetListeningHistory()
   const [isResetHistoryDialogOpen, setIsResetHistoryDialogOpen] = useState(false)
+  const [isResetSearchHistoryDialogOpen, setIsResetSearchHistoryDialogOpen] = useState(false)
+  const [isResettingSearchHistory, setIsResettingSearchHistory] = useState(false)
 
   const isResettingHistory = resetListeningHistoryMutation.isPending
 
@@ -65,6 +70,31 @@ export default function AdvancedSettingsScreen() {
         t("settings.advanced.historyResetUnableTitle"),
         t("settings.advanced.tryAgainDescription")
       )
+    }
+  }
+
+  async function handleConfirmResetSearchHistory() {
+    if (isResettingSearchHistory) {
+      return
+    }
+
+    setIsResettingSearchHistory(true)
+
+    try {
+      await clearRecentSearches()
+      await queryClient.invalidateQueries({ queryKey: libraryKeys.recentSearches() })
+      setIsResetSearchHistoryDialogOpen(false)
+      showAppToast(
+        t("settings.advanced.searchHistoryResetTitle"),
+        t("settings.advanced.searchHistoryResetDescription")
+      )
+    } catch {
+      showAppToast(
+        t("settings.advanced.searchHistoryResetUnableTitle"),
+        t("settings.advanced.tryAgainDescription")
+      )
+    } finally {
+      setIsResettingSearchHistory(false)
     }
   }
 
@@ -181,6 +211,22 @@ export default function AdvancedSettingsScreen() {
               </ListGroup.ItemContent>
             </ListGroup.Item>
           </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="resetSearchHistory">
+            <ListGroup.Item
+              onPress={() => setIsResetSearchHistoryDialogOpen(true)}
+              disabled={isResettingSearchHistory}
+            >
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>
+                  {t("settings.advanced.resetSearchHistory")}
+                </ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>
+                  {t("settings.advanced.resetSearchHistoryDescription")}
+                </ListGroup.ItemDescription>
+              </ListGroup.ItemContent>
+            </ListGroup.Item>
+          </SettingsHighlight>
         </ListGroup>
 
         <Text className="px-1 text-xs font-semibold uppercase text-muted">
@@ -271,6 +317,41 @@ export default function AdvancedSettingsScreen() {
                   void handleConfirmResetHistory()
                 }}
                 isDisabled={isResettingHistory}
+              >
+                {t("common.reset")}
+              </Button>
+            </View>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+
+      <Dialog
+        isOpen={isResetSearchHistoryDialogOpen}
+        onOpenChange={setIsResetSearchHistoryDialogOpen}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay />
+          <Dialog.Content className="gap-4">
+            <View className="gap-1.5">
+              <Dialog.Title>{t("settings.advanced.resetSearchHistoryDialogTitle")}</Dialog.Title>
+              <Dialog.Description>
+                {t("settings.advanced.resetSearchHistoryDialogDescription")}
+              </Dialog.Description>
+            </View>
+            <View className="flex-row justify-end gap-3">
+              <Button
+                variant="ghost"
+                onPress={() => setIsResetSearchHistoryDialogOpen(false)}
+                isDisabled={isResettingSearchHistory}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="danger"
+                onPress={() => {
+                  void handleConfirmResetSearchHistory()
+                }}
+                isDisabled={isResettingSearchHistory}
               >
                 {t("common.reset")}
               </Button>
