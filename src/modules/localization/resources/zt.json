@@ -223,7 +223,8 @@
       "playlistsMessage": "建立您的第一個播放清單來組織您的音樂。",
       "playlistsFoundMessage": "建立您的第一個播放清單來組織曲目。",
       "selectedTracksMessage": "點擊新增曲目開始建立此播放清單。"
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "新播放列表",

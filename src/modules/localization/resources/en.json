@@ -252,7 +252,8 @@
       "playlistsMessage": "Create your first playlist to organize your music.",
       "playlistsFoundMessage": "Create your first playlist to organize tracks.",
       "selectedTracksMessage": "Tap Add Tracks to start building this playlist."
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "New Playlist",

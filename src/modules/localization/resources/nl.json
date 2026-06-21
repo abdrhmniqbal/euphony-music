@@ -223,7 +223,8 @@
       "playlistsMessage": "Maak uw eerste afspeellijst om uw muziek te ordenen.",
       "playlistsFoundMessage": "Maak je eerste afspeellijst om nummers te ordenen.",
       "selectedTracksMessage": "Tik op Nummers toevoegen om deze afspeellijst te maken."
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "Nieuwe afspeellijst",

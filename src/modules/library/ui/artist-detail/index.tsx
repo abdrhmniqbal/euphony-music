@@ -12,6 +12,7 @@ import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { ArtistDetailHeader } from "./artist-detail-header"
 import { ArtistHeroSection } from "./artist-hero-section"
+import { ArtistInfoSection } from "./artist-info-section"
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { Button, PressableFeedback } from "heroui-native"
@@ -63,6 +64,7 @@ import { useIsFavorite } from "@/modules/favorites/queries"
 import { ALBUM_SORT_OPTIONS, TRACK_SORT_OPTIONS } from "@/modules/library/sort-constants"
 import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort-store"
 import { sortAlbums, sortTracks } from "@/modules/library/sort-utils"
+import { useLastFmArtistInfo } from "@/modules/library/lastfm"
 import { useArtistByName, useTracksByArtistName } from "@/modules/library/queries"
 import { useCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
 import {
@@ -186,8 +188,9 @@ export default function ArtistDetailsScreen() {
   )
   const artistTracks = mergeArtistTracks(artistTracksFromQuery, fallbackArtistTracks)
   const { data: artistRecord } = useArtistByName(artistName)
+  const { data: lastFmArtistInfo } = useLastFmArtistInfo(artistName)
   const artistId = artistRecord?.id
-  const artistImage = artistRecord?.artwork || undefined
+  const artistImage = lastFmArtistInfo?.image || artistRecord?.artwork || undefined
   const artistTransitionId = resolveArtistTransitionId({
     transitionId,
     id: artistId,
@@ -484,6 +487,8 @@ export default function ArtistDetailsScreen() {
                   />
                 </View>
               )}
+
+              <ArtistInfoSection title={t("library.artistInfo", "Artist info")} bio={lastFmArtistInfo?.bio} />
             </Animated.View>
           </ScrollView>
         ) : activeView === "tracks" ? (

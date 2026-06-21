@@ -223,7 +223,8 @@
       "playlistsMessage": "Crie sua primeira playlist para organizar suas músicas.",
       "playlistsFoundMessage": "Crie sua primeira playlist para organizar as faixas.",
       "selectedTracksMessage": "Toque em Adicionar faixas para começar a criar esta lista de reprodução."
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "Nova lista de reprodução",

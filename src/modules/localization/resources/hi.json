@@ -223,7 +223,8 @@
       "playlistsMessage": "अपने संगीत को व्यवस्थित करने के लिए अपनी पहली प्लेलिस्ट बनाएं।",
       "playlistsFoundMessage": "ट्रैक व्यवस्थित करने के लिए अपनी पहली प्लेलिस्ट बनाएं।",
       "selectedTracksMessage": "इस प्लेलिस्ट को बनाना शुरू करने के लिए ट्रैक जोड़ें पर टैप करें।"
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "नई प्लेलिस्ट",

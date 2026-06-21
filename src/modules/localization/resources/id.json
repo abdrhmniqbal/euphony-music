@@ -223,7 +223,8 @@
       "playlistsMessage": "Buat playlist pertama untuk mengatur musik kamu.",
       "playlistsFoundMessage": "Buat playlist pertama untuk mengatur lagu.",
       "selectedTracksMessage": "Ketuk Tambah Lagu untuk mulai membuat playlist ini."
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "Playlist Baru",

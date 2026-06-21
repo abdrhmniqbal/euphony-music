@@ -223,7 +223,8 @@
       "playlistsMessage": "음악을 정리하려면 첫 번째 재생목록을 만드세요.",
       "playlistsFoundMessage": "트랙을 정리하려면 첫 번째 재생목록을 만드세요.",
       "selectedTracksMessage": "이 재생 목록 만들기를 시작하려면 트랙 추가를 탭하세요."
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "새 재생목록",

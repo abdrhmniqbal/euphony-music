@@ -223,7 +223,8 @@
       "playlistsMessage": "Créez votre première playlist pour organiser votre musique.",
       "playlistsFoundMessage": "Créez votre première playlist pour organiser les pistes.",
       "selectedTracksMessage": "Appuyez sur Ajouter des pistes pour commencer à créer cette liste de lecture."
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "Nouvelle liste de lecture",

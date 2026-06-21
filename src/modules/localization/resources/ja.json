@@ -223,7 +223,8 @@
       "playlistsMessage": "最初のプレイリストを作成して音楽を整理します。",
       "playlistsFoundMessage": "最初のプレイリストを作成してトラックを整理します。",
       "selectedTracksMessage": "「トラックを追加」をタップして、このプレイリストの作成を開始します。"
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "新しいプレイリスト",

@@ -223,7 +223,8 @@
       "playlistsMessage": "Erstellen Sie Ihre erste Playlist, um Ihre Musik zu organisieren.",
       "playlistsFoundMessage": "Erstellen Sie Ihre erste Playlist, um Titel zu organisieren.",
       "selectedTracksMessage": "Tippen Sie auf „Titel hinzufügen“, um mit der Erstellung dieser Wiedergabeliste zu beginnen."
-    }
+    },
+    "artistInfo": "Artist info"
   },
   "playlist": {
     "newPlaylist": "Neue Playlist",
