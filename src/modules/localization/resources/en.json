@@ -407,7 +407,7 @@
       },
       "theme": {
         "title": "Color Scheme",
-        "description": "Current scheme: {{theme}}"
+        "description": "Choose app color scheme."
       },
       "audio": {
         "title": "Audio",
@@ -498,6 +498,12 @@
         "dark": "Dark",
         "system": "System"
       }
+    },
+    "search": {
+      "placeholder": "Search settings",
+      "resultCount": "{{count}} matching settings",
+      "noResults": "No settings found",
+      "clear": "Clear search"
     },
     "language": {
       "english": "English",
@@ -724,6 +730,9 @@
       "whatsNewEmpty": "No release notes found for this version.",
       "openSourceLicenses": "Open Source Licenses",
       "openSourceLicensesDescription": "Third-party packages and license texts.",
+      "licenseRepository": "Repository",
+      "viewRepository": "View on repository",
+      "licenseText": "License Text",
       "openSourceLicensesEmpty": "No generated licenses yet. Run generate:licenses script.",
       "licenseTextUnavailable": "License text unavailable."
     },

@@ -8,9 +8,10 @@
 
 import { ListGroup, Separator, Slider, Switch } from "heroui-native"
 import * as React from "react"
-import { ScrollView, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
+import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
 import { setAudioPlaybackConfig, type AudioPlaybackConfig } from "@/modules/settings/audio-playback"
 import { setCrossfadeConfig } from "@/modules/settings/audio-crossfade"
 import { useSettingsStore } from "@/modules/settings/store"
@@ -69,13 +70,13 @@ export default function AudioSettingsScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="gap-5 px-4 py-4">
-        <View className="gap-2">
-          <Text className="px-1 text-xs font-semibold uppercase text-muted">
-            {t("settings.audio.sections.transitions")}
-          </Text>
-          <ListGroup>
+    <SettingsScrollView>
+      <View className="gap-2">
+        <Text className="px-1 text-xs font-semibold uppercase text-muted">
+          {t("settings.audio.sections.transitions")}
+        </Text>
+        <ListGroup>
+          <SettingsHighlight id="fadePlayPauseStop">
             <AudioSwitchRow
               title={t("settings.audio.fadePlayPauseStop")}
               description={t("settings.audio.fadePlayPauseStopDescription")}
@@ -84,48 +85,52 @@ export default function AudioSettingsScreen() {
                 updateAudioPlaybackConfig("fadePlayPauseStop", isSelected)
               }
             />
-            <Separator className="mx-4" />
+          </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="fadeOnSeek">
             <AudioSwitchRow
               title={t("settings.audio.fadeOnSeek")}
               description={t("settings.audio.fadeOnSeekDescription")}
               isSelected={audioPlaybackConfig.fadeOnSeek}
               onSelectedChange={(isSelected) => updateAudioPlaybackConfig("fadeOnSeek", isSelected)}
             />
-          </ListGroup>
-        </View>
+          </SettingsHighlight>
+        </ListGroup>
+      </View>
 
-        <View className="gap-2">
-          <Text className="px-1 text-xs font-semibold uppercase text-muted">
-            {t("settings.audio.sections.resume")}
-          </Text>
-          <ListGroup>
+      <View className="gap-2">
+        <Text className="px-1 text-xs font-semibold uppercase text-muted">
+          {t("settings.audio.sections.resume")}
+        </Text>
+        <ListGroup>
+          <SettingsHighlight id="resumeAfterCall">
             <AudioSwitchRow
               title={t("settings.audio.resumeAfterCall")}
               description={t("settings.audio.resumeAfterCallDescription")}
               isSelected={audioPlaybackConfig.resumeAfterCall}
-              onSelectedChange={(isSelected) =>
-                updateAudioPlaybackConfig("resumeAfterCall", isSelected)
-              }
+              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("resumeAfterCall", isSelected)}
             />
-            <Separator className="mx-4" />
+          </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="resumeOnStart">
             <AudioSwitchRow
               title={t("settings.audio.resumeOnStart")}
               description={t("settings.audio.resumeOnStartDescription")}
               isSelected={audioPlaybackConfig.resumeOnStart}
-              onSelectedChange={(isSelected) =>
-                updateAudioPlaybackConfig("resumeOnStart", isSelected)
-              }
+              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("resumeOnStart", isSelected)}
             />
-            <Separator className="mx-4" />
+          </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="resumeOnReopen">
             <AudioSwitchRow
               title={t("settings.audio.resumeOnReopen")}
               description={t("settings.audio.resumeOnReopenDescription")}
               isSelected={audioPlaybackConfig.resumeOnReopen}
-              onSelectedChange={(isSelected) =>
-                updateAudioPlaybackConfig("resumeOnReopen", isSelected)
-              }
+              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("resumeOnReopen", isSelected)}
             />
-            <Separator className="mx-4" />
+          </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="resumeOnFocusGain">
             <AudioSwitchRow
               title={t("settings.audio.resumeOnFocusGain")}
               description={t("settings.audio.resumeOnFocusGainDescription")}
@@ -134,14 +139,16 @@ export default function AudioSettingsScreen() {
                 updateAudioPlaybackConfig("resumeOnFocusGain", isSelected)
               }
             />
-          </ListGroup>
-        </View>
+          </SettingsHighlight>
+        </ListGroup>
+      </View>
 
-        <View className="gap-2">
-          <Text className="px-1 text-xs font-semibold uppercase text-muted">
-            {t("settings.audio.sections.audioFocus")}
-          </Text>
-          <ListGroup>
+      <View className="gap-2">
+        <Text className="px-1 text-xs font-semibold uppercase text-muted">
+          {t("settings.audio.sections.audioFocus")}
+        </Text>
+        <ListGroup>
+          <SettingsHighlight id="shortAudioFocusChange">
             <AudioSwitchRow
               title={t("settings.audio.shortAudioFocusChange")}
               description={t("settings.audio.shortAudioFocusChangeDescription")}
@@ -150,23 +157,27 @@ export default function AudioSettingsScreen() {
                 updateAudioPlaybackConfig("shortAudioFocusChange", isSelected)
               }
             />
-            <Separator className="mx-4" />
+          </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="pauseInCall">
             <AudioSwitchRow
               title={t("settings.audio.pauseInCall")}
               description={t("settings.audio.pauseInCallDescription")}
               isSelected={audioPlaybackConfig.pauseInCall}
-              onSelectedChange={(isSelected) =>
-                updateAudioPlaybackConfig("pauseInCall", isSelected)
-              }
+              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("pauseInCall", isSelected)}
             />
-            <Separator className="mx-4" />
+          </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="duckVolume">
             <AudioSwitchRow
               title={t("settings.audio.duckVolume")}
               description={t("settings.audio.duckVolumeDescription")}
               isSelected={audioPlaybackConfig.duckVolume}
               onSelectedChange={(isSelected) => updateAudioPlaybackConfig("duckVolume", isSelected)}
             />
-            <Separator className="mx-4" />
+          </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="permanentAudioFocusChange">
             <AudioSwitchRow
               title={t("settings.audio.permanentAudioFocusChange")}
               description={t("settings.audio.permanentAudioFocusChangeDescription")}
@@ -175,14 +186,16 @@ export default function AudioSettingsScreen() {
                 updateAudioPlaybackConfig("permanentAudioFocusChange", isSelected)
               }
             />
-          </ListGroup>
-        </View>
+          </SettingsHighlight>
+        </ListGroup>
+      </View>
 
-        <View className="gap-2">
-          <Text className="px-1 text-xs font-semibold uppercase text-muted">
-            {t("settings.audio.sections.crossfade")}
-          </Text>
-          <ListGroup>
+      <View className="gap-2">
+        <Text className="px-1 text-xs font-semibold uppercase text-muted">
+          {t("settings.audio.sections.crossfade")}
+        </Text>
+        <ListGroup>
+          <SettingsHighlight id="crossfade">
             <ListGroup.Item>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>{t("settings.audio.crossfade")}</ListGroup.ItemTitle>
@@ -201,45 +214,47 @@ export default function AudioSettingsScreen() {
                 />
               </ListGroup.ItemSuffix>
             </ListGroup.Item>
+          </SettingsHighlight>
 
-            {crossfadeConfig.isEnabled ? (
-              <>
-                <Separator className="mx-4" />
+          {crossfadeConfig.isEnabled ? (
+            <>
+              <Separator className="mx-4" />
+              <SettingsHighlight id="crossfadeDuration">
                 <ListGroup.Item>
                   <ListGroup.ItemContent>
-                    <View className="mb-3 flex-row items-center justify-between">
-                      <ListGroup.ItemTitle>{t("settings.audio.duration")}</ListGroup.ItemTitle>
-                      <Text className="text-sm font-medium text-foreground">
-                        {Math.round(resolvedSliderValue)}s
-                      </Text>
-                    </View>
-                    <Slider
-                      minValue={1}
-                      maxValue={12}
-                      step={1}
-                      value={resolvedSliderValue}
-                      onChange={(value) => {
-                        setSliderValue(getSliderNumericValue(value))
-                      }}
-                      onChangeEnd={(value) => {
-                        void handleCrossfadeSlidingComplete(getSliderNumericValue(value))
-                      }}
-                    >
-                      <Slider.Track className="h-2 rounded-full bg-border">
-                        <Slider.Fill className="rounded-full bg-accent" />
-                        <Slider.Thumb />
-                      </Slider.Track>
-                    </Slider>
-                    <Text className="mt-2 text-xs text-muted">
-                      {t("settings.audio.durationHint")}
+                  <View className="mb-3 flex-row items-center justify-between">
+                    <ListGroup.ItemTitle>{t("settings.audio.duration")}</ListGroup.ItemTitle>
+                    <Text className="text-sm font-medium text-foreground">
+                      {Math.round(resolvedSliderValue)}s
                     </Text>
-                  </ListGroup.ItemContent>
-                </ListGroup.Item>
-              </>
-            ) : null}
-          </ListGroup>
-        </View>
+                  </View>
+                  <Slider
+                    minValue={1}
+                    maxValue={12}
+                    step={1}
+                    value={resolvedSliderValue}
+                    onChange={(value) => {
+                      setSliderValue(getSliderNumericValue(value))
+                    }}
+                    onChangeEnd={(value) => {
+                      void handleCrossfadeSlidingComplete(getSliderNumericValue(value))
+                    }}
+                  >
+                    <Slider.Track className="h-2 rounded-full bg-border">
+                      <Slider.Fill className="rounded-full bg-accent" />
+                      <Slider.Thumb />
+                    </Slider.Track>
+                  </Slider>
+                  <Text className="mt-2 text-xs text-muted">
+                    {t("settings.audio.durationHint")}
+                  </Text>
+                </ListGroup.ItemContent>
+              </ListGroup.Item>
+              </SettingsHighlight>
+            </>
+          ) : null}
+        </ListGroup>
       </View>
-    </ScrollView>
+    </SettingsScrollView>
   )
 }

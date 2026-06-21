@@ -16,6 +16,7 @@ import { useState } from "react"
 import appIcon from "@/assets/icon.png"
 import {
   SettingsActionRow,
+  SettingsHighlight,
   SettingsListGroup,
   SettingsNavigationRow,
   SettingsScrollView,
@@ -87,30 +88,34 @@ export default function AboutSettingsScreen() {
           {t("settings.about.sections.updates", "Updates")}
         </Text>
         <SettingsListGroup>
-          <SettingsActionRow
-            title={t("settings.about.checkForUpdates")}
-            description={
-              isCheckingForUpdates
-                ? t("settings.about.checkingForUpdates")
-                : t("settings.about.checkForUpdatesDescription")
-            }
-            disabled={isCheckingForUpdates}
-            onPress={() => {
-              void handleCheckForUpdates()
-            }}
-          />
-          <SettingsSwitchRow
-            title={t("settings.advanced.joinPreviewReleases")}
-            description={
-              includePrereleases
-                ? t("settings.advanced.joinPreviewReleasesEnabled")
-                : t("settings.advanced.joinPreviewReleasesDisabled")
-            }
-            isSelected={includePrereleases}
-            onSelectedChange={(isSelected) => {
-              void setAppUpdateConfig({ includePrereleases: isSelected })
-            }}
-          />
+          <SettingsHighlight id="updates">
+            <SettingsActionRow
+              title={t("settings.about.checkForUpdates")}
+              description={
+                isCheckingForUpdates
+                  ? t("settings.about.checkingForUpdates")
+                  : t("settings.about.checkForUpdatesDescription")
+              }
+              disabled={isCheckingForUpdates}
+              onPress={() => {
+                void handleCheckForUpdates()
+              }}
+            />
+          </SettingsHighlight>
+          <SettingsHighlight id="previewReleases">
+            <SettingsSwitchRow
+              title={t("settings.advanced.joinPreviewReleases")}
+              description={
+                includePrereleases
+                  ? t("settings.advanced.joinPreviewReleasesEnabled")
+                  : t("settings.advanced.joinPreviewReleasesDisabled")
+              }
+              isSelected={includePrereleases}
+              onSelectedChange={(isSelected) => {
+                void setAppUpdateConfig({ includePrereleases: isSelected })
+              }}
+            />
+          </SettingsHighlight>
           <SettingsNavigationRow
             title={t("settings.about.whatsNew")}
             description={t("settings.about.whatsNewDescription")}

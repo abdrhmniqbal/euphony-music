@@ -1,0 +1,62 @@
+export interface SettingsSearchEntry {
+  id: string
+  route: string
+  highlight?: string
+  titleKey: string
+  descriptionKey?: string
+  sectionKey?: string
+}
+
+export const SETTINGS_SEARCH_ENTRIES: SettingsSearchEntry[] = [
+  { id: "appearance-theme", route: "/settings/theme", highlight: "theme", titleKey: "settings.routes.theme.title", descriptionKey: "settings.routes.theme.description", sectionKey: "settings.routes.appearance.title" },
+  { id: "appearance-theme-mode", route: "/settings/theme-mode", highlight: "themeMode", titleKey: "settings.routes.themeMode.title", descriptionKey: "settings.routes.themeMode.description", sectionKey: "settings.routes.appearance.title" },
+  { id: "appearance-language", route: "/settings/language", highlight: "language", titleKey: "settings.routes.language.title", descriptionKey: "settings.routes.language.description", sectionKey: "settings.routes.appearance.title" },
+  { id: "appearance-theme", route: "/settings/theme", highlight: "theme", titleKey: "settings.routes.theme.title", descriptionKey: "settings.routes.theme.description", sectionKey: "settings.routes.appearance.title" },
+  { id: "audio-fade-play-pause-stop", route: "/settings/audio", highlight: "fadePlayPauseStop", titleKey: "settings.audio.fadePlayPauseStop", descriptionKey: "settings.audio.fadePlayPauseStopDescription", sectionKey: "settings.audio.sections.transitions" },
+  { id: "audio-fade-on-seek", route: "/settings/audio", highlight: "fadeOnSeek", titleKey: "settings.audio.fadeOnSeek", descriptionKey: "settings.audio.fadeOnSeekDescription", sectionKey: "settings.audio.sections.transitions" },
+  { id: "audio-resume-after-call", route: "/settings/audio", highlight: "resumeAfterCall", titleKey: "settings.audio.resumeAfterCall", descriptionKey: "settings.audio.resumeAfterCallDescription", sectionKey: "settings.audio.sections.resume" },
+  { id: "audio-resume-on-start", route: "/settings/audio", highlight: "resumeOnStart", titleKey: "settings.audio.resumeOnStart", descriptionKey: "settings.audio.resumeOnStartDescription", sectionKey: "settings.audio.sections.resume" },
+  { id: "audio-resume-on-reopen", route: "/settings/audio", highlight: "resumeOnReopen", titleKey: "settings.audio.resumeOnReopen", descriptionKey: "settings.audio.resumeOnReopenDescription", sectionKey: "settings.audio.sections.resume" },
+  { id: "audio-resume-on-focus-gain", route: "/settings/audio", highlight: "resumeOnFocusGain", titleKey: "settings.audio.resumeOnFocusGain", descriptionKey: "settings.audio.resumeOnFocusGainDescription", sectionKey: "settings.audio.sections.resume" },
+  { id: "audio-short-focus", route: "/settings/audio", highlight: "shortAudioFocusChange", titleKey: "settings.audio.shortAudioFocusChange", descriptionKey: "settings.audio.shortAudioFocusChangeDescription", sectionKey: "settings.audio.sections.audioFocus" },
+  { id: "audio-pause-in-call", route: "/settings/audio", highlight: "pauseInCall", titleKey: "settings.audio.pauseInCall", descriptionKey: "settings.audio.pauseInCallDescription", sectionKey: "settings.audio.sections.audioFocus" },
+  { id: "audio-duck-volume", route: "/settings/audio", highlight: "duckVolume", titleKey: "settings.audio.duckVolume", descriptionKey: "settings.audio.duckVolumeDescription", sectionKey: "settings.audio.sections.audioFocus" },
+  { id: "audio-permanent-focus", route: "/settings/audio", highlight: "permanentAudioFocusChange", titleKey: "settings.audio.permanentAudioFocusChange", descriptionKey: "settings.audio.permanentAudioFocusChangeDescription", sectionKey: "settings.audio.sections.audioFocus" },
+  { id: "audio-crossfade", route: "/settings/audio", highlight: "crossfade", titleKey: "settings.audio.crossfade", descriptionKey: "settings.audio.crossfadeEnabled", sectionKey: "settings.audio.sections.crossfade" },
+  { id: "audio-crossfade-duration", route: "/settings/audio", highlight: "crossfadeDuration", titleKey: "settings.audio.duration", descriptionKey: "settings.audio.durationHint", sectionKey: "settings.audio.sections.crossfade" },
+  { id: "library-folder-filters", route: "/settings/folder-filters", titleKey: "settings.routes.folderFilters.title", descriptionKey: "settings.library.folderFiltersDescription", sectionKey: "settings.routes.library.title" },
+  { id: "library-track-duration", route: "/settings/track-duration-filter", titleKey: "settings.routes.trackDurationFilter.title", descriptionKey: "settings.routes.trackDurationFilter.description", sectionKey: "settings.routes.library.title" },
+  { id: "library-split-values", route: "/settings/split-multiple-values", titleKey: "settings.routes.splitMultipleValues.title", descriptionKey: "settings.routes.splitMultipleValues.description", sectionKey: "settings.routes.library.title" },
+  { id: "library-tabs", route: "/settings/library-tabs", titleKey: "settings.routes.libraryTabs.title", descriptionKey: "settings.library.libraryTabsDescription", sectionKey: "settings.routes.library.title" },
+  { id: "library-count-played", route: "/settings/library", highlight: "countAsPlayed", titleKey: "settings.library.countAsPlayed", descriptionKey: "settings.library.countAsPlayedDescription", sectionKey: "settings.library.sections.content" },
+  { id: "library-auto-scan", route: "/settings/library", highlight: "autoScan", titleKey: "settings.library.autoScan", descriptionKey: "settings.library.autoScanDescription", sectionKey: "settings.library.sections.indexing" },
+  { id: "library-initial-scan", route: "/settings/library", highlight: "initialScan", titleKey: "settings.library.initialScan", descriptionKey: "settings.library.initialScanDescription", sectionKey: "settings.library.sections.indexing" },
+  { id: "library-rescan", route: "/settings/library", highlight: "rescanImmediately", titleKey: "settings.library.rescanImmediately", descriptionKey: "settings.library.rescanImmediatelyDescription", sectionKey: "settings.library.sections.indexing" },
+  { id: "library-full-rescan", route: "/settings/library", highlight: "reindex", titleKey: "settings.library.reindexLibrary", descriptionKey: "settings.library.reindexDescription", sectionKey: "settings.library.sections.indexing" },
+  { id: "notifications-app-updates", route: "/settings/notifications", highlight: "appUpdateNotifications", titleKey: "settings.notifications.appUpdateNotifications", descriptionKey: "settings.notifications.appUpdateNotificationsEnabled", sectionKey: "settings.routes.notifications.title" },
+  { id: "notifications-indexer", route: "/settings/notifications", highlight: "indexerNotifications", titleKey: "settings.notifications.indexerNotifications", descriptionKey: "settings.notifications.indexerNotificationsEnabled", sectionKey: "settings.routes.notifications.title" },
+  { id: "integrations-lastfm", route: "/settings/lastfm", highlight: "connection", titleKey: "settings.routes.lastfm.title", descriptionKey: "settings.routes.lastfm.description", sectionKey: "settings.routes.integrations.title" },
+  { id: "lastfm-scrobble", route: "/settings/lastfm", highlight: "scrobble", titleKey: "settings.routes.lastfm.title", descriptionKey: "settings.routes.lastfm.description", sectionKey: "settings.routes.integrations.title" },
+  { id: "lastfm-scrobble-point", route: "/settings/lastfm", highlight: "scrobblePoint", titleKey: "Scrobble Point", descriptionKey: "Tracks won't be scrobbled before elapsed time threshold.", sectionKey: "settings.routes.lastfm.title" },
+  { id: "lastfm-min-duration", route: "/settings/lastfm", highlight: "minimumTrackDuration", titleKey: "Minimum Track Duration", descriptionKey: "Tracks shorter than this will not be scrobbled.", sectionKey: "settings.routes.lastfm.title" },
+  { id: "lastfm-clear-data", route: "/settings/lastfm", highlight: "clearData", titleKey: "Clear Last.fm Data", descriptionKey: "Remove saved session and scrobble settings.", sectionKey: "settings.routes.lastfm.title" },
+  { id: "backup-folder", route: "/settings/backup", highlight: "folder", titleKey: "settings.autoBackup.targetFolder", descriptionKey: "settings.autoBackup.folderSet", sectionKey: "settings.backup.sections.storage" },
+  { id: "backup-manual", route: "/settings/backup", highlight: "manual", titleKey: "settings.backup.backup", descriptionKey: "settings.backup.backupDescription", sectionKey: "settings.backup.sections.manual" },
+  { id: "backup-restore", route: "/settings/backup", highlight: "restore", titleKey: "settings.backup.restore", descriptionKey: "settings.backup.restoreDescription", sectionKey: "settings.backup.sections.manual" },
+  { id: "backup-auto", route: "/settings/auto-backup", titleKey: "settings.autoBackup.title", descriptionKey: "settings.autoBackup.enabledDescription", sectionKey: "settings.backup.sections.automatic" },
+  { id: "backup-auto-folder", route: "/settings/auto-backup", highlight: "targetFolder", titleKey: "settings.autoBackup.targetFolder", descriptionKey: "settings.autoBackup.folderSet", sectionKey: "settings.backup.sections.automatic" },
+  { id: "advanced-log-level", route: "/settings/log-level", titleKey: "settings.routes.logLevel.title", descriptionKey: "settings.routes.logLevel.description", sectionKey: "settings.advanced.sections.logs" },
+  { id: "advanced-whats-new", route: "/settings/whats-new", titleKey: "settings.about.whatsNew", descriptionKey: "settings.about.whatsNewDescription", sectionKey: "settings.about.sections.updates" },
+  { id: "about-open-source-licenses", route: "/settings/open-source-licenses", titleKey: "settings.about.openSourceLicenses", descriptionKey: "settings.about.openSourceLicensesDescription", sectionKey: "settings.about.sections.project" },
+  { id: "advanced-crash-logs", route: "/settings/advanced", highlight: "shareCrashLogs", titleKey: "settings.advanced.shareCrashLogs", descriptionKey: "settings.advanced.shareCrashLogsDescription", sectionKey: "settings.advanced.sections.logs" },
+  { id: "advanced-history", route: "/settings/advanced", highlight: "resetHistory", titleKey: "settings.advanced.resetListeningHistory", descriptionKey: "settings.advanced.resetListeningHistoryDescription", sectionKey: "settings.advanced.sections.history" },
+  { id: "advanced-battery", route: "/settings/advanced", highlight: "batteryOptimization", titleKey: "settings.advanced.disableBatteryOptimization", descriptionKey: "settings.advanced.disableBatteryOptimizationAndroid", sectionKey: "settings.advanced.sections.background" },
+  { id: "advanced-dont-kill-my-app", route: "/settings/advanced", highlight: "dontKillMyApp", titleKey: "settings.advanced.dontKillMyApp", descriptionKey: "settings.advanced.dontKillMyAppDescription", sectionKey: "settings.advanced.sections.background" },
+  { id: "advanced-onboarding", route: "/settings/advanced", highlight: "restartOnboarding", titleKey: "settings.advanced.restartOnboarding", descriptionKey: "settings.advanced.restartOnboardingDescription", sectionKey: "settings.advanced.sections.onboarding" },
+  { id: "about-update", route: "/settings/about", highlight: "updates", titleKey: "settings.about.checkForUpdates", descriptionKey: "settings.about.checkForUpdatesDescription", sectionKey: "settings.about.sections.updates" },
+  { id: "about-preview", route: "/settings/about", highlight: "previewReleases", titleKey: "settings.advanced.joinPreviewReleases", descriptionKey: "settings.advanced.joinPreviewReleasesEnabled", sectionKey: "settings.about.sections.updates" },
+  { id: "about-whats-new", route: "/settings/whats-new", titleKey: "settings.about.whatsNew", descriptionKey: "settings.about.whatsNewDescription", sectionKey: "settings.about.sections.updates" },
+  { id: "about-github", route: "/settings/about", titleKey: "settings.about.github", descriptionKey: "settings.about.repositoryDescription", sectionKey: "settings.about.sections.project" },
+  { id: "about-translate", route: "/settings/about", titleKey: "settings.about.helpTranslate", descriptionKey: "settings.about.helpTranslateDescription", sectionKey: "settings.about.sections.project" },
+  { id: "about-licenses", route: "/settings/open-source-licenses", titleKey: "settings.about.openSourceLicenses", descriptionKey: "settings.about.openSourceLicensesDescription", sectionKey: "settings.about.sections.project" },
+]

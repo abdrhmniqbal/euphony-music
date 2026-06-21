@@ -6,9 +6,9 @@
  * Side Effects: Opens dependency repository links in external browser and controls bottom sheet visibility.
  */
 
-import { BottomSheet, ListGroup, PressableFeedback } from "heroui-native"
+import { BottomSheet, Button, ListGroup } from "heroui-native"
 import * as React from "react"
-import { BottomSheetFooter, BottomSheetScrollView } from "@gorhom/bottom-sheet"
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
 import { Linking, ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
@@ -26,7 +26,7 @@ export default function OpenSourceLicensesSettingsScreen() {
   const { t } = useTranslation()
   const entries = licenses as OpenSourceLicenseItem[]
   const [selectedEntry, setSelectedEntry] = React.useState<OpenSourceLicenseItem | null>(null)
-  const snapPoints = React.useMemo(() => ["45%", "90%"], [])
+  const snapPoints = React.useMemo(() => ["72%", "92%"], [])
   const isSheetOpen = selectedEntry !== null
 
   return (
@@ -83,50 +83,69 @@ export default function OpenSourceLicensesSettingsScreen() {
             enableOverDrag={false}
             enableDynamicSizing={false}
             contentContainerClassName="h-full px-0"
-            handleComponent={() => null}
             className="gap-2"
-            backgroundClassName="bg-background"
+            backgroundClassName="bg-surface"
           >
-            <View className="flex-row items-center justify-between gap-4 px-4 pb-2">
-              <BottomSheet.Title className="flex-1 text-xl font-semibold">
-                {selectedEntry?.name || t("common.unknown")}
-              </BottomSheet.Title>
-              <BottomSheet.Close />
-            </View>
-
             <BottomSheetScrollView
               contentContainerClassName="px-4 pb-safe-offset-16"
               showsVerticalScrollIndicator={false}
             >
-              <Text className="text-sm text-muted">
-                v{selectedEntry?.version || t("common.unknown")}
-              </Text>
-              <Text className="mt-1 text-sm text-muted">
-                {selectedEntry?.licenses || t("common.unknown")}
-              </Text>
+              <View className="gap-5 pb-4">
+                <View className="gap-2">
+                  <Text className="text-2xl font-semibold leading-8 text-foreground">
+                    {selectedEntry?.name || t("common.unknown")}
+                  </Text>
+                  <View className="flex-row flex-wrap gap-2">
+                    <View className="rounded-full bg-background px-3 py-1.5">
+                      <Text className="text-xs font-medium text-muted">
+                        v{selectedEntry?.version || t("common.unknown")}
+                      </Text>
+                    </View>
+                    <View className="rounded-full bg-background px-3 py-1.5">
+                      <Text className="text-xs font-medium text-muted">
+                        {selectedEntry?.licenses || t("common.unknown")}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
 
-              {selectedEntry?.repository ? (
-                <PressableFeedback
-                  onPress={() => {
-                    void Linking.openURL(selectedEntry.repository)
-                  }}
-                  className="mt-2"
-                >
-                  <Text className="text-sm text-accent">{selectedEntry.repository}</Text>
-                </PressableFeedback>
-              ) : null}
+                {selectedEntry?.repository ? (
+                  <View className="gap-2">
+                    <Text className="px-1 text-xs font-semibold uppercase text-muted">
+                      {t("settings.about.licenseRepository", { defaultValue: "Repository" })}
+                    </Text>
+                    <Button
+                      onPress={() => {
+                        void Linking.openURL(selectedEntry.repository)
+                      }}
+                    >
+                      {t("settings.about.viewRepository", { defaultValue: "View on repository" })}
+                    </Button>
+                    <Text className="px-1 text-xs leading-5 text-muted" numberOfLines={2}>
+                      {selectedEntry.repository}
+                    </Text>
+                  </View>
+                ) : null}
 
-              {selectedEntry?.licenseText ? (
-                <Text className="mt-4 text-sm leading-5 text-foreground">
-                  {selectedEntry.licenseText}
-                </Text>
-              ) : (
-                <Text className="mt-4 text-xs text-muted">
-                  {t("settings.about.licenseTextUnavailable", {
-                    defaultValue: "License text unavailable.",
-                  })}
-                </Text>
-              )}
+                <View className="gap-2">
+                  <Text className="px-1 text-xs font-semibold uppercase text-muted">
+                    {t("settings.about.licenseText", { defaultValue: "License Text" })}
+                  </Text>
+                  <View className="rounded-2xl border border-border bg-background p-4">
+                    {selectedEntry?.licenseText ? (
+                      <Text className="text-xs leading-5 text-foreground">
+                        {selectedEntry.licenseText}
+                      </Text>
+                    ) : (
+                      <Text className="text-xs leading-5 text-muted">
+                        {t("settings.about.licenseTextUnavailable", {
+                          defaultValue: "License text unavailable.",
+                        })}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              </View>
             </BottomSheetScrollView>
           </BottomSheet.Content>
         </BottomSheet.Portal>

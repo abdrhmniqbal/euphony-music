@@ -1,7 +1,7 @@
 import { BottomSheet, Button, ListGroup, Separator, Slider, Switch } from "heroui-native"
 
 import { useEffect, useMemo, useState } from "react"
-import { ScrollView, Text, View } from "react-native"
+import { Text, View } from "react-native"
 
 import {
   connectLastFmWithCredentials,
@@ -12,6 +12,7 @@ import {
   type LastFmIntegrationState,
 } from "@/modules/settings/lastfm-integration"
 import { BottomSheetInput } from "@/components/ui/bottom-sheet-input"
+import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
 import { showAppToast } from "@/modules/ui/toast"
 
 export default function LastFmSettingsScreen() {
@@ -119,20 +120,22 @@ export default function LastFmSettingsScreen() {
 
   return (
     <>
-      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="gap-5 px-4 py-4">
+      <SettingsScrollView>
           <ListGroup>
-            <ListGroup.Item onPress={() => setIsAuthSheetOpen(true)}>
+            <SettingsHighlight id="connection">
+              <ListGroup.Item onPress={() => setIsAuthSheetOpen(true)}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>Last.fm</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>{connectionDescription}</ListGroup.ItemDescription>
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
-            </ListGroup.Item>
+              </ListGroup.Item>
+            </SettingsHighlight>
           </ListGroup>
 
           <ListGroup>
-            <ListGroup.Item disabled={!state.isConnected} className={!state.isConnected ? "opacity-50" : ""}>
+            <SettingsHighlight id="scrobble">
+              <ListGroup.Item disabled={!state.isConnected} className={!state.isConnected ? "opacity-50" : ""}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>Scrobble Tracks</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>Automatically send listening history to Last.fm.</ListGroup.ItemDescription>
@@ -140,62 +143,68 @@ export default function LastFmSettingsScreen() {
               <ListGroup.ItemSuffix>
                 <Switch isDisabled={!state.isConnected} isSelected={state.scrobbleConfig.isEnabled} onSelectedChange={handleScrobbleToggle} />
               </ListGroup.ItemSuffix>
-            </ListGroup.Item>
+              </ListGroup.Item>
+            </SettingsHighlight>
             {state.scrobbleConfig.isEnabled && (
               <>
                 <Separator className="mx-4" />
-                <ListGroup.Item>
-                  <ListGroup.ItemContent>
-                    <View className="mb-1 flex-row items-center justify-between">
-                      <ListGroup.ItemTitle>Scrobble Point</ListGroup.ItemTitle>
-                      <Text className="text-sm font-medium text-foreground">{delayPercentValue}%</Text>
-                    </View>
-                    <ListGroup.ItemDescription className="mb-3">
-                      Tracks won't be scrobbled before {delayPercentValue}% elapsed time.
-                    </ListGroup.ItemDescription>
-                    <Slider minValue={15} maxValue={100} step={1} value={delayPercentValue} onChange={(value) => setDelayPercentValue(getSliderNumericValue(value, 30))} onChangeEnd={(value) => void handleScrobbleDelayChangeEnd(getSliderNumericValue(value, 30))}>
-                      <Slider.Track className="h-2 rounded-full bg-border">
-                        <Slider.Fill className="rounded-full bg-accent" />
-                        <Slider.Thumb />
-                      </Slider.Track>
-                    </Slider>
-                  </ListGroup.ItemContent>
-                </ListGroup.Item>
+                <SettingsHighlight id="scrobblePoint">
+                  <ListGroup.Item>
+                    <ListGroup.ItemContent>
+                      <View className="mb-1 flex-row items-center justify-between">
+                        <ListGroup.ItemTitle>Scrobble Point</ListGroup.ItemTitle>
+                        <Text className="text-sm font-medium text-foreground">{delayPercentValue}%</Text>
+                      </View>
+                      <ListGroup.ItemDescription className="mb-3">
+                        Tracks won't be scrobbled before {delayPercentValue}% elapsed time.
+                      </ListGroup.ItemDescription>
+                      <Slider minValue={15} maxValue={100} step={1} value={delayPercentValue} onChange={(value) => setDelayPercentValue(getSliderNumericValue(value, 30))} onChangeEnd={(value) => void handleScrobbleDelayChangeEnd(getSliderNumericValue(value, 30))}>
+                        <Slider.Track className="h-2 rounded-full bg-border">
+                          <Slider.Fill className="rounded-full bg-accent" />
+                          <Slider.Thumb />
+                        </Slider.Track>
+                      </Slider>
+                    </ListGroup.ItemContent>
+                  </ListGroup.Item>
+                </SettingsHighlight>
                 <Separator className="mx-4" />
-                <ListGroup.Item>
-                  <ListGroup.ItemContent>
-                    <View className="mb-1 flex-row items-center justify-between">
-                      <ListGroup.ItemTitle>Minimum Track Duration</ListGroup.ItemTitle>
-                      <Text className="text-sm font-medium text-foreground">{durationSecondsValue}s</Text>
-                    </View>
-                    <ListGroup.ItemDescription className="mb-3">
-                      Tracks shorter than this will not be scrobbled.
-                    </ListGroup.ItemDescription>
-                    <Slider minValue={10} maxValue={120} step={5} value={durationSecondsValue} onChange={(value) => setDurationSecondsValue(getSliderNumericValue(value, 30))} onChangeEnd={(value) => void handleMinimumDurationChangeEnd(getSliderNumericValue(value, 30))}>
-                      <Slider.Track className="h-2 rounded-full bg-border">
-                        <Slider.Fill className="rounded-full bg-accent" />
-                        <Slider.Thumb />
-                      </Slider.Track>
-                    </Slider>
-                  </ListGroup.ItemContent>
-                </ListGroup.Item>
+                <SettingsHighlight id="minimumTrackDuration">
+                  <ListGroup.Item>
+                    <ListGroup.ItemContent>
+                      <View className="mb-1 flex-row items-center justify-between">
+                        <ListGroup.ItemTitle>Minimum Track Duration</ListGroup.ItemTitle>
+                        <Text className="text-sm font-medium text-foreground">{durationSecondsValue}s</Text>
+                      </View>
+                      <ListGroup.ItemDescription className="mb-3">
+                        Tracks shorter than this will not be scrobbled.
+                      </ListGroup.ItemDescription>
+                      <Slider minValue={10} maxValue={120} step={5} value={durationSecondsValue} onChange={(value) => setDurationSecondsValue(getSliderNumericValue(value, 30))} onChangeEnd={(value) => void handleMinimumDurationChangeEnd(getSliderNumericValue(value, 30))}>
+                        <Slider.Track className="h-2 rounded-full bg-border">
+                          <Slider.Fill className="rounded-full bg-accent" />
+                          <Slider.Thumb />
+                        </Slider.Track>
+                      </Slider>
+                    </ListGroup.ItemContent>
+                  </ListGroup.Item>
+                </SettingsHighlight>
               </>
             )}
           </ListGroup>
 
           {state.isConnected ? (
             <ListGroup>
-              <ListGroup.Item onPress={handleForgetCredentials}>
+              <SettingsHighlight id="clearData">
+                <ListGroup.Item onPress={handleForgetCredentials}>
                 <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>Clear Last.fm Data</ListGroup.ItemTitle>
                   <ListGroup.ItemDescription>Remove saved session and scrobble settings.</ListGroup.ItemDescription>
                 </ListGroup.ItemContent>
-              </ListGroup.Item>
+                </ListGroup.Item>
+              </SettingsHighlight>
             </ListGroup>
           ) : null}
 
-        </View>
-      </ScrollView>
+      </SettingsScrollView>
 
       <BottomSheet isOpen={isAuthSheetOpen} onOpenChange={setIsAuthSheetOpen}>
         <BottomSheet.Portal>
