@@ -196,21 +196,22 @@ export default function ArtistDetailsScreen() {
   })
   const { data: isArtistFavorite = false } = useIsFavorite("artist", artistId || "")
   const isLoading = (isArtistTracksLoading || isArtistTracksFetching) && artistTracks.length === 0
-  const albumArtistTracks = artistTracks.filter((track) =>
-    trackMatchesArtistName(
-      { ...track, artist: track.albumArtist },
+  const albumArtistTracks = artistTracks.filter((track) => {
+    const primaryArtist = track.albumArtist || track.artist
+    return trackMatchesArtistName(
+      { ...track, artist: primaryArtist, albumArtist: primaryArtist },
       normalizedArtistName,
       splitMultipleValueConfig
     )
-  )
-  const featuredOnTracks = artistTracks.filter(
-    (track) =>
-      !trackMatchesArtistName(
-        { ...track, artist: track.albumArtist },
-        normalizedArtistName,
-        splitMultipleValueConfig
-      )
-  )
+  })
+  const featuredOnTracks = artistTracks.filter((track) => {
+    const primaryArtist = track.albumArtist || track.artist
+    return !trackMatchesArtistName(
+      { ...track, artist: primaryArtist, albumArtist: primaryArtist },
+      normalizedArtistName,
+      splitMultipleValueConfig
+    )
+  })
   const albums = buildArtistAlbums(albumArtistTracks)
   const featuredOnAlbums = buildArtistAlbums(featuredOnTracks)
   const sortedArtistTracks = sortTracks(artistTracks, allSortConfigs.ArtistTracks)
