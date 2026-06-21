@@ -28,12 +28,20 @@ export default function WhatsNewSettingsScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="gap-4 px-4 py-4">
-        <Text className="text-sm leading-5 text-muted">
-          {t("settings.about.whatsNewCurrentVersion", {
-            version: currentVersion || t("common.unknown"),
-          })}
-        </Text>
+      <View className="gap-5 px-4 py-4">
+        <View className="gap-1">
+          <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+            {t("settings.about.whatsNew")}
+          </Text>
+          <Text className="text-2xl font-semibold leading-8 text-foreground">
+            v{currentVersion || t("common.unknown")}
+          </Text>
+          <Text className="text-sm leading-5 text-muted">
+            {t("settings.about.whatsNewCurrentVersion", {
+              version: currentVersion || t("common.unknown"),
+            })}
+          </Text>
+        </View>
 
         {releaseNotesQuery.isPending ? (
           <Text className="text-sm text-muted">{t("settings.about.whatsNewLoading")}</Text>
@@ -44,14 +52,25 @@ export default function WhatsNewSettingsScreen() {
         ) : null}
 
         {releaseNotes.map((release) => (
-          <View key={release.version} className="border-b border-border pb-4">
-            <Text className="text-base font-semibold text-foreground">
-              {release.releaseName}
-              {release.prerelease ? ` · ${t("updates.previewRelease")}` : ""}
-            </Text>
-            <View className="mt-3">
-              <ReleaseNotesMarkdown markdown={release.body.trim() || t("updates.noReleaseNotes")} />
+          <View key={release.version} className="gap-3 rounded-2xl border border-border bg-surface px-4 py-4">
+            <View className="gap-2">
+              <View className="flex-row items-start gap-3">
+                <Text className="flex-1 text-xl font-semibold leading-7 text-foreground">
+                  {release.releaseName}
+                </Text>
+                {release.prerelease ? (
+                  <View className="rounded-full bg-background px-3 py-1.5">
+                    <Text className="text-xs font-medium text-muted">
+                      {t("updates.previewRelease")}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+              <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
+                {t("settings.about.releaseNotesLabel", { defaultValue: "Release Notes" })}
+              </Text>
             </View>
+            <ReleaseNotesMarkdown markdown={release.body.trim() || t("updates.noReleaseNotes")} />
           </View>
         ))}
       </View>

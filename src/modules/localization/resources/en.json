@@ -725,6 +725,7 @@
       "updateCheckFailedDescription": "Check your connection and try again.",
       "whatsNew": "$t(term.whatsNewLabel)",
       "whatsNewDescription": "Release notes up to your installed version.",
+      "releaseNotesLabel": "Release Notes",
       "whatsNewCurrentVersion": "Showing release notes through v{{version}}.",
       "whatsNewLoading": "Loading release notes...",
       "whatsNewEmpty": "No release notes found for this version.",
