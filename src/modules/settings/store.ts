@@ -26,6 +26,7 @@ import type {
   SplitMultipleValueConfig,
   TrackDurationFilterConfig,
   ThemeConfig,
+  AutoBackupConfig,
 } from "./types";
 
 const DEFAULT_LANGUAGE_CODE: LanguageCode = "en";
@@ -80,6 +81,12 @@ const DEFAULT_SPLIT_MULTIPLE_VALUE_CONFIG: SplitMultipleValueConfig = {
 const DEFAULT_THEME_CONFIG: ThemeConfig = {
   themeId: "default",
 };
+const DEFAULT_AUTO_BACKUP_CONFIG: AutoBackupConfig = {
+  enabled: false,
+  intervalHours: 24,
+  lastBackupAt: 0,
+  targetDirectoryUri: null,
+};
 
 interface SettingsState {
   _hasHydrated: boolean;
@@ -96,6 +103,7 @@ interface SettingsState {
   splitMultipleValueConfig: SplitMultipleValueConfig;
   themeConfig: ThemeConfig;
   libraryTabsConfig: LibraryTabsConfig;
+  autoBackupConfig: AutoBackupConfig;
 }
 
 export const useSettingsStore = create<SettingsState>(() => ({
@@ -113,6 +121,7 @@ export const useSettingsStore = create<SettingsState>(() => ({
   splitMultipleValueConfig: DEFAULT_SPLIT_MULTIPLE_VALUE_CONFIG,
   themeConfig: DEFAULT_THEME_CONFIG,
   libraryTabsConfig: getDefaultLibraryTabsConfig(),
+  autoBackupConfig: DEFAULT_AUTO_BACKUP_CONFIG,
 }));
 
 export function getDefaultLanguageCode() {
@@ -169,4 +178,8 @@ export function getDefaultSplitMultipleValueConfig() {
 
 export function getDefaultThemeConfig() {
   return DEFAULT_THEME_CONFIG;
+}
+
+export function getDefaultAutoBackupConfig() {
+  return DEFAULT_AUTO_BACKUP_CONFIG;
 }

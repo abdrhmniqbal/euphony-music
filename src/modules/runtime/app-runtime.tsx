@@ -33,6 +33,7 @@ import { ensureIndexerNotificationsConfigLoaded } from "@/modules/settings/index
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import { ensureTrackDurationFilterConfigLoaded } from "@/modules/settings/track-duration-filter"
 import { ensureThemeConfigLoaded } from "@/modules/settings/theme"
+import { ensureAutoBackupConfigLoaded } from "@/modules/settings/auto-backup"
 import { updateSettingsState } from "@/modules/settings/store"
 import AudioBrowser from "react-native-audio-browser"
 
@@ -59,6 +60,7 @@ async function preloadSettings() {
     ensureSplitMultipleValueConfigLoaded(),
     ensureThemeConfigLoaded(),
     ensureTrackDurationFilterConfigLoaded(),
+    ensureAutoBackupConfigLoaded(),
   ])
   updateSettingsState({ _hasHydrated: true })
 }
@@ -170,6 +172,10 @@ async function startRuntime() {
   AudioBrowser.handleRemoteSeek((e: { position: number }) => {
     void seekTo(e.position)
   })
+
+  // Trigger auto backup check
+  const { runAutoBackupCheck } = await import("@/modules/settings/auto-backup")
+  void runAutoBackupCheck()
 
   AudioBrowser.onActiveTrackChanged.addListener(onActiveTrackChanged)
   AudioBrowser.onProgressUpdated.addListener(onProgressUpdated)

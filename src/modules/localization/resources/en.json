@@ -464,6 +464,10 @@
       "backup": {
         "title": "Backup & Restore",
         "description": "Export and import app settings and preferences."
+      },
+      "autoBackup": {
+        "title": "Automatic Backup",
+        "description": "Schedule backups to Startune/Music/AutoBackup."
       }
     },
     "appearance": {
@@ -713,6 +717,19 @@
       "openSourceLicensesDescription": "Third-party packages and license texts.",
       "openSourceLicensesEmpty": "No generated licenses yet. Run generate:licenses script.",
       "licenseTextUnavailable": "License text unavailable."
+    },
+    "autoBackup": {
+      "title": "Automatic Backup",
+      "enableAutoBackup": "Automatic Backup",
+      "enableAutoBackupDescription": "Back up preferences automatically on the selected schedule.",
+      "targetFolder": "Backup Folder",
+      "folderSet": "Folder selected. Backups save inside that folder.",
+      "folderUnset": "Choose Startune/Music/AutoBackup.",
+      "every12Hours": "Every 12 hours",
+      "every24Hours": "Every day",
+      "every3Days": "Every 3 days",
+      "everyWeek": "Every week",
+      "customInterval": "Custom interval"
     }
   }
 }

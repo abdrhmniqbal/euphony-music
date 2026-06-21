@@ -29,7 +29,8 @@ export type SettingsRouteName =
   | "theme"
   | "library-tabs"
   | "integrations"
-  | "backup";
+  | "backup"
+  | "auto-backup";
 
 export interface SettingsRouteDefinition {
   name: SettingsRouteName;
@@ -111,4 +112,9 @@ export interface ThemeConfig {
   themeId: string;
 }
 
-export type { LibraryTabsConfig } from "@/modules/library/tabs";
+export interface AutoBackupConfig {
+  enabled: boolean;
+  intervalHours: number;
+  lastBackupAt: number;
+  targetDirectoryUri: string | null;
+}

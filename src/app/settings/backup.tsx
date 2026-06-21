@@ -5,10 +5,12 @@ import { useState } from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
+import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { backupPreferencesToFile, restorePreferencesFromFile } from "@/modules/settings/backup"
 import { showAppToast } from "@/modules/ui/toast"
 
 export default function BackupSettingsScreen() {
+  const router = useRouter()
   const { t } = useTranslation()
   const [isBackupDialogOpen, setIsBackupDialogOpen] = useState(false)
   const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false)
@@ -62,6 +64,14 @@ export default function BackupSettingsScreen() {
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>Restore Preferences</ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>Import settings from backup file.</ListGroup.ItemDescription>
+              </ListGroup.ItemContent>
+              <ListGroup.ItemSuffix />
+            </ListGroup.Item>
+            <Separator className="mx-4" />
+            <ListGroup.Item onPress={() => router.push("/settings/auto-backup")}>
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>Automatic Backup</ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>Configure scheduled backup times.</ListGroup.ItemDescription>
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
