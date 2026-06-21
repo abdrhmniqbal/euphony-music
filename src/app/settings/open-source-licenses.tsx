@@ -131,7 +131,7 @@ export default function OpenSourceLicensesSettingsScreen() {
                   <Text className="px-1 text-xs font-semibold uppercase text-muted">
                     {t("settings.about.licenseText", { defaultValue: "License Text" })}
                   </Text>
-                  <View className="rounded-2xl border border-border bg-background p-4">
+                  <View className="rounded-2xl bg-background p-4">
                     {selectedEntry?.licenseText ? (
                       <Text className="text-xs leading-5 text-foreground">
                         {selectedEntry.licenseText}

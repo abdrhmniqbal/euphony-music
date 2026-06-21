@@ -11,6 +11,7 @@ import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import { ReleaseNotesMarkdown } from "@/components/blocks/release-notes-markdown"
+import { Separator } from "heroui-native"
 import {
   getChangelogReleaseNotesUntilCurrent,
   getCurrentAppVersion,
@@ -51,15 +52,16 @@ export default function WhatsNewSettingsScreen() {
           <Text className="text-sm text-muted">{t("settings.about.whatsNewEmpty")}</Text>
         ) : null}
 
-        {releaseNotes.map((release) => (
-          <View key={release.version} className="gap-3 rounded-2xl border border-border bg-surface px-4 py-4">
+        {releaseNotes.map((release, index) => (
+          <View key={release.version} className="gap-3 pt-2">
+            {index > 0 && <Separator className="my-2" />}
             <View className="gap-2">
               <View className="flex-row items-start gap-3">
                 <Text className="flex-1 text-xl font-semibold leading-7 text-foreground">
                   {release.releaseName}
                 </Text>
                 {release.prerelease ? (
-                  <View className="rounded-full bg-background px-3 py-1.5">
+                  <View className="rounded-full bg-surface px-3 py-1.5">
                     <Text className="text-xs font-medium text-muted">
                       {t("updates.previewRelease")}
                     </Text>
