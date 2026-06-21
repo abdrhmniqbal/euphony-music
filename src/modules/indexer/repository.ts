@@ -11,6 +11,7 @@ import { and, eq, inArray, sql } from "drizzle-orm"
 
 import * as MediaLibrary from "expo-media-library/legacy"
 import { db } from "@/db/client"
+import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts-repository"
 import { albums, artists, genres, trackArtists, trackGenres, tracks } from "@/db/schema"
 import { GENRE_COLORS, GENRE_SHAPES, type GenreShape } from "@/modules/genres/constants"
 import { waitForIndexerResume } from "@/modules/indexer/runtime"
@@ -37,7 +38,7 @@ import { normalizeMetadata, normalizeText } from "./normalization"
 import { saveIndexerRunSnapshot } from "./run-snapshot"
 import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
 import { chunkArray, wait, yieldToEventLoop } from "./batch-utils"
-import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts-repository"
+import { refreshLastFmArtistMetadataForIndexedArtists } from "@/modules/library/lastfm"
 import {
   processDeletedTracksInScopes,
   hardDeleteSoftDeletedTracksInScopes,
@@ -231,6 +232,9 @@ export async function scanMediaLibrary(
   await updateAlbumCounts()
   if (signal?.aborted) return
   await updateGenreCounts()
+  if (signal?.aborted) return
+
+  await refreshLastFmArtistMetadataForIndexedArtists(signal)
   if (signal?.aborted) return
 
   onProgress?.({

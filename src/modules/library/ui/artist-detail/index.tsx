@@ -64,7 +64,6 @@ import { useIsFavorite } from "@/modules/favorites/queries"
 import { ALBUM_SORT_OPTIONS, TRACK_SORT_OPTIONS } from "@/modules/library/sort-constants"
 import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort-store"
 import { sortAlbums, sortTracks } from "@/modules/library/sort-utils"
-import { useLastFmArtistInfo } from "@/modules/library/lastfm"
 import { useArtistByName, useTracksByArtistName } from "@/modules/library/queries"
 import { useCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
 import {
@@ -188,9 +187,8 @@ export default function ArtistDetailsScreen() {
   )
   const artistTracks = mergeArtistTracks(artistTracksFromQuery, fallbackArtistTracks)
   const { data: artistRecord } = useArtistByName(artistName)
-  const { data: lastFmArtistInfo } = useLastFmArtistInfo(artistName)
   const artistId = artistRecord?.id
-  const artistImage = lastFmArtistInfo?.image || artistRecord?.artwork || undefined
+  const artistImage = artistRecord?.artwork || undefined
   const artistTransitionId = resolveArtistTransitionId({
     transitionId,
     id: artistId,
@@ -488,7 +486,9 @@ export default function ArtistDetailsScreen() {
                 </View>
               )}
 
-              <ArtistInfoSection title={t("library.artistInfo", "About")} bio={lastFmArtistInfo?.bio} />
+              {artistRecord?.bio && (
+                <ArtistInfoSection title={t("library.artistInfo", "About")} bio={artistRecord.bio} />
+              )}
             </Animated.View>
           </ScrollView>
         ) : activeView === "tracks" ? (

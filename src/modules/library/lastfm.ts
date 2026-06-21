@@ -1,54 +1,45 @@
-import { useQuery } from "@tanstack/react-query"
-import { queryClient } from "@/lib/tanstack-query"
 import * as SecureStore from "expo-secure-store"
-import { File, Paths } from "expo-file-system"
+import { gt, sql } from "drizzle-orm"
+import { db } from "@/db/client"
+import { artists } from "@/db/schema"
 
 export interface LastFmArtistInfo {
   bio?: string
   image?: string
 }
 
-const CACHE_FILE = new File(Paths.cache, "lastfm-artist-cache.json")
+function extractMetaImage(html: string) {
+  const patterns = [
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["'][^>]*>/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["'][^>]*>/i,
+  ]
 
-interface CacheMap {
-  [artistName: string]: {
-    data: LastFmArtistInfo
-    timestamp: number
-  }
-}
-
-async function loadCacheMap(): Promise<CacheMap> {
-  try {
-    if (!CACHE_FILE.exists) return {}
-    const text = await CACHE_FILE.text()
-    return JSON.parse(text) as CacheMap
-  } catch {
-    return {}
-  }
-}
-
-async function saveCacheMap(map: CacheMap) {
-  try {
-    if (!CACHE_FILE.exists) {
-      CACHE_FILE.create({ intermediates: true })
+  for (const pattern of patterns) {
+    const match = html.match(pattern)
+    const image = match?.[1]?.replace(/&amp;/g, "&").trim()
+    if (image) {
+      return image
     }
-    await CACHE_FILE.write(JSON.stringify(map), { encoding: "utf8" })
+  }
+
+  return undefined
+}
+
+async function fetchLastFmPageImage(artistName: string, artistUrl?: string) {
+  const url = artistUrl || `https://www.last.fm/music/${encodeURIComponent(artistName)}`
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return undefined
+
+    return extractMetaImage(await response.text())
   } catch {
-    // Ignore cache write errors
+    return undefined
   }
 }
 
 export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmArtistInfo> {
-  const normalizedName = artistName.trim().toLowerCase()
-  const cache = await loadCacheMap()
-  
-  // 7 days cache validity for artists
-  const now = Date.now()
-  const cached = cache[normalizedName]
-  if (cached && now - cached.timestamp < 7 * 24 * 60 * 60 * 1000) {
-    return cached.data
-  }
-
   const storedKey = await SecureStore.getItemAsync("lastfm.apiKey")
   const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY || storedKey
 
@@ -71,13 +62,17 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
     const bioSummary = artist.bio?.summary
     const bioText = bioSummary ? bioSummary.replace(/<a\b[^>]*>(.*?)<\/a>/gi, "").trim() : undefined
     
-    // Extract image. Last.fm provides an array of images. We want the mega or large one.
     const images = artist.image
     let imageUrl: string | undefined
     if (Array.isArray(images) && images.length > 0) {
       const candidates = ["mega", "extralarge", "large", "medium", "small"]
       for (const size of candidates) {
-        const match = images.find((img) => img.size === size && typeof img?.["#text"] === "string" && img["#text"].trim().length > 0)
+        const match = images.find(
+          (img) =>
+            img.size === size &&
+            typeof img?.["#text"] === "string" &&
+            img["#text"].trim().length > 0
+        )
         if (match?.["#text"]) {
           imageUrl = match["#text"]
           break
@@ -92,29 +87,45 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
     if (!imageUrl && typeof artist?.image === "string" && artist.image.trim().length > 0) {
       imageUrl = artist.image
     }
+
+    if (!imageUrl) {
+      imageUrl = await fetchLastFmPageImage(artistName, artist.url)
+    }
     
-    const result = {
+    return {
       bio: bioText,
       image: imageUrl || undefined,
     }
-    
-    cache[normalizedName] = { data: result, timestamp: now }
-    await saveCacheMap(cache)
-    
-    return result
   } catch {
     return {}
   }
 }
 
-export function useLastFmArtistInfo(artistName: string) {
-  return useQuery(
-    {
-      queryKey: ["lastfm", "artist", artistName.trim().toLowerCase()],
-      queryFn: async () => await fetchLastFmArtistInfo(artistName),
-      enabled: artistName.trim().length > 0,
-      staleTime: 24 * 60 * 60 * 1000, // 24 hours
+export async function refreshLastFmArtistMetadataForIndexedArtists(signal?: AbortSignal) {
+  const rows = await db.query.artists.findMany({
+    where: gt(artists.trackCount, 0),
+    columns: {
+      id: true,
+      name: true,
+      artwork: true,
+      bio: true,
     },
-    queryClient
-  )
+    orderBy: sql`lower(coalesce(${artists.name}, ''))`,
+  })
+
+  for (const artist of rows) {
+    if (signal?.aborted) return
+
+    const info = await fetchLastFmArtistInfo(artist.name)
+    if (!info.bio && !info.image) continue
+
+    await db
+      .update(artists)
+      .set({
+        bio: info.bio || artist.bio || null,
+        artwork: info.image || artist.artwork || null,
+        updatedAt: Date.now(),
+      })
+      .where(sql`${artists.id} = ${artist.id}`)
+  }
 }

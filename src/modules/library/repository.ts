@@ -94,6 +94,7 @@ export async function getArtistByName(name: string) {
       id: true,
       name: true,
       artwork: true,
+      bio: true,
       createdAt: true,
       trackCount: true,
     },
@@ -103,6 +104,18 @@ export async function getArtistByName(name: string) {
 export async function getArtistById(id: string) {
   return db.query.artists.findFirst({
     where: and(eq(artists.id, id), gt(artists.trackCount, 0)),
+    columns: {
+      id: true,
+      name: true,
+      artwork: true,
+      bio: true,
+      trackCount: true,
+      albumCount: true,
+      isFavorite: true,
+      favoritedAt: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     with: {
       albums: {
         where: gt(albums.trackCount, 0),
