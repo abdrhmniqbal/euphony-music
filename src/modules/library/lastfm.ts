@@ -69,6 +69,7 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
     const bioSummary = artist.bio?.summary
     const bioText = bioSummary ? bioSummary.replace(/<a\b[^>]*>(.*?)<\/a>/gi, "").trim() : undefined
     
+    let artistUrl = artist.url
     const images = artist.image
     let imageUrl: string | undefined
     if (Array.isArray(images) && images.length > 0) {
@@ -95,8 +96,15 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
       imageUrl = artist.image
     }
 
+    // Last.fm's API frequently returns empty star placeholder images inside the image array.
+    // e.g. "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png"
+    // If we only get a placeholder or no API image, rely on the page scraper.
+    if (imageUrl && imageUrl.includes("2a96cbd8b46e442fc41c2b86b821562f")) {
+      imageUrl = undefined
+    }
+
     if (!imageUrl) {
-      imageUrl = await fetchLastFmPageImage(artistName, artist.url)
+      imageUrl = await fetchLastFmPageImage(artistName, artistUrl)
     }
     
     return {
