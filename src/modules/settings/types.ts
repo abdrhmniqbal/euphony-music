@@ -8,7 +8,6 @@
 
 import type { LanguageCode } from "@/modules/localization/types";
 
-import type { LibraryTabsConfig } from "@/modules/library/tabs";
 
 export type SettingsRouteName =
   | "index"
@@ -111,6 +110,8 @@ export interface SplitMultipleValueConfig {
 export interface ThemeConfig {
   themeId: string;
 }
+
+export type { LibraryTabsConfig } from "@/modules/library/tabs";
 
 export interface AutoBackupConfig {
   enabled: boolean;

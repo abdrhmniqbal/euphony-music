@@ -15,7 +15,9 @@ export function ArtistInfoSection({ title, bio }: ArtistInfoSectionProps) {
   return (
     <View className="mt-8 px-6">
       <SectionTitle title={title} />
-      <Text className="text-base leading-6 text-muted">{bio}</Text>
+      <View className="overflow-hidden rounded-2xl bg-surface p-4">
+        <Text className="text-sm leading-5 text-foreground">{bio}</Text>
+      </View>
     </View>
   )
 }

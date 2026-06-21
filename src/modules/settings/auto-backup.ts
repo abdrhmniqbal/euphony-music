@@ -88,7 +88,7 @@ export async function runAutoBackupCheck(force = false): Promise<boolean> {
     
     const filename = `startune-backup-${now}.json`
     const createdFile = targetDir.createFile(filename, "application/json")
-    createdFile.write(content, { encoding: "utf8" })
+    await createdFile.write(content, { encoding: "utf8" })
     
     // Save state
     await setAutoBackupConfig({ lastBackupAt: now })

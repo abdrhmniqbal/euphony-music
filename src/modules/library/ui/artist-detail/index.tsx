@@ -488,7 +488,7 @@ export default function ArtistDetailsScreen() {
                 </View>
               )}
 
-              <ArtistInfoSection title={t("library.artistInfo", "Artist info")} bio={lastFmArtistInfo?.bio} />
+              <ArtistInfoSection title={t("library.artistInfo", "About")} bio={lastFmArtistInfo?.bio} />
             </Animated.View>
           </ScrollView>
         ) : activeView === "tracks" ? (
