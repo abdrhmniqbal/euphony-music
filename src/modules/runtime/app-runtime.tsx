@@ -12,6 +12,7 @@ import { startIndexing } from "@/modules/indexer/service"
 import { logError, logInfo } from "@/modules/logging/service"
 import { ensureLoggingConfigLoaded } from "@/modules/logging/store"
 import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-subscriber"
+import { handlePlaybackProgress, handleTrackChanged as handleLastFmTrackChanged } from "@/modules/player/lastfm-scrobbler"
 import { playNext, pauseTrack, resumeTrack, playPrevious, seekTo } from "@/modules/player/controls"
 import {
   evaluateSleepTimerOnProgress,
@@ -99,9 +100,11 @@ function onActiveTrackChanged(e: {
 }) {
   if (e.index === undefined || e.track?.src === undefined) return
   const activeTrackUri = decodeURIComponent(e.track.src)
-  const currentTrackId = playbackStore.getState().activeTrack?.id ?? null
+  const currentTrack = playbackStore.getState().activeTrack ?? undefined
+  const currentTrackId = currentTrack?.id ?? null
   handleSleepTimerTrackChanged(lastSleepTimerTrackId, currentTrackId)
   lastSleepTimerTrackId = currentTrackId
+  void handleLastFmTrackChanged(currentTrack)
 
   const { lastPosition } = playbackStore.getState()
   if (playCountTimeout !== null) clearTimeout(playCountTimeout)
@@ -129,7 +132,10 @@ function onActiveTrackChanged(e: {
 function onProgressUpdated(e: { position: number; duration: number }) {
   if (e.duration === 0) return
   playbackStore.setState({ lastPosition: e.position })
+  const activeTrack = playbackStore.getState().activeTrack ?? undefined
   evaluateSleepTimerOnProgress(e.position, e.duration)
+  void handleLastFmTrackChanged(activeTrack)
+  void handlePlaybackProgress(e.position, e.duration)
   void handleCrossfadeProgress(e.position, e.duration)
 }
 

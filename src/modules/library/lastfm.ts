@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store"
 import { and, gt, isNull, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { artists } from "@/db/schema"
+import { logError } from "@/modules/logging/service"
 
 export interface LastFmArtistInfo {
   bio?: string
@@ -36,17 +37,26 @@ async function fetchLastFmPageImage(artistName: string, artistUrl?: string) {
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
     })
-    if (!response.ok) return undefined
+    if (!response.ok) {
+      logError("fetchLastFmPageImage: HTTP error", undefined, { url, status: response.status })
+      return undefined
+    }
 
-    return extractMetaImage(await response.text())
-  } catch {
+    const html = await response.text()
+    const image = extractMetaImage(html)
+    if (!image) {
+      logError("fetchLastFmPageImage: no image found in meta", undefined, { url })
+    }
+    return image
+  } catch (err) {
+    logError("fetchLastFmPageImage: failed to fetch or parse", err instanceof Error ? err : new Error(String(err)), { url })
     return undefined
   }
 }
 
 export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmArtistInfo> {
   const storedKey = await SecureStore.getItemAsync("lastfm.apiKey")
-  const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY || storedKey
+  const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY?.trim() || storedKey?.trim()
 
   if (!apiKey) {
     return {
@@ -59,11 +69,22 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
       artistName
     )}&api_key=${apiKey}&autocorrect=1&format=json`
     const response = await fetch(url)
-    if (!response.ok) return {}
+    if (!response.ok) {
+      const errText = await response.text().catch(() => "")
+      logError("fetchLastFmArtistInfo: API response not ok", undefined, { status: response.status, body: errText })
+      return {
+        image: await fetchLastFmPageImage(artistName),
+      }
+    }
     
     const data = await response.json()
     const artist = data?.artist
-    if (!artist) return {}
+    if (!artist) {
+      logError("fetchLastFmArtistInfo: no artist in JSON response", undefined, { data })
+      return {
+        image: await fetchLastFmPageImage(artistName),
+      }
+    }
     
     // Extract bio
     const bioSummary = artist.bio?.summary
@@ -117,7 +138,8 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
       bio: bioText,
       image: imageUrl || undefined,
     }
-  } catch {
+  } catch (err) {
+    logError("fetchLastFmArtistInfo: general failure", err instanceof Error ? err : new Error(String(err)), { artistName })
     return {
       image: await fetchLastFmPageImage(artistName),
     }

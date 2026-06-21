@@ -1,5 +1,6 @@
 import * as Crypto from "expo-crypto"
 import * as SecureStore from "expo-secure-store"
+import { logError } from "@/modules/logging/service"
 
 export interface LastFmScrobbleConfig {
   isEnabled: boolean
@@ -25,26 +26,22 @@ interface LastFmSessionResponse {
   message?: string
 }
 
-const LASTFM_API_KEY_STORE_KEY = "lastfm.apiKey"
-const LASTFM_API_SECRET_STORE_KEY = "lastfm.apiSecret"
 const LASTFM_SESSION_KEY = "lastfm.sessionKey"
 const LASTFM_USERNAME_KEY = "lastfm.username"
 const LASTFM_SCROBBLE_ENABLED_KEY = "lastfm.scrobbleEnabled"
 const LASTFM_MINIMUM_TRACK_DURATION_KEY = "lastfm.minimumTrackDurationSeconds"
 const LASTFM_SCROBBLE_DELAY_PERCENT_KEY = "lastfm.scrobbleDelayPercent"
-const LASTFM_API_URL = "https://ws.audioscrobbler.com/2.0/"
+export const LASTFM_API_URL = "https://ws.audioscrobbler.com/2.0/"
 
 export const DEFAULT_LASTFM_SCROBBLE_CONFIG: LastFmScrobbleConfig = {
   isEnabled: false,
   minimumTrackDurationSeconds: 30,
-  scrobbleDelayPercent: 15,
+  scrobbleDelayPercent: 30,
 }
 
-async function getLastFmApiCredentials() {
-  const [apiKey, apiSecret] = await Promise.all([
-    SecureStore.getItemAsync(LASTFM_API_KEY_STORE_KEY),
-    SecureStore.getItemAsync(LASTFM_API_SECRET_STORE_KEY),
-  ])
+export async function getLastFmApiCredentials() {
+  const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY
+  const apiSecret = process.env.EXPO_PUBLIC_LASTFM_API_SECRET
 
   return {
     apiKey: apiKey || undefined,
@@ -66,7 +63,7 @@ function sanitizeScrobbleConfig(source: {
       ? Math.max(1, Math.min(3600, Math.round(minimumTrackDurationSeconds)))
       : DEFAULT_LASTFM_SCROBBLE_CONFIG.minimumTrackDurationSeconds,
     scrobbleDelayPercent: Number.isFinite(scrobbleDelayPercent)
-      ? Math.max(1, Math.min(100, Math.round(scrobbleDelayPercent)))
+      ? Math.max(15, Math.min(100, Math.round(scrobbleDelayPercent)))
       : DEFAULT_LASTFM_SCROBBLE_CONFIG.scrobbleDelayPercent,
   }
 }
@@ -122,7 +119,7 @@ export async function getLastFmIntegrationState(): Promise<LastFmIntegrationStat
   }
 }
 
-function createSignature(params: Record<string, string>, apiSecret: string) {
+export function createSignature(params: Record<string, string>, apiSecret: string) {
   const input = Object.keys(params)
     .sort()
     .map((key) => `${key}${params[key]}`)
@@ -132,25 +129,28 @@ function createSignature(params: Record<string, string>, apiSecret: string) {
 }
 
 export async function connectLastFmWithCredentials({
-  apiKey,
-  apiSecret,
   username,
   password,
 }: {
-  apiKey: string
-  apiSecret: string
   username: string
   password: string
 }): Promise<LastFmIntegrationState> {
-  const params: Record<string, string> = {
+  const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY?.trim()
+  const apiSecret = process.env.EXPO_PUBLIC_LASTFM_API_SECRET?.trim()
+
+  if (!apiKey || !apiSecret) {
+    throw new Error("Last.fm API key and secret are not configured in this app build.")
+  }
+
+  const signatureParams: Record<string, string> = {
     api_key: apiKey,
     method: "auth.getMobileSession",
     password,
     username,
   }
 
-  const apiSig = await createSignature(params, apiSecret)
-  const body = new URLSearchParams({ ...params, api_sig: apiSig, format: "json" })
+  const apiSig = await createSignature(signatureParams, apiSecret)
+  const body = new URLSearchParams({ ...signatureParams, api_sig: apiSig, format: "json" })
 
   const response = await fetch(LASTFM_API_URL, {
     method: "POST",
@@ -159,7 +159,21 @@ export async function connectLastFmWithCredentials({
   })
 
   if (!response.ok) {
-    throw new Error("Last.fm authentication request failed")
+    const errorText = await response.text().catch(() => "could not read body")
+    let lastfmMessage = "Unknown Last.fm error"
+    try {
+      const parsed = JSON.parse(errorText)
+      if (parsed?.message) lastfmMessage = parsed.message
+    } catch {
+      // ignore
+    }
+
+    logError("Last.fm authentication request failed", undefined, {
+      status: response.status,
+      body: errorText,
+      username,
+    })
+    throw new Error(`Last.fm authentication failed: ${lastfmMessage}`)
   }
 
   const data = (await response.json()) as LastFmSessionResponse
@@ -171,8 +185,6 @@ export async function connectLastFmWithCredentials({
   }
 
   await Promise.all([
-    SecureStore.setItemAsync(LASTFM_API_KEY_STORE_KEY, apiKey),
-    SecureStore.setItemAsync(LASTFM_API_SECRET_STORE_KEY, apiSecret),
     SecureStore.setItemAsync(LASTFM_SESSION_KEY, sessionKey),
     SecureStore.setItemAsync(LASTFM_USERNAME_KEY, returnedUsername),
   ])
@@ -191,8 +203,6 @@ export async function disconnectLastFm(): Promise<LastFmIntegrationState> {
 
 export async function forgetLastFmCredentials(): Promise<LastFmIntegrationState> {
   await Promise.all([
-    SecureStore.deleteItemAsync(LASTFM_API_KEY_STORE_KEY),
-    SecureStore.deleteItemAsync(LASTFM_API_SECRET_STORE_KEY),
     SecureStore.deleteItemAsync(LASTFM_SESSION_KEY),
     SecureStore.deleteItemAsync(LASTFM_USERNAME_KEY),
     SecureStore.deleteItemAsync(LASTFM_SCROBBLE_ENABLED_KEY),
