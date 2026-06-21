@@ -388,6 +388,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "libraryTabs": {
+        "title": "Library tabs"
       }
     },
     "appearance": {
@@ -485,7 +488,15 @@
       "removeSplitSymbol": "分割記号を削除",
       "addUnsplitArtist": "分割しないアーティストを追加",
       "removeUnsplitArtist": "分割しないアーティストを削除",
-      "reindexLaterAction": "いや、後で"
+      "reindexLaterAction": "いや、後で",
+      "libraryTabsDescription": "Reorder or hide tabs on your library home screen.",
+      "tabsTracks": "Tracks",
+      "tabsAlbums": "Albums",
+      "tabsArtists": "Artists",
+      "tabsGenres": "Genres",
+      "tabsPlaylists": "Playlists",
+      "tabsFolders": "Folders",
+      "tabsFavorites": "Favorites"
     },
     "audio": {
       "sections": {

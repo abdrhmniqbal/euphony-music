@@ -388,6 +388,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "libraryTabs": {
+        "title": "Library tabs"
       }
     },
     "appearance": {
@@ -485,7 +488,15 @@
       "removeSplitSymbol": "Supprimer le symbole de séparation",
       "addUnsplitArtist": "Ajouter un artiste non séparé",
       "removeUnsplitArtist": "Supprimer l'artiste non séparé",
-      "reindexLaterAction": "Non, plus tard"
+      "reindexLaterAction": "Non, plus tard",
+      "libraryTabsDescription": "Reorder or hide tabs on your library home screen.",
+      "tabsTracks": "Tracks",
+      "tabsAlbums": "Albums",
+      "tabsArtists": "Artists",
+      "tabsGenres": "Genres",
+      "tabsPlaylists": "Playlists",
+      "tabsFolders": "Folders",
+      "tabsFavorites": "Favorites"
     },
     "audio": {
       "sections": {

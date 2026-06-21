@@ -6,90 +6,115 @@
  * Side Effects: Persists library settings, shows a manual reindex dialog, and can trigger a full library reindex.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { Button, Dialog, ListGroup, Separator, Slider, Switch } from "heroui-native"
-import * as React from "react"
-import { ScrollView, Text, View } from "react-native"
-import { useTranslation } from "react-i18next"
+import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router";
+import {
+  Button,
+  Dialog,
+  ListGroup,
+  Separator,
+  Slider,
+  Switch,
+} from "heroui-native";
+import * as React from "react";
+import { ScrollView, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
-import { forceReindexLibrary } from "@/modules/indexer/service"
-import { useIndexerStore } from "@/modules/indexer/store"
-import { setAutoScanConfig } from "@/modules/settings/auto-scan"
-import { setCountAsPlayedConfig } from "@/modules/settings/count-as-played"
-import type { IndexerScanConfig } from "@/modules/settings/types"
-import { getTrackDurationFilterLabel } from "@/modules/settings/track-duration-filter"
-import { useSettingsStore } from "@/modules/settings/store"
-import { showAppToast } from "@/modules/ui/toast"
+import { forceReindexLibrary } from "@/modules/indexer/service";
+import { useIndexerStore } from "@/modules/indexer/store";
+import { setAutoScanConfig } from "@/modules/settings/auto-scan";
+import { setCountAsPlayedConfig } from "@/modules/settings/count-as-played";
+import type { IndexerScanConfig } from "@/modules/settings/types";
+import { getTrackDurationFilterLabel } from "@/modules/settings/track-duration-filter";
+import { useSettingsStore } from "@/modules/settings/store";
+import { showAppToast } from "@/modules/ui/toast";
 
 function getSliderNumericValue(value: number | number[]): number {
-  return Array.isArray(value) ? (value[0] ?? 0) : value
+  return Array.isArray(value) ? (value[0] ?? 0) : value;
 }
 
 export default function LibrarySettingsScreen() {
-  const router = useRouter()
-  const { t } = useTranslation()
-  const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
-  const indexerScanConfig = useSettingsStore((state) => state.indexerScanConfig)
-  const countAsPlayedConfig = useSettingsStore((state) => state.countAsPlayedConfig)
-  const trackDurationFilterConfig = useSettingsStore((state) => state.trackDurationFilterConfig)
-  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
-  const [showReindexDialog, setShowReindexDialog] = React.useState(false)
-  const [countAsPlayedSliderValue, setCountAsPlayedSliderValue] = React.useState<number | null>(
-    null
-  )
+  const router = useRouter();
+  const { t } = useTranslation();
+  const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing);
+  const indexerScanConfig = useSettingsStore(
+    (state) => state.indexerScanConfig,
+  );
+  const countAsPlayedConfig = useSettingsStore(
+    (state) => state.countAsPlayedConfig,
+  );
+  const trackDurationFilterConfig = useSettingsStore(
+    (state) => state.trackDurationFilterConfig,
+  );
+  const splitMultipleValueConfig = useSettingsStore(
+    (state) => state.splitMultipleValueConfig,
+  );
+  const [showReindexDialog, setShowReindexDialog] = React.useState(false);
+  const [countAsPlayedSliderValue, setCountAsPlayedSliderValue] =
+    React.useState<number | null>(null);
   const resolvedCountAsPlayedPercent =
-    countAsPlayedSliderValue ?? countAsPlayedConfig.minimumPlayedPercent
+    countAsPlayedSliderValue ?? countAsPlayedConfig.minimumPlayedPercent;
 
   function getSplitMultipleValuesSummary() {
     const modeLabel =
       splitMultipleValueConfig.artistSplitMode === "original"
         ? t("settings.library.artistSplitModeOriginal")
-        : t("settings.library.artistSplitModeSplit")
+        : t("settings.library.artistSplitModeSplit");
 
     return t("settings.library.splitMultipleValuesSummary", {
       mode: modeLabel,
       artistSymbols: splitMultipleValueConfig.artistSplitSymbols.join(" "),
       genreSymbols: splitMultipleValueConfig.genreSplitSymbols.join(" "),
-    })
+    });
   }
 
   function handleReindexDialogOpenChange(isOpen: boolean) {
-    setShowReindexDialog(isOpen)
+    setShowReindexDialog(isOpen);
   }
 
   function handleReindexLater() {
-    setShowReindexDialog(false)
+    setShowReindexDialog(false);
   }
 
   function handleConfirmForceReindex() {
-    setShowReindexDialog(false)
-    showAppToast(t("settings.library.reindexLibrary"), t("common.feedback.libraryReindexStarted"))
-    void forceReindexLibrary(true)
+    setShowReindexDialog(false);
+    showAppToast(
+      t("settings.library.reindexLibrary"),
+      t("common.feedback.libraryReindexStarted"),
+    );
+    void forceReindexLibrary(true);
   }
 
-  function updateIndexerScanConfig(key: keyof IndexerScanConfig, value: boolean) {
+  function updateIndexerScanConfig(
+    key: keyof IndexerScanConfig,
+    value: boolean,
+  ) {
     void setAutoScanConfig({
       [key]: value,
-    } as Partial<IndexerScanConfig>)
+    } as Partial<IndexerScanConfig>);
   }
 
   async function handleCountAsPlayedChangeEnd(value: number) {
     await setCountAsPlayedConfig({
       minimumPlayedPercent: value,
-    })
-    setCountAsPlayedSliderValue(null)
+    });
+    setCountAsPlayedSliderValue(null);
     showAppToast(
       t("settings.library.countAsPlayed"),
-      t("settings.library.countAsPlayedValue", { value })
-    )
+      t("settings.library.countAsPlayedValue", { value }),
+    );
   }
 
   return (
     <>
-      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         <View className="gap-5 px-4 py-4">
           <ListGroup>
-            <ListGroup.Item onPress={() => router.push("/settings/folder-filters")}>
+            <ListGroup.Item
+              onPress={() => router.push("/settings/folder-filters")}
+            >
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>
                   {t("settings.routes.folderFilters.title")}
@@ -101,7 +126,9 @@ export default function LibrarySettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
             <Separator className="mx-4" />
-            <ListGroup.Item onPress={() => router.push("/settings/track-duration-filter")}>
+            <ListGroup.Item
+              onPress={() => router.push("/settings/track-duration-filter")}
+            >
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>
                   {t("settings.library.trackDurationFilter")}
@@ -113,7 +140,9 @@ export default function LibrarySettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
             <Separator className="mx-4" />
-            <ListGroup.Item onPress={() => router.push("/settings/split-multiple-values")}>
+            <ListGroup.Item
+              onPress={() => router.push("/settings/split-multiple-values")}
+            >
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>
                   {t("settings.library.splitMultipleValues")}
@@ -125,10 +154,26 @@ export default function LibrarySettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
             <Separator className="mx-4" />
+            <ListGroup.Item
+              onPress={() => router.push("/settings/library-tabs")}
+            >
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>
+                  {t("settings.routes.libraryTabs.title")}
+                </ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>
+                  {t("settings.library.libraryTabsDescription")}
+                </ListGroup.ItemDescription>
+              </ListGroup.ItemContent>
+              <ListGroup.ItemSuffix />
+            </ListGroup.Item>
+            <Separator className="mx-4" />
             <ListGroup.Item>
               <ListGroup.ItemContent>
                 <View className="mb-3 flex-row items-center justify-between">
-                  <ListGroup.ItemTitle>{t("settings.library.countAsPlayed")}</ListGroup.ItemTitle>
+                  <ListGroup.ItemTitle>
+                    {t("settings.library.countAsPlayed")}
+                  </ListGroup.ItemTitle>
                   <Text className="text-sm font-medium text-foreground">
                     {t("settings.library.countAsPlayedValue", {
                       value: resolvedCountAsPlayedPercent,
@@ -141,10 +186,12 @@ export default function LibrarySettingsScreen() {
                   step={1}
                   value={resolvedCountAsPlayedPercent}
                   onChange={(value) => {
-                    setCountAsPlayedSliderValue(getSliderNumericValue(value))
+                    setCountAsPlayedSliderValue(getSliderNumericValue(value));
                   }}
                   onChangeEnd={(value) => {
-                    void handleCountAsPlayedChangeEnd(getSliderNumericValue(value))
+                    void handleCountAsPlayedChangeEnd(
+                      getSliderNumericValue(value),
+                    );
                   }}
                 >
                   <Slider.Track className="h-2 rounded-full bg-border">
@@ -160,7 +207,9 @@ export default function LibrarySettingsScreen() {
             <Separator className="mx-4" />
             <ListGroup.Item>
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.library.autoScan")}</ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>
+                  {t("settings.library.autoScan")}
+                </ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.library.autoScanDescription")}
                 </ListGroup.ItemDescription>
@@ -169,7 +218,7 @@ export default function LibrarySettingsScreen() {
                 <Switch
                   isSelected={indexerScanConfig.autoScanEnabled}
                   onSelectedChange={(isSelected) => {
-                    updateIndexerScanConfig("autoScanEnabled", isSelected)
+                    updateIndexerScanConfig("autoScanEnabled", isSelected);
                   }}
                 />
               </ListGroup.ItemSuffix>
@@ -177,7 +226,9 @@ export default function LibrarySettingsScreen() {
             <Separator className="mx-4" />
             <ListGroup.Item>
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.library.initialScan")}</ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>
+                  {t("settings.library.initialScan")}
+                </ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.library.initialScanDescription")}
                 </ListGroup.ItemDescription>
@@ -186,7 +237,7 @@ export default function LibrarySettingsScreen() {
                 <Switch
                   isSelected={indexerScanConfig.initialScanEnabled}
                   onSelectedChange={(isSelected) => {
-                    updateIndexerScanConfig("initialScanEnabled", isSelected)
+                    updateIndexerScanConfig("initialScanEnabled", isSelected);
                   }}
                 />
               </ListGroup.ItemSuffix>
@@ -194,7 +245,9 @@ export default function LibrarySettingsScreen() {
             <Separator className="mx-4" />
             <ListGroup.Item>
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.library.rescanImmediately")}</ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>
+                  {t("settings.library.rescanImmediately")}
+                </ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {t("settings.library.rescanImmediatelyDescription")}
                 </ListGroup.ItemDescription>
@@ -203,15 +256,23 @@ export default function LibrarySettingsScreen() {
                 <Switch
                   isSelected={indexerScanConfig.rescanImmediatelyEnabled}
                   onSelectedChange={(isSelected) => {
-                    updateIndexerScanConfig("rescanImmediatelyEnabled", isSelected)
+                    updateIndexerScanConfig(
+                      "rescanImmediatelyEnabled",
+                      isSelected,
+                    );
                   }}
                 />
               </ListGroup.ItemSuffix>
             </ListGroup.Item>
             <Separator className="mx-4" />
-            <ListGroup.Item onPress={() => setShowReindexDialog(true)} disabled={isIndexing}>
+            <ListGroup.Item
+              onPress={() => setShowReindexDialog(true)}
+              disabled={isIndexing}
+            >
               <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.library.reindexLibrary")}</ListGroup.ItemTitle>
+                <ListGroup.ItemTitle>
+                  {t("settings.library.reindexLibrary")}
+                </ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
                   {isIndexing
                     ? t("settings.library.reindexInProgress")
@@ -223,12 +284,17 @@ export default function LibrarySettingsScreen() {
         </View>
       </ScrollView>
 
-      <Dialog isOpen={showReindexDialog} onOpenChange={handleReindexDialogOpenChange}>
+      <Dialog
+        isOpen={showReindexDialog}
+        onOpenChange={handleReindexDialogOpenChange}
+      >
         <Dialog.Portal>
           <Dialog.Overlay isCloseOnPress />
           <Dialog.Content className="gap-4" isSwipeable>
             <View className="gap-1.5">
-              <Dialog.Title>{t("settings.library.reindexDialogTitle")}</Dialog.Title>
+              <Dialog.Title>
+                {t("settings.library.reindexDialogTitle")}
+              </Dialog.Title>
               <Dialog.Description>
                 {t("settings.library.reindexDialogDescription")}
               </Dialog.Description>
@@ -245,5 +311,5 @@ export default function LibrarySettingsScreen() {
         </Dialog.Portal>
       </Dialog>
     </>
-  )
+  );
 }

@@ -6,7 +6,9 @@
  * Side Effects: None.
  */
 
-import type { LanguageCode } from "@/modules/localization/types"
+import type { LanguageCode } from "@/modules/localization/types";
+
+import type { LibraryTabsConfig } from "@/modules/library/tabs";
 
 export type SettingsRouteName =
   | "index"
@@ -25,78 +27,88 @@ export type SettingsRouteName =
   | "open-source-licenses"
   | "whats-new"
   | "theme"
+  | "library-tabs"
+  | "library-tabs"
+  | "library-tabs";
 
 export interface SettingsRouteDefinition {
-  name: SettingsRouteName
-  titleKey: string
-  descriptionKey?: string
+  name: SettingsRouteName;
+  titleKey: string;
+  descriptionKey?: string;
 }
 
-export type { LanguageCode }
+export type { LanguageCode };
 
-export type AppLogLevel = "minimal" | "extra"
+export type AppLogLevel = "minimal" | "extra";
 
 export interface LoggingConfig {
-  level: AppLogLevel
+  level: AppLogLevel;
 }
 
 export interface AppUpdateConfig {
-  notificationsEnabled: boolean
-  includePrereleases: boolean
-  lastNotifiedVersion?: string
+  notificationsEnabled: boolean;
+  includePrereleases: boolean;
+  lastNotifiedVersion?: string;
 }
 
 export interface IndexerScanConfig {
-  autoScanEnabled: boolean
-  rescanImmediatelyEnabled: boolean
-  initialScanEnabled: boolean
+  autoScanEnabled: boolean;
+  rescanImmediatelyEnabled: boolean;
+  initialScanEnabled: boolean;
 }
 
-export type FolderFilterMode = "whitelist" | "blacklist"
+export type FolderFilterMode = "whitelist" | "blacklist";
 
 export interface FolderFilterConfig {
-  whitelist: string[]
-  blacklist: string[]
+  whitelist: string[];
+  blacklist: string[];
 }
 
-export type TrackDurationFilterMode = "off" | "min30s" | "min60s" | "min120s" | "custom"
+export type TrackDurationFilterMode =
+  | "off"
+  | "min30s"
+  | "min60s"
+  | "min120s"
+  | "custom";
 
 export interface TrackDurationFilterConfig {
-  mode: TrackDurationFilterMode
-  customMinimumSeconds: number
+  mode: TrackDurationFilterMode;
+  customMinimumSeconds: number;
 }
 
 export interface CountAsPlayedConfig {
-  minimumPlayedPercent: number
+  minimumPlayedPercent: number;
 }
 
 export interface CrossfadeConfig {
-  isEnabled: boolean
-  durationSeconds: number
+  isEnabled: boolean;
+  durationSeconds: number;
 }
 
 export interface AudioPlaybackConfig {
-  fadePlayPauseStop: boolean
-  fadeOnSeek: boolean
-  resumeAfterCall: boolean
-  resumeOnStart: boolean
-  resumeOnReopen: boolean
-  shortAudioFocusChange: boolean
-  pauseInCall: boolean
-  resumeOnFocusGain: boolean
-  duckVolume: boolean
-  permanentAudioFocusChange: boolean
+  fadePlayPauseStop: boolean;
+  fadeOnSeek: boolean;
+  resumeAfterCall: boolean;
+  resumeOnStart: boolean;
+  resumeOnReopen: boolean;
+  shortAudioFocusChange: boolean;
+  pauseInCall: boolean;
+  resumeOnFocusGain: boolean;
+  duckVolume: boolean;
+  permanentAudioFocusChange: boolean;
 }
 
-export type ArtistSplitMode = "original" | "split"
+export type ArtistSplitMode = "original" | "split";
 
 export interface SplitMultipleValueConfig {
-  artistSplitSymbols: string[]
-  unsplitArtists: string[]
-  artistSplitMode: ArtistSplitMode
-  genreSplitSymbols: string[]
+  artistSplitSymbols: string[];
+  unsplitArtists: string[];
+  artistSplitMode: ArtistSplitMode;
+  genreSplitSymbols: string[];
 }
 
 export interface ThemeConfig {
-  themeId: string
+  themeId: string;
 }
+
+export type { LibraryTabsConfig } from "@/modules/library/tabs";

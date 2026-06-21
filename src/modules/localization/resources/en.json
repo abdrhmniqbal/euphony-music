@@ -446,6 +446,9 @@
       },
       "onboarding": {
         "title": "Onboarding"
+      },
+      "libraryTabs": {
+        "title": "Library tabs"
       }
     },
     "appearance": {
@@ -557,7 +560,15 @@
       "removeSplitSymbol": "Remove split symbol",
       "addUnsplitArtist": "Add unsplit artist",
       "removeUnsplitArtist": "Remove unsplit artist",
-      "reindexLaterAction": "No, later"
+      "reindexLaterAction": "No, later",
+      "libraryTabsDescription": "Reorder or hide tabs on your library home screen.",
+      "tabsTracks": "Tracks",
+      "tabsAlbums": "Albums",
+      "tabsArtists": "Artists",
+      "tabsGenres": "Genres",
+      "tabsPlaylists": "Playlists",
+      "tabsFolders": "Folders",
+      "tabsFavorites": "Favorites"
     },
     "audio": {
       "sections": {

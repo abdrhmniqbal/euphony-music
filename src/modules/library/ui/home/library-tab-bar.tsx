@@ -1,15 +1,16 @@
-import { Tabs } from "heroui-native"
-import { cn } from "tailwind-variants"
-import type { LibraryTab } from "./use-library-home-state"
-import { LIBRARY_TABS } from "./use-library-home-state"
+import { Tabs } from "heroui-native";
+import { cn } from "tailwind-variants";
+import type { LibraryTab } from "@/modules/library/tabs";
 
 interface LibraryTabBarProps {
-  activeTab: LibraryTab
-  onActiveTabChange: (tab: LibraryTab) => void
-  getLibraryTabLabel: (tab: LibraryTab) => string
+  tabs: LibraryTab[];
+  activeTab: LibraryTab;
+  onActiveTabChange: (tab: LibraryTab) => void;
+  getLibraryTabLabel: (tab: LibraryTab) => string;
 }
 
 export function LibraryTabBar({
+  tabs,
   activeTab,
   onActiveTabChange,
   getLibraryTabLabel,
@@ -28,13 +29,13 @@ export function LibraryTabBar({
           contentContainerClassName="px-1 gap-4"
         >
           <Tabs.Indicator />
-          {LIBRARY_TABS.map((tab) => (
+          {tabs.map((tab) => (
             <Tabs.Trigger key={tab} value={tab} className="py-2">
               {({ isSelected }) => (
                 <Tabs.Label
                   className={cn(
                     "text-lg font-semibold",
-                    isSelected ? "text-foreground" : "text-muted"
+                    isSelected ? "text-foreground" : "text-muted",
                   )}
                 >
                   {getLibraryTabLabel(tab)}
@@ -45,5 +46,5 @@ export function LibraryTabBar({
         </Tabs.ScrollView>
       </Tabs.List>
     </Tabs>
-  )
+  );
 }

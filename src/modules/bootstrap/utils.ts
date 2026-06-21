@@ -32,6 +32,7 @@ import { ensureFolderFilterConfigLoaded } from "@/modules/settings/folder-filter
 import { ensureIndexerNotificationsConfigLoaded } from "@/modules/settings/indexer-notifications"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import { ensureTrackDurationFilterConfigLoaded } from "@/modules/settings/track-duration-filter"
+import { ensureLibraryTabsConfigLoaded } from "@/modules/settings/library-tabs"
 import { preferenceStore } from "@/stores/preference/store"
 
 async function preloadLocalSettings() {
@@ -47,6 +48,7 @@ async function preloadLocalSettings() {
       ensureIndexerNotificationsConfigLoaded(),
       ensureTrackDurationFilterConfigLoaded(),
       ensureSplitMultipleValueConfigLoaded(),
+      ensureLibraryTabsConfigLoaded(),
       ensureLoggingConfigLoaded(),
     ])
   })

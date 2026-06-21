@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { SettingsRouteDefinition } from "./types"
+import type { SettingsRouteDefinition } from "./types";
 
 export const SETTINGS_CATEGORY_ROUTES: SettingsRouteDefinition[] = [
   {
@@ -39,7 +39,7 @@ export const SETTINGS_CATEGORY_ROUTES: SettingsRouteDefinition[] = [
     titleKey: "settings.routes.about.title",
     descriptionKey: "settings.routes.about.description",
   },
-]
+];
 
 export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
   index: "settings.routes.index.title",
@@ -60,4 +60,5 @@ export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
   "theme-mode": "settings.routes.themeMode.title",
   theme: "settings.routes.theme.title",
   onboarding: "settings.routes.onboarding.title",
-}
+  "library-tabs": "settings.routes.libraryTabs.title",
+};

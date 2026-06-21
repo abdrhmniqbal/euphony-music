@@ -388,6 +388,9 @@
       },
       "artistSplitMode": {
         "title": "$t(term.artistSplitModeLabel)"
+      },
+      "libraryTabs": {
+        "title": "Library tabs"
       }
     },
     "appearance": {
@@ -485,7 +488,15 @@
       "removeSplitSymbol": "移除分割符號",
       "addUnsplitArtist": "新增不分割演出者",
       "removeUnsplitArtist": "移除不分割演出者",
-      "reindexLaterAction": "不，稍後"
+      "reindexLaterAction": "不，稍後",
+      "libraryTabsDescription": "Reorder or hide tabs on your library home screen.",
+      "tabsTracks": "Tracks",
+      "tabsAlbums": "Albums",
+      "tabsArtists": "Artists",
+      "tabsGenres": "Genres",
+      "tabsPlaylists": "Playlists",
+      "tabsFolders": "Folders",
+      "tabsFavorites": "Favorites"
     },
     "audio": {
       "sections": {
