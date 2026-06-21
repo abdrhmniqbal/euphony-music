@@ -93,7 +93,6 @@ function PlaylistPickerSearchInput({
         <Input
           key={inputKey}
           ref={inputRef}
-          variant="secondary"
           placeholder={t("playlist.searchPlaceholder")}
           onChangeText={setSearchQuery}
           className="flex-1 pr-10 pl-10"

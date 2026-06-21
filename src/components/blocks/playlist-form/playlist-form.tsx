@@ -76,7 +76,6 @@ export function PlaylistForm({
           </Text>
         </View>
         <Input
-          variant="secondary"
           placeholder={t("playlist.namePlaceholder")}
           value={name}
           onChangeText={setName}
@@ -92,7 +91,6 @@ export function PlaylistForm({
           </Text>
         </View>
         <TextArea
-          variant="secondary"
           placeholder={t("playlist.descriptionPlaceholder")}
           value={description}
           onChangeText={setDescription}

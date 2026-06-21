@@ -53,7 +53,6 @@ export function SheetSearchInput({ inputKey, searchQuery, setSearchQuery }: Shee
         <Input
           key={inputKey}
           ref={inputRef}
-          variant="secondary"
           placeholder={t("playlist.searchTracksPlaceholder")}
           onChangeText={setSearchQuery}
           className="flex-1 pr-10 pl-10"
