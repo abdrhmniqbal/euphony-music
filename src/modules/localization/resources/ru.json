@@ -396,6 +396,10 @@
       "integrations": {
         "title": "Integrations",
         "description": "Connected services and accounts."
+      },
+      "backup": {
+        "title": "Backup & Restore",
+        "description": "Export and import app settings and preferences."
       }
     },
     "appearance": {

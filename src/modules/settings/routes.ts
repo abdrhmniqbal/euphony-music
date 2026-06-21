@@ -30,6 +30,16 @@ export const SETTINGS_CATEGORY_ROUTES: SettingsRouteDefinition[] = [
     descriptionKey: "settings.routes.notifications.description",
   },
   {
+    name: "integrations",
+    titleKey: "settings.routes.integrations.title",
+    descriptionKey: "settings.routes.integrations.description",
+  },
+  {
+    name: "backup",
+    titleKey: "settings.routes.backup.title",
+    descriptionKey: "settings.routes.backup.description",
+  },
+  {
     name: "advanced",
     titleKey: "settings.routes.advanced.title",
     descriptionKey: "settings.routes.advanced.description",
@@ -38,11 +48,6 @@ export const SETTINGS_CATEGORY_ROUTES: SettingsRouteDefinition[] = [
     name: "about",
     titleKey: "settings.routes.about.title",
     descriptionKey: "settings.routes.about.description",
-  },
-  {
-    name: "integrations",
-    titleKey: "settings.routes.integrations.title",
-    descriptionKey: "settings.routes.integrations.description",
   },
 ];
 
@@ -67,4 +72,5 @@ export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
   onboarding: "settings.routes.onboarding.title",
   "library-tabs": "settings.routes.libraryTabs.title",
   integrations: "settings.routes.integrations.title",
+  backup: "settings.routes.backup.title",
 };

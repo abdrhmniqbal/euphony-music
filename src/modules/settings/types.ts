@@ -29,8 +29,7 @@ export type SettingsRouteName =
   | "theme"
   | "library-tabs"
   | "integrations"
-  | "library-tabs"
-  | "library-tabs";
+  | "backup";
 
 export interface SettingsRouteDefinition {
   name: SettingsRouteName;

@@ -40,6 +40,7 @@ const DETAIL_SETTINGS_SCREENS = [
   "theme",
   "library-tabs",
   "integrations",
+  "backup",
 ] as const;
 
 export default function SettingsLayout() {
