@@ -111,176 +111,195 @@ export default function LibrarySettingsScreen() {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         <View className="gap-5 px-4 py-4">
-          <ListGroup>
-            <ListGroup.Item
-              onPress={() => router.push("/settings/folder-filters")}
-            >
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.routes.folderFilters.title")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {t("settings.library.folderFiltersDescription")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item
-              onPress={() => router.push("/settings/track-duration-filter")}
-            >
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.trackDurationFilter")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {getTrackDurationFilterLabel(trackDurationFilterConfig)}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item
-              onPress={() => router.push("/settings/split-multiple-values")}
-            >
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.splitMultipleValues")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {t("settings.library.artistSplitSymbolsDescription")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item
-              onPress={() => router.push("/settings/library-tabs")}
-            >
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.routes.libraryTabs.title")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {t("settings.library.libraryTabsDescription")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item>
-              <ListGroup.ItemContent>
-                <View className="mb-3 flex-row items-center justify-between">
+          <View className="gap-2">
+            <Text className="px-1 text-xs font-semibold uppercase text-muted">
+              {t("settings.library.sections.content", "Content & Filters")}
+            </Text>
+            <ListGroup>
+              <ListGroup.Item
+                onPress={() => router.push("/settings/folder-filters")}
+              >
+                <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>
-                    {t("settings.library.countAsPlayed")}
+                    {t("settings.routes.folderFilters.title")}
                   </ListGroup.ItemTitle>
-                  <Text className="text-sm font-medium text-foreground">
-                    {t("settings.library.countAsPlayedValue", {
-                      value: resolvedCountAsPlayedPercent,
-                    })}
+                  <ListGroup.ItemDescription>
+                    {t("settings.library.folderFiltersDescription")}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item
+                onPress={() => router.push("/settings/track-duration-filter")}
+              >
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.library.trackDurationFilter")}
+                  </ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {getTrackDurationFilterLabel(trackDurationFilterConfig)}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item>
+                <ListGroup.ItemContent>
+                  <View className="mb-3 flex-row items-center justify-between">
+                    <ListGroup.ItemTitle>
+                      {t("settings.library.countAsPlayed")}
+                    </ListGroup.ItemTitle>
+                    <Text className="text-sm font-medium text-foreground">
+                      {t("settings.library.countAsPlayedValue", {
+                        value: resolvedCountAsPlayedPercent,
+                      })}
+                    </Text>
+                  </View>
+                  <Slider
+                    minValue={1}
+                    maxValue={100}
+                    step={1}
+                    value={resolvedCountAsPlayedPercent}
+                    onChange={(value) => {
+                      setCountAsPlayedSliderValue(getSliderNumericValue(value));
+                    }}
+                    onChangeEnd={(value) => {
+                      void handleCountAsPlayedChangeEnd(
+                        getSliderNumericValue(value),
+                      );
+                    }}
+                  >
+                    <Slider.Track className="h-2 rounded-full bg-border">
+                      <Slider.Fill className="rounded-full bg-accent" />
+                      <Slider.Thumb />
+                    </Slider.Track>
+                  </Slider>
+                  <Text className="mt-2 text-xs text-muted">
+                    {t("settings.library.countAsPlayedDescription")}
                   </Text>
-                </View>
-                <Slider
-                  minValue={1}
-                  maxValue={100}
-                  step={1}
-                  value={resolvedCountAsPlayedPercent}
-                  onChange={(value) => {
-                    setCountAsPlayedSliderValue(getSliderNumericValue(value));
-                  }}
-                  onChangeEnd={(value) => {
-                    void handleCountAsPlayedChangeEnd(
-                      getSliderNumericValue(value),
-                    );
-                  }}
-                >
-                  <Slider.Track className="h-2 rounded-full bg-border">
-                    <Slider.Fill className="rounded-full bg-accent" />
-                    <Slider.Thumb />
-                  </Slider.Track>
-                </Slider>
-                <Text className="mt-2 text-xs text-muted">
-                  {t("settings.library.countAsPlayedDescription")}
-                </Text>
-              </ListGroup.ItemContent>
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.autoScan")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {t("settings.library.autoScanDescription")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix>
-                <Switch
-                  isSelected={indexerScanConfig.autoScanEnabled}
-                  onSelectedChange={(isSelected) => {
-                    updateIndexerScanConfig("autoScanEnabled", isSelected);
-                  }}
-                />
-              </ListGroup.ItemSuffix>
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.initialScan")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {t("settings.library.initialScanDescription")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix>
-                <Switch
-                  isSelected={indexerScanConfig.initialScanEnabled}
-                  onSelectedChange={(isSelected) => {
-                    updateIndexerScanConfig("initialScanEnabled", isSelected);
-                  }}
-                />
-              </ListGroup.ItemSuffix>
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.rescanImmediately")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {t("settings.library.rescanImmediatelyDescription")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix>
-                <Switch
-                  isSelected={indexerScanConfig.rescanImmediatelyEnabled}
-                  onSelectedChange={(isSelected) => {
-                    updateIndexerScanConfig(
-                      "rescanImmediatelyEnabled",
-                      isSelected,
-                    );
-                  }}
-                />
-              </ListGroup.ItemSuffix>
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item
-              onPress={() => setShowReindexDialog(true)}
-              disabled={isIndexing}
-            >
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.library.reindexLibrary")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {isIndexing
-                    ? t("settings.library.reindexInProgress")
-                    : t("settings.library.reindexDescription")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-            </ListGroup.Item>
-          </ListGroup>
+                </ListGroup.ItemContent>
+              </ListGroup.Item>
+            </ListGroup>
+          </View>
+
+          <View className="gap-2">
+            <Text className="px-1 text-xs font-semibold uppercase text-muted">
+              {t("settings.library.sections.interface", "Library Interface")}
+            </Text>
+            <ListGroup>
+              <ListGroup.Item
+                onPress={() => router.push("/settings/split-multiple-values")}
+              >
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.library.splitMultipleValues")}
+                  </ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {t("settings.library.artistSplitSymbolsDescription")}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item
+                onPress={() => router.push("/settings/library-tabs")}
+              >
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.routes.libraryTabs.title")}
+                  </ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {t("settings.library.libraryTabsDescription")}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+            </ListGroup>
+          </View>
+
+          <View className="gap-2">
+            <Text className="px-1 text-xs font-semibold uppercase text-muted">
+              {t("settings.library.sections.indexing", "Indexing & Scanning")}
+            </Text>
+            <ListGroup>
+              <ListGroup.Item>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.library.autoScan")}
+                  </ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {t("settings.library.autoScanDescription")}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix>
+                  <Switch
+                    isSelected={indexerScanConfig.autoScanEnabled}
+                    onSelectedChange={(isSelected) => {
+                      updateIndexerScanConfig("autoScanEnabled", isSelected);
+                    }}
+                  />
+                </ListGroup.ItemSuffix>
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.library.initialScan")}
+                  </ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {t("settings.library.initialScanDescription")}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix>
+                  <Switch
+                    isSelected={indexerScanConfig.initialScanEnabled}
+                    onSelectedChange={(isSelected) => {
+                      updateIndexerScanConfig("initialScanEnabled", isSelected);
+                    }}
+                  />
+                </ListGroup.ItemSuffix>
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.library.rescanImmediately")}
+                  </ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {t("settings.library.rescanImmediatelyDescription")}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix>
+                  <Switch
+                    isSelected={indexerScanConfig.rescanImmediatelyEnabled}
+                    onSelectedChange={(isSelected) => {
+                      updateIndexerScanConfig(
+                        "rescanImmediatelyEnabled",
+                        isSelected,
+                      );
+                    }}
+                  />
+                </ListGroup.ItemSuffix>
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item
+                onPress={() => setShowReindexDialog(true)}
+                disabled={isIndexing}
+              >
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.library.reindexLibrary")}
+                  </ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {isIndexing
+                      ? t("settings.library.reindexInProgress")
+                      : t("settings.library.reindexDescription")}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+              </ListGroup.Item>
+            </ListGroup>
+          </View>
         </View>
       </ScrollView>
 

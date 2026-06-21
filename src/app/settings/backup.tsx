@@ -4,7 +4,7 @@ import * as Sharing from "expo-sharing"
 import { Button, Dialog, ListGroup, Separator } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
-import { ScrollView, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -97,47 +97,62 @@ export default function BackupSettingsScreen() {
     <>
       <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="gap-5 px-4 py-4">
-          <ListGroup>
-            <ListGroup.Item onPress={handleTargetFolderPick}>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.autoBackup.targetFolder")}</ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {folderDescription}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-          </ListGroup>
+          <View className="gap-2">
+            <Text className="px-1 text-xs font-semibold uppercase text-muted">
+              {t("settings.backup.sections.storage", "Storage Location")}
+            </Text>
+            <ListGroup>
+              <ListGroup.Item onPress={handleTargetFolderPick}>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>{t("settings.autoBackup.targetFolder")}</ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {folderDescription}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+            </ListGroup>
+          </View>
 
-          <ListGroup>
-            <ListGroup.Item onPress={() => setIsBackupDialogOpen(true)}>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.backup.backup")}</ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>{t("settings.backup.backupDescription")}</ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-            <Separator className="mx-4" />
-            <ListGroup.Item onPress={() => setIsRestoreDialogOpen(true)}>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.backup.restore")}</ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>{t("settings.backup.restoreDescription")}</ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-          </ListGroup>
+          <View className="gap-2">
+            <Text className="px-1 text-xs font-semibold uppercase text-muted">
+              {t("settings.backup.sections.manual", "Manual Backup")}
+            </Text>
+            <ListGroup>
+              <ListGroup.Item onPress={() => setIsBackupDialogOpen(true)}>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>{t("settings.backup.backup")}</ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>{t("settings.backup.backupDescription")}</ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item onPress={() => setIsRestoreDialogOpen(true)}>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>{t("settings.backup.restore")}</ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>{t("settings.backup.restoreDescription")}</ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+            </ListGroup>
+          </View>
 
-          <ListGroup>
-            <ListGroup.Item onPress={() => router.push("/settings/auto-backup")}>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>{t("settings.autoBackup.title")}</ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {config.enabled ? `${t("settings.autoBackup.enabledDescription")} · ${lastBackupDescription}` : lastBackupDescription}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix />
-            </ListGroup.Item>
-          </ListGroup>
+          <View className="gap-2">
+            <Text className="px-1 text-xs font-semibold uppercase text-muted">
+              {t("settings.backup.sections.automatic", "Automatic Backup")}
+            </Text>
+            <ListGroup>
+              <ListGroup.Item onPress={() => router.push("/settings/auto-backup")}>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>{t("settings.autoBackup.title")}</ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>
+                    {config.enabled ? `${t("settings.autoBackup.enabledDescription")} · ${lastBackupDescription}` : lastBackupDescription}
+                  </ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+                <ListGroup.ItemSuffix />
+              </ListGroup.Item>
+            </ListGroup>
+          </View>
         </View>
       </ScrollView>
 

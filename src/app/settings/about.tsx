@@ -19,16 +19,19 @@ import {
   SettingsListGroup,
   SettingsNavigationRow,
   SettingsScrollView,
+  SettingsSwitchRow,
 } from "@/components/blocks/settings"
-import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
+import { ensureAppUpdateConfigLoaded, setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { checkForAppUpdate, getCurrentAppVersion } from "@/modules/updates/app-update-service"
 import { openAppUpdatePrompt } from "@/modules/updates/app-update-store"
 import { showAppToast } from "@/modules/ui/toast"
+import { useSettingsStore } from "@/modules/settings/store"
 
 export default function AboutSettingsScreen() {
   const router = useRouter()
   const { t } = useTranslation()
   const [isCheckingForUpdates, setIsCheckingForUpdates] = useState(false)
+  const includePrereleases = useSettingsStore((state) => state.appUpdateConfig.includePrereleases)
   const appName = Application.applicationName || "Startune Music"
   const version = getCurrentAppVersion()
   const repositoryUrl = "https://github.com/abdrhmniqbal/startune-music"
@@ -79,52 +82,77 @@ export default function AboutSettingsScreen() {
         </View>
       </View>
 
-      <SettingsListGroup>
-        <SettingsActionRow
-          title={t("settings.about.checkForUpdates")}
-          description={
-            isCheckingForUpdates
-              ? t("settings.about.checkingForUpdates")
-              : t("settings.about.checkForUpdatesDescription")
-          }
-          disabled={isCheckingForUpdates}
-          onPress={() => {
-            void handleCheckForUpdates()
-          }}
-        />
-        <SettingsNavigationRow
-          title={t("settings.about.whatsNew")}
-          description={t("settings.about.whatsNewDescription")}
-          onPress={() => {
-            router.push("/settings/whats-new")
-          }}
-        />
-        <SettingsActionRow
-          title={t("settings.about.github")}
-          description={t("settings.about.repositoryDescription")}
-          onPress={() => {
-            void Linking.openURL(repositoryUrl)
-          }}
-        />
-        <SettingsActionRow
-          title={t("settings.about.helpTranslate")}
-          description={t("settings.about.helpTranslateDescription")}
-          onPress={() => {
-            void Linking.openURL(crowdinUrl)
-          }}
-        />
-        <SettingsNavigationRow
-          title={t("settings.about.openSourceLicenses", {
-            defaultValue: "Open Source Licenses",
-          })}
-          description={t("settings.about.openSourceLicensesDescription", {
-            defaultValue: "Third-party packages and license texts.",
-          })}
-          onPress={() => {
-            router.push("/settings/open-source-licenses")
-          }}
-        />
-      </SettingsListGroup>
+      <View className="gap-2">
+        <Text className="px-1 text-xs font-semibold uppercase text-muted">
+          {t("settings.about.sections.updates", "Updates")}
+        </Text>
+        <SettingsListGroup>
+          <SettingsActionRow
+            title={t("settings.about.checkForUpdates")}
+            description={
+              isCheckingForUpdates
+                ? t("settings.about.checkingForUpdates")
+                : t("settings.about.checkForUpdatesDescription")
+            }
+            disabled={isCheckingForUpdates}
+            onPress={() => {
+              void handleCheckForUpdates()
+            }}
+          />
+          <SettingsSwitchRow
+            title={t("settings.advanced.joinPreviewReleases")}
+            description={
+              includePrereleases
+                ? t("settings.advanced.joinPreviewReleasesEnabled")
+                : t("settings.advanced.joinPreviewReleasesDisabled")
+            }
+            isSelected={includePrereleases}
+            onSelectedChange={(isSelected) => {
+              void setAppUpdateConfig({ includePrereleases: isSelected })
+            }}
+          />
+          <SettingsNavigationRow
+            title={t("settings.about.whatsNew")}
+            description={t("settings.about.whatsNewDescription")}
+            onPress={() => {
+              router.push("/settings/whats-new")
+            }}
+          />
+        </SettingsListGroup>
+      </View>
+
+      <View className="gap-2">
+        <Text className="px-1 text-xs font-semibold uppercase text-muted">
+          {t("settings.about.sections.project", "Project & Legal")}
+        </Text>
+        <SettingsListGroup>
+          <SettingsActionRow
+            title={t("settings.about.github")}
+            description={t("settings.about.repositoryDescription")}
+            onPress={() => {
+              void Linking.openURL(repositoryUrl)
+            }}
+          />
+          <SettingsActionRow
+            title={t("settings.about.helpTranslate")}
+            description={t("settings.about.helpTranslateDescription")}
+            onPress={() => {
+              void Linking.openURL(crowdinUrl)
+            }}
+          />
+          <SettingsNavigationRow
+            title={t("settings.about.openSourceLicenses", {
+              defaultValue: "Open Source Licenses",
+            })}
+            description={t("settings.about.openSourceLicensesDescription", {
+              defaultValue: "Third-party packages and license texts.",
+            })}
+            onPress={() => {
+              router.push("/settings/open-source-licenses")
+            }}
+          />
+        </SettingsListGroup>
+      </View>
     </SettingsScrollView>
   )
 }

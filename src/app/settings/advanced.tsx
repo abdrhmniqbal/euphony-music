@@ -8,7 +8,7 @@
 
 import * as Application from "expo-application"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { Button, Dialog, ListGroup, Separator, Switch } from "heroui-native"
+import { Button, Dialog, ListGroup, Separator } from "heroui-native"
 import { useState } from "react"
 import { Linking, Platform, ScrollView, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -20,7 +20,7 @@ import {
 } from "@/modules/device/battery-optimization"
 import { useResetListeningHistory } from "@/modules/history/mutations"
 import { shareCrashLogs } from "@/modules/logging/service"
-import { setAppUpdateConfig } from "@/modules/settings/app-updates"
+
 import { useSettingsStore } from "@/modules/settings/store"
 import { showAppToast } from "@/modules/ui/toast"
 import { preferenceStore } from "@/stores/preference/store"
@@ -29,7 +29,7 @@ export default function AdvancedSettingsScreen() {
   const router = useRouter()
   const { t } = useTranslation()
   const loggingLevel = useSettingsStore((state) => state.loggingConfig.level)
-  const includePrereleases = useSettingsStore((state) => state.appUpdateConfig.includePrereleases)
+
   const resetListeningHistoryMutation = useResetListeningHistory()
   const [isResetHistoryDialogOpen, setIsResetHistoryDialogOpen] = useState(false)
 
@@ -234,33 +234,6 @@ export default function AdvancedSettingsScreen() {
             </ListGroup.Item>
           </ListGroup>
 
-          <Text className="px-1 text-xs font-semibold uppercase text-muted">
-            {t("settings.advanced.sections.updates")}
-          </Text>
-          <ListGroup>
-            <ListGroup.Item>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>
-                  {t("settings.advanced.joinPreviewReleases")}
-                </ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {includePrereleases
-                    ? t("settings.advanced.joinPreviewReleasesEnabled")
-                    : t("settings.advanced.joinPreviewReleasesDisabled")}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-              <ListGroup.ItemSuffix>
-                <Switch
-                  isSelected={includePrereleases}
-                  onSelectedChange={(isSelected) => {
-                    void setAppUpdateConfig({
-                      includePrereleases: isSelected,
-                    })
-                  }}
-                />
-              </ListGroup.ItemSuffix>
-            </ListGroup.Item>
-          </ListGroup>
         </View>
       </ScrollView>
 

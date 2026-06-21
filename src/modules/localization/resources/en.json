@@ -530,6 +530,11 @@
       "portugueseBrazilNative": "Português do Brasil"
     },
     "library": {
+      "sections": {
+        "content": "Content & Filters",
+        "interface": "Library Interface",
+        "indexing": "Indexing & Scanning"
+      },
       "filterMode": "Filter Mode",
       "filterModeDescription": "Choose whether selected folders should be allowed or hidden.",
       "addNewFolder": "Add New Folder",
@@ -697,6 +702,10 @@
       "unableToOpenLinkTitle": "Unable to open link"
     },
     "about": {
+      "sections": {
+        "updates": "Updates",
+        "project": "Project & Legal"
+      },
       "github": "GitHub",
       "repositoryDescription": "Project source code.",
       "helpTranslate": "Help Translate",
@@ -719,6 +728,11 @@
       "licenseTextUnavailable": "License text unavailable."
     },
     "backup": {
+      "sections": {
+        "storage": "Storage Location",
+        "manual": "Manual Backup",
+        "automatic": "Automatic Backup"
+      },
       "backup": "Backup",
       "backupDescription": "Export app settings to a file.",
       "backupDialogDescription": "Export all settings to a file.",
