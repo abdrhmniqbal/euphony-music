@@ -29,6 +29,7 @@ import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-ho
 import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
+import { collectPlaylistImages } from "@/modules/playlist/repository"
 import { EmptyState } from "@/components/ui/empty-state"
 import { screenEnterTransition } from "@/constants/animations"
 import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
@@ -356,6 +357,7 @@ export default function PlaylistDetailsScreen() {
           name={playlist.name}
           subtitle={formatDuration(totalDuration)}
           image={playlist.artwork || undefined}
+          images={collectPlaylistImages(playlist)}
           trackCount={playlist.trackCount || 0}
         >
           <Button

@@ -1,15 +1,15 @@
 import type { PlaylistFormProps } from "./types"
 import type { Track } from "@/modules/player/types"
-import { Button, Input, PressableFeedback, TextArea } from "heroui-native"
+import { Button, Input, ListGroup, PressableFeedback, Separator, TextArea } from "heroui-native"
 
+import { Image } from "expo-image"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import ReorderableList, { useReorderableDrag } from "react-native-reorderable-list"
+import ReorderableList, { useIsActive, useReorderableDrag } from "react-native-reorderable-list"
 import LocalAddIcon from "@/components/icons/local/add"
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
-import { TrackRow } from "@/components/patterns/track-row"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -17,40 +17,62 @@ import { MAX_PLAYLIST_DESCRIPTION_LENGTH, MAX_PLAYLIST_NAME_LENGTH } from "@/mod
 
 interface ReorderableSelectedTrackRowProps {
   track: Track
+  index: number
   onToggle: (trackId: string) => void
 }
 
-function ReorderableSelectedTrackRow({ track, onToggle }: ReorderableSelectedTrackRowProps) {
+function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSelectedTrackRowProps) {
   const drag = useReorderableDrag()
+  const isActive = useIsActive()
   const theme = useThemeColors()
+  const { t } = useTranslation()
 
   return (
-    <TrackRow
-      track={track}
-      className="w-full py-2"
-      leftAction={
+    <>
+      {index > 0 ? <Separator className="mx-4" /> : null}
+      <ListGroup.Item
+        style={{
+          backgroundColor: isActive ? theme.border : "transparent",
+          opacity: isActive ? 0.9 : 1,
+        }}
+      >
         <PressableFeedback
           onPressIn={(event) => {
             event.stopPropagation()
             drag()
           }}
-          className="p-2 opacity-60"
+          className="p-1 opacity-60"
         >
-          <LocalDragDropVerticalIcon fill="none" width={24} height={24} color={theme.foreground} />
+          <LocalDragDropVerticalIcon fill="none" width={20} height={20} color={theme.muted} />
         </PressableFeedback>
-      }
-      rightAction={
+        <ListGroup.ItemPrefix>
+          <View className="size-14 overflow-hidden rounded-xl bg-surface">
+            {track.image ? (
+              <Image source={{ uri: track.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+            ) : (
+              <View className="flex-1 items-center justify-center">
+                <LocalMusicNoteSolidIcon fill="none" width={22} height={22} color={theme.muted} />
+              </View>
+            )}
+          </View>
+        </ListGroup.ItemPrefix>
+        <ListGroup.ItemContent>
+          <ListGroup.ItemTitle>{track.title}</ListGroup.ItemTitle>
+          <ListGroup.ItemDescription>
+            {track.artist || t("library.unknownArtist")}
+          </ListGroup.ItemDescription>
+        </ListGroup.ItemContent>
         <PressableFeedback
           onPress={(event) => {
             event.stopPropagation()
             onToggle(track.id)
           }}
-          className="p-2 opacity-60"
+          className="p-1 opacity-60"
         >
-          <LocalCancelIcon fill="none" width={24} height={24} color={theme.muted} />
+          <LocalCancelIcon fill="none" width={20} height={20} color={theme.muted} />
         </PressableFeedback>
-      }
-    />
+      </ListGroup.Item>
+    </>
   )
 }
 
@@ -114,29 +136,34 @@ export function PlaylistForm({
   )
 
   return (
-    <ReorderableList
-      data={selectedTracksList}
-      onReorder={({ from, to }) => reorderSelectedTracks(from, to)}
-      renderItem={({ item }) => (
-        <View className="mb-2">
-          <ReorderableSelectedTrackRow track={item} onToggle={toggleTrack} />
-        </View>
-      )}
-      keyExtractor={(item) => item.id}
-      ListHeaderComponent={header}
-      ListEmptyComponent={() => (
+    <View className="flex-1 bg-background px-4 py-4">
+      {header}
+
+      {selectedTracksList.length === 0 ? (
         <EmptyState
           icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
           title={t("library.empty.tracksSelectedTitle")}
           message={t("library.empty.selectedTracksMessage")}
           className="py-8"
         />
+      ) : (
+        <ListGroup>
+          <ReorderableList
+            data={selectedTracksList}
+            onReorder={({ from, to }) => reorderSelectedTracks(from, to)}
+            renderItem={({ item, index }) => (
+              <ReorderableSelectedTrackRow track={item} index={index} onToggle={toggleTrack} />
+            )}
+            keyExtractor={(item) => item.id}
+            shouldUpdateActiveItem
+            style={{ flexGrow: 0 }}
+            scrollEnabled={false}
+            contentContainerStyle={{ paddingBottom: 0 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          />
+        </ListGroup>
       )}
-      style={{ flex: 1, minHeight: 1 }}
-      contentContainerStyle={{ padding: 16, paddingBottom: 200 }}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
-      contentInsetAdjustmentBehavior="automatic"
-    />
+    </View>
   )
 }
