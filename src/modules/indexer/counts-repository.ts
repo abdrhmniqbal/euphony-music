@@ -45,7 +45,7 @@ export async function updateArtistCounts(): Promise<void> {
         ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
         LIMIT 1
       ),
-      NULL
+      artists.artwork
     ),
     updated_at = ${Date.now()}
   `)
