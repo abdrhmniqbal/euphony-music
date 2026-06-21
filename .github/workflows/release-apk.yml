@@ -29,6 +29,7 @@ jobs:
     env:
       RELEASE_CRED: ${{ secrets.RELEASE_CRED }}
       KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      EXPO_PUBLIC_LASTFM_API_KEY: ${{ secrets.EXPO_PUBLIC_LASTFM_API_KEY }}
 
     steps:
       - name: Checkout
