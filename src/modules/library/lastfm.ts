@@ -57,7 +57,7 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
   try {
     const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${encodeURIComponent(
       artistName
-    )}&api_key=${apiKey}&format=json`
+    )}&api_key=${apiKey}&autocorrect=1&format=json`
     const response = await fetch(url)
     if (!response.ok) return {}
     
@@ -105,6 +105,12 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
 
     if (!imageUrl) {
       imageUrl = await fetchLastFmPageImage(artistName, artistUrl)
+    }
+
+    // Do not use Last.fm default/no-image fallback assets if the scraper failed too.
+    // e.g. "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png" or typical grey stars.
+    if (imageUrl && (imageUrl.includes("2a96cbd8b46e442fc41c2b86b821562f") || imageUrl.includes("noimage") || imageUrl.includes("default_artist"))) {
+      imageUrl = undefined
     }
     
     return {
