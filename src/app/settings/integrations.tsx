@@ -1,81 +1,83 @@
-import * as Linking from "expo-linking"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { ListGroup } from "heroui-native"
-import { useEffect, useState, useRef } from "react"
-import { AppState, ScrollView, View, Text } from "react-native"
+import { useEffect, useState } from "react"
+import { ScrollView, Text, TextInput, View } from "react-native"
 
 import {
-  getLastFmIntegrationState,
-  isLastFmConfigured,
-  openLastFmAuth,
-  completeLastFmAuth,
+  connectLastFmWithCredentials,
   disconnectLastFm,
+  forgetLastFmCredentials,
+  getLastFmIntegrationState,
   type LastFmIntegrationState,
 } from "@/modules/settings/lastfm-integration"
 import { showAppToast } from "@/modules/ui/toast"
 
 export default function IntegrationsSettingsScreen() {
-  const router = useRouter()
   const [state, setState] = useState<LastFmIntegrationState>({
-    isConfigured: isLastFmConfigured(),
+    isConfigured: false,
     isConnected: false,
   })
+  const [apiKey, setApiKey] = useState("")
+  const [apiSecret, setApiSecret] = useState("")
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(true)
-  const [isAuthenticating, setIsAuthenticating] = useState(false)
-  const appState = useRef(AppState.currentState)
+  const [isConnecting, setIsConnecting] = useState(false)
 
   useEffect(() => {
     getLastFmIntegrationState().then((s) => {
       setState(s)
-      if (s.pendingToken && !s.isConnected) {
-        setIsAuthenticating(true)
-      }
+      setApiKey(s.apiKey || "")
       setIsLoading(false)
     })
   }, [])
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener("change", nextAppState => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active" &&
-        isAuthenticating
-      ) {
-        completeLastFmAuth()
-          .then((newState) => {
-            setState(newState)
-            showAppToast("Connected", "Successfully connected to Last.fm.")
-          })
-          .catch(() => {
-            // It's possible they didn't authorize or cancelled, fail silently or show small toast
-          })
-          .finally(() => {
-            setIsAuthenticating(false)
-          })
-      }
-
-      appState.current = nextAppState
-    })
-
-    return () => subscription.remove()
-  }, [isAuthenticating])
-
   async function handleConnect() {
-    setIsAuthenticating(true)
+    const trimmedApiKey = apiKey.trim()
+    const trimmedApiSecret = apiSecret.trim()
+    const trimmedUsername = username.trim()
+
+    if (!trimmedApiKey || !trimmedApiSecret || !trimmedUsername || !password) {
+      showAppToast("Missing Details", "Enter API key, shared secret, username, and password.")
+      return
+    }
+
+    setIsConnecting(true)
     try {
-      const newState = await openLastFmAuth()
+      const newState = await connectLastFmWithCredentials({
+        apiKey: trimmedApiKey,
+        apiSecret: trimmedApiSecret,
+        username: trimmedUsername,
+        password,
+      })
       setState(newState)
-    } catch {
-      setIsAuthenticating(false)
-      showAppToast("Error", "Could not start Last.fm authorization.")
+      setApiSecret("")
+      setUsername("")
+      setPassword("")
+      showAppToast("Connected", "Successfully connected to Last.fm.")
+    } catch (error) {
+      showAppToast(
+        "Connection Failed",
+        error instanceof Error ? error.message : "Could not connect to Last.fm."
+      )
+    } finally {
+      setIsConnecting(false)
     }
   }
 
   async function handleDisconnect() {
     const newState = await disconnectLastFm()
     setState(newState)
-    setIsAuthenticating(false)
     showAppToast("Disconnected", "Last.fm disconnected.")
+  }
+
+  async function handleForgetCredentials() {
+    const newState = await forgetLastFmCredentials()
+    setState(newState)
+    setApiKey("")
+    setApiSecret("")
+    setUsername("")
+    setPassword("")
+    showAppToast("Removed", "Last.fm credentials removed.")
   }
 
   if (isLoading) {
@@ -85,20 +87,14 @@ export default function IntegrationsSettingsScreen() {
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
-        <Text className="px-1 text-xs font-semibold uppercase text-muted">Last.fm</Text>
+        <View className="gap-2 px-1">
+          <Text className="text-xs font-semibold uppercase text-muted">Last.fm</Text>
+          <Text className="text-sm leading-5 text-muted">
+            Connect with Last.fm mobile authentication. Your app key, shared secret, and session key are stored securely on this device. Password is sent to Last.fm over HTTPS and is not stored.
+          </Text>
+        </View>
 
-        {!state.isConfigured ? (
-          <ListGroup>
-            <ListGroup.Item>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>Not Configured</ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  EXPO_PUBLIC_LASTFM_API_KEY and EXPO_PUBLIC_LASTFM_API_SECRET missing.
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-            </ListGroup.Item>
-          </ListGroup>
-        ) : state.isConnected ? (
+        {state.isConnected ? (
           <ListGroup>
             <ListGroup.Item onPress={handleDisconnect}>
               <ListGroup.ItemContent>
@@ -113,16 +109,74 @@ export default function IntegrationsSettingsScreen() {
             </ListGroup.Item>
           </ListGroup>
         ) : (
-          <ListGroup>
-            <ListGroup.Item onPress={handleConnect} disabled={isAuthenticating}>
-              <ListGroup.ItemContent>
-                <ListGroup.ItemTitle>Connect Last.fm</ListGroup.ItemTitle>
-                <ListGroup.ItemDescription>
-                  {isAuthenticating ? "Waiting for authorization..." : "Link account to enable scrobbling."}
-                </ListGroup.ItemDescription>
-              </ListGroup.ItemContent>
-            </ListGroup.Item>
-          </ListGroup>
+          <View className="gap-3 rounded-[28px] border border-border/70 bg-default p-4">
+            <View className="gap-2">
+              <Text className="text-sm font-medium text-foreground">API key</Text>
+              <TextInput
+                value={apiKey}
+                onChangeText={setApiKey}
+                autoCapitalize="none"
+                autoCorrect={false}
+                className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-base text-foreground"
+                placeholder="Last.fm API key"
+                placeholderTextColor="hsl(var(--muted))"
+              />
+            </View>
+            <View className="gap-2">
+              <Text className="text-sm font-medium text-foreground">Shared secret</Text>
+              <TextInput
+                value={apiSecret}
+                onChangeText={setApiSecret}
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry
+                className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-base text-foreground"
+                placeholder="Last.fm shared secret"
+                placeholderTextColor="hsl(var(--muted))"
+              />
+            </View>
+            <View className="gap-2">
+              <Text className="text-sm font-medium text-foreground">Username</Text>
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="username"
+                className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-base text-foreground"
+                placeholder="Last.fm username"
+                placeholderTextColor="hsl(var(--muted))"
+              />
+            </View>
+            <View className="gap-2">
+              <Text className="text-sm font-medium text-foreground">Password</Text>
+              <TextInput
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                textContentType="password"
+                className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-base text-foreground"
+                placeholder="Last.fm password"
+                placeholderTextColor="hsl(var(--muted))"
+              />
+            </View>
+            <ListGroup>
+              <ListGroup.Item onPress={handleConnect} disabled={isConnecting}>
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>{isConnecting ? "Connecting..." : "Connect Last.fm"}</ListGroup.ItemTitle>
+                  <ListGroup.ItemDescription>Stores only API credentials and returned Last.fm session key.</ListGroup.ItemDescription>
+                </ListGroup.ItemContent>
+              </ListGroup.Item>
+              {state.isConfigured ? (
+                <ListGroup.Item onPress={handleForgetCredentials}>
+                  <ListGroup.ItemContent>
+                    <ListGroup.ItemTitle>Forget saved credentials</ListGroup.ItemTitle>
+                    <ListGroup.ItemDescription>Remove stored API key and shared secret.</ListGroup.ItemDescription>
+                  </ListGroup.ItemContent>
+                </ListGroup.Item>
+              ) : null}
+            </ListGroup>
+          </View>
         )}
       </View>
     </ScrollView>

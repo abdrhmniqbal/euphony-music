@@ -1,22 +1,23 @@
 import { useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/tanstack-query"
+import * as SecureStore from "expo-secure-store"
 
 export interface LastFmArtistInfo {
   bio?: string
   image?: string
 }
 
-const LASTFM_API_KEY = process.env.EXPO_PUBLIC_LASTFM_API_KEY
-
 export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmArtistInfo> {
-  if (!LASTFM_API_KEY) {
+  const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY || (await SecureStore.getItemAsync("lastfm.apiKey"))
+
+  if (!apiKey) {
     return {}
   }
   
   try {
     const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${encodeURIComponent(
       artistName
-    )}&api_key=${LASTFM_API_KEY}&format=json`
+    )}&api_key=${apiKey}&format=json`
     const response = await fetch(url)
     if (!response.ok) return {}
     
@@ -52,7 +53,7 @@ export function useLastFmArtistInfo(artistName: string) {
     {
       queryKey: ["lastfm", "artist", artistName.trim().toLowerCase()],
       queryFn: async () => await fetchLastFmArtistInfo(artistName),
-      enabled: artistName.trim().length > 0 && !!LASTFM_API_KEY,
+      enabled: artistName.trim().length > 0,
       staleTime: 24 * 60 * 60 * 1000, // 24 hours
     },
     queryClient
