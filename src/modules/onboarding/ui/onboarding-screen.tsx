@@ -31,7 +31,7 @@ import { OnboardingWelcome } from "./onboarding-welcome"
 import { ThemeStep } from "./theme-step"
 import { FolderFilterStep } from "./folder-filter-step"
 import { PermissionsStep } from "./permissions-step"
-import RestoreStep from "./restore-step"
+import { RestoreStep } from "./restore-step"
 import * as DocumentPicker from "expo-document-picker"
 import { restorePreferencesFromFile } from "@/modules/settings/backup"
 
@@ -180,12 +180,12 @@ export default function OnboardingScreen() {
 
   const stepTitle =
     step === 0
-      ? t("onboarding.restore.title")
+      ? t("settings.routes.appearance.title")
       : step === 1
-        ? t("settings.routes.appearance.title")
+        ? t("settings.routes.folderFilters.title")
         : step === 2
-          ? t("settings.routes.folderFilters.title")
-          : t("onboarding.permissions.title")
+          ? t("onboarding.permissions.title")
+          : t("onboarding.restore.title")
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={["top", "bottom"]}>
@@ -197,13 +197,6 @@ export default function OnboardingScreen() {
           <OnboardingWelcome step={step} appName={appName} />
 
           {step === 0 && (
-            <RestoreStep
-              onRestore={handleOnboardingRestore}
-              onSkip={nextStep}
-            />
-          )}
-
-          {step === 1 && (
             <ThemeStep
               stepTitle={stepTitle}
               currentMode={currentMode}
@@ -212,7 +205,7 @@ export default function OnboardingScreen() {
             />
           )}
 
-          {step === 2 && (
+          {step === 1 && (
             <FolderFilterStep
               activeFolders={activeFolders}
               selectedMode={selectedMode}
@@ -225,7 +218,7 @@ export default function OnboardingScreen() {
             />
           )}
 
-          {step === 3 && (
+          {step === 2 && (
             <PermissionsStep
               stepTitle={stepTitle}
               mediaPermission={mediaPermission}
@@ -241,6 +234,13 @@ export default function OnboardingScreen() {
               onRequestBatteryOptimization={requestBatteryOptimization}
             />
           )}
+
+          {step === 3 && (
+            <RestoreStep
+              stepTitle={stepTitle}
+              onRestore={handleOnboardingRestore}
+            />
+          )}
         </View>
       </ScrollView>
 
@@ -248,11 +248,9 @@ export default function OnboardingScreen() {
         className="gap-3 border-t border-border px-4 pt-3"
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
-        {step !== 0 && (
-          <Button size="lg" className="w-full rounded-full" onPress={nextStep}>
-            <Button.Label>{step === 3 ? t("common.finish") : t("common.next")}</Button.Label>
-          </Button>
-        )}
+        <Button size="lg" className="w-full rounded-full" onPress={nextStep}>
+          <Button.Label>{step === 3 ? t("common.finish") : t("common.next")}</Button.Label>
+        </Button>
         {step > 0 ? (
           <Button variant="ghost" className="w-full rounded-full" onPress={previousStep}>
             <Button.Label>{t("common.goBack")}</Button.Label>

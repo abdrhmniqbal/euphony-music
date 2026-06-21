@@ -1,19 +1,29 @@
-import { Button, PressableFeedback } from "heroui-native"
-import { ScrollView, Text, View } from "react-native"
+import { ListGroup } from "heroui-native"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-export default function RestoreStep({ onRestore, onSkip }: { onRestore: () => void; onSkip: () => void }) {
+interface RestoreStepProps {
+  stepTitle: string
+  onRestore: () => void
+}
+
+export function RestoreStep({ stepTitle, onRestore }: RestoreStepProps) {
   const { t } = useTranslation()
+
   return (
-    <ScrollView className="flex-1 bg-background px-4 py-6">
-      <View className="gap-4">
-        <Text className="text-3xl font-bold text-foreground">{t("onboarding.restore.title")}</Text>
-        <Text className="text-base text-muted">{t("onboarding.restore.description")}</Text>
-        <Button onPress={onRestore}>{t("onboarding.restore.action")}</Button>
-        <PressableFeedback onPress={onSkip}>
-          <Text className="text-center text-sm text-muted">{t("onboarding.restore.skip")}</Text>
-        </PressableFeedback>
-      </View>
-    </ScrollView>
+    <View className="gap-2">
+      <Text className="px-1 text-xs font-semibold uppercase text-muted">{stepTitle}</Text>
+      <ListGroup>
+        <ListGroup.Item onPress={onRestore}>
+          <ListGroup.ItemContent>
+            <ListGroup.ItemTitle>{t("onboarding.restore.action")}</ListGroup.ItemTitle>
+            <ListGroup.ItemDescription>
+              {t("onboarding.restore.description")}
+            </ListGroup.ItemDescription>
+          </ListGroup.ItemContent>
+          <ListGroup.ItemSuffix />
+        </ListGroup.Item>
+      </ListGroup>
+    </View>
   )
 }

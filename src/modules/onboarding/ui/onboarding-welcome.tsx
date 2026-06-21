@@ -15,7 +15,7 @@ export function OnboardingWelcome({ step, appName }: OnboardingWelcomeProps) {
     <View className="items-center justify-center gap-4 py-6">
       <Image source={appIcon} style={{ width: 80, height: 80 }} contentFit="contain" />
       <View className="items-center gap-1">
-        <Text className="text-sm font-medium text-muted">{step + 1} / 3</Text>
+        <Text className="text-sm font-medium text-muted">{step + 1} / 4</Text>
         <Text className="text-2xl font-bold text-foreground">
           {t("onboarding.welcomePrefix")} {appName}
         </Text>
