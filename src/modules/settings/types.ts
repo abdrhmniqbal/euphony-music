@@ -28,6 +28,7 @@ export type SettingsRouteName =
   | "whats-new"
   | "theme"
   | "library-tabs"
+  | "integrations"
   | "library-tabs"
   | "library-tabs";
 

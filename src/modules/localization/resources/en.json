@@ -456,6 +456,10 @@
       },
       "libraryTabs": {
         "title": "Library tabs"
+      },
+      "integrations": {
+        "title": "Integrations",
+        "description": "Connected services and accounts."
       }
     },
     "appearance": {

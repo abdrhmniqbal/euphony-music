@@ -39,6 +39,11 @@ export const SETTINGS_CATEGORY_ROUTES: SettingsRouteDefinition[] = [
     titleKey: "settings.routes.about.title",
     descriptionKey: "settings.routes.about.description",
   },
+  {
+    name: "integrations",
+    titleKey: "settings.routes.integrations.title",
+    descriptionKey: "settings.routes.integrations.description",
+  },
 ];
 
 export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
@@ -61,4 +66,5 @@ export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
   theme: "settings.routes.theme.title",
   onboarding: "settings.routes.onboarding.title",
   "library-tabs": "settings.routes.libraryTabs.title",
+  integrations: "settings.routes.integrations.title",
 };
