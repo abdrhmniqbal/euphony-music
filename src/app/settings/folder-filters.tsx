@@ -6,7 +6,7 @@
  * Side Effects: Persists folder filter configuration and can trigger library reindexing.
  */
 
-import { BottomSheet, Button, Card, ListGroup, PressableFeedback, Separator } from "heroui-native"
+import { Button, Card, ListGroup, Separator } from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -15,7 +15,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import LocalAddIcon from "@/components/icons/local/add"
 import LocalCancelIcon from "@/components/icons/local/cancel"
 import LocalFolderSolidIcon from "@/components/icons/local/folder-solid"
-import LocalTickIcon from "@/components/icons/local/tick"
 import { EmptyState } from "@/components/ui/empty-state"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
@@ -153,7 +152,6 @@ export default function FolderFiltersScreen() {
     getModeFromConfig(folderFilterConfig)
   )
   const [hasPendingChanges, setHasPendingChanges] = React.useState(false)
-  const [isModeSheetOpen, setIsModeSheetOpen] = React.useState(false)
 
   const allFolders = buildFolderEntries(tracks)
   const folderPaths = Array.from(
@@ -231,6 +229,10 @@ export default function FolderFiltersScreen() {
     setHasPendingChanges(true)
   }
 
+  function toggleMode() {
+    setUnifiedMode(selectedMode === "whitelist" ? "blacklist" : "whitelist")
+  }
+
   async function applyFilter() {
     if (!hasPendingChanges) {
       return
@@ -269,12 +271,14 @@ export default function FolderFiltersScreen() {
           <Card.Body>
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4 pb-2">
-                <Card.Title>{t("settings.library.filterMode")}</Card.Title>
-                <Card.Description>{t("settings.library.filterModeDescription")}</Card.Description>
+                <Card.Title className="text-lg">{t("settings.library.filterMode")}</Card.Title>
+                <Card.Description className="text-sm leading-5">
+                  {t("settings.library.filterModeDescription")}
+                </Card.Description>
               </View>
               <Button
                 variant="secondary"
-                onPress={() => setIsModeSheetOpen(true)}
+                onPress={toggleMode}
                 isDisabled={isIndexing}
               >
                 {getModeLabel()}
@@ -348,52 +352,6 @@ export default function FolderFiltersScreen() {
         </Button>
       </View>
 
-      <BottomSheet isOpen={isModeSheetOpen} onOpenChange={setIsModeSheetOpen}>
-        <BottomSheet.Portal>
-          <BottomSheet.Overlay />
-          <BottomSheet.Content className="gap-1" backgroundClassName="bg-surface">
-            <BottomSheet.Title className="mb-1 text-xl">
-              {t("settings.library.selectFilterMode")}
-            </BottomSheet.Title>
-            <PressableFeedback
-              className="h-14 flex-row items-center justify-between active:opacity-60"
-              onPress={() => {
-                setUnifiedMode("whitelist")
-                setIsModeSheetOpen(false)
-              }}
-            >
-              <Text
-                className={`text-base ${
-                  selectedMode === "whitelist" ? "text-accent" : "text-foreground"
-                }`}
-              >
-                {t("settings.library.whitelist")}
-              </Text>
-              {selectedMode === "whitelist" ? (
-                <LocalTickIcon fill="none" width={20} height={20} color={theme.accent} />
-              ) : null}
-            </PressableFeedback>
-            <PressableFeedback
-              className="h-14 flex-row items-center justify-between active:opacity-60"
-              onPress={() => {
-                setUnifiedMode("blacklist")
-                setIsModeSheetOpen(false)
-              }}
-            >
-              <Text
-                className={`text-base ${
-                  selectedMode === "blacklist" ? "text-accent" : "text-foreground"
-                }`}
-              >
-                {t("settings.library.blacklist")}
-              </Text>
-              {selectedMode === "blacklist" ? (
-                <LocalTickIcon fill="none" width={20} height={20} color={theme.accent} />
-              ) : null}
-            </PressableFeedback>
-          </BottomSheet.Content>
-        </BottomSheet.Portal>
-      </BottomSheet>
     </View>
   )
 }

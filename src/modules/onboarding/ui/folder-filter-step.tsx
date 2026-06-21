@@ -14,7 +14,7 @@ interface FolderFilterStepProps {
   foregroundColor: string
   mutedColor: string
   getModeLabel: () => string
-  onOpenModeSheet: () => void
+  onToggleMode: () => void
   onPickFolder: () => void
   onRemoveFolder: (path: string) => void
 }
@@ -24,7 +24,7 @@ export function FolderFilterStep({
   foregroundColor,
   mutedColor,
   getModeLabel,
-  onOpenModeSheet,
+  onToggleMode,
   onPickFolder,
   onRemoveFolder,
 }: FolderFilterStepProps) {
@@ -36,10 +36,12 @@ export function FolderFilterStep({
         <Card.Body>
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-4 pb-2">
-              <Card.Title>{t("settings.library.filterMode")}</Card.Title>
-              <Card.Description>{t("settings.library.filterModeDescription")}</Card.Description>
+              <Card.Title className="text-lg">{t("settings.library.filterMode")}</Card.Title>
+              <Card.Description className="text-sm leading-5">
+                {t("settings.library.filterModeDescription")}
+              </Card.Description>
             </View>
-            <Button variant="secondary" onPress={onOpenModeSheet}>
+            <Button variant="secondary" onPress={onToggleMode}>
               {getModeLabel()}
             </Button>
           </View>

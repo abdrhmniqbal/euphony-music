@@ -5,14 +5,14 @@
  */
 
 import * as Application from "expo-application"
-import { BottomSheet, Button, PressableFeedback } from "heroui-native"
+import { Button } from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
 import { Uniwind } from "uniwind"
 
-import LocalTickIcon from "@/components/icons/local/tick"
+
 import { startIndexing } from "@/modules/indexer/service"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import {
@@ -54,7 +54,7 @@ export default function OnboardingScreen() {
   const [selectedMode, setSelectedMode] = React.useState<FolderFilterMode>(
     pendingConfig.whitelist.length > 0 ? "whitelist" : "blacklist"
   )
-  const [isModeSheetOpen, setIsModeSheetOpen] = React.useState(false)
+
 
   const activeFolders =
     selectedMode === "whitelist" ? pendingConfig.whitelist : pendingConfig.blacklist
@@ -212,7 +212,7 @@ export default function OnboardingScreen() {
               foregroundColor={theme.foreground}
               mutedColor={theme.muted}
               getModeLabel={getModeLabel}
-              onOpenModeSheet={() => setIsModeSheetOpen(true)}
+              onToggleMode={() => setUnifiedMode(selectedMode === "whitelist" ? "blacklist" : "whitelist")}
               onPickFolder={pickFolder}
               onRemoveFolder={removeFolder}
             />
@@ -258,52 +258,6 @@ export default function OnboardingScreen() {
         ) : null}
       </View>
 
-      <BottomSheet isOpen={isModeSheetOpen} onOpenChange={setIsModeSheetOpen}>
-        <BottomSheet.Portal>
-          <BottomSheet.Overlay />
-          <BottomSheet.Content className="gap-1" backgroundClassName="bg-surface">
-            <BottomSheet.Title className="mb-1 text-xl">
-              {t("settings.library.selectFilterMode")}
-            </BottomSheet.Title>
-            <PressableFeedback
-              className="h-14 flex-row items-center justify-between active:opacity-60"
-              onPress={() => {
-                setUnifiedMode("whitelist")
-                setIsModeSheetOpen(false)
-              }}
-            >
-              <Text
-                className={`text-base ${
-                  selectedMode === "whitelist" ? "text-accent" : "text-foreground"
-                }`}
-              >
-                {t("settings.library.whitelist")}
-              </Text>
-              {selectedMode === "whitelist" ? (
-                <LocalTickIcon fill="none" width={20} height={20} color={theme.accent} />
-              ) : null}
-            </PressableFeedback>
-            <PressableFeedback
-              className="h-14 flex-row items-center justify-between active:opacity-60"
-              onPress={() => {
-                setUnifiedMode("blacklist")
-                setIsModeSheetOpen(false)
-              }}
-            >
-              <Text
-                className={`text-base ${
-                  selectedMode === "blacklist" ? "text-accent" : "text-foreground"
-                }`}
-              >
-                {t("settings.library.blacklist")}
-              </Text>
-              {selectedMode === "blacklist" ? (
-                <LocalTickIcon fill="none" width={20} height={20} color={theme.accent} />
-              ) : null}
-            </PressableFeedback>
-          </BottomSheet.Content>
-        </BottomSheet.Portal>
-      </BottomSheet>
     </SafeAreaView>
   )
 }
