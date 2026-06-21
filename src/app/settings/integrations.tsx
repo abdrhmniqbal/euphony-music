@@ -1,4 +1,4 @@
-import { ListGroup } from "heroui-native"
+import { ListGroup, Separator, Slider, Switch } from "heroui-native"
 import { useEffect, useState } from "react"
 import { ScrollView, Text, TextInput, View } from "react-native"
 
@@ -7,6 +7,7 @@ import {
   disconnectLastFm,
   forgetLastFmCredentials,
   getLastFmIntegrationState,
+  setLastFmScrobbleConfig,
   type LastFmIntegrationState,
 } from "@/modules/settings/lastfm-integration"
 import { showAppToast } from "@/modules/ui/toast"
@@ -15,6 +16,11 @@ export default function IntegrationsSettingsScreen() {
   const [state, setState] = useState<LastFmIntegrationState>({
     isConfigured: false,
     isConnected: false,
+    scrobbleConfig: {
+      isEnabled: false,
+      minimumTrackDurationSeconds: 30,
+      scrobbleDelayPercent: 15,
+    },
   })
   const [apiKey, setApiKey] = useState("")
   const [apiSecret, setApiSecret] = useState("")
@@ -80,6 +86,21 @@ export default function IntegrationsSettingsScreen() {
     showAppToast("Removed", "Last.fm credentials removed.")
   }
 
+  async function handleScrobbleToggle(isEnabled: boolean) {
+    const newState = await setLastFmScrobbleConfig({ isEnabled })
+    setState(newState)
+  }
+
+  async function handleScrobbleDelayChangeEnd(value: number) {
+    const newState = await setLastFmScrobbleConfig({ scrobbleDelayPercent: value })
+    setState(newState)
+  }
+
+  async function handleMinimumDurationChangeEnd(value: number) {
+    const newState = await setLastFmScrobbleConfig({ minimumTrackDurationSeconds: value })
+    setState(newState)
+  }
+
   if (isLoading) {
     return <View className="flex-1 bg-background" />
   }
@@ -96,6 +117,83 @@ export default function IntegrationsSettingsScreen() {
 
         {state.isConnected ? (
           <ListGroup>
+            <ListGroup.Item>
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>Scrobble Tracks</ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>
+                  Automatically send listening history to Last.fm.
+                </ListGroup.ItemDescription>
+              </ListGroup.ItemContent>
+              <ListGroup.ItemSuffix>
+                <Switch
+                  isSelected={state.scrobbleConfig.isEnabled}
+                  onSelectedChange={handleScrobbleToggle}
+                />
+              </ListGroup.ItemSuffix>
+            </ListGroup.Item>
+            
+            {state.scrobbleConfig.isEnabled && (
+              <>
+                <Separator className="mx-4" />
+                <ListGroup.Item>
+                  <ListGroup.ItemContent>
+                    <View className="mb-3 flex-row items-center justify-between">
+                      <ListGroup.ItemTitle>Scrobble Point</ListGroup.ItemTitle>
+                      <Text className="text-sm font-medium text-foreground">
+                        {state.scrobbleConfig.scrobbleDelayPercent}%
+                      </Text>
+                    </View>
+                    <Slider
+                      minValue={1}
+                      maxValue={100}
+                      step={1}
+                      value={state.scrobbleConfig.scrobbleDelayPercent}
+                      onChangeEnd={(value) => {
+                        void handleScrobbleDelayChangeEnd(Array.isArray(value) ? (value[0] ?? 15) : value)
+                      }}
+                    >
+                      <Slider.Track className="h-2 rounded-full bg-border">
+                        <Slider.Fill className="rounded-full bg-accent" />
+                        <Slider.Thumb />
+                      </Slider.Track>
+                    </Slider>
+                    <Text className="mt-2 text-xs text-muted">
+                      Percentage of track to play before scrobbling.
+                    </Text>
+                  </ListGroup.ItemContent>
+                </ListGroup.Item>
+                <Separator className="mx-4" />
+                <ListGroup.Item>
+                  <ListGroup.ItemContent>
+                    <View className="mb-3 flex-row items-center justify-between">
+                      <ListGroup.ItemTitle>Minimum Track Duration</ListGroup.ItemTitle>
+                      <Text className="text-sm font-medium text-foreground">
+                        {state.scrobbleConfig.minimumTrackDurationSeconds}s
+                      </Text>
+                    </View>
+                    <Slider
+                      minValue={10}
+                      maxValue={120}
+                      step={5}
+                      value={state.scrobbleConfig.minimumTrackDurationSeconds}
+                      onChangeEnd={(value) => {
+                        void handleMinimumDurationChangeEnd(Array.isArray(value) ? (value[0] ?? 30) : value)
+                      }}
+                    >
+                      <Slider.Track className="h-2 rounded-full bg-border">
+                        <Slider.Fill className="rounded-full bg-accent" />
+                        <Slider.Thumb />
+                      </Slider.Track>
+                    </Slider>
+                    <Text className="mt-2 text-xs text-muted">
+                      Tracks shorter than this will never be scrobbled.
+                    </Text>
+                  </ListGroup.ItemContent>
+                </ListGroup.Item>
+              </>
+            )}
+
+            <Separator className="mx-4" />
             <ListGroup.Item onPress={handleDisconnect}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>Connected</ListGroup.ItemTitle>

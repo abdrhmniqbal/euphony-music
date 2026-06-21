@@ -1,11 +1,18 @@
 import * as Crypto from "expo-crypto"
 import * as SecureStore from "expo-secure-store"
 
+export interface LastFmScrobbleConfig {
+  isEnabled: boolean
+  minimumTrackDurationSeconds: number
+  scrobbleDelayPercent: number
+}
+
 export interface LastFmIntegrationState {
   isConfigured: boolean
   isConnected: boolean
   apiKey?: string
   username?: string
+  scrobbleConfig: LastFmScrobbleConfig
 }
 
 interface LastFmSessionResponse {
@@ -22,7 +29,16 @@ const LASTFM_API_KEY_STORE_KEY = "lastfm.apiKey"
 const LASTFM_API_SECRET_STORE_KEY = "lastfm.apiSecret"
 const LASTFM_SESSION_KEY = "lastfm.sessionKey"
 const LASTFM_USERNAME_KEY = "lastfm.username"
+const LASTFM_SCROBBLE_ENABLED_KEY = "lastfm.scrobbleEnabled"
+const LASTFM_MINIMUM_TRACK_DURATION_KEY = "lastfm.minimumTrackDurationSeconds"
+const LASTFM_SCROBBLE_DELAY_PERCENT_KEY = "lastfm.scrobbleDelayPercent"
 const LASTFM_API_URL = "https://ws.audioscrobbler.com/2.0/"
+
+export const DEFAULT_LASTFM_SCROBBLE_CONFIG: LastFmScrobbleConfig = {
+  isEnabled: false,
+  minimumTrackDurationSeconds: 30,
+  scrobbleDelayPercent: 15,
+}
 
 async function getLastFmApiCredentials() {
   const [apiKey, apiSecret] = await Promise.all([
@@ -36,11 +52,65 @@ async function getLastFmApiCredentials() {
   }
 }
 
+function sanitizeScrobbleConfig(source: {
+  isEnabled?: string | null
+  minimumTrackDurationSeconds?: string | null
+  scrobbleDelayPercent?: string | null
+}): LastFmScrobbleConfig {
+  const minimumTrackDurationSeconds = Number(source.minimumTrackDurationSeconds)
+  const scrobbleDelayPercent = Number(source.scrobbleDelayPercent)
+
+  return {
+    isEnabled: source.isEnabled === "true",
+    minimumTrackDurationSeconds: Number.isFinite(minimumTrackDurationSeconds)
+      ? Math.max(1, Math.min(3600, Math.round(minimumTrackDurationSeconds)))
+      : DEFAULT_LASTFM_SCROBBLE_CONFIG.minimumTrackDurationSeconds,
+    scrobbleDelayPercent: Number.isFinite(scrobbleDelayPercent)
+      ? Math.max(1, Math.min(100, Math.round(scrobbleDelayPercent)))
+      : DEFAULT_LASTFM_SCROBBLE_CONFIG.scrobbleDelayPercent,
+  }
+}
+
+export async function getLastFmScrobbleConfig(): Promise<LastFmScrobbleConfig> {
+  const [isEnabled, minimumTrackDurationSeconds, scrobbleDelayPercent] = await Promise.all([
+    SecureStore.getItemAsync(LASTFM_SCROBBLE_ENABLED_KEY),
+    SecureStore.getItemAsync(LASTFM_MINIMUM_TRACK_DURATION_KEY),
+    SecureStore.getItemAsync(LASTFM_SCROBBLE_DELAY_PERCENT_KEY),
+  ])
+
+  return sanitizeScrobbleConfig({ isEnabled, minimumTrackDurationSeconds, scrobbleDelayPercent })
+}
+
+export async function setLastFmScrobbleConfig(
+  updates: Partial<LastFmScrobbleConfig>
+): Promise<LastFmIntegrationState> {
+  const current = await getLastFmScrobbleConfig()
+  const next = sanitizeScrobbleConfig({
+    isEnabled: String(updates.isEnabled ?? current.isEnabled),
+    minimumTrackDurationSeconds: String(
+      updates.minimumTrackDurationSeconds ?? current.minimumTrackDurationSeconds
+    ),
+    scrobbleDelayPercent: String(updates.scrobbleDelayPercent ?? current.scrobbleDelayPercent),
+  })
+
+  await Promise.all([
+    SecureStore.setItemAsync(LASTFM_SCROBBLE_ENABLED_KEY, String(next.isEnabled)),
+    SecureStore.setItemAsync(
+      LASTFM_MINIMUM_TRACK_DURATION_KEY,
+      String(next.minimumTrackDurationSeconds)
+    ),
+    SecureStore.setItemAsync(LASTFM_SCROBBLE_DELAY_PERCENT_KEY, String(next.scrobbleDelayPercent)),
+  ])
+
+  return getLastFmIntegrationState()
+}
+
 export async function getLastFmIntegrationState(): Promise<LastFmIntegrationState> {
-  const [sessionKey, username, credentials] = await Promise.all([
+  const [sessionKey, username, credentials, scrobbleConfig] = await Promise.all([
     SecureStore.getItemAsync(LASTFM_SESSION_KEY),
     SecureStore.getItemAsync(LASTFM_USERNAME_KEY),
     getLastFmApiCredentials(),
+    getLastFmScrobbleConfig(),
   ])
 
   return {
@@ -48,6 +118,7 @@ export async function getLastFmIntegrationState(): Promise<LastFmIntegrationStat
     isConnected: Boolean(sessionKey),
     apiKey: credentials.apiKey,
     username: username || undefined,
+    scrobbleConfig,
   }
 }
 
@@ -124,6 +195,9 @@ export async function forgetLastFmCredentials(): Promise<LastFmIntegrationState>
     SecureStore.deleteItemAsync(LASTFM_API_SECRET_STORE_KEY),
     SecureStore.deleteItemAsync(LASTFM_SESSION_KEY),
     SecureStore.deleteItemAsync(LASTFM_USERNAME_KEY),
+    SecureStore.deleteItemAsync(LASTFM_SCROBBLE_ENABLED_KEY),
+    SecureStore.deleteItemAsync(LASTFM_MINIMUM_TRACK_DURATION_KEY),
+    SecureStore.deleteItemAsync(LASTFM_SCROBBLE_DELAY_PERCENT_KEY),
   ])
 
   return getLastFmIntegrationState()
