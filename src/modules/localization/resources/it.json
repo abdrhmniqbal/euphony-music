@@ -624,5 +624,13 @@
       "openSourceLicensesEmpty": "No generated licenses yet. Run generate:licenses script.",
       "licenseTextUnavailable": "Testo licenza non disponibile."
     }
+  },
+  "onboarding": {
+    "restore": {
+      "title": "Restore backup?",
+      "description": "If you have a Startune backup file, restore settings and preferences before setup.",
+      "action": "Restore from backup",
+      "skip": "No backup, continue setup"
+    }
   }
 }

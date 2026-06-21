@@ -383,6 +383,12 @@
       "fileAccessDescription": "Allow Startune to read your music files.",
       "notifications": "Notifications",
       "notificationsDescription": "Allow progress updates and alerts."
+    },
+    "restore": {
+      "title": "Restore backup?",
+      "description": "If you have a Startune backup file, restore settings and preferences before setup.",
+      "action": "Restore from backup",
+      "skip": "No backup, continue setup"
     }
   },
   "settings": {

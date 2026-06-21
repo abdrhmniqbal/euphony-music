@@ -31,9 +31,12 @@ import { OnboardingWelcome } from "./onboarding-welcome"
 import { ThemeStep } from "./theme-step"
 import { FolderFilterStep } from "./folder-filter-step"
 import { PermissionsStep } from "./permissions-step"
+import RestoreStep from "./restore-step"
+import * as DocumentPicker from "expo-document-picker"
+import { restorePreferencesFromFile } from "@/modules/settings/backup"
 
 type ThemeValue = "light" | "dark" | "system"
-type Step = 0 | 1 | 2
+type Step = 0 | 1 | 2 | 3
 
 export default function OnboardingScreen() {
   const router = useRouter()
@@ -139,8 +142,29 @@ export default function OnboardingScreen() {
     router.replace("/(main)")
   }
 
+  async function handleOnboardingRestore() {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/json",
+        copyToCacheDirectory: true,
+      })
+      if (result.canceled || !result.assets[0]?.uri) return
+      
+      const success = await restorePreferencesFromFile(result.assets[0].uri)
+      if (success) {
+        showAppToast("Restore Successful", "Preferences restored.")
+        preferenceStore.setState({ completedOnboarding: true })
+        router.replace("/(main)")
+      } else {
+        showAppToast("Restore Failed", "Invalid backup file.")
+      }
+    } catch {
+      showAppToast("Restore Failed", t("settings.advanced.tryAgainDescription"))
+    }
+  }
+
   function nextStep() {
-    if (step < 2) {
+    if (step < 3) {
       setStep((step + 1) as Step)
       return
     }
@@ -156,10 +180,12 @@ export default function OnboardingScreen() {
 
   const stepTitle =
     step === 0
-      ? t("settings.routes.appearance.title")
+      ? t("onboarding.restore.title")
       : step === 1
-        ? t("settings.routes.folderFilters.title")
-        : t("onboarding.permissions.title")
+        ? t("settings.routes.appearance.title")
+        : step === 2
+          ? t("settings.routes.folderFilters.title")
+          : t("onboarding.permissions.title")
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={["top", "bottom"]}>
@@ -171,6 +197,13 @@ export default function OnboardingScreen() {
           <OnboardingWelcome step={step} appName={appName} />
 
           {step === 0 && (
+            <RestoreStep
+              onRestore={handleOnboardingRestore}
+              onSkip={nextStep}
+            />
+          )}
+
+          {step === 1 && (
             <ThemeStep
               stepTitle={stepTitle}
               currentMode={currentMode}
@@ -179,7 +212,7 @@ export default function OnboardingScreen() {
             />
           )}
 
-          {step === 1 && (
+          {step === 2 && (
             <FolderFilterStep
               activeFolders={activeFolders}
               selectedMode={selectedMode}
@@ -192,7 +225,7 @@ export default function OnboardingScreen() {
             />
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <PermissionsStep
               stepTitle={stepTitle}
               mediaPermission={mediaPermission}
@@ -215,9 +248,11 @@ export default function OnboardingScreen() {
         className="gap-3 border-t border-border px-4 pt-3"
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
-        <Button size="lg" className="w-full rounded-full" onPress={nextStep}>
-          <Button.Label>{step === 2 ? t("common.finish") : t("common.next")}</Button.Label>
-        </Button>
+        {step !== 0 && (
+          <Button size="lg" className="w-full rounded-full" onPress={nextStep}>
+            <Button.Label>{step === 3 ? t("common.finish") : t("common.next")}</Button.Label>
+          </Button>
+        )}
         {step > 0 ? (
           <Button variant="ghost" className="w-full rounded-full" onPress={previousStep}>
             <Button.Label>{t("common.goBack")}</Button.Label>
