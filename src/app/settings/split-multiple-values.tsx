@@ -11,18 +11,16 @@ import {
   BottomSheet,
   Button,
   Chip,
-  Input,
   ListGroup,
   Separator,
   TagGroup,
-  TextField,
-  useBottomSheetAwareHandlers,
 } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalAddIcon from "@/components/icons/local/add"
+import { BottomSheetInput } from "@/components/ui/bottom-sheet-input"
 import { rebuildSplitRelationsForConfig } from "@/modules/indexer/service"
 import { setSplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
@@ -62,7 +60,6 @@ function TagEditorSheetContent({
   const theme = useThemeColors()
   const [inputValue, setInputValue] = React.useState("")
   const trimmedInput = inputValue.trim()
-  const { onFocus, onBlur } = useBottomSheetAwareHandlers()
 
   function addValue() {
     if (!trimmedInput) return
@@ -90,19 +87,14 @@ function TagEditorSheetContent({
         </TagGroup>
       ) : null}
       <View className="flex-row items-center gap-2">
-        <TextField className="flex-1">
-          <Input
-            variant="secondary"
-            value={inputValue}
-            onChangeText={setInputValue}
-            onSubmitEditing={addValue}
-            placeholder={placeholder}
-            className="min-h-12"
-            returnKeyType="done"
-            onFocus={onFocus}
-            onBlur={onBlur}
-          />
-        </TextField>
+        <BottomSheetInput
+          value={inputValue}
+          onChangeText={setInputValue}
+          onSubmitEditing={addValue}
+          placeholder={placeholder}
+          className="flex-1 min-h-12"
+          returnKeyType="done"
+        />
         <Button
           accessibilityLabel={addLabel}
           variant="secondary"

@@ -40,11 +40,6 @@ export const SETTINGS_CATEGORY_ROUTES: SettingsRouteDefinition[] = [
     descriptionKey: "settings.routes.backup.description",
   },
   {
-    name: "auto-backup",
-    titleKey: "settings.routes.autoBackup.title",
-    descriptionKey: "settings.routes.autoBackup.description",
-  },
-  {
     name: "advanced",
     titleKey: "settings.routes.advanced.title",
     descriptionKey: "settings.routes.advanced.description",
@@ -77,6 +72,7 @@ export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
   onboarding: "settings.routes.onboarding.title",
   "library-tabs": "settings.routes.libraryTabs.title",
   integrations: "settings.routes.integrations.title",
+  lastfm: "settings.routes.lastfm.title",
   backup: "settings.routes.backup.title",
   "auto-backup": "settings.routes.autoBackup.title",
 };

@@ -40,6 +40,7 @@ const DETAIL_SETTINGS_SCREENS = [
   "theme",
   "library-tabs",
   "integrations",
+  "lastfm",
   "backup",
   "auto-backup",
 ] as const;
