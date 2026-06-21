@@ -16,37 +16,40 @@ export async function updateArtistCounts(): Promise<void> {
       JOIN track_artists ta ON ta.track_id = t.id
       WHERE ta.artist_id = artists.id AND t.is_deleted = 0
     ),
-    artwork = COALESCE(
-      (
-        SELECT t.artwork FROM tracks t
-        WHERE t.artist_id = artists.id
-          AND t.is_deleted = 0
-          AND t.artwork IS NOT NULL
-        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
-        LIMIT 1
-      ),
-      (
-        SELECT a.artwork FROM tracks t
-        JOIN track_artists ta ON ta.track_id = t.id
-        JOIN albums a ON a.id = t.album_id
-        WHERE ta.artist_id = artists.id
-          AND t.artist_id != artists.id
-          AND t.is_deleted = 0
-          AND a.artwork IS NOT NULL
-        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
-        LIMIT 1
-      ),
-      (
-        SELECT a.artwork FROM tracks t
-        JOIN albums a ON a.id = t.album_id
-        WHERE t.artist_id = artists.id
-          AND t.is_deleted = 0
-          AND a.artwork IS NOT NULL
-        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
-        LIMIT 1
-      ),
-      artists.artwork
-    ),
+    artwork = CASE 
+      WHEN artists.artwork LIKE 'http%' THEN artists.artwork
+      ELSE COALESCE(
+        (
+          SELECT t.artwork FROM tracks t
+          WHERE t.artist_id = artists.id
+            AND t.is_deleted = 0
+            AND t.artwork IS NOT NULL
+          ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+          LIMIT 1
+        ),
+        (
+          SELECT a.artwork FROM tracks t
+          JOIN track_artists ta ON ta.track_id = t.id
+          JOIN albums a ON a.id = t.album_id
+          WHERE ta.artist_id = artists.id
+            AND t.artist_id != artists.id
+            AND t.is_deleted = 0
+            AND a.artwork IS NOT NULL
+          ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+          LIMIT 1
+        ),
+        (
+          SELECT a.artwork FROM tracks t
+          JOIN albums a ON a.id = t.album_id
+          WHERE t.artist_id = artists.id
+            AND t.is_deleted = 0
+            AND a.artwork IS NOT NULL
+          ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+          LIMIT 1
+        ),
+        artists.artwork
+      )
+    END,
     updated_at = ${Date.now()}
   `)
 }
