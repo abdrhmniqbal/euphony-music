@@ -30,7 +30,12 @@ function extractMetaImage(html: string) {
 async function fetchLastFmPageImage(artistName: string, artistUrl?: string) {
   const url = artistUrl || `https://www.last.fm/music/${encodeURIComponent(artistName)}`
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    })
     if (!response.ok) return undefined
 
     return extractMetaImage(await response.text())
@@ -44,7 +49,9 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
   const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY || storedKey
 
   if (!apiKey) {
-    return {}
+    return {
+      image: await fetchLastFmPageImage(artistName),
+    }
   }
   
   try {
@@ -97,7 +104,9 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
       image: imageUrl || undefined,
     }
   } catch {
-    return {}
+    return {
+      image: await fetchLastFmPageImage(artistName),
+    }
   }
 }
 
