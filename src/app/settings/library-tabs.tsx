@@ -1,6 +1,6 @@
-import { Checkbox, PressableFeedback } from "heroui-native";
+import { Checkbox, ListGroup, PressableFeedback, Separator } from "heroui-native";
 import React, { useCallback, useMemo } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import ReorderableList, {
   reorderItems,
   useIsActive,
@@ -20,10 +20,11 @@ import { useThemeColors } from "@/modules/ui/theme";
 
 interface LibraryTabItemProps {
   item: LibraryTabSettingsItem;
+  index: number;
   onToggle: (id: string, visible: boolean) => void;
 }
 
-function LibraryTabItem({ item, onToggle }: LibraryTabItemProps) {
+function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
   const { t } = useTranslation();
   const theme = useThemeColors();
   const drag = useReorderableDrag();
@@ -51,24 +52,26 @@ function LibraryTabItem({ item, onToggle }: LibraryTabItemProps) {
   }, [item.id, t]);
 
   return (
-    <View
-      style={{
-        backgroundColor: isActive ? theme.border : "transparent",
-        opacity: isActive ? 0.9 : 1,
-      }}
-      className="flex-row items-center justify-between border-b border-border py-4"
-    >
-      <View className="flex-row items-center gap-3">
+    <>
+      {index > 0 && <Separator className="mx-4" />}
+      <ListGroup.Item
+        style={{
+          backgroundColor: isActive ? theme.border : "transparent",
+          opacity: isActive ? 0.9 : 1,
+        }}
+      >
+        <PressableFeedback onPressIn={drag} hitSlop={15} className="p-1">
+          <LocalDragDropVerticalIcon width={20} height={20} color={theme.muted} />
+        </PressableFeedback>
         <Checkbox
           isSelected={item.visible}
           onSelectedChange={(isSelected) => onToggle(item.id, isSelected)}
         />
-        <Text className="text-base font-medium text-foreground">{label}</Text>
-      </View>
-      <PressableFeedback onPressIn={drag} hitSlop={15} className="p-2">
-        <LocalDragDropVerticalIcon width={20} height={20} color={theme.muted} />
-      </PressableFeedback>
-    </View>
+        <ListGroup.ItemContent>
+          <ListGroup.ItemTitle>{label}</ListGroup.ItemTitle>
+        </ListGroup.ItemContent>
+      </ListGroup.Item>
+    </>
   );
 }
 
@@ -98,8 +101,8 @@ export default function LibraryTabsSettingsScreen() {
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: LibraryTabSettingsItem }) => (
-      <LibraryTabItem item={item} onToggle={handleToggle} />
+    ({ item, index }: { item: LibraryTabSettingsItem; index: number }) => (
+      <LibraryTabItem item={item} index={index} onToggle={handleToggle} />
     ),
     [handleToggle],
   );
@@ -109,16 +112,20 @@ export default function LibraryTabsSettingsScreen() {
   }, []) as any;
 
   return (
-    <View className="flex-1 bg-background px-4">
-      <ReorderableList
-        data={libraryTabsConfig.tabs}
-        onReorder={handleReorder}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        shouldUpdateActiveItem
-        panGesture={panGesture}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      />
+    <View className="flex-1 bg-background px-4 py-4">
+      <ListGroup>
+        <ReorderableList
+          data={libraryTabsConfig.tabs}
+          onReorder={handleReorder}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          shouldUpdateActiveItem
+          panGesture={panGesture}
+          scrollEnabled={false}
+          style={{ flexGrow: 0 }}
+          contentContainerStyle={{ paddingBottom: 0 }}
+        />
+      </ListGroup>
     </View>
   );
 }
