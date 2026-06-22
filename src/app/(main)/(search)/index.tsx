@@ -44,8 +44,8 @@ export default function SearchScreen() {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   
-  const { data: dailyMix = [] } = useDailyMix()
-  const { data: forYouMix = [] } = useForYouMix()
+  const { data: dailyMix } = useDailyMix()
+  const { data: forYouMix } = useForYouMix()
 
   const { data: dbTracks = [] } = useTracks({
     sortBy: "dateAdded",
@@ -84,46 +84,29 @@ export default function SearchScreen() {
     router.push("/(main)/(search)/search")
   }
 
-  const dailySeed = useMemo(() => {
-    const now = new Date()
-    return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
-  }, [])
+  const dailyMixTracks = useMemo(() => dailyMix?.tracks ?? [], [dailyMix])
+  const forYouMixTracks = useMemo(() => forYouMix?.tracks ?? [], [forYouMix])
 
-  const weeklySeed = useMemo(() => {
-    const now = new Date()
-    const yearStart = new Date(now.getFullYear(), 0, 1)
-    const dayOffset = Math.floor((now.getTime() - yearStart.getTime()) / 86400000)
-    const weekNumber = Math.floor(dayOffset / 7)
-    return now.getFullYear() * 100 + weekNumber
-  }, [])
+  const dailyMixImages = useMemo(() => {
+    return dailyMixTracks.map((t) => t.image).filter(Boolean) as string[]
+  }, [dailyMixTracks])
+
+  const forYouMixImages = useMemo(() => {
+    return forYouMixTracks.map((t) => t.image).filter(Boolean) as string[]
+  }, [forYouMixTracks])
 
   const dailyMixColor = useMemo(() => {
     if (!theme.rainbow || theme.rainbow.length === 0) return "#3b82f6"
-    return theme.rainbow[dailySeed % theme.rainbow.length]
-  }, [theme.rainbow, dailySeed])
+    return theme.rainbow[(dailyMix?.colorIndex ?? 0) % theme.rainbow.length]
+  }, [theme.rainbow, dailyMix])
 
   const forYouMixColor = useMemo(() => {
     if (!theme.rainbow || theme.rainbow.length === 0) return "#8b5cf6"
-    return theme.rainbow[weeklySeed % theme.rainbow.length]
-  }, [theme.rainbow, weeklySeed])
+    return theme.rainbow[(forYouMix?.colorIndex ?? 0) % theme.rainbow.length]
+  }, [theme.rainbow, forYouMix])
 
-  const dailyMixPattern = useMemo(() => {
-    const patterns = ["circles", "waves", "grid", "diamonds", "triangles", "rings", "pills", "stripes", "stars", "zigzag", "crosses"] as const
-    return patterns[dailySeed % patterns.length]
-  }, [dailySeed])
-
-  const forYouMixPattern = useMemo(() => {
-    const patterns = ["circles", "waves", "grid", "diamonds", "triangles", "rings", "pills", "stripes", "stars", "zigzag", "crosses"] as const
-    return patterns[weeklySeed % patterns.length]
-  }, [weeklySeed])
-
-  const dailyMixImages = useMemo(() => {
-    return dailyMix.map((t) => t.image).filter(Boolean) as string[]
-  }, [dailyMix])
-
-  const forYouMixImages = useMemo(() => {
-    return forYouMix.map((t) => t.image).filter(Boolean) as string[]
-  }, [forYouMix])
+  const dailyMixPattern = dailyMix?.shape ?? "circles"
+  const forYouMixPattern = forYouMix?.shape ?? "circles"
 
   return (
     <>

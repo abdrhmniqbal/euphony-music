@@ -11,6 +11,34 @@ const MIX_LIMIT = 25
 const DAILY_MIX_ID = "daily"
 const FOR_YOU_MIX_ID = "for-you"
 
+export const MIX_SHAPES = [
+  "circles",
+  "waves",
+  "grid",
+  "diamonds",
+  "triangles",
+  "rings",
+  "pills",
+  "stripes",
+  "stars",
+  "zigzag",
+  "crosses",
+] as const
+
+export type MixShape = (typeof MIX_SHAPES)[number]
+
+export type PersistedMix = {
+  id: string
+  kind: string
+  title: string
+  timespan: string | null
+  colorIndex: number
+  shape: MixShape
+  generatedAt: number
+  expiresAt: number
+  tracks: Track[]
+}
+
 type MixProfile = {
   artistNames: string[]
   genreNames: string[]
@@ -51,6 +79,17 @@ function getStartOfNextLocalWeek(now = new Date()) {
 
   startOfDay.setDate(startOfDay.getDate() - mondayOffset + 7)
   return startOfDay.getTime()
+}
+
+function getMixVisual(seed: number) {
+  return {
+    colorIndex: Math.abs(seed) % 10,
+    shape: MIX_SHAPES[Math.abs(seed) % MIX_SHAPES.length],
+  }
+}
+
+function toMixShape(shape: string): MixShape {
+  return MIX_SHAPES.includes(shape as MixShape) ? (shape as MixShape) : "circles"
 }
 
 async function listLibraryTracks(): Promise<DBTrack[]> {
@@ -164,6 +203,20 @@ async function loadPersistedMixTracks(mixId: string): Promise<Track[]> {
     .map((track) => transformDBTrackToTrack(track))
 }
 
+function toPersistedMix(row: typeof mixes.$inferSelect, tracksList: Track[]): PersistedMix {
+  return {
+    id: row.id,
+    kind: row.kind,
+    title: row.title,
+    timespan: row.timespan,
+    colorIndex: row.colorIndex,
+    shape: toMixShape(row.shape),
+    generatedAt: row.generatedAt,
+    expiresAt: row.expiresAt,
+    tracks: tracksList,
+  }
+}
+
 async function persistMix(params: {
   id: string
   kind: string
@@ -171,6 +224,8 @@ async function persistMix(params: {
   timespan: string
   expiresAt: number
   tracks: Track[]
+  colorIndex: number
+  shape: MixShape
 }) {
   const now = Date.now()
 
@@ -182,6 +237,8 @@ async function persistMix(params: {
         kind: params.kind,
         title: params.title,
         timespan: params.timespan,
+        colorIndex: params.colorIndex,
+        shape: params.shape,
         generatedAt: now,
         expiresAt: params.expiresAt,
         updatedAt: now,
@@ -192,6 +249,8 @@ async function persistMix(params: {
           kind: params.kind,
           title: params.title,
           timespan: params.timespan,
+          colorIndex: params.colorIndex,
+          shape: params.shape,
           generatedAt: now,
           expiresAt: params.expiresAt,
           updatedAt: now,
@@ -230,7 +289,7 @@ async function getPersistedMixIfFresh(mixId: string) {
     return null
   }
 
-  return persistedTracks
+  return toPersistedMix(mix, persistedTracks)
 }
 
 async function generateDailyMixTracks(seed: number) {
@@ -282,13 +341,15 @@ async function generateForYouMixTracks(seed: number) {
   return generateMix(topLibraryTracks, seed)
 }
 
-export async function getDailyMix(): Promise<Track[]> {
+export async function getDailyMix(): Promise<PersistedMix> {
   const persisted = await getPersistedMixIfFresh(DAILY_MIX_ID)
   if (persisted) {
     return persisted
   }
 
-  const mixTracksList = await generateDailyMixTracks(getDaySeed())
+  const seed = getDaySeed()
+  const visual = getMixVisual(seed)
+  const mixTracksList = await generateDailyMixTracks(seed)
 
   await persistMix({
     id: DAILY_MIX_ID,
@@ -297,18 +358,30 @@ export async function getDailyMix(): Promise<Track[]> {
     timespan: "day",
     expiresAt: getStartOfNextLocalDay(),
     tracks: mixTracksList,
+    ...visual,
   })
 
-  return mixTracksList
+  return {
+    id: DAILY_MIX_ID,
+    kind: "system",
+    title: "Daily Mix",
+    timespan: "day",
+    generatedAt: Date.now(),
+    expiresAt: getStartOfNextLocalDay(),
+    tracks: mixTracksList,
+    ...visual,
+  }
 }
 
-export async function getForYouMix(): Promise<Track[]> {
+export async function getForYouMix(): Promise<PersistedMix> {
   const persisted = await getPersistedMixIfFresh(FOR_YOU_MIX_ID)
   if (persisted) {
     return persisted
   }
 
-  const mixTracksList = await generateForYouMixTracks(getWeekSeed())
+  const seed = getWeekSeed()
+  const visual = getMixVisual(seed)
+  const mixTracksList = await generateForYouMixTracks(seed)
 
   await persistMix({
     id: FOR_YOU_MIX_ID,
@@ -317,7 +390,17 @@ export async function getForYouMix(): Promise<Track[]> {
     timespan: "week",
     expiresAt: getStartOfNextLocalWeek(),
     tracks: mixTracksList,
+    ...visual,
   })
 
-  return mixTracksList
+  return {
+    id: FOR_YOU_MIX_ID,
+    kind: "system",
+    title: "For You Mix",
+    timespan: "week",
+    generatedAt: Date.now(),
+    expiresAt: getStartOfNextLocalWeek(),
+    tracks: mixTracksList,
+    ...visual,
+  }
 }

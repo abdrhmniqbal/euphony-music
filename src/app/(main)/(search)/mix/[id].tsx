@@ -36,7 +36,7 @@ export default function MixDetailsScreen() {
   const { data: dailyMix, isLoading: isDailyLoading } = useDailyMix()
   const { data: forYouMix, isLoading: isForYouLoading } = useForYouMix()
 
-  const tracks = isDaily ? (dailyMix ?? []) : (forYouMix ?? [])
+  const tracks = isDaily ? (dailyMix?.tracks ?? []) : (forYouMix?.tracks ?? [])
   const isLoading = isDaily ? isDailyLoading : isForYouLoading
 
   const title = isDaily

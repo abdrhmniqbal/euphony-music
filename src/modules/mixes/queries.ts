@@ -3,7 +3,7 @@ import { queryClient } from "@/lib/tanstack-query"
 import { getDailyMix, getForYouMix } from "./repository"
 
 export const mixKeys = {
-  all: ["mixes", "v2"] as const,
+  all: ["mixes", "v3"] as const,
   daily: () => [...mixKeys.all, "daily"] as const,
   forYou: () => [...mixKeys.all, "forYou"] as const,
 }

@@ -236,6 +236,8 @@ export const mixes = sqliteTable("mixes", {
   kind: text("kind").notNull(),
   title: text("title").notNull(),
   timespan: text("timespan"),
+  colorIndex: integer("color_index").default(0).notNull(),
+  shape: text("shape").default("circles").notNull(),
   generatedAt: integer("generated_at").notNull(),
   expiresAt: integer("expires_at").notNull(),
   createdAt: integer("created_at")
