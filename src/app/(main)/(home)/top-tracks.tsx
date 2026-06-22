@@ -7,14 +7,15 @@
  */
 
 import type { HistoryTopTracksPeriod as TopTracksPeriod } from "@/modules/history/types"
-import { Tabs } from "heroui-native"
+import { BottomSheet, PressableFeedback } from "heroui-native"
 import { useState } from "react"
-import { View } from "react-native"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import Animated from "react-native-reanimated"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
+import LocalArrowDownIcon from "@/components/icons/local/arrow-down"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
@@ -26,58 +27,54 @@ import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
-const TOP_TRACKS_TABS = ["Realtime", "Daily", "Weekly"] as const
-type TopTracksTab = (typeof TOP_TRACKS_TABS)[number]
 const TOP_TRACKS_LIMIT = 50
-
-function tabToPeriod(tab: TopTracksTab): TopTracksPeriod {
-  if (tab === "Daily") {
-    return "day"
-  }
-
-  if (tab === "Weekly") {
-    return "week"
-  }
-
-  return "all"
-}
 
 export default function TopTracksScreen() {
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const [activeTab, setActiveTab] = useState<TopTracksTab>("Realtime")
-  const period = tabToPeriod(activeTab)
+  const [period, setPeriod] = useState<TopTracksPeriod>("all")
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const {
     data: currentTracksData,
     isLoading,
     isFetching,
     refetch,
+    dataUpdatedAt,
   } = useTopTracksByPeriod(period, TOP_TRACKS_LIMIT)
 
   const currentTracks = currentTracksData ?? []
 
-  function getTopTracksPeriodText(tab: TopTracksTab) {
-    switch (tab) {
-      case "Daily":
+  const formattedUpdatedTime =
+    dataUpdatedAt > 0
+      ? new Intl.DateTimeFormat(undefined, {
+          hour: "numeric",
+          minute: "numeric",
+        }).format(new Date(dataUpdatedAt))
+      : null
+
+  const lastUpdatedText = formattedUpdatedTime
+    ? t("home.topTracks.lastUpdated", {
+        time: formattedUpdatedTime,
+        defaultValue: `Charts updated at ${formattedUpdatedTime}`,
+      })
+    : null
+
+
+  function getPeriodLabel(p: TopTracksPeriod) {
+    switch (p) {
+      case "day":
         return t("home.topTracks.today", "Today")
-      case "Weekly":
+      case "week":
         return t("home.topTracks.thisWeek", "This week")
-      case "Realtime":
+      case "month":
+        return t("home.topTracks.thisMonth", "This month")
+      case "all":
         return t("home.topTracks.allTime", "All time")
     }
   }
 
-  function getTopTracksTabLabel(tab: TopTracksTab) {
-    switch (tab) {
-      case "Daily":
-        return t("home.tabs.daily")
-      case "Weekly":
-        return t("home.tabs.weekly")
-      case "Realtime":
-        return t("home.tabs.realtime")
-    }
-  }
+  const periodOptions: TopTracksPeriod[] = ["all", "day", "week", "month"]
 
   async function refresh() {
     await startIndexing(false)
@@ -116,26 +113,9 @@ export default function TopTracksScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <Tabs
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as TopTracksTab)}
-        className="gap-3 px-4 pt-4 pb-3"
-      >
-        <Tabs.List className="w-full flex-row rounded-[26px] border border-border/60 bg-default/35 px-1 py-1">
-          <Tabs.Indicator className="rounded-full bg-background text-surface-foreground" />
-          {TOP_TRACKS_TABS.map((tab) => (
-            <Tabs.Trigger key={tab} value={tab} className="flex-1 rounded-full py-2.5">
-              <Tabs.Label className="text-[15px] font-semibold">
-                {getTopTracksTabLabel(tab)}
-              </Tabs.Label>
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
-      </Tabs>
-
       {currentTracks.length === 0 ? (
         <Animated.View
-          key={`empty-${activeTab}`}
+          key={`empty-${period}`}
           entering={screenEnterTransition()}
           exiting={screenExitTransition()}
           className="px-4"
@@ -151,7 +131,7 @@ export default function TopTracksScreen() {
         </Animated.View>
       ) : (
         <Animated.View
-          key={`tracks-${activeTab}`}
+          key={`tracks-${period}`}
           entering={screenEnterTransition()}
           exiting={screenExitTransition()}
           className="flex-1"
@@ -175,24 +155,65 @@ export default function TopTracksScreen() {
               />
             }
             listHeader={
-              <Animated.View key={`actions-${activeTab}`} entering={screenEnterTransition()}>
+              <Animated.View key={`actions-${period}`} entering={screenEnterTransition()}>
+                <PressableFeedback
+                  onPress={() => setIsSheetOpen(true)}
+                  className="mb-4 mt-2 flex-row items-center gap-2 active:opacity-50"
+                >
+                  <Text className="text-3xl font-bold text-foreground">
+                    {getPeriodLabel(period)}
+                  </Text>
+                  <LocalArrowDownIcon fill="none" width={20} height={20} color={theme.foreground} />
+                </PressableFeedback>
+
                 <PlaybackActionsRow
                   onPlay={playAll}
                   onShuffle={shuffle}
                   className="mb-1 px-0 py-0"
                 />
-                <Animated.Text
-                  key={`period-${activeTab}`}
-                  entering={screenEnterTransition()}
-                  className="text-left text-xs text-muted"
-                >
-                  {getTopTracksPeriodText(activeTab)}
-                </Animated.Text>
+                {lastUpdatedText ? (
+                  <Animated.Text
+                    key={`updated-${period}-${dataUpdatedAt}`}
+                    entering={screenEnterTransition()}
+                    className="text-left text-xs text-muted"
+                  >
+                    {lastUpdatedText}
+                  </Animated.Text>
+                ) : null}
               </Animated.View>
             }
           />
         </Animated.View>
       )}
+
+      <BottomSheet isOpen={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <BottomSheet.Portal>
+          <BottomSheet.Overlay />
+          <BottomSheet.Content backgroundClassName="bg-surface" className="gap-1 pb-8">
+            <BottomSheet.Title className="mb-2 text-xl">
+              {t("home.topTracks.timespanTitle", "Timespan")}
+            </BottomSheet.Title>
+            {periodOptions.map((opt) => (
+              <PressableFeedback
+                key={opt}
+                className="h-14 flex-row items-center justify-between active:opacity-50"
+                onPress={() => {
+                  setPeriod(opt)
+                  setIsSheetOpen(false)
+                }}
+              >
+                <Text
+                  className={
+                    period === opt ? "text-base font-semibold text-accent" : "text-base font-medium text-foreground"
+                  }
+                >
+                  {getPeriodLabel(opt)}
+                </Text>
+              </PressableFeedback>
+            ))}
+          </BottomSheet.Content>
+        </BottomSheet.Portal>
+      </BottomSheet>
     </View>
   )
 }

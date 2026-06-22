@@ -31,6 +31,10 @@ function getStartOfLocalWeek(now = new Date()) {
   return startOfDay.getTime()
 }
 
+function getStartOfLocalMonth(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), 1).getTime()
+}
+
 export async function getTrackHistory(): Promise<Track[]> {
   try {
     const history = await db.query.playHistory.findMany({
@@ -95,7 +99,15 @@ export async function getTopTracksByPeriod(
         .map((track) => transformDBTrackToTrack(track as DBTrack))
     }
 
-    const timeThreshold = period === "day" ? getStartOfLocalDay() : getStartOfLocalWeek()
+    let timeThreshold: number
+    if (period === "day") {
+      timeThreshold = getStartOfLocalDay()
+    } else if (period === "week") {
+      timeThreshold = getStartOfLocalWeek()
+    } else {
+      timeThreshold = getStartOfLocalMonth()
+    }
+
 
     const history = await db.query.playHistory.findMany({
       where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
