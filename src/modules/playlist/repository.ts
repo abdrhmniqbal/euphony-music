@@ -57,57 +57,70 @@ export function collectPlaylistImages(playlist: {
   return Array.from(images)
 }
 
-async function getPlaylistDurationByTrackIds(trackIds: string[]): Promise<number> {
-  if (trackIds.length === 0) {
-    return 0
-  }
+type PlaylistWriteDb = Pick<typeof db, "delete" | "insert" | "select" | "update">
 
-  const rows = await db
-    .select({ duration: tracks.duration })
-    .from(tracks)
-    .where(inArray(tracks.id, trackIds))
-
-  return rows.reduce((sum, row) => sum + (row.duration || 0), 0)
+function toPlaylistTrackRows(playlistId: string, trackIds: string[], now: number) {
+  return trackIds.map((trackId, index) => ({
+    id: generateId(),
+    playlistId,
+    trackId,
+    position: index,
+    addedAt: now,
+  }))
 }
 
-async function updatePlaylistStats(playlistId: string) {
-  const trackEntries = await db.query.playlistTracks.findMany({
-    where: eq(playlistTracks.playlistId, playlistId),
-    with: {
-      track: true,
-    },
-  })
+async function replacePlaylistTrackMembership(
+  database: PlaylistWriteDb,
+  playlistId: string,
+  trackIds: string[],
+  now: number
+) {
+  await database.delete(playlistTracks).where(eq(playlistTracks.playlistId, playlistId))
 
-  const trackCount = trackEntries.length
-  const duration = trackEntries.reduce((sum, entry) => sum + (entry.track?.duration || 0), 0)
+  if (trackIds.length === 0) {
+    return
+  }
 
-  await db
+  await database.insert(playlistTracks).values(toPlaylistTrackRows(playlistId, trackIds, now))
+}
+
+async function recomputePlaylistStats(
+  database: PlaylistWriteDb,
+  playlistId: string,
+  now: number
+) {
+  const [stats] = await database
+    .select({
+      trackCount: sql<number>`count(${playlistTracks.id})`,
+      duration: sql<number>`coalesce(sum(${tracks.duration}), 0)`,
+    })
+    .from(playlistTracks)
+    .leftJoin(tracks, eq(playlistTracks.trackId, tracks.id))
+    .where(eq(playlistTracks.playlistId, playlistId))
+
+  await database
     .update(playlists)
     .set({
-      trackCount,
-      duration,
-      updatedAt: Date.now(),
+      trackCount: Number(stats?.trackCount ?? 0),
+      duration: Number(stats?.duration ?? 0),
+      updatedAt: now,
     })
     .where(eq(playlists.id, playlistId))
 }
 
-async function resequencePlaylistTracks(playlistId: string) {
-  const remainingTracks = await db.query.playlistTracks.findMany({
-    where: eq(playlistTracks.playlistId, playlistId),
-    orderBy: [asc(playlistTracks.position)],
-  })
+async function resequencePlaylistTracks(database: PlaylistWriteDb, playlistId: string) {
+  const remainingTracks = await database
+    .select({ id: playlistTracks.id })
+    .from(playlistTracks)
+    .where(eq(playlistTracks.playlistId, playlistId))
+    .orderBy(asc(playlistTracks.position))
 
-  await db.transaction(async (tx) => {
-    for (let i = 0; i < remainingTracks.length; i++) {
-      const playlistTrack = remainingTracks[i]
-      if (!playlistTrack) continue
+  for (let i = 0; i < remainingTracks.length; i++) {
+    const playlistTrack = remainingTracks[i]
+    if (!playlistTrack) continue
 
-      await tx
-        .update(playlistTracks)
-        .set({ position: i })
-        .where(eq(playlistTracks.id, playlistTrack.id))
-    }
-  })
+    await database.update(playlistTracks).set({ position: i }).where(eq(playlistTracks.id, playlistTrack.id))
+  }
 }
 
 export async function listPlaylists() {
@@ -198,30 +211,22 @@ export async function createPlaylist(
   try {
     const id = generateId()
     const now = Date.now()
-    const duration = await getPlaylistDurationByTrackIds(trackIds)
     const normalizedDescription = normalizeDescription(description)
 
-    await db.insert(playlists).values({
-      id,
-      name,
-      description: normalizedDescription,
-      trackCount: trackIds.length,
-      duration,
-      createdAt: now,
-      updatedAt: now,
-    })
+    await db.transaction(async (tx) => {
+      await tx.insert(playlists).values({
+        id,
+        name,
+        description: normalizedDescription,
+        trackCount: 0,
+        duration: 0,
+        createdAt: now,
+        updatedAt: now,
+      })
 
-    if (trackIds.length > 0) {
-      await db.insert(playlistTracks).values(
-        trackIds.map((trackId, index) => ({
-          id: generateId(),
-          playlistId: id,
-          trackId,
-          position: index,
-          addedAt: now,
-        }))
-      )
-    }
+      await replacePlaylistTrackMembership(tx, id, trackIds, now)
+      await recomputePlaylistStats(tx, id, now)
+    })
   } catch (error) {
     logError("Failed to create playlist", error, {
       name,
@@ -239,7 +244,6 @@ export async function updatePlaylist(
 ): Promise<void> {
   try {
     const now = Date.now()
-    const duration = await getPlaylistDurationByTrackIds(trackIds)
     const normalizedDescription = normalizeDescription(description)
 
     await db.transaction(async (tx) => {
@@ -248,25 +252,12 @@ export async function updatePlaylist(
         .set({
           name,
           description: normalizedDescription,
-          trackCount: trackIds.length,
-          duration,
           updatedAt: now,
         })
         .where(eq(playlists.id, id))
 
-      await tx.delete(playlistTracks).where(eq(playlistTracks.playlistId, id))
-
-      if (trackIds.length > 0) {
-        await tx.insert(playlistTracks).values(
-          trackIds.map((trackId, index) => ({
-            id: generateId(),
-            playlistId: id,
-            trackId,
-            position: index,
-            addedAt: now,
-          }))
-        )
-      }
+      await replacePlaylistTrackMembership(tx, id, trackIds, now)
+      await recomputePlaylistStats(tx, id, now)
     })
   } catch (error) {
     logError("Failed to update playlist", error, {
@@ -308,33 +299,40 @@ export async function addTrackToPlaylist({
   playlistId: string
   trackId: string
 }) {
-  const existingEntry = await db.query.playlistTracks.findFirst({
-    where: and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)),
+  const now = Date.now()
+  let skipped = false
+
+  await db.transaction(async (tx) => {
+    const [existingEntry] = await tx
+      .select({ id: playlistTracks.id })
+      .from(playlistTracks)
+      .where(and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)))
+      .limit(1)
+
+    if (existingEntry) {
+      skipped = true
+      return
+    }
+
+    const [lastTrack] = await tx
+      .select({ position: playlistTracks.position })
+      .from(playlistTracks)
+      .where(eq(playlistTracks.playlistId, playlistId))
+      .orderBy(desc(playlistTracks.position))
+      .limit(1)
+
+    await tx.insert(playlistTracks).values({
+      id: generateId(),
+      playlistId,
+      trackId,
+      position: lastTrack ? (lastTrack.position || 0) + 1 : 0,
+      addedAt: now,
+    })
+
+    await recomputePlaylistStats(tx, playlistId, now)
   })
 
-  if (existingEntry) {
-    return { playlistId, trackId, skipped: true as const }
-  }
-
-  const existingTracks = await db.query.playlistTracks.findMany({
-    where: eq(playlistTracks.playlistId, playlistId),
-    orderBy: [desc(playlistTracks.position)],
-    limit: 1,
-  })
-
-  const nextPosition = existingTracks.length > 0 ? (existingTracks[0].position || 0) + 1 : 0
-
-  await db.insert(playlistTracks).values({
-    id: generateId(),
-    playlistId,
-    trackId,
-    position: nextPosition,
-    addedAt: Date.now(),
-  })
-
-  await updatePlaylistStats(playlistId)
-
-  return { playlistId, trackId, skipped: false as const }
+  return { playlistId, trackId, skipped }
 }
 
 export async function removeTrackFromPlaylist({
@@ -344,12 +342,16 @@ export async function removeTrackFromPlaylist({
   playlistId: string
   trackId: string
 }) {
-  await db
-    .delete(playlistTracks)
-    .where(and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)))
+  const now = Date.now()
 
-  await resequencePlaylistTracks(playlistId)
-  await updatePlaylistStats(playlistId)
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(playlistTracks)
+      .where(and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)))
+
+    await resequencePlaylistTracks(tx, playlistId)
+    await recomputePlaylistStats(tx, playlistId, now)
+  })
 
   return { playlistId, trackId }
 }
@@ -361,6 +363,8 @@ export async function reorderPlaylistTracks({
   playlistId: string
   trackIds: string[]
 }) {
+  const now = Date.now()
+
   await db.transaction(async (tx) => {
     for (let i = 0; i < trackIds.length; i++) {
       const trackId = trackIds[i]
@@ -371,6 +375,8 @@ export async function reorderPlaylistTracks({
         .set({ position: i })
         .where(and(eq(playlistTracks.playlistId, playlistId), eq(playlistTracks.trackId, trackId)))
     }
+
+    await recomputePlaylistStats(tx, playlistId, now)
   })
 }
 
