@@ -16,9 +16,9 @@ import { getCurrentTrackState, getQueueTrackIdsState, getRepeatModeState } from 
 const FULL_VOLUME = 1
 const SILENT_VOLUME = 0
 const DUCKED_VOLUME = 0.25
-const MIN_FADE_SECONDS = 0.5
+const MIN_FADE_SECONDS = 0.75
 const SHORT_FADE_SECONDS = 0.2
-const FADE_STEP_MS = 100
+const FADE_STEP_MS = 50
 
 let volumeRampTimer: ReturnType<typeof setInterval> | null = null
 let activeRampId = 0
@@ -32,6 +32,10 @@ function clampVolume(value: number) {
   }
 
   return Math.max(SILENT_VOLUME, Math.min(FULL_VOLUME, value))
+}
+
+function easeInOutCubic(value: number) {
+  return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2
 }
 
 function clearVolumeRamp() {
@@ -68,7 +72,8 @@ async function startVolumeRamp(toVolume: number, durationSeconds: number) {
     activeRampResolve = resolve
     volumeRampTimer = setInterval(() => {
       const progress = Math.min(1, (Date.now() - startedAt) / durationMs)
-      const nextVolume = fromVolume + (targetVolume - fromVolume) * progress
+      const easedProgress = easeInOutCubic(progress)
+      const nextVolume = fromVolume + (targetVolume - fromVolume) * easedProgress
 
       void setPlayerVolume(nextVolume).catch((error) => {
         clearVolumeRamp()
