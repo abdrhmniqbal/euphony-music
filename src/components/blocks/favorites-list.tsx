@@ -6,7 +6,12 @@
  * Side Effects: Navigates to favorite media routes, starts favorite track playback, and toggles favorite flags.
  */
 
-import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types"
+type CollectionFavoriteType = Extract<FavoriteType, "artist" | "album" | "playlist">
+
+function isCollectionFavoriteType(type: FavoriteType | undefined): type is CollectionFavoriteType {
+  return type === "artist" || type === "album" || type === "playlist"
+}
+
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -361,8 +366,15 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
       image: selectedFavorite.image,
       duration: 0,
       uri: "",
-    } as any
+    }
   }, [selectedFavorite, tracks])
+
+  const selectedCollectionFavorite = React.useMemo(() => {
+    if (selectedFavorite && isCollectionFavoriteType(selectedFavorite.type)) {
+      return selectedFavorite
+    }
+    return null
+  }, [selectedFavorite])
 
   return (
     <View style={{ flex: 1, minHeight: 1 }}>
@@ -418,18 +430,18 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
         style={{ flex: 1, minHeight: 1 }}
       />
       <CollectionActionSheet
-        visible={isSheetOpen && !isTrackType && Boolean(selectedFavorite)}
+        visible={isSheetOpen && Boolean(selectedCollectionFavorite)}
         onOpenChange={(open) => {
           if (!open) {
             setIsSheetOpen(false)
           }
         }}
-        type={selectedFavorite?.type as any}
-        id={selectedFavorite?.id ?? ""}
-        name={selectedFavorite?.name ?? ""}
-        subtitle={selectedFavorite?.subtitle}
-        image={selectedFavorite?.image}
-        images={selectedFavorite?.images}
+        type={selectedCollectionFavorite?.type ?? "album"}
+        id={selectedCollectionFavorite?.id ?? ""}
+        name={selectedCollectionFavorite?.name ?? ""}
+        subtitle={selectedCollectionFavorite?.subtitle}
+        image={selectedCollectionFavorite?.image}
+        images={selectedCollectionFavorite?.images}
       />
       <TrackActionSheet
         track={mappedTrack}

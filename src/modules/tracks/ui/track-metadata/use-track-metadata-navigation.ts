@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import type { ArtistPickerSheetItem } from "@/components/blocks/artist-picker-sheet"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
-import { buildArtistSelectionItems, dedupeValues } from "./metadata-derivation"
+import { buildArtistSelectionItems, dedupeValues, type FullTrackData } from "./metadata-derivation"
 
 export function useTrackMetadataNavigation({
   trackAlbumId,
@@ -12,8 +12,17 @@ export function useTrackMetadataNavigation({
   onSheetClose,
 }: {
   trackAlbumId?: string
-  fullTrackData: any
-  buildArtistPickerItems: any
+  fullTrackData: FullTrackData | null | undefined
+  buildArtistPickerItems: (
+    source: {
+      artwork?: string | null
+      albumArtwork?: string | null
+      artist?: { name?: string | null } | null
+      featuredArtists?: Array<{ artist?: { name?: string | null } | null }> | null
+    },
+    names: string[],
+    formatCount: (count: number) => string
+  ) => ArtistPickerSheetItem[]
   trackCountLabel: (count: number) => string
   onSheetClose: () => void
 }) {

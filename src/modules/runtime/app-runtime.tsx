@@ -139,6 +139,23 @@ function onProgressUpdated(e: { position: number; duration: number }) {
   void handleCrossfadeProgress(e.position, e.duration)
 }
 
+function toPlaybackState(state: string) {
+  switch (state) {
+    case "none":
+    case "ready":
+    case "playing":
+    case "paused":
+    case "stopped":
+    case "buffering":
+    case "loading":
+    case "ended":
+    case "error":
+      return state
+    default:
+      return "none"
+  }
+}
+
 function onPlaybackChanged(e: { state: string }) {
   if (e.state === "paused") {
     playbackStore.setState({ isPlaying: false })
@@ -151,7 +168,7 @@ function onPlaybackChanged(e: { state: string }) {
     })
   }
 
-  void handleCrossfadePlaybackState(e.state as any)
+  void handleCrossfadePlaybackState(toPlaybackState(e.state))
 }
 
 async function startRuntime() {

@@ -223,7 +223,7 @@ export default function Layout() {
     : `${appTheme.rootClassName}-light`
 
   return (
-    <ScopedTheme theme={activeThemeName as any}>
+    <ScopedTheme theme={activeThemeName}>
       <ThemedAppShell
         currentTheme={currentTheme}
         notifyDatabaseReady={notifyDatabaseReady}

@@ -46,7 +46,7 @@ export function dedupeValues(values: string[]) {
   })
 }
 
-interface FullTrackData {
+export interface FullTrackData {
   artwork?: string | null
   album?: {
     artwork?: string | null

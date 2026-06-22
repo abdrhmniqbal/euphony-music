@@ -109,7 +109,7 @@ export default function LibraryTabsSettingsScreen() {
 
   const panGesture = useMemo(() => {
     return Gesture.Pan().activateAfterLongPress(200);
-  }, []) as any;
+  }, []);
 
   return (
     <View className="flex-1 bg-background px-4 py-4">

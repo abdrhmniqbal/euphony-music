@@ -105,7 +105,7 @@ function mapInputToAudioBrowserTrack(track: TrackPlayerInput) {
   }
 }
 
-function mapAudioBrowserState(state?: string): State {
+export function mapAudioBrowserState(state?: string): State {
   switch (state) {
     case "playing":
       return State.Playing
