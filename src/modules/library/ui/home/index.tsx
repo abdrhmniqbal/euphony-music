@@ -12,6 +12,13 @@ import {
   type NativeSyntheticEvent,
   View,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  Easing,
+  interpolate,
+} from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { AlbumsTab } from "@/components/blocks/albums-tab";
 import { ArtistsTab } from "@/components/blocks/artists-tab";
@@ -40,6 +47,28 @@ export default function LibraryScreen() {
   const theme = useThemeColors();
 
   const state = useLibraryHomeState();
+
+  const tabSlideOffset = useSharedValue(0);
+
+  const handleActiveTabChange = (nextTab: typeof state.activeTab) => {
+    const currentIndex = state.visibleTabs.indexOf(state.activeTab);
+    const nextIndex = state.visibleTabs.indexOf(nextTab);
+    const direction = nextIndex >= currentIndex ? 1 : -1;
+
+    tabSlideOffset.value = direction * 32;
+    state.setActiveTab(nextTab);
+    tabSlideOffset.value = withTiming(0, {
+      duration: 260,
+      easing: Easing.out(Easing.poly(4)),
+    });
+  };
+
+  const tabContentStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: tabSlideOffset.value }],
+      opacity: interpolate(Math.abs(tabSlideOffset.value), [0, 32], [1, 0.4]),
+    };
+  });
 
   const [actionSheetConfig, setActionSheetConfig] = React.useState<{
     visible: boolean;
@@ -240,7 +269,7 @@ export default function LibraryScreen() {
           <LibraryTabBar
             tabs={state.visibleTabs}
             activeTab={state.activeTab}
-            onActiveTabChange={state.setActiveTab}
+            onActiveTabChange={handleActiveTabChange}
             getLibraryTabLabel={state.getLibraryTabLabel}
           />
 
@@ -262,7 +291,9 @@ export default function LibraryScreen() {
                 />
               </View>
             )}
-            <View className="flex-1">{renderTabContent()}</View>
+            <Animated.View style={tabContentStyle} className="flex-1">
+              {renderTabContent()}
+            </Animated.View>
           </View>
         </View>
 
