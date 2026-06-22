@@ -231,6 +231,44 @@ export const playlistTracks = sqliteTable(
   })
 )
 
+export const mixes = sqliteTable("mixes", {
+  id: text("id").primaryKey(),
+  kind: text("kind").notNull(),
+  title: text("title").notNull(),
+  timespan: text("timespan"),
+  generatedAt: integer("generated_at").notNull(),
+  expiresAt: integer("expires_at").notNull(),
+  createdAt: integer("created_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
+  updatedAt: integer("updated_at")
+    .notNull()
+    .$defaultFn(() => Date.now()),
+})
+
+
+export const mixTracks = sqliteTable(
+  "mix_tracks",
+  {
+    id: text("id").primaryKey(),
+    mixId: text("mix_id")
+      .notNull()
+      .references(() => mixes.id, { onDelete: "cascade" }),
+    trackId: text("track_id")
+      .notNull()
+      .references(() => tracks.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+    addedAt: integer("added_at")
+      .notNull()
+      .$defaultFn(() => Date.now()),
+  },
+  (table) => ({
+    mixIdx: index("mix_tracks_mix_idx").on(table.mixId),
+    trackIdx: index("mix_tracks_track_idx").on(table.trackId),
+    positionIdx: index("mix_tracks_position_idx").on(table.mixId, table.position),
+  })
+)
+
 export const playHistory = sqliteTable(
   "play_history",
   {
@@ -349,6 +387,21 @@ export const playlistTracksRelations = relations(playlistTracks, ({ one }) => ({
   }),
   track: one(tracks, {
     fields: [playlistTracks.trackId],
+    references: [tracks.id],
+  }),
+}))
+
+export const mixesRelations = relations(mixes, ({ many }) => ({
+  tracks: many(mixTracks),
+}))
+
+export const mixTracksRelations = relations(mixTracks, ({ one }) => ({
+  mix: one(mixes, {
+    fields: [mixTracks.mixId],
+    references: [mixes.id],
+  }),
+  track: one(tracks, {
+    fields: [mixTracks.trackId],
     references: [tracks.id],
   }),
 }))

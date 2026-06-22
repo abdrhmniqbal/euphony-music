@@ -1,12 +1,15 @@
+import { createId } from "@paralleldrive/cuid2"
 import type { Track } from "@/modules/player/types"
-import { desc, eq } from "drizzle-orm"
+import { asc, desc, eq } from "drizzle-orm"
 
 import { db } from "@/db/client"
-import { tracks } from "@/db/schema"
+import { mixTracks, mixes, playHistory, tracks } from "@/db/schema"
 import type { DBTrack } from "@/types/database"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
 const MIX_LIMIT = 25
+const DAILY_MIX_ID = "daily"
+const FOR_YOU_MIX_ID = "for-you"
 
 type MixProfile = {
   artistNames: string[]
@@ -26,9 +29,28 @@ function shuffle<T>(items: T[], seed = Date.now()) {
   return next
 }
 
-function getSeedFromDay(dayOffset = 0) {
-  const now = new Date()
-  return Number(`${now.getFullYear()}${now.getMonth() + 1}${now.getDate() + dayOffset}`)
+function getDaySeed(now = new Date()) {
+  return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
+}
+
+function getWeekSeed(now = new Date()) {
+  const startOfYear = new Date(now.getFullYear(), 0, 1)
+  const dayOffset = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000)
+  const weekNumber = Math.floor(dayOffset / 7)
+  return now.getFullYear() * 100 + weekNumber
+}
+
+function getStartOfNextLocalDay(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime()
+}
+
+function getStartOfNextLocalWeek(now = new Date()) {
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const dayOfWeek = startOfDay.getDay()
+  const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+
+  startOfDay.setDate(startOfDay.getDate() - mondayOffset + 7)
+  return startOfDay.getTime()
 }
 
 async function listLibraryTracks(): Promise<DBTrack[]> {
@@ -112,9 +134,108 @@ async function generateMix(seedTracks: Track[], seed: number): Promise<Track[]> 
   return shuffle(ranked, seed).slice(0, MIX_LIMIT)
 }
 
-export async function getDailyMix(): Promise<Track[]> {
+async function loadPersistedMixTracks(mixId: string): Promise<Track[]> {
+  const rows = await db.query.mixTracks.findMany({
+    where: eq(mixTracks.mixId, mixId),
+    orderBy: [asc(mixTracks.position)],
+    with: {
+      track: {
+        with: {
+          artist: true,
+          featuredArtists: {
+            with: {
+              artist: true,
+            },
+          },
+          album: true,
+          genres: {
+            with: {
+              genre: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return rows
+    .map((row) => row.track)
+    .filter((track): track is DBTrack => Boolean(track && !track.isDeleted))
+    .map((track) => transformDBTrackToTrack(track))
+}
+
+async function persistMix(params: {
+  id: string
+  kind: string
+  title: string
+  timespan: string
+  expiresAt: number
+  tracks: Track[]
+}) {
+  const now = Date.now()
+
+  await db.transaction(async (tx) => {
+    await tx
+      .insert(mixes)
+      .values({
+        id: params.id,
+        kind: params.kind,
+        title: params.title,
+        timespan: params.timespan,
+        generatedAt: now,
+        expiresAt: params.expiresAt,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: mixes.id,
+        set: {
+          kind: params.kind,
+          title: params.title,
+          timespan: params.timespan,
+          generatedAt: now,
+          expiresAt: params.expiresAt,
+          updatedAt: now,
+        },
+      })
+
+    await tx.delete(mixTracks).where(eq(mixTracks.mixId, params.id))
+
+    if (params.tracks.length === 0) {
+      return
+    }
+
+    await tx.insert(mixTracks).values(
+      params.tracks.map((track, index) => ({
+        id: createId(),
+        mixId: params.id,
+        trackId: track.id,
+        position: index,
+        addedAt: now,
+      }))
+    )
+  })
+}
+
+async function getPersistedMixIfFresh(mixId: string) {
+  const mix = await db.query.mixes.findFirst({
+    where: eq(mixes.id, mixId),
+  })
+
+  if (!mix || mix.expiresAt <= Date.now()) {
+    return null
+  }
+
+  const persistedTracks = await loadPersistedMixTracks(mixId)
+  if (persistedTracks.length === 0) {
+    return null
+  }
+
+  return persistedTracks
+}
+
+async function generateDailyMixTracks(seed: number) {
   const recent = await db.query.playHistory.findMany({
-    orderBy: [],
+    orderBy: [desc(playHistory.playedAt)],
     with: {
       track: {
         with: {
@@ -142,21 +263,61 @@ export async function getDailyMix(): Promise<Track[]> {
     .map((track) => transformDBTrackToTrack(track))
 
   if (seedTracks.length === 0) {
-    return shuffle((await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)), getSeedFromDay()).slice(0, MIX_LIMIT)
+    return shuffle((await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)), seed).slice(0, MIX_LIMIT)
   }
 
-  return generateMix(seedTracks, getSeedFromDay())
+  return generateMix(seedTracks, seed)
 }
 
-export async function getForYouMix(): Promise<Track[]> {
+async function generateForYouMixTracks(seed: number) {
   const topLibraryTracks = (await listLibraryTracks())
     .filter((track) => (track.playCount ?? 0) > 0)
     .slice(0, 50)
     .map((track) => transformDBTrackToTrack(track))
 
   if (topLibraryTracks.length === 0) {
-    return shuffle((await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)), getSeedFromDay(7)).slice(0, MIX_LIMIT)
+    return shuffle((await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)), seed).slice(0, MIX_LIMIT)
   }
 
-  return generateMix(topLibraryTracks, getSeedFromDay(7))
+  return generateMix(topLibraryTracks, seed)
+}
+
+export async function getDailyMix(): Promise<Track[]> {
+  const persisted = await getPersistedMixIfFresh(DAILY_MIX_ID)
+  if (persisted) {
+    return persisted
+  }
+
+  const mixTracksList = await generateDailyMixTracks(getDaySeed())
+
+  await persistMix({
+    id: DAILY_MIX_ID,
+    kind: "system",
+    title: "Daily Mix",
+    timespan: "day",
+    expiresAt: getStartOfNextLocalDay(),
+    tracks: mixTracksList,
+  })
+
+  return mixTracksList
+}
+
+export async function getForYouMix(): Promise<Track[]> {
+  const persisted = await getPersistedMixIfFresh(FOR_YOU_MIX_ID)
+  if (persisted) {
+    return persisted
+  }
+
+  const mixTracksList = await generateForYouMixTracks(getWeekSeed())
+
+  await persistMix({
+    id: FOR_YOU_MIX_ID,
+    kind: "system",
+    title: "For You Mix",
+    timespan: "week",
+    expiresAt: getStartOfNextLocalWeek(),
+    tracks: mixTracksList,
+  })
+
+  return mixTracksList
 }
