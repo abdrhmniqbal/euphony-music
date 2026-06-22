@@ -19,6 +19,7 @@ export interface PlaybackStore {
   getTrack: (trackKey: string) => Promise<Track | undefined>
   reset: () => Promise<void>
   resetOnCrash: () => Promise<void>
+  restoreActiveTrack: () => Promise<void>
 
   _hasRestoredPosition: boolean
   _restoredTrackKey: string | undefined

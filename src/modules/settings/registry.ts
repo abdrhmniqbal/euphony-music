@@ -7,6 +7,7 @@ import { ensureCrossfadeConfigLoaded } from "@/modules/settings/audio-crossfade"
 import { ensureFolderFilterConfigLoaded } from "@/modules/settings/folder-filters"
 import { ensureIndexerNotificationsConfigLoaded } from "@/modules/settings/indexer-notifications"
 import { ensureLoggingConfigLoaded } from "@/modules/logging/store"
+import { ensureLibraryTabsConfigLoaded } from "@/modules/settings/library-tabs"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import { ensureThemeConfigLoaded } from "@/modules/settings/theme"
 import { ensureTrackDurationFilterConfigLoaded } from "@/modules/settings/track-duration-filter"
@@ -25,6 +26,7 @@ const SETTING_HYDRATION_REGISTRY: SettingHydrationDescriptor[] = [
   { key: "folderFilterConfig", ensureLoaded: ensureFolderFilterConfigLoaded },
   { key: "indexerNotificationsEnabled", ensureLoaded: ensureIndexerNotificationsConfigLoaded },
   { key: "loggingConfig", ensureLoaded: ensureLoggingConfigLoaded },
+  { key: "libraryTabsConfig", ensureLoaded: ensureLibraryTabsConfigLoaded },
   { key: "splitMultipleValueConfig", ensureLoaded: ensureSplitMultipleValueConfigLoaded },
   { key: "themeConfig", ensureLoaded: ensureThemeConfigLoaded },
   { key: "trackDurationFilterConfig", ensureLoaded: ensureTrackDurationFilterConfigLoaded },

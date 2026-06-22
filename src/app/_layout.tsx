@@ -48,6 +48,16 @@ const TOAST_VISIBLE_BOTTOM_GAP = 0
 const SETTINGS_FOLDER_FILTERS_ACTION_HEIGHT = 56
 const SETTINGS_FOLDER_FILTERS_ACTION_TOP_PADDING = 12
 
+type ScopedThemeName =
+  | "theme-default-light"
+  | "theme-default-dark"
+  | "theme-nord-light"
+  | "theme-nord-dark"
+  | "theme-dracula-light"
+  | "theme-dracula-dark"
+  | "theme-catppuccin-light"
+  | "theme-catppuccin-dark"
+
 function ToastAnimatedWrapper({
   children,
   extraBottom,
@@ -218,9 +228,9 @@ export default function Layout() {
     : folderFiltersToastOffset
 
   const isDark = currentTheme === "dark" || currentTheme.endsWith("-dark")
-  const activeThemeName = isDark
-    ? `${appTheme.rootClassName}-dark`
-    : `${appTheme.rootClassName}-light`
+  const activeThemeName = (
+    isDark ? `${appTheme.rootClassName}-dark` : `${appTheme.rootClassName}-light`
+  ) as ScopedThemeName
 
   return (
     <ScopedTheme theme={activeThemeName}>

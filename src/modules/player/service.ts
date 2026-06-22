@@ -27,13 +27,11 @@ import { playbackStore } from "@/stores/playback/store"
 import { preferenceStore } from "@/stores/preference/store"
 import { resolvePlayableFileUri } from "@/utils/file-path"
 import { updateNowPlaying } from "react-native-audio-browser"
-import {
-  getExternalTrackTitle,
-  normalizeExternalIntentUri,
-} from "./external-track-utils"
+import { getExternalTrackTitle, normalizeExternalIntentUri } from "./external-track-utils"
 import { getIsShuffledState, getTracksState, setTracksState } from "./store"
 
 let isPlayerReady = false
+let setupPlayerPromise: Promise<void> | null = null
 
 function buildPlaybackQueue(tracks: Track[], selectedTrackId: string) {
   const selectedTrackIndex = tracks.findIndex((track) => track.id === selectedTrackId)
@@ -97,40 +95,50 @@ function inferQueueContext(
 }
 
 export async function setupPlayer() {
-  try {
-    if (isPlayerReady) {
-      return
-    }
-
-    logInfo("Setting up audio-browser playback core")
-    await setupPlaybackCore()
-
-    const { restoreLastPosition } = preferenceStore.getState()
-    const { activeKey } = playbackStore.getState()
-    if (restoreLastPosition) {
-      playbackStore.setState({
-        _hasRestoredPosition: false,
-        _restoredTrackKey: activeKey,
-      })
-    } else {
-      playbackStore.setState({
-        _hasRestoredPosition: true,
-        _restoredTrackKey: undefined,
-        lastPosition: 0,
-      })
-    }
-
-    isPlayerReady = true
-    logInfo("Playback core setup completed")
-  } catch (error: unknown) {
-    if (error instanceof Error && error.message.includes("already been initialized")) {
-      isPlayerReady = true
-      logInfo("AudioBrowser playback core already initialized")
-      return
-    }
-
-    logError("AudioBrowser playback core setup failed", error)
+  if (isPlayerReady) {
+    return
   }
+
+  if (setupPlayerPromise) {
+    return setupPlayerPromise
+  }
+
+  setupPlayerPromise = (async () => {
+    try {
+      logInfo("Setting up audio-browser playback core")
+      await setupPlaybackCore()
+
+      const { restoreLastPosition } = preferenceStore.getState()
+      const { activeKey } = playbackStore.getState()
+      if (restoreLastPosition) {
+        playbackStore.setState({
+          _hasRestoredPosition: false,
+          _restoredTrackKey: activeKey,
+        })
+      } else {
+        playbackStore.setState({
+          _hasRestoredPosition: true,
+          _restoredTrackKey: undefined,
+          lastPosition: 0,
+        })
+      }
+
+      isPlayerReady = true
+      logInfo("Playback core setup completed")
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes("already been initialized")) {
+        isPlayerReady = true
+        logInfo("AudioBrowser playback core already initialized")
+        return
+      }
+
+      logError("AudioBrowser playback core setup failed", error)
+    } finally {
+      setupPlayerPromise = null
+    }
+  })()
+
+  return setupPlayerPromise
 }
 
 export async function playTrack(
@@ -139,7 +147,14 @@ export async function playTrack(
   queueContext?: PlayerQueueContext
 ) {
   if (!isPlayerReady) {
-    logWarn("Ignored playTrack call because player is not ready", {
+    logInfo("Player not ready on playTrack call, initializing now", {
+      trackId: track.id,
+    })
+    await setupPlayer()
+  }
+
+  if (!isPlayerReady) {
+    logWarn("Ignored playTrack call because player setup failed", {
       trackId: track.id,
     })
     return false

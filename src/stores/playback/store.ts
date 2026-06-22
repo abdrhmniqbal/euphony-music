@@ -4,7 +4,7 @@ import { useStore } from "zustand"
 
 import { db } from "@/db"
 import { playlistTracks } from "@/db/schema"
-import { getTrack } from "@/modules/tracks/repository"
+import { maybeGetTrack } from "@/modules/tracks/repository"
 
 import { createPersistedStore } from "@/lib/zustand"
 import { resetWidgets } from "@/modules/widget/utils"
@@ -21,7 +21,6 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
       let activeTrack: PlaybackStore["activeTrack"]
       if (activeKey) {
         activeTrack = await get().getTrack(activeKey)
-        if (!activeTrack) return
       }
       let upToDateIsPlaying = false
       try {
@@ -34,12 +33,29 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
 
     getTrack: async (trackKey) => {
       const tId = extractTrackId(trackKey)
+
       try {
-        const wantedTrack = await getTrack(tId)
-        return wantedTrack
-      } catch {
+        const wantedTrack = await maybeGetTrack(tId)
+        if (wantedTrack) {
+          return wantedTrack
+        }
+
         console.log(`[Database Mismatch] Track (${tId}) doesn't exist in the database.`)
         await get().reset()
+      } catch (error) {
+        logWarn("Failed to resolve playback track from database", {
+          error,
+          trackId: tId,
+        })
+      }
+    },
+    restoreActiveTrack: async () => {
+      const { activeTrack, activeKey, getTrack: resolveTrack } = get()
+      if (!activeTrack && activeKey) {
+        const resolved = await resolveTrack(activeKey)
+        if (resolved) {
+          set({ activeTrack: resolved })
+        }
       }
     },
     reset: async () => {

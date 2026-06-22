@@ -207,7 +207,7 @@ function toDataTrack(row: TrackRow): Track {
   }
 }
 
-export async function getTrack(id: string): Promise<Track> {
+export async function maybeGetTrack(id: string): Promise<Track | null> {
   const row = await db.query.tracks.findFirst({
     where: and(eq(tracks.id, id), eq(tracks.isDeleted, 0)),
     with: {
@@ -219,10 +219,18 @@ export async function getTrack(id: string): Promise<Track> {
   })
 
   if (!row) {
-    throw new Error("err.msg.noTracks")
+    return null
   }
 
   return toDataTrack(row)
+}
+
+export async function getTrack(id: string): Promise<Track> {
+  const track = await maybeGetTrack(id)
+  if (!track) {
+    throw new Error("err.msg.noTracks")
+  }
+  return track
 }
 
 export async function getTracksByIds(ids: string[]): Promise<Track[]> {

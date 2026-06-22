@@ -1,7 +1,16 @@
 import { File, Paths } from "expo-file-system"
+import KvStore from "expo-sqlite/kv-store"
 
-export function createSettingsConfigFile(fileName: string) {
-  return new File(Paths.document, fileName)
+export interface SettingsConfigDescriptor {
+  key: string
+  legacyFile: File
+}
+
+export function createSettingsConfigFile(fileName: string): SettingsConfigDescriptor {
+  return {
+    key: `startune::settings::${fileName}`,
+    legacyFile: new File(Paths.document, fileName),
+  }
 }
 
 function toSettingsInput(value: unknown): unknown {
@@ -12,33 +21,61 @@ function toSettingsInput(value: unknown): unknown {
   return value
 }
 
+async function migrateFileConfigToKvStore<T>(
+  descriptor: SettingsConfigDescriptor,
+  fallback: T,
+  sanitize: (config: unknown) => T
+): Promise<T> {
+  if (!descriptor.legacyFile.exists) {
+    return fallback
+  }
+
+  const raw = await descriptor.legacyFile.text()
+  const parsed = JSON.parse(raw) as unknown
+  const config = sanitize(toSettingsInput(parsed))
+  await KvStore.setItem(descriptor.key, JSON.stringify(config))
+  return config
+}
+
 export async function loadSettingsConfig<T>(
-  file: File,
+  descriptor: SettingsConfigDescriptor,
   fallback: T,
   sanitize: (config: unknown) => T
 ): Promise<T> {
   try {
-    if (!file.exists) {
-      return fallback
+    const cached = await KvStore.getItem(descriptor.key)
+    if (cached) {
+      const parsed = JSON.parse(cached) as unknown
+      return sanitize(toSettingsInput(parsed))
     }
 
-    const raw = await file.text()
-    const parsed = JSON.parse(raw) as unknown
-    return sanitize(toSettingsInput(parsed))
+    return await migrateFileConfigToKvStore(descriptor, fallback, sanitize)
   } catch {
     return fallback
   }
 }
 
-export async function saveSettingsConfig<T>(file: File, config: T): Promise<void> {
-  if (!file.exists) {
-    file.create({
-      intermediates: true,
-      overwrite: true,
-    })
-  }
+async function persistLegacySettingsFileBestEffort<T>(legacyFile: File, config: T): Promise<void> {
+  try {
+    if (!legacyFile.exists) {
+      legacyFile.create({
+        intermediates: true,
+        overwrite: true,
+      })
+    }
 
-  file.write(JSON.stringify(config), {
-    encoding: "utf8",
-  })
+    legacyFile.write(JSON.stringify(config), {
+      encoding: "utf8",
+    })
+  } catch (error) {
+    console.warn("Failed to persist legacy settings JSON file", error)
+  }
+}
+
+export async function saveSettingsConfig<T>(
+  descriptor: SettingsConfigDescriptor,
+  config: T
+): Promise<void> {
+  await KvStore.setItem(descriptor.key, JSON.stringify(config))
+  void persistLegacySettingsFileBestEffort(descriptor.legacyFile, config)
 }

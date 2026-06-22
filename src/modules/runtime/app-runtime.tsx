@@ -10,32 +10,23 @@ import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup"
 import { ensureLoggingInitialized } from "@/modules/bootstrap/runtime"
 import { startIndexing } from "@/modules/indexer/service"
 import { logError, logInfo } from "@/modules/logging/service"
-import {
-  handleCrossfadePlaybackState,
-  handleCrossfadeProgress,
-  handleCrossfadeTrackActivated,
-} from "@/modules/player/crossfade"
+import { registerPlaybackListeners } from "@/modules/player/playback-listeners"
 import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-subscriber"
-import { handlePlaybackProgress, handleTrackChanged as handleLastFmTrackChanged } from "@/modules/player/lastfm-scrobbler"
-import { playNext, pauseTrack, resumeTrack, playPrevious, seekTo } from "@/modules/player/controls"
-import {
-  evaluateSleepTimerOnProgress,
-  handleSleepTimerPlaybackEnded,
-  handleSleepTimerTrackChanged,
-} from "@/modules/player/sleep-timer"
 import { preloadRegisteredSettings } from "@/modules/settings/registry"
 import { updateSettingsState } from "@/modules/settings/store"
-import AudioBrowser from "react-native-audio-browser"
-
-import { addPlayedTrack } from "@/modules/history/repository"
-import { queryClient } from "@/lib/tanstack-query"
-import { invalidateTrackQueries } from "@/modules/tracks/keys"
 import { canStartIndexingNow } from "@/modules/bootstrap/utils"
+import { loadCurrentTrack } from "@/stores/playback/actions/playback-controls"
 import { playbackStore, usePlaybackStore } from "@/stores/playback/store"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useViewPreferenceStore } from "@/stores/view-preference/store"
 
 type RuntimeStatus = "loading" | "ready" | "error"
+
+const STARTUP_BACKGROUND_WORK_DELAY_MS = 3000
+
+function schedulePostStartupWork(task: () => void) {
+  setTimeout(task, STARTUP_BACKGROUND_WORK_DELAY_MS)
+}
 
 async function preloadSettings() {
   await preloadRegisteredSettings()
@@ -56,138 +47,60 @@ async function runStartupScan() {
   await startIndexing(false, false)
 }
 
-let playCountTimeout: ReturnType<typeof setTimeout> | null = null
-let lastAutoAdvanceAt = 0
-let lastSleepTimerTrackId: string | null = null
+function startDeferredRuntimeWork(startedAt: number) {
+  const deferredStartedAt = Date.now()
 
-function advanceToNextTrackOnce() {
-  const now = Date.now()
-  if (now - lastAutoAdvanceAt < 1000) {
-    return
-  }
-
-  lastAutoAdvanceAt = now
-  void playNext(true)
-}
-
-function onActiveTrackChanged(e: {
-  index?: number
-  track?: { src?: string; duration?: number } | null
-}) {
-  if (e.index === undefined || e.track?.src === undefined) return
-  const activeTrackUri = decodeURIComponent(e.track.src)
-  const currentTrack = playbackStore.getState().activeTrack ?? undefined
-  const currentTrackId = currentTrack?.id ?? null
-  handleSleepTimerTrackChanged(lastSleepTimerTrackId, currentTrackId)
-  lastSleepTimerTrackId = currentTrackId
-  void handleLastFmTrackChanged(currentTrack)
-
-  const { lastPosition } = playbackStore.getState()
-  if (playCountTimeout !== null) clearTimeout(playCountTimeout)
-  if (lastPosition < 10) {
-    playCountTimeout = setTimeout(
-      async () => {
-        const trackId = await addPlayedTrack(activeTrackUri)
-        if (trackId) {
-          await invalidateTrackQueries(queryClient, { trackId })
-          await queryClient.invalidateQueries({
-            queryKey: ["history-recently-played"],
-          })
-          await queryClient.invalidateQueries({
-            queryKey: ["history-top-tracks"],
-          })
-        }
-      },
-      (Math.min(e.track.duration!, 10) - lastPosition) * 1000
+  const dbStartedAt = Date.now()
+  void loadInitialDatabaseState()
+    .then(() =>
+      logInfo("Deferred startup cached DB ready", { elapsedMs: Date.now() - dbStartedAt })
     )
-  }
+    .catch((error) => logError("Reference-style app runtime failed to load cached tracks", error))
 
-  void handleCrossfadeTrackActivated()
+  logInfo("Reference-style app runtime deferred work dispatched", {
+    elapsedMs: Date.now() - deferredStartedAt,
+    totalElapsedMs: Date.now() - startedAt,
+  })
 }
 
-function onProgressUpdated(e: { position: number; duration: number }) {
-  if (e.duration === 0) return
-  playbackStore.setState({ lastPosition: e.position })
-  const activeTrack = playbackStore.getState().activeTrack ?? undefined
-  evaluateSleepTimerOnProgress(e.position, e.duration)
-  void handleLastFmTrackChanged(activeTrack)
-  void handlePlaybackProgress(e.position, e.duration)
-  void handleCrossfadeProgress(e.position, e.duration)
-}
-
-function toPlaybackState(state: string) {
-  switch (state) {
-    case "none":
-    case "ready":
-    case "playing":
-    case "paused":
-    case "stopped":
-    case "buffering":
-    case "loading":
-    case "ended":
-    case "error":
-      return state
-    default:
-      return "none"
-  }
-}
-
-function onPlaybackChanged(e: { state: string }) {
-  if (e.state === "paused") {
-    playbackStore.setState({ isPlaying: false })
-  } else if (e.state === "ended") {
-    const currentTrackId = playbackStore.getState().activeTrack?.id ?? null
-    void handleSleepTimerPlaybackEnded(currentTrackId).then((hasStopped) => {
-      if (!hasStopped) {
-        advanceToNextTrackOnce()
-      }
+function startPostStartupRuntimeWork() {
+  schedulePostStartupWork(() => {
+    import("@/modules/settings/auto-backup").then(({ runAutoBackupCheck }) => {
+      void runAutoBackupCheck()
     })
-  }
+  })
 
-  void handleCrossfadePlaybackState(toPlaybackState(e.state))
+  schedulePostStartupWork(() => {
+    const scanStartedAt = Date.now()
+    void runStartupScan()
+      .then(() => logInfo("Post-startup scan ready", { elapsedMs: Date.now() - scanStartedAt }))
+      .catch((error) => logError("Reference-style app runtime failed to run startup scan", error))
+  })
 }
 
 async function startRuntime() {
+  const startedAt = Date.now()
+
   await ensureLoggingInitialized()
   logInfo("Reference-style app runtime starting")
   registerPlaybackService()
   await initializeTrackPlayer()
-  subscribePlaybackStoreToPlayerStore()
-  lastSleepTimerTrackId = playbackStore.getState().activeTrack?.id ?? null
+  registerPlaybackListeners()
 
-  // Register remote media control listeners
-  AudioBrowser.handleRemotePlay(() => {
-    void resumeTrack()
-  })
-  AudioBrowser.handleRemotePause(() => {
-    void pauseTrack()
-  })
-  AudioBrowser.handleRemoteNext(() => {
-    void playNext()
-  })
-  AudioBrowser.handleRemotePrevious(() => {
-    void playPrevious()
-  })
-  AudioBrowser.handleRemoteSeek((e: { position: number }) => {
-    void seekTo(e.position)
-  })
+  await playbackStore.getState().restoreActiveTrack()
+  await loadCurrentTrack()
 
-  // Trigger auto backup check
-  const { runAutoBackupCheck } = await import("@/modules/settings/auto-backup")
-  void runAutoBackupCheck()
-
-  AudioBrowser.onActiveTrackChanged.addListener(onActiveTrackChanged)
-  AudioBrowser.onProgressUpdated.addListener(onProgressUpdated)
-  AudioBrowser.onPlaybackChanged.addListener(onPlaybackChanged)
+  const settingsStartedAt = Date.now()
   await preloadSettings()
+  logInfo("Reference-style app runtime settings ready", {
+    elapsedMs: Date.now() - settingsStartedAt,
+  })
+  subscribePlaybackStoreToPlayerStore()
+  logInfo("Reference-style app runtime critical path ready", {
+    elapsedMs: Date.now() - startedAt,
+  })
 
-  void loadInitialDatabaseState().catch((error) => {
-    logError("Reference-style app runtime failed to load cached tracks", error)
-  })
-  void runStartupScan().catch((error) => {
-    logError("Reference-style app runtime failed to run startup scan", error)
-  })
-  logInfo("Reference-style app runtime ready")
+  startDeferredRuntimeWork(startedAt)
 }
 
 export function AppRuntime({
@@ -231,6 +144,7 @@ export function AppRuntime({
         }
         setStatus("ready")
         onReady?.()
+        startPostStartupRuntimeWork()
       })
       .catch((runtimeError) => {
         if (cancelled) {
