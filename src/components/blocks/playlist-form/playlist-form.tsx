@@ -137,18 +137,20 @@ export function PlaylistForm({
 
   return (
     <View className="flex-1 bg-background px-4 py-4">
-      {header}
-
       {selectedTracksList.length === 0 ? (
-        <EmptyState
-          icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
-          title={t("library.empty.tracksSelectedTitle")}
-          message={t("library.empty.selectedTracksMessage")}
-          className="py-8"
-        />
+        <View className="flex-1">
+          {header}
+          <EmptyState
+            icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+            title={t("library.empty.tracksSelectedTitle")}
+            message={t("library.empty.selectedTracksMessage")}
+            className="py-8"
+          />
+        </View>
       ) : (
-        <ListGroup>
+        <ListGroup className="flex-1">
           <ReorderableList
+            ListHeaderComponent={header}
             data={selectedTracksList}
             onReorder={({ from, to }) => reorderSelectedTracks(from, to)}
             renderItem={({ item, index }) => (
@@ -156,9 +158,9 @@ export function PlaylistForm({
             )}
             keyExtractor={(item) => item.id}
             shouldUpdateActiveItem
-            style={{ flexGrow: 0 }}
-            scrollEnabled={false}
-            contentContainerStyle={{ paddingBottom: 0 }}
+            style={{ flex: 1 }}
+            scrollEnabled
+            contentContainerStyle={{ flexGrow: 1, paddingBottom: 220 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           />
