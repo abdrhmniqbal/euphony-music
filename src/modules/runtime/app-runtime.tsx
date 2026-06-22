@@ -10,7 +10,11 @@ import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup"
 import { ensureLoggingInitialized } from "@/modules/bootstrap/runtime"
 import { startIndexing } from "@/modules/indexer/service"
 import { logError, logInfo } from "@/modules/logging/service"
-import { ensureLoggingConfigLoaded } from "@/modules/logging/store"
+import {
+  handleCrossfadePlaybackState,
+  handleCrossfadeProgress,
+  handleCrossfadeTrackActivated,
+} from "@/modules/player/crossfade"
 import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-subscriber"
 import { handlePlaybackProgress, handleTrackChanged as handleLastFmTrackChanged } from "@/modules/player/lastfm-scrobbler"
 import { playNext, pauseTrack, resumeTrack, playPrevious, seekTo } from "@/modules/player/controls"
@@ -19,22 +23,7 @@ import {
   handleSleepTimerPlaybackEnded,
   handleSleepTimerTrackChanged,
 } from "@/modules/player/sleep-timer"
-import { ensureAppUpdateConfigLoaded } from "@/modules/settings/app-updates"
-import { ensureCrossfadeConfigLoaded } from "@/modules/settings/audio-crossfade"
-import {
-  handleCrossfadePlaybackState,
-  handleCrossfadeProgress,
-  handleCrossfadeTrackActivated,
-} from "@/modules/player/crossfade"
-import { ensureAudioPlaybackConfigLoaded } from "@/modules/settings/audio-playback"
-import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"
-import { ensureCountAsPlayedConfigLoaded } from "@/modules/settings/count-as-played"
-import { ensureFolderFilterConfigLoaded } from "@/modules/settings/folder-filters"
-import { ensureIndexerNotificationsConfigLoaded } from "@/modules/settings/indexer-notifications"
-import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
-import { ensureTrackDurationFilterConfigLoaded } from "@/modules/settings/track-duration-filter"
-import { ensureThemeConfigLoaded } from "@/modules/settings/theme"
-import { ensureAutoBackupConfigLoaded } from "@/modules/settings/auto-backup"
+import { preloadRegisteredSettings } from "@/modules/settings/registry"
 import { updateSettingsState } from "@/modules/settings/store"
 import AudioBrowser from "react-native-audio-browser"
 
@@ -49,20 +38,7 @@ import { useViewPreferenceStore } from "@/stores/view-preference/store"
 type RuntimeStatus = "loading" | "ready" | "error"
 
 async function preloadSettings() {
-  await Promise.all([
-    ensureAutoScanConfigLoaded(),
-    ensureAudioPlaybackConfigLoaded(),
-    ensureAppUpdateConfigLoaded(),
-    ensureCountAsPlayedConfigLoaded(),
-    ensureCrossfadeConfigLoaded(),
-    ensureFolderFilterConfigLoaded(),
-    ensureIndexerNotificationsConfigLoaded(),
-    ensureLoggingConfigLoaded(),
-    ensureSplitMultipleValueConfigLoaded(),
-    ensureThemeConfigLoaded(),
-    ensureTrackDurationFilterConfigLoaded(),
-    ensureAutoBackupConfigLoaded(),
-  ])
+  await preloadRegisteredSettings()
   updateSettingsState({ _hasHydrated: true })
 }
 
