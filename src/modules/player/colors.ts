@@ -103,6 +103,9 @@ export async function updateColorsForImage(imageUri: string | undefined) {
   setCurrentImageUriState(imageUri)
 
   const colors = await getTrackColors(imageUri)
+  if (imageUri !== getCurrentImageUriState()) {
+    return
+  }
   setCurrentColorsState(colors)
   setIsLoadingColorsState(false)
 }

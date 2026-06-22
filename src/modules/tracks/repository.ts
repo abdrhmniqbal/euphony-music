@@ -225,6 +225,25 @@ export async function getTrack(id: string): Promise<Track> {
   return toDataTrack(row)
 }
 
+export async function getTracksByIds(ids: string[]): Promise<Track[]> {
+  const uniqueIds = Array.from(new Set(ids)).filter((id) => id.length > 0)
+  if (uniqueIds.length === 0) {
+    return []
+  }
+
+  const rows = await db.query.tracks.findMany({
+    where: and(inArray(tracks.id, uniqueIds), eq(tracks.isDeleted, 0)),
+    with: {
+      artist: true,
+      album: { with: { artist: true } },
+      featuredArtists: { with: { artist: true } },
+      genres: { with: { genre: true } },
+    },
+  })
+
+  return rows.map(toDataTrack)
+}
+
 export async function getSortedTracks<TOnlyIds extends boolean | undefined = false>(
   onlyIds?: TOnlyIds,
   sortOptions?: TracksSortOptions
