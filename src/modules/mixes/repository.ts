@@ -81,11 +81,18 @@ function getStartOfNextLocalWeek(now = new Date()) {
   return startOfDay.getTime()
 }
 
-function getMixVisual(seed: number) {
-  return {
-    colorIndex: Math.abs(seed) % 10,
-    shape: MIX_SHAPES[Math.abs(seed) % MIX_SHAPES.length],
-  }
+function getMixVisual(seed: number, reserved?: { colorIndex: number; shape: MixShape }) {
+  const baseColorIndex = Math.abs(seed) % 10
+  const baseShapeIndex = Math.abs(seed) % MIX_SHAPES.length
+  const candidates = Array.from({ length: MIX_SHAPES.length }, (_, offset) => ({
+    colorIndex: (baseColorIndex + offset) % 10,
+    shape: MIX_SHAPES[(baseShapeIndex + offset) % MIX_SHAPES.length],
+  }))
+
+  return candidates.find((candidate) => {
+    if (!reserved) return true
+    return candidate.colorIndex !== reserved.colorIndex || candidate.shape !== reserved.shape
+  }) ?? { colorIndex: baseColorIndex, shape: MIX_SHAPES[baseShapeIndex] }
 }
 
 function toMixShape(shape: string): MixShape {
@@ -348,7 +355,9 @@ export async function getDailyMix(): Promise<PersistedMix> {
   }
 
   const seed = getDaySeed()
-  const visual = getMixVisual(seed)
+  const forYouMixRow = await db.query.mixes.findFirst({ where: eq(mixes.id, FOR_YOU_MIX_ID) })
+  const reserved = forYouMixRow ? { colorIndex: forYouMixRow.colorIndex, shape: toMixShape(forYouMixRow.shape) } : undefined
+  const visual = getMixVisual(seed, reserved)
   const mixTracksList = await generateDailyMixTracks(seed)
 
   await persistMix({
@@ -380,7 +389,9 @@ export async function getForYouMix(): Promise<PersistedMix> {
   }
 
   const seed = getWeekSeed()
-  const visual = getMixVisual(seed)
+  const dailyMixRow = await db.query.mixes.findFirst({ where: eq(mixes.id, DAILY_MIX_ID) })
+  const reserved = dailyMixRow ? { colorIndex: dailyMixRow.colorIndex, shape: toMixShape(dailyMixRow.shape) } : undefined
+  const visual = getMixVisual(seed, reserved)
   const mixTracksList = await generateForYouMixTracks(seed)
 
   await persistMix({
