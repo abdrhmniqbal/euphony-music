@@ -18,6 +18,19 @@ import { transformDBTrackToTrack } from "@/utils/transformers"
 
 import type { HistoryTopTracksPeriod } from "./types"
 
+function getStartOfLocalDay(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+}
+
+function getStartOfLocalWeek(now = new Date()) {
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const dayOfWeek = startOfDay.getDay()
+  const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+
+  startOfDay.setDate(startOfDay.getDate() - mondayOffset)
+  return startOfDay.getTime()
+}
+
 export async function getTrackHistory(): Promise<Track[]> {
   try {
     const history = await db.query.playHistory.findMany({
@@ -82,8 +95,7 @@ export async function getTopTracksByPeriod(
         .map((track) => transformDBTrackToTrack(track as DBTrack))
     }
 
-    const timeThreshold =
-      period === "day" ? Date.now() - 24 * 60 * 60 * 1000 : Date.now() - 7 * 24 * 60 * 60 * 1000
+    const timeThreshold = period === "day" ? getStartOfLocalDay() : getStartOfLocalWeek()
 
     const history = await db.query.playHistory.findMany({
       where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
@@ -139,14 +151,12 @@ export async function addTrackToHistory(trackId: string): Promise<void> {
       completed: 0,
     })
 
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+    const cutoffThreshold = Date.now() - THIRTY_DAYS_MS
+
     await db.run(sql`
       DELETE FROM ${playHistory}
-      WHERE ${playHistory.id} IN (
-        SELECT ${playHistory.id}
-        FROM ${playHistory}
-        ORDER BY ${playHistory.playedAt} DESC
-        LIMIT -1 OFFSET 50
-      )
+      WHERE ${playHistory.playedAt} < ${cutoffThreshold}
     `)
   } catch {
     // no-op

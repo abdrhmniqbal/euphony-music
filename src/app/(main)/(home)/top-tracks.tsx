@@ -57,6 +57,17 @@ export default function TopTracksScreen() {
 
   const currentTracks = currentTracksData ?? []
 
+  function getTopTracksPeriodText(tab: TopTracksTab) {
+    switch (tab) {
+      case "Daily":
+        return t("home.topTracks.today", "Today")
+      case "Weekly":
+        return t("home.topTracks.thisWeek", "This week")
+      case "Realtime":
+        return t("home.topTracks.allTime", "All time")
+    }
+  }
+
   function getTopTracksTabLabel(tab: TopTracksTab) {
     switch (tab) {
       case "Daily":
@@ -168,8 +179,15 @@ export default function TopTracksScreen() {
                 <PlaybackActionsRow
                   onPlay={playAll}
                   onShuffle={shuffle}
-                  className="mb-2 px-0 py-0"
+                  className="mb-1 px-0 py-0"
                 />
+                <Animated.Text
+                  key={`period-${activeTab}`}
+                  entering={screenEnterTransition()}
+                  className="text-left text-xs text-muted"
+                >
+                  {getTopTracksPeriodText(activeTab)}
+                </Animated.Text>
               </Animated.View>
             }
           />
