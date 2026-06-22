@@ -415,3 +415,11 @@ export async function getForYouMix(): Promise<PersistedMix> {
     ...visual,
   }
 }
+
+export async function forceUpdateMixes(): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.delete(mixTracks)
+    await tx.delete(mixes)
+  })
+}
+

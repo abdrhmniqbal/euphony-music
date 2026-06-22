@@ -468,7 +468,7 @@
       "backup": {
         "title": "Backup & Restore",
         "description": "Export and import app settings and preferences."
-      },
+      }
     },
     "appearance": {
       "languageDescription": "Current language: {{language}}.",
@@ -686,6 +686,8 @@
       "resetListeningHistoryDescription": "Clear recently played and top-track stats.",
       "resetSearchHistory": "Reset search history",
       "resetSearchHistoryDescription": "Clear all recent search terms and query history.",
+      "forceUpdateMixes": "Force update mixes",
+      "forceUpdateMixesDescription": "Discard and regenerate Daily Mix and For You Mix immediately.",
       "disableBatteryOptimization": "Disable Battery Optimization",
       "disableBatteryOptimizationAndroid": "Prevent background restrictions so indexing and playback stay reliable.",
       "openSystemSettings": "Open system settings.",
@@ -698,6 +700,8 @@
       "resetDialogDescription": "This will clear recently played and reset top-track stats. Your music files, playlists, and favorites will stay unchanged.",
       "resetSearchHistoryDialogTitle": "Reset search history?",
       "resetSearchHistoryDialogDescription": "This will clear all saved recent search items. Your listening history, playlists, and favorites will stay unchanged.",
+      "forceUpdateMixesDialogTitle": "Force update mixes?",
+      "forceUpdateMixesDialogDescription": "This will discard the current Daily Mix and For You Mix and force them to regenerate from your latest history and library taste. Your play history itself will stay unchanged.",
       "logsReadyTitle": "Logs ready to share",
       "logsUnableTitle": "Unable to share logs",
       "logsReadyDescription": "Share sheet opened with the latest captured logs.",
@@ -708,6 +712,9 @@
       "searchHistoryResetTitle": "Search history reset",
       "searchHistoryResetDescription": "All recent searches have been cleared.",
       "searchHistoryResetUnableTitle": "Unable to reset search history",
+      "forceUpdateMixesCompleteTitle": "Mixes reset",
+      "forceUpdateMixesCompleteDescription": "Daily Mix and For You Mix will rebuild from current listening data.",
+      "forceUpdateMixesUnableTitle": "Unable to update mixes",
       "batteryAlreadyDisabledTitle": "Battery optimization already disabled",
       "batteryAlreadyDisabledDescription": "No additional action is needed.",
       "restartOnboarding": "Restart onboarding",

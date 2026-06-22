@@ -22,6 +22,8 @@ import {
 } from "@/modules/device/battery-optimization"
 import { useResetListeningHistory } from "@/modules/history/mutations"
 import { libraryKeys } from "@/modules/library/keys"
+import { mixKeys } from "@/modules/mixes/queries"
+import { forceUpdateMixes } from "@/modules/mixes/repository"
 import { clearRecentSearches } from "@/modules/library/recent-searches-repository"
 import { shareCrashLogs } from "@/modules/logging/service"
 
@@ -37,7 +39,9 @@ export default function AdvancedSettingsScreen() {
   const resetListeningHistoryMutation = useResetListeningHistory()
   const [isResetHistoryDialogOpen, setIsResetHistoryDialogOpen] = useState(false)
   const [isResetSearchHistoryDialogOpen, setIsResetSearchHistoryDialogOpen] = useState(false)
+  const [isForceUpdateMixesDialogOpen, setIsForceUpdateMixesDialogOpen] = useState(false)
   const [isResettingSearchHistory, setIsResettingSearchHistory] = useState(false)
+  const [isForceUpdatingMixes, setIsForceUpdatingMixes] = useState(false)
 
   const isResettingHistory = resetListeningHistoryMutation.isPending
 
@@ -95,6 +99,31 @@ export default function AdvancedSettingsScreen() {
       )
     } finally {
       setIsResettingSearchHistory(false)
+    }
+  }
+
+  async function handleConfirmForceUpdateMixes() {
+    if (isForceUpdatingMixes) {
+      return
+    }
+
+    setIsForceUpdatingMixes(true)
+
+    try {
+      await forceUpdateMixes()
+      await queryClient.invalidateQueries({ queryKey: mixKeys.all })
+      setIsForceUpdateMixesDialogOpen(false)
+      showAppToast(
+        t("settings.advanced.forceUpdateMixesCompleteTitle", "Mixes reset"),
+        t("settings.advanced.forceUpdateMixesCompleteDescription", "Daily Mix and For You Mix will rebuild from current listening data.")
+      )
+    } catch {
+      showAppToast(
+        t("settings.advanced.forceUpdateMixesUnableTitle", "Unable to update mixes"),
+        t("settings.advanced.tryAgainDescription")
+      )
+    } finally {
+      setIsForceUpdatingMixes(false)
     }
   }
 
@@ -227,6 +256,22 @@ export default function AdvancedSettingsScreen() {
               </ListGroup.ItemContent>
             </ListGroup.Item>
           </SettingsHighlight>
+          <Separator className="mx-4" />
+          <SettingsHighlight id="forceUpdateMixes">
+            <ListGroup.Item
+              onPress={() => setIsForceUpdateMixesDialogOpen(true)}
+              disabled={isForceUpdatingMixes}
+            >
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>
+                  {t("settings.advanced.forceUpdateMixes", "Force update mixes")}
+                </ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>
+                  {t("settings.advanced.forceUpdateMixesDescription", "Discard and regenerate Daily Mix and For You Mix immediately.")}
+                </ListGroup.ItemDescription>
+              </ListGroup.ItemContent>
+            </ListGroup.Item>
+          </SettingsHighlight>
         </ListGroup>
 
         <Text className="px-1 text-xs font-semibold uppercase text-muted">
@@ -354,6 +399,41 @@ export default function AdvancedSettingsScreen() {
                 isDisabled={isResettingSearchHistory}
               >
                 {t("common.reset")}
+              </Button>
+            </View>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog>
+
+      <Dialog
+        isOpen={isForceUpdateMixesDialogOpen}
+        onOpenChange={setIsForceUpdateMixesDialogOpen}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay />
+          <Dialog.Content className="gap-4">
+            <View className="gap-1.5">
+              <Dialog.Title>{t("settings.advanced.forceUpdateMixesDialogTitle", "Force update mixes?")}</Dialog.Title>
+              <Dialog.Description>
+                {t("settings.advanced.forceUpdateMixesDialogDescription", "This will discard the current Daily Mix and For You Mix and force them to regenerate from your latest history and library taste. Your play history itself will stay unchanged.")}
+              </Dialog.Description>
+            </View>
+            <View className="flex-row justify-end gap-3">
+              <Button
+                variant="ghost"
+                onPress={() => setIsForceUpdateMixesDialogOpen(false)}
+                isDisabled={isForceUpdatingMixes}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="danger"
+                onPress={() => {
+                  void handleConfirmForceUpdateMixes()
+                }}
+                isDisabled={isForceUpdatingMixes}
+              >
+                {t("common.update", "Update")}
               </Button>
             </View>
           </Dialog.Content>
