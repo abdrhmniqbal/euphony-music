@@ -168,6 +168,7 @@ export function getDefaultNativeStackOptions(theme: NavigationThemeColors) {
     headerTintColor: theme.foreground,
     headerShadowVisible: false,
     headerTitleAlign: "center" as const,
+    freezeOnBlur: false,
     contentStyle: {
       backgroundColor: theme.background,
     },
