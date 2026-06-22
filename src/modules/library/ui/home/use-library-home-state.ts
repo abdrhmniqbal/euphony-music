@@ -9,7 +9,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router";
-import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types";
+import type { FavoriteType } from "@/modules/favorites/types";
 import type { GenreCategory } from "@/modules/genres/types";
 import type { SortField } from "@/modules/library/sort-types";
 import type { Track } from "@/modules/player/store";
@@ -25,7 +25,13 @@ import {
   setSortConfig,
   useLibrarySortStore,
 } from "@/modules/library/sort-store";
-import { sortGeneric, sortTracks } from "@/modules/library/sort-utils";
+import { sortGeneric } from "@/modules/library/sort-utils";
+import {
+  playSingleTrack as playSingleTrackAction,
+  playFavoriteTrack as playFavoriteTrackAction,
+  playAllTracks,
+  shuffleTracks,
+} from "@/modules/library/library-playback-actions";
 import { useAlbums, useArtists } from "@/modules/library/queries";
 import {
   useHasCurrentTrack,
@@ -33,7 +39,7 @@ import {
 } from "@/modules/player/selectors";
 import { playTrack } from "@/modules/player/service";
 import { usePlaylistsWithOptions } from "@/modules/playlist/queries";
-import { getPlaylistTrackIdsByPlaylistIds } from "@/modules/playlist/repository";
+
 import { useGenres } from "@/modules/genres/queries";
 import { mapGenresToCategories } from "@/modules/genres/utils";
 import { getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/constants/layout";
@@ -348,174 +354,45 @@ export function useLibraryHomeState() {
   }
 
   function playSingleTrack(track: Track, queue?: Track[]) {
-    if (queue && queue.length > 0) {
-      playTrack(track, queue, {
-        type: "trackList",
-        title: getLibraryTabLabel(activeTab),
-      });
-      return;
-    }
-
-    const sortedTracksQueue = sortTracks(tracks, allSortConfigs.Tracks);
-    if (sortedTracksQueue.length > 0) {
-      playTrack(track, sortedTracksQueue, {
-        type: "trackList",
-        title: t("library.tracks"),
-      });
-      return;
-    }
-
-    playTrack(track);
-  }
-
-  function appendUniqueTrack(
-    queue: Track[],
-    seenTrackIds: Set<string>,
-    track: Track | undefined,
-  ) {
-    if (!track || seenTrackIds.has(track.id)) {
-      return;
-    }
-
-    seenTrackIds.add(track.id);
-    queue.push(track);
-  }
-
-  async function buildFavoritesPlaybackQueue(
-    favoriteEntries: FavoriteEntry[],
-  ): Promise<Track[]> {
-    const queue: Track[] = [];
-    const seenTrackIds = new Set<string>();
-    const trackById = new Map(tracks.map((track) => [track.id, track]));
-    const playlistFavorites = favoriteEntries.filter(
-      (favorite) => favorite.type === "playlist",
-    );
-    const playlistRows = await getPlaylistTrackIdsByPlaylistIds(
-      playlistFavorites.map((favorite) => favorite.id),
-    );
-    const playlistTrackIds = new Map<string, string[]>();
-
-    for (const row of playlistRows) {
-      const currentIds = playlistTrackIds.get(row.playlistId) ?? [];
-      currentIds.push(row.trackId);
-      playlistTrackIds.set(row.playlistId, currentIds);
-    }
-
-    for (const favorite of favoriteEntries) {
-      switch (favorite.type) {
-        case "track":
-          appendUniqueTrack(queue, seenTrackIds, trackById.get(favorite.id));
-          break;
-        case "album":
-          for (const track of tracks) {
-            if (track.albumId === favorite.id) {
-              appendUniqueTrack(queue, seenTrackIds, track);
-            }
-          }
-          break;
-        case "artist":
-          for (const track of tracks) {
-            const artistNames = (track.artist || "")
-              .split(",")
-              .map((name) => name.trim().toLowerCase());
-            if (
-              track.artistId === favorite.id ||
-              artistNames.includes(favorite.name.trim().toLowerCase())
-            ) {
-              appendUniqueTrack(queue, seenTrackIds, track);
-            }
-          }
-          break;
-        case "playlist":
-          for (const trackId of playlistTrackIds.get(favorite.id) ?? []) {
-            appendUniqueTrack(queue, seenTrackIds, trackById.get(trackId));
-          }
-          break;
-      }
-    }
-
-    return queue;
+    playSingleTrackAction({
+      track,
+      tracks,
+      queue,
+      activeTabTitle: getLibraryTabLabel(activeTab),
+      tracksSortConfig: allSortConfigs.Tracks,
+      defaultTracksTitle: t("library.tracks"),
+    });
   }
 
   async function playFavoriteTrack(trackId: string) {
-    const queue = await buildFavoritesPlaybackQueue(filteredFavorites);
-    const track = queue.find((item) => item.id === trackId);
-    if (track) {
-      playTrack(track, queue, {
-        type: "favorites",
-        title: t("library.favorites"),
-      });
-      return;
-    }
-
-    const fallbackTrack = tracks.find((item) => item.id === trackId);
-    if (fallbackTrack) {
-      playTrack(fallbackTrack, queue.length > 0 ? queue : tracks, {
-        type: "favorites",
-        title: t("library.favorites"),
-      });
-    }
+    await playFavoriteTrackAction({
+      trackId,
+      filteredFavorites,
+      tracks,
+      favoritesTitle: t("library.favorites"),
+    });
   }
 
   async function playAll() {
-    if (activeTab === "Tracks") {
-      const sortedTracksQueue = sortTracks(tracks, allSortConfigs.Tracks);
-      if (sortedTracksQueue.length > 0) {
-        playTrack(sortedTracksQueue[0], sortedTracksQueue, {
-          type: "trackList",
-          title: t("library.tracks"),
-        });
-      }
-      return;
-    }
-
-    if (activeTab === "Favorites") {
-      const queue = await buildFavoritesPlaybackQueue(filteredFavorites);
-      if (queue.length > 0) {
-        playTrack(queue[0], queue, {
-          type: "favorites",
-          title: t("library.favorites"),
-        });
-      }
-      return;
-    }
-
-    if (tracks.length > 0) {
-      playTrack(tracks[0]);
-    }
+    await playAllTracks({
+      activeTab,
+      tracks,
+      tracksSortConfig: allSortConfigs.Tracks,
+      filteredFavorites,
+      defaultTracksTitle: t("library.tracks"),
+      favoritesTitle: t("library.favorites"),
+    });
   }
 
   async function shuffle() {
-    if (activeTab === "Tracks") {
-      const sortedTracksQueue = sortTracks(tracks, allSortConfigs.Tracks);
-      if (sortedTracksQueue.length > 0) {
-        const randomIndex = Math.floor(
-          Math.random() * sortedTracksQueue.length,
-        );
-        playTrack(sortedTracksQueue[randomIndex], sortedTracksQueue, {
-          type: "trackList",
-          title: t("library.tracks"),
-        });
-      }
-      return;
-    }
-
-    if (activeTab === "Favorites") {
-      const queue = await buildFavoritesPlaybackQueue(filteredFavorites);
-      if (queue.length > 0) {
-        const randomIndex = Math.floor(Math.random() * queue.length);
-        playTrack(queue[randomIndex], queue, {
-          type: "favorites",
-          title: t("library.favorites"),
-        });
-      }
-      return;
-    }
-
-    if (tracks.length > 0) {
-      const randomIndex = Math.floor(Math.random() * tracks.length);
-      playTrack(tracks[randomIndex]);
-    }
+    await shuffleTracks({
+      activeTab,
+      tracks,
+      tracksSortConfig: allSortConfigs.Tracks,
+      filteredFavorites,
+      defaultTracksTitle: t("library.tracks"),
+      favoritesTitle: t("library.favorites"),
+    });
   }
 
   function handleSortSelect(field: SortField, order?: "asc" | "desc") {
