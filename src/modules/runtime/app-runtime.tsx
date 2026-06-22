@@ -187,8 +187,13 @@ async function startRuntime() {
   AudioBrowser.onProgressUpdated.addListener(onProgressUpdated)
   AudioBrowser.onPlaybackChanged.addListener(onPlaybackChanged)
   await preloadSettings()
-  await loadInitialDatabaseState()
-  await runStartupScan()
+
+  void loadInitialDatabaseState().catch((error) => {
+    logError("Reference-style app runtime failed to load cached tracks", error)
+  })
+  void runStartupScan().catch((error) => {
+    logError("Reference-style app runtime failed to run startup scan", error)
+  })
   logInfo("Reference-style app runtime ready")
 }
 
