@@ -13,11 +13,10 @@ import {
   View,
 } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  Easing,
-  interpolate,
+  FadeInLeft,
+  FadeInRight,
+  FadeOutLeft,
+  FadeOutRight,
 } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { AlbumsTab } from "@/components/blocks/albums-tab";
@@ -48,27 +47,16 @@ export default function LibraryScreen() {
 
   const state = useLibraryHomeState();
 
-  const tabSlideOffset = useSharedValue(0);
+  const [tabTransitionDirection, setTabTransitionDirection] = React.useState<1 | -1>(1);
 
   const handleActiveTabChange = (nextTab: typeof state.activeTab) => {
     const currentIndex = state.visibleTabs.indexOf(state.activeTab);
     const nextIndex = state.visibleTabs.indexOf(nextTab);
-    const direction = nextIndex >= currentIndex ? 1 : -1;
+    const direction: 1 | -1 = nextIndex >= currentIndex ? 1 : -1;
 
-    tabSlideOffset.value = direction * 32;
+    setTabTransitionDirection(direction);
     state.setActiveTab(nextTab);
-    tabSlideOffset.value = withTiming(0, {
-      duration: 260,
-      easing: Easing.out(Easing.poly(4)),
-    });
   };
-
-  const tabContentStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: tabSlideOffset.value }],
-      opacity: interpolate(Math.abs(tabSlideOffset.value), [0, 32], [1, 0.4]),
-    };
-  });
 
   const [actionSheetConfig, setActionSheetConfig] = React.useState<{
     visible: boolean;
@@ -291,9 +279,24 @@ export default function LibraryScreen() {
                 />
               </View>
             )}
-            <Animated.View style={tabContentStyle} className="flex-1">
-              {renderTabContent()}
-            </Animated.View>
+            <View className="flex-1 overflow-hidden">
+              <Animated.View
+                key={state.activeTab}
+                className="flex-1"
+                entering={
+                  tabTransitionDirection === 1
+                    ? FadeInRight.duration(220)
+                    : FadeInLeft.duration(220)
+                }
+                exiting={
+                  tabTransitionDirection === 1
+                    ? FadeOutLeft.duration(180)
+                    : FadeOutRight.duration(180)
+                }
+              >
+                {renderTabContent()}
+              </Animated.View>
+            </View>
           </View>
         </View>
 
