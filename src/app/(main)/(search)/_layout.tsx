@@ -67,6 +67,10 @@ export default function SearchLayout() {
         options={({ route }) => getHiddenPlaylistScreenOptions(route.params)}
       />
       <Stack.Screen
+        name="mix"
+        options={({ route }) => getHiddenPlaylistScreenOptions(route.params)}
+      />
+      <Stack.Screen
         name="recently-added"
         options={getDrillDownScreenOptions(t("search.recentlyAdded"), () => (
           <BackButton className="-ml-2" />
