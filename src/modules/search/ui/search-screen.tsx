@@ -31,17 +31,21 @@ import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import { Stack } from "@/layouts/stack"
 import { queryClient } from "@/lib/tanstack-query"
-import {
-  resolveAlbumTransitionId,
-  resolveArtistTransitionId,
-  resolvePlaylistTransitionId,
-} from "@/modules/artists/artist-transition"
 import { libraryKeys } from "@/modules/library/keys"
 import {
   addRecentSearch,
   clearRecentSearches,
   deleteRecentSearch,
 } from "@/modules/library/recent-searches-repository"
+import {
+  resolveAlbumPress,
+  resolveAlbumLongPress,
+  resolveArtistPress,
+  resolveArtistLongPress,
+  resolvePlaylistPress,
+  resolvePlaylistLongPress,
+  resolveRecentItemPress,
+} from "@/modules/search/search-actions"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useRecentSearches, useSearch } from "@/modules/library/queries"
 import type { Track } from "@/modules/player/types"
@@ -230,56 +234,18 @@ export default function SearchInteractionScreen() {
 
   function handleRecentItemPress(item: RecentSearchItem) {
     dismissKeyboard()
-    if (item.type === "artist" && item.query.trim()) {
-      pushRecentSearch(item)
-      router.push({
-        pathname: "artist/[name]",
-        params: { name: item.query },
-      })
-      return
-    }
+    const action = resolveRecentItemPress(item)
 
-    if (item.type === "album" && item.query.trim()) {
-      pushRecentSearch(item)
-      router.push({
-        pathname: "album/[name]",
-        params: {
-          name: item.query,
-          transitionId: resolveAlbumTransitionId({
-            id: item.targetId,
-            title: item.title || item.query,
-          }),
-        },
-      })
-      return
+    if (action.recentSearch) {
+      pushRecentSearch(action.recentSearch)
     }
-
-    if (item.type === "playlist" && item.targetId) {
-      pushRecentSearch(item)
-      router.push({
-        pathname: "playlist/[id]",
-        params: {
-          id: item.targetId,
-          transitionId: resolvePlaylistTransitionId({
-            id: item.targetId,
-            title: item.title,
-          }),
-        },
-      })
-      return
+    if (action.searchQueryUpdate !== undefined) {
+      setSearchQuery(action.searchQueryUpdate)
+      setHeaderInputKey((prev) => prev + 1)
     }
-
-    setSearchQuery(item.query || item.title)
-    setHeaderInputKey((prev) => prev + 1)
-    pushRecentSearch({
-      query: item.query || item.title,
-      title: item.title,
-      subtitle: item.subtitle,
-      type: item.type,
-      targetId: item.targetId,
-      image: item.image,
-      images: item.images,
-    })
+    if (action.route) {
+      router.push(action.route as any)
+    }
   }
 
   function handleRemoveRecentItem(id: string) {
@@ -303,111 +269,59 @@ export default function SearchInteractionScreen() {
 
   function handleArtistLongPress(artist: SearchArtistResult) {
     dismissKeyboard()
-    setActionSheetConfig({
-      visible: true,
-      type: "artist",
-      id: artist.id,
-      name: artist.name,
-      subtitle: t("library.count.track", { count: artist.trackCount }),
-      image: artist.image,
-      trackCount: artist.trackCount,
-    })
+    const action = resolveArtistLongPress(artist, t("library.count.track", { count: artist.trackCount }))
+    if (action.sheet) {
+      setActionSheetConfig(action.sheet as any)
+    }
   }
 
   function handleArtistPress(artist: SearchArtistResult) {
     dismissKeyboard()
-    pushRecentSearch({
-      query: artist.name,
-      title: artist.name,
-      subtitle: t("library.count.track", { count: artist.trackCount }),
-      type: "artist",
-      targetId: artist.id,
-      image: artist.image,
-    })
-
-    router.push({
-      pathname: "artist/[name]",
-      params: {
-        name: artist.name,
-        transitionId: resolveArtistTransitionId({
-          id: artist.id,
-          name: artist.name,
-        }),
-      },
-    })
+    const action = resolveArtistPress(artist, t("library.count.track", { count: artist.trackCount }))
+    if (action.recentSearch) {
+      pushRecentSearch(action.recentSearch)
+    }
+    if (action.route) {
+      router.push(action.route as any)
+    }
   }
 
   function handleAlbumLongPress(album: SearchAlbumResult) {
     dismissKeyboard()
-    setActionSheetConfig({
-      visible: true,
-      type: "album",
-      id: album.id,
-      name: album.title,
-      subtitle: album.artist || t("library.unknownArtist"),
-      image: album.image,
-    })
+    const action = resolveAlbumLongPress(album, t("library.unknownArtist"))
+    if (action.sheet) {
+      setActionSheetConfig(action.sheet as any)
+    }
   }
 
   function handleAlbumPress(album: SearchAlbumResult) {
     dismissKeyboard()
-    pushRecentSearch({
-      query: album.title,
-      title: album.title,
-      subtitle: album.artist || t("library.favoriteType.album"),
-      type: "album",
-      targetId: album.id,
-      image: album.image,
-    })
-
-    router.push({
-      pathname: "album/[name]",
-      params: {
-        name: album.title,
-        transitionId: resolveAlbumTransitionId({
-          id: album.id,
-          title: album.title,
-        }),
-      },
-    })
+    const action = resolveAlbumPress(album, t("library.favoriteType.album"))
+    if (action.recentSearch) {
+      pushRecentSearch(action.recentSearch)
+    }
+    if (action.route) {
+      router.push(action.route as any)
+    }
   }
 
   function handlePlaylistLongPress(playlist: SearchPlaylistResult) {
     dismissKeyboard()
-    setActionSheetConfig({
-      visible: true,
-      type: "playlist",
-      id: playlist.id,
-      name: playlist.title,
-      subtitle: t("library.count.track", { count: playlist.trackCount }),
-      image: playlist.image,
-      images: playlist.images,
-      trackCount: playlist.trackCount,
-    })
+    const action = resolvePlaylistLongPress(playlist, t("library.count.track", { count: playlist.trackCount }))
+    if (action.sheet) {
+      setActionSheetConfig(action.sheet as any)
+    }
   }
 
   function handlePlaylistPress(playlist: SearchPlaylistResult) {
     dismissKeyboard()
-    pushRecentSearch({
-      query: playlist.title,
-      title: playlist.title,
-      subtitle: t("library.count.track", { count: playlist.trackCount }),
-      type: "playlist",
-      targetId: playlist.id,
-      image: playlist.image || playlist.images?.[0],
-      images: playlist.images,
-    })
-
-    router.push({
-      pathname: "playlist/[id]",
-      params: {
-        id: playlist.id,
-        transitionId: resolvePlaylistTransitionId({
-          id: playlist.id,
-          title: playlist.title,
-        }),
-      },
-    })
+    const action = resolvePlaylistPress(playlist, t("library.count.track", { count: playlist.trackCount }))
+    if (action.recentSearch) {
+      pushRecentSearch(action.recentSearch)
+    }
+    if (action.route) {
+      router.push(action.route as any)
+    }
   }
 
   return (
