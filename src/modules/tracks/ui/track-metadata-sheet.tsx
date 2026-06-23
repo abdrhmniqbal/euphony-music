@@ -4,6 +4,10 @@ import * as React from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { Image } from "expo-image"
+import { useThemeColors } from "@/modules/ui/theme"
+import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import { ICON_SIZES } from "@/constants/icon-sizes"
 import { ArtistPickerSheet } from "@/components/blocks/artist-picker-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
@@ -29,6 +33,7 @@ export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
   onCloseParent,
 }) => {
   const { t } = useTranslation()
+  const theme = useThemeColors()
   const trackUri = track.uri ?? ""
 
   const { data: resolvedFileUri = null } = useQuery({
@@ -60,7 +65,7 @@ export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
   } = useTrackMetadataNavigation({
     trackAlbumId: track.albumId,
     fullTrackData,
-    buildArtistPickerItems,
+    buildArtistPickerItems: buildArtistPickerItems as any,
     trackCountLabel: (count) => t("library.count.track", { count }),
     onSheetClose: handleCloseAll,
   })
@@ -89,6 +94,8 @@ export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
   })
 
   const metadataLayoutItems = buildMetadataLayoutItems(metadataItems)
+  const fallbackArtist = track.artist || t("library.unknownArtist")
+  const fallbackAlbum = track.album || t("library.unknownAlbum")
 
   return (
     <>
@@ -102,10 +109,34 @@ export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
             backgroundClassName="bg-surface"
           >
             <View className="mb-5 flex-row items-center gap-4">
-              <Text className="text-xl font-bold text-foreground">{t("track.viewMetadata")}</Text>
+              <View className="h-18 w-18 overflow-hidden rounded-xl bg-default">
+                {track.image ? (
+                  <Image
+                    source={{ uri: track.image }}
+                    style={{ width: "100%", height: "100%" }}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <View className="h-full w-full items-center justify-center bg-default">
+                    <LocalMusicNoteSolidIcon
+                      fill="none"
+                      width={ICON_SIZES.sheetArtworkFallback}
+                      height={ICON_SIZES.sheetArtworkFallback}
+                      color={theme.muted}
+                    />
+                  </View>
+                )}
+              </View>
+              <View className="flex-1 gap-1">
+                <Text className="text-xl leading-7 font-bold text-foreground">{track.title}</Text>
+                <Text className="text-sm text-muted">{fallbackArtist}</Text>
+                <Text className="text-xs text-muted/90" numberOfLines={1}>
+                  {fallbackAlbum}
+                </Text>
+              </View>
             </View>
 
-            <View className="mb-3 flex-row flex-wrap gap-2">
+            <View className="mb-4 flex-row flex-wrap gap-2">
               {quickFacts.map((fact) => (
                 <Chip key={fact.label} size="sm" variant="secondary" color="default">
                   <Chip.Label className="text-xs">{`${fact.label}: ${fact.value}`}</Chip.Label>
