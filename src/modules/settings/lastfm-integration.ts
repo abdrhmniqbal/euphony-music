@@ -10,7 +10,6 @@ export interface LastFmScrobbleConfig {
 export interface LastFmIntegrationState {
   isConfigured: boolean
   isConnected: boolean
-  apiKey?: string
   username?: string
   scrobbleConfig: LastFmScrobbleConfig
 }
@@ -39,13 +38,6 @@ export const DEFAULT_LASTFM_SCROBBLE_CONFIG: LastFmScrobbleConfig = {
   isEnabled: false,
   minimumTrackDurationSeconds: 30,
   scrobbleDelayPercent: 30,
-}
-
-export async function getLastFmApiCredentials() {
-  return {
-    apiKey: undefined,
-    apiSecret: undefined,
-  }
 }
 
 function sanitizeScrobbleConfig(source: {
@@ -111,7 +103,6 @@ export async function getLastFmIntegrationState(): Promise<LastFmIntegrationStat
   return {
     isConfigured: Boolean(LASTFM_SERVICE_URL),
     isConnected: Boolean(sessionKey),
-    apiKey: undefined,
     username: username || undefined,
     scrobbleConfig,
   }

@@ -1,7 +1,7 @@
 import { logError, logInfo } from "@/modules/logging/service"
 import {
   getLastFmSessionKey,
-  getLastFmIntegrationState,
+  getLastFmScrobbleConfig,
   LASTFM_SERVICE_URL,
 } from "@/modules/settings/lastfm-integration"
 import type { Track } from "@/modules/tracks/types"
@@ -33,20 +33,22 @@ export async function handleTrackChanged(track: Track | undefined) {
   }
 
   try {
-    const state = await getLastFmIntegrationState()
-    const sessionKey = await getLastFmSessionKey()
+    const [sessionKey, scrobbleConfig] = await Promise.all([
+      getLastFmSessionKey(),
+      getLastFmScrobbleConfig(),
+    ])
 
-    if (!state.isConnected || !state.scrobbleConfig.isEnabled || !sessionKey) {
+    if (!sessionKey || !scrobbleConfig.isEnabled) {
       return
     }
 
     const duration = track.duration || 0
-    if (duration < state.scrobbleConfig.minimumTrackDurationSeconds) {
-      logInfo(`Last.fm: Track ${track.name} ignored (shorter than minimum duration: ${duration}s < ${state.scrobbleConfig.minimumTrackDurationSeconds}s)`)
+    if (duration < scrobbleConfig.minimumTrackDurationSeconds) {
+      logInfo(`Last.fm: Track ${track.name} ignored (shorter than minimum duration: ${duration}s < ${scrobbleConfig.minimumTrackDurationSeconds}s)`)
       return
     }
 
-    const delayPercent = state.scrobbleConfig.scrobbleDelayPercent
+    const delayPercent = scrobbleConfig.scrobbleDelayPercent
     const scrobbleThresholdSeconds = Math.round((duration * delayPercent) / 100)
 
     current = {
@@ -80,8 +82,8 @@ export async function handlePlaybackProgress(position: number, duration: number)
   // Update threshold dynamically if duration was initially 0
   if (current.duration === 0 && duration > 0) {
     current.duration = duration
-    const state = await getLastFmIntegrationState()
-    const delayPercent = state.scrobbleConfig.scrobbleDelayPercent
+    const scrobbleConfig = await getLastFmScrobbleConfig()
+    const delayPercent = scrobbleConfig.scrobbleDelayPercent
     current.scrobbleThresholdSeconds = Math.round((duration * delayPercent) / 100)
   }
 
