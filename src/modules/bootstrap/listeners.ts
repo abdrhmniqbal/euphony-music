@@ -13,8 +13,8 @@ import { flushPlaybackStoreSnapshot } from "@/stores/playback/store"
 import { runAutoScan } from "@/modules/bootstrap/runtime"
 import { isExtraLoggingEnabled, logError, logInfo } from "@/modules/logging/service"
 import { resumeTrack } from "@/modules/player/controls"
-import { syncPlaybackStateAfterForeground } from "@/modules/player/session-service"
-import { getCurrentTrackState, getIsPlayingState } from "@/modules/player/store"
+import { syncPlaybackStateFromNative } from "@/stores/playback/actions/playback-controls"
+import { playbackStore } from "@/stores/playback/store"
 import { ensureAudioPlaybackConfigLoaded } from "@/modules/settings/audio-playback"
 import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"
 
@@ -136,9 +136,15 @@ export function registerBootstrapListeners() {
         isLongBackgroundSession,
       })
       void (async () => {
-        await syncPlaybackStateAfterForeground()
+        const didSyncPlaybackState = await syncPlaybackStateFromNative()
+        if (!didSyncPlaybackState) {
+          logInfo("Foreground playback sync skipped resume because native state was unavailable")
+          return
+        }
+
         const audioPlaybackConfig = await ensureAudioPlaybackConfigLoaded()
-        if (audioPlaybackConfig.resumeOnReopen && getCurrentTrackState() && !getIsPlayingState()) {
+        const { activeTrack, isPlaying } = playbackStore.getState()
+        if (audioPlaybackConfig.resumeOnReopen && activeTrack && !isPlaying) {
           await resumeTrack()
         }
       })().catch((error) => {

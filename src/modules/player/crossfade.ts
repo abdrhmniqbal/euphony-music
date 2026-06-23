@@ -1,19 +1,32 @@
 /**
  * Purpose: Applies saved audio crossfade and short playback volume transition preferences to native playback volume.
  * Caller: Player event service progress, active-track, playback-state, queue-ended handlers, and player controls.
- * Dependencies: TrackPlayer native module, settings crossfade config loader, settings store, player queue state, logging service.
+ * Dependencies: AudioBrowser native module, settings crossfade config loader, settings store, player queue state, logging service.
  * Main Functions: handleCrossfadeProgress(), handleCrossfadeTrackActivated(), handleCrossfadePlaybackState(), handleCrossfadePlaybackStopped(), resetCrossfadeVolume(), fadePlaybackVolumeIn(), fadePlaybackVolumeOut(), duckPlaybackVolume(), restorePlaybackVolume()
- * Side Effects: Reads local settings and updates native TrackPlayer volume.
+ * Side Effects: Reads local settings and updates native AudioBrowser volume.
  */
 
 import { logError } from "@/modules/logging/service"
 import { ensureCrossfadeConfigLoaded } from "@/modules/settings/audio-crossfade"
 import { getSettingsState } from "@/modules/settings/store"
+import AudioBrowser from "react-native-audio-browser"
 
-import { State, TrackPlayer } from "./utils"
 import { getCurrentTrackState, getQueueTrackIdsState, getRepeatModeState } from "./store"
 
 const FULL_VOLUME = 1
+
+type PlaybackState =
+  | "none"
+  | "ready"
+  | "playing"
+  | "paused"
+  | "stopped"
+  | "ended"
+  | "error"
+  | "loading"
+  | "buffering"
+
+const RESET_VOLUME_STATES = new Set<PlaybackState>(["paused", "stopped", "ended", "none", "error"])
 const SILENT_VOLUME = 0
 const DUCKED_VOLUME = 0.25
 const MIN_FADE_SECONDS = 0.75
@@ -50,15 +63,18 @@ function clearVolumeRamp() {
   activeRampResolve = null
 }
 
+let currentVolume = 1
+
 async function setPlayerVolume(value: number) {
-  await TrackPlayer.setVolume(clampVolume(value))
+  currentVolume = clampVolume(value)
+  AudioBrowser.setVolume(currentVolume)
 }
 
 async function startVolumeRamp(toVolume: number, durationSeconds: number) {
   clearVolumeRamp()
 
   const rampId = activeRampId
-  const fromVolume = clampVolume(await TrackPlayer.getVolume())
+  const fromVolume = currentVolume
   const targetVolume = clampVolume(toVolume)
   const durationMs = Math.max(1, durationSeconds * 1000)
   const startedAt = Date.now()
@@ -224,14 +240,8 @@ export async function handleCrossfadeTrackActivated() {
   }
 }
 
-export async function handleCrossfadePlaybackState(state: State) {
-  if (
-    state === State.Paused ||
-    state === State.Stopped ||
-    state === State.Ended ||
-    state === State.None ||
-    state === State.Error
-  ) {
+export async function handleCrossfadePlaybackState(state: PlaybackState) {
+  if (RESET_VOLUME_STATES.has(state)) {
     await resetCrossfadeVolume()
   }
 }

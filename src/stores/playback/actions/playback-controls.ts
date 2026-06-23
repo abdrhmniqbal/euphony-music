@@ -10,7 +10,7 @@ import {
   getTrackIdsList,
   getUpdatedLists,
 } from "../utils"
-import { playbackStore, setPlaybackLastPosition } from "../store"
+import { flushPlaybackStoreSnapshot, playbackStore, setPlaybackLastPosition } from "../store"
 
 import { isAudioBrowserSetUp } from "@/lib/react-native-audio-browser"
 import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
@@ -27,6 +27,21 @@ export async function loadCurrentTrack() {
     if (_restoredTrackKey !== undefined && extractTrackId(_restoredTrackKey) === activeTrack.id) {
       await seekTo(lastPosition ?? 0)
     }
+  }
+}
+
+export async function syncPlaybackStateFromNative() {
+  try {
+    const progress = AudioBrowser.getProgress()
+    const isPlaying = AudioBrowser.getPlayingState().playing
+    playbackStore.setState({
+      isPlaying,
+      lastPosition: Math.max(0, progress.position ?? playbackStore.getState().lastPosition),
+    })
+    await flushPlaybackStoreSnapshot()
+    return true
+  } catch {
+    return false
   }
 }
 

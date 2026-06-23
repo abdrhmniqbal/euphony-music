@@ -10,21 +10,23 @@ import { useMemo } from "react"
 import { usePolledProgress } from "react-native-audio-browser"
 
 import { type RepeatModeType, type Track, usePlayerStore } from "./store"
+import { usePlaybackStore } from "@/stores/playback/store"
+import type { PlayerQueueContext } from "@/modules/player/types"
 
 export function useCurrentTrack() {
   return usePlayerStore((state) => state.currentTrack)
 }
 
 export function useCurrentTrackId() {
-  return usePlayerStore((state) => state.currentTrack?.id)
+  return usePlaybackStore((state) => state.activeTrack?.id)
 }
 
 export function useHasCurrentTrack() {
-  return usePlayerStore((state) => state.currentTrack !== null)
+  return usePlaybackStore((state) => state.activeTrack !== undefined)
 }
 
 export function useIsPlaying() {
-  return usePlayerStore((state) => state.isPlaying)
+  return usePlaybackStore((state) => state.isPlaying)
 }
 
 export function usePlaybackCurrentTime() {
@@ -41,11 +43,13 @@ export function usePlaybackProgressState() {
 }
 
 export function usePlaybackRepeatMode(): RepeatModeType {
-  return usePlayerStore((state) => state.repeatMode)
+  return usePlaybackStore((state) =>
+    state.repeat === "no-repeat" ? "off" : state.repeat === "repeat" ? "queue" : "track"
+  )
 }
 
 export function useIsShuffled() {
-  return usePlayerStore((state) => state.isShuffled)
+  return usePlaybackStore((state) => state.shuffle)
 }
 
 export function usePlayerTracks(): Track[] {
@@ -57,7 +61,9 @@ export function usePlayerQueue(): Track[] {
 }
 
 export function usePlayerQueueContext() {
-  return usePlayerStore((state) => state.queueContext)
+  return usePlaybackStore((state): PlayerQueueContext | null =>
+    state.playingFrom ? { type: state.playingFrom.type, title: state.playingFromName } : null
+  )
 }
 
 export function useSleepTimerState() {

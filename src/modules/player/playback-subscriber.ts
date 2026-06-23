@@ -1,3 +1,7 @@
+/**
+ * CQRS Read-Model Projector: Synchronizes the Drizzle KV `playbackStore` (source of truth)
+ * into `usePlayerStore` (legacy UI read-model) to keep synchronous full-object getter helpers working.
+ */
 import type { Track as DataTrack } from "@/modules/tracks/types"
 import { updateColorsForImage } from "@/modules/player/colors"
 import { logError } from "@/modules/logging/service"

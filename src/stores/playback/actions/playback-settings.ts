@@ -7,14 +7,18 @@ import { playbackStore } from "../store"
 
 import { shuffleArray } from "@/utils/object"
 
+export async function setRepeat(mode: RepeatMode) {
+  playbackStore.setState({ repeat: mode })
+  AudioBrowser.setRepeatMode(mode === RepeatModes.REPEAT_ONE ? "track" : "off")
+}
+
 export async function cycleRepeat() {
   const { repeat } = playbackStore.getState()
   let newMode: RepeatMode = RepeatModes.REPEAT
   if (repeat === RepeatModes.REPEAT) newMode = RepeatModes.REPEAT_ONE
   else if (repeat === RepeatModes.REPEAT_ONE) newMode = RepeatModes.NO_REPEAT
-  playbackStore.setState({ repeat: newMode })
 
-  AudioBrowser.setRepeatMode(newMode === RepeatModes.REPEAT_ONE ? "track" : "off")
+  await setRepeat(newMode)
 }
 
 export async function toggleShuffle() {

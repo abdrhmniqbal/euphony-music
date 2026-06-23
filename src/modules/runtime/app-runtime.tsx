@@ -3,7 +3,6 @@ import { type ReactNode, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Text, View } from "react-native"
 
-import { initializeTrackPlayer, registerPlaybackService } from "@/core/audio/track-player-service"
 import { db } from "@/db/client"
 import migrations from "@/db/migrations/migrations"
 import { loadInitialDatabaseState } from "@/modules/bootstrap/database-startup"
@@ -11,6 +10,7 @@ import { ensureLoggingInitialized } from "@/modules/bootstrap/runtime"
 import { startIndexing } from "@/modules/indexer/service"
 import { logError, logInfo } from "@/modules/logging/service"
 import { registerPlaybackListeners } from "@/modules/player/playback-listeners"
+import { setupPlayer } from "@/modules/player/service"
 import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-subscriber"
 import { preloadRegisteredSettings } from "@/modules/settings/registry"
 import { updateSettingsState } from "@/modules/settings/store"
@@ -83,8 +83,7 @@ async function startRuntime() {
 
   await ensureLoggingInitialized()
   logInfo("Reference-style app runtime starting")
-  registerPlaybackService()
-  await initializeTrackPlayer()
+  await setupPlayer()
   registerPlaybackListeners()
 
   await playbackStore.getState().restoreActiveTrack()

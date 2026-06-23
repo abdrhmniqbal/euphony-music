@@ -1,8 +1,8 @@
 import AudioBrowser from "react-native-audio-browser"
 
-import type { PlayerQueueContext, RepeatModeType, Track } from "@/modules/player/types"
+import type { PlayerQueueContext, Track } from "@/modules/player/types"
 import type { Track as DataTrack } from "@/modules/tracks/types"
-import { PlaybackControls, PlaybackSettings, Queue } from "@/stores/playback/actions"
+import { PlaybackControls } from "@/stores/playback/actions"
 import { playbackStore } from "@/stores/playback/store"
 import { preferenceStore } from "@/stores/preference/store"
 import { getUpdatedLists, extractTrackId } from "@/stores/playback/utils"
@@ -71,49 +71,4 @@ export async function playFromTracks(options: {
   await PlaybackControls.loadCurrentTrack()
   AudioBrowser.play()
   return true
-}
-
-export async function pausePlayback() {
-  await PlaybackControls.pause()
-}
-
-export async function resumePlayback() {
-  await PlaybackControls.play()
-}
-
-export async function togglePlaybackCore() {
-  await PlaybackControls.playToggle()
-}
-
-export async function nextTrack(naturalProgression = false) {
-  await PlaybackControls.next(naturalProgression)
-}
-
-export async function previousTrack() {
-  await PlaybackControls.prev()
-}
-
-export async function playQueueIndex(index: number) {
-  await PlaybackControls.playAtIndex(index)
-}
-
-export async function seekPlayback(seconds: number) {
-  await PlaybackControls.seekTo(seconds)
-}
-
-export async function setPlaybackRepeatMode(mode: RepeatModeType) {
-  repeatMode: switch (mode) {
-    case "off":
-      playbackStore.setState({ repeat: "no-repeat" })
-      AudioBrowser.setRepeatMode("off")
-      break
-    case "queue":
-      playbackStore.setState({ repeat: "repeat" })
-      AudioBrowser.setRepeatMode("off")
-      break
-    case "track":
-      playbackStore.setState({ repeat: "repeat-one" })
-      AudioBrowser.setRepeatMode("track")
-      break
-  }
 }

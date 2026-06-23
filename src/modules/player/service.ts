@@ -1,9 +1,9 @@
 /**
  * Purpose: Sets up AudioBrowser playback, plays indexed tracks, indexes external intent files on demand, and stores queue source context when playback starts.
  * Caller: track rows, player controls, queue recovery flows, bootstrap playback setup, external audio intent handler.
- * Dependencies: AudioBrowser playback core, player store, playback session service, player activity service, crossfade transition service, metadata/artwork helpers, file URI utilities, logging service.
+ * Dependencies: AudioBrowser playback core, player store, player activity service, crossfade transition service, metadata/artwork helpers, file URI utilities, logging service.
  * Main Functions: setupPlayer(), playTrack(), playExternalFileUri()
- * Side Effects: Initializes native playback, reads external file metadata/artwork, writes newly opened external files to the library database, resets playback context and volume transitions, starts playback, persists session state.
+ * Side Effects: Initializes native playback, reads external file metadata/artwork, writes newly opened external files to the library database, resets playback context and volume transitions, starts playback.
  */
 
 import { logError, logInfo, logWarn } from "@/modules/logging/service"
@@ -16,7 +16,6 @@ import { handleTrackActivated } from "@/modules/player/activity"
 import { resetCrossfadeVolume } from "@/modules/player/crossfade"
 import { playFromTracks, setupPlaybackCore } from "@/modules/player/playback-core"
 import { beginPlayerQueueReplacement, endPlayerQueueReplacement } from "@/modules/player/runtime"
-import { persistPlaybackSession } from "@/modules/player/session-service"
 import {
   EXTERNAL_TRACK_ID_PREFIX,
   type PlayerQueueContext,
@@ -185,7 +184,6 @@ export async function playTrack(
     }
     if (!track.isExternal) {
       await handleTrackActivated(track)
-      await persistPlaybackSession({ force: true })
     }
     return true
   } catch (error) {

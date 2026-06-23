@@ -19,17 +19,8 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
   (set, get) => ({
     _hasHydrated: false,
     _init: async ({ activeKey }) => {
-      let activeTrack: PlaybackStore["activeTrack"]
-      if (activeKey) {
-        activeTrack = await get().getTrack(activeKey)
-      }
-      let upToDateIsPlaying = false
-      try {
-        upToDateIsPlaying = AudioBrowser.getPlayingState().playing
-      } catch {
-        // Intentionally silent: AudioBrowser might not be initialized yet during early hydration.
-      }
-      set({ _hasHydrated: true, isPlaying: upToDateIsPlaying, activeTrack })
+      const activeTrack = activeKey ? await get().getTrack(activeKey) : undefined
+      set({ _hasHydrated: true, activeTrack })
     },
 
     getTrack: async (trackKey) => {

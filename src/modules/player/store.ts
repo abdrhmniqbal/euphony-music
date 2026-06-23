@@ -2,7 +2,7 @@
  * Purpose: Stores playback state, queue state, and queue source context for player UI and controls.
  * Caller: player service, player selectors, player controls, and player UI blocks.
  * Dependencies: Zustand and player domain types.
- * Main Functions: usePlayerStore, setQueueContextState(), setQueueState(), setCurrentTrackState()
+ * Main Functions: usePlayerStore, getCurrentTrackState(), setTracksState(), setSleepTimerState()
  * Side Effects: Updates in-memory Zustand playback state.
  */
 
@@ -86,32 +86,12 @@ export function getIsPlayingState() {
   return usePlayerStore.getState().isPlaying
 }
 
-export function setIsPlayingState(value: boolean) {
-  usePlayerStore.setState({ isPlaying: value })
-}
-
-export function setCurrentTimeState(value: number) {
-  if (usePlayerStore.getState().currentTime === value) {
-    return
-  }
-
-  usePlayerStore.setState({ currentTime: value })
-}
-
-export function getCurrentTimeState() {
-  return usePlayerStore.getState().currentTime
-}
-
 export function setDurationState(value: number) {
   if (usePlayerStore.getState().duration === value) {
     return
   }
 
   usePlayerStore.setState({ duration: value })
-}
-
-export function getDurationState() {
-  return usePlayerStore.getState().duration
 }
 
 export function setPlaybackRefreshVersionState(value: number) {
@@ -126,64 +106,12 @@ export function getRepeatModeState() {
   return usePlayerStore.getState().repeatMode
 }
 
-export function setRepeatModeState(value: RepeatModeType) {
-  usePlayerStore.setState({ repeatMode: value })
-}
-
-export function getQueueState() {
-  return usePlayerStore.getState().queue
-}
-
-export function setQueueState(value: Track[]) {
-  usePlayerStore.setState({ queue: value })
-}
-
 export function getQueueTrackIdsState() {
   return usePlayerStore.getState().queueTrackIds
 }
 
-export function setQueueTrackIdsState(value: string[]) {
-  usePlayerStore.setState({ queueTrackIds: value })
-}
-
-export function getOriginalQueueState() {
-  return usePlayerStore.getState().originalQueue
-}
-
-export function setOriginalQueueState(value: Track[]) {
-  usePlayerStore.setState({ originalQueue: value })
-}
-
-export function getOriginalQueueTrackIdsState() {
-  return usePlayerStore.getState().originalQueueTrackIds
-}
-
-export function setOriginalQueueTrackIdsState(value: string[]) {
-  usePlayerStore.setState({ originalQueueTrackIds: value })
-}
-
-export function getImmediateQueueTrackIdsState() {
-  return usePlayerStore.getState().immediateQueueTrackIds
-}
-
-export function setImmediateQueueTrackIdsState(value: string[]) {
-  usePlayerStore.setState({ immediateQueueTrackIds: value })
-}
-
 export function getIsShuffledState() {
   return usePlayerStore.getState().isShuffled
-}
-
-export function setIsShuffledState(value: boolean) {
-  usePlayerStore.setState({ isShuffled: value })
-}
-
-export function getQueueContextState() {
-  return usePlayerStore.getState().queueContext
-}
-
-export function setQueueContextState(value: PlayerQueueContext | null) {
-  usePlayerStore.setState({ queueContext: value })
 }
 
 export function getSleepTimerState() {
