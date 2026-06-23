@@ -1,10 +1,8 @@
 import { logError, logInfo } from "@/modules/logging/service"
 import {
-  createSignature,
-  getLastFmApiCredentials,
   getLastFmSessionKey,
   getLastFmIntegrationState,
-  LASTFM_API_URL,
+  LASTFM_SERVICE_URL,
 } from "@/modules/settings/lastfm-integration"
 import type { Track } from "@/modules/tracks/types"
 
@@ -19,8 +17,6 @@ interface CurrentScrobble {
   nowPlayingSent: boolean
   scrobbleSent: boolean
   isEnabled: boolean
-  apiKey: string
-  apiSecret: string
   sessionKey: string
 }
 
@@ -39,9 +35,8 @@ export async function handleTrackChanged(track: Track | undefined) {
   try {
     const state = await getLastFmIntegrationState()
     const sessionKey = await getLastFmSessionKey()
-    const credentials = await getLastFmApiCredentials()
 
-    if (!state.isConnected || !state.scrobbleConfig.isEnabled || !credentials.apiKey || !credentials.apiSecret || !sessionKey) {
+    if (!state.isConnected || !state.scrobbleConfig.isEnabled || !sessionKey) {
       return
     }
 
@@ -65,8 +60,6 @@ export async function handleTrackChanged(track: Track | undefined) {
       nowPlayingSent: false,
       scrobbleSent: false,
       isEnabled: true,
-      apiKey: credentials.apiKey,
-      apiSecret: credentials.apiSecret,
       sessionKey,
     }
 
@@ -101,26 +94,21 @@ async function sendNowPlaying() {
   if (!current || current.nowPlayingSent) return
   current.nowPlayingSent = true
 
-  const { artist, title, album, duration, apiKey, apiSecret, sessionKey } = current
+  const { artist, title, album, duration, sessionKey } = current
 
   try {
-    const params: Record<string, string> = {
-      api_key: apiKey,
+    const payload = {
+      sessionKey,
       artist,
-      method: "track.updateNowPlaying",
-      sk: sessionKey,
       track: title,
+      ...(album ? { album } : {}),
+      ...(duration > 0 ? { duration } : {}),
     }
-    if (album) params.album = album
-    if (duration > 0) params.duration = String(duration)
 
-    const apiSig = await createSignature(params, apiSecret)
-    const body = new URLSearchParams({ ...params, api_sig: apiSig, format: "json" })
-
-    const response = await fetch(LASTFM_API_URL, {
+    const response = await fetch(`${LASTFM_SERVICE_URL}/api/lastfm/now-playing`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
@@ -138,26 +126,21 @@ async function sendScrobble() {
   if (!current || current.scrobbleSent) return
   current.scrobbleSent = true
 
-  const { artist, title, album, startedAt, apiKey, apiSecret, sessionKey } = current
+  const { artist, title, album, startedAt, sessionKey } = current
 
   try {
-    const params: Record<string, string> = {
-      api_key: apiKey,
+    const payload = {
+      sessionKey,
       artist,
-      method: "track.scrobble",
-      sk: sessionKey,
-      timestamp: String(startedAt),
       track: title,
+      timestamp: startedAt,
+      ...(album ? { album } : {}),
     }
-    if (album) params.album = album
 
-    const apiSig = await createSignature(params, apiSecret)
-    const body = new URLSearchParams({ ...params, api_sig: apiSig, format: "json" })
-
-    const response = await fetch(LASTFM_API_URL, {
+    const response = await fetch(`${LASTFM_SERVICE_URL}/api/lastfm/scrobble`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
