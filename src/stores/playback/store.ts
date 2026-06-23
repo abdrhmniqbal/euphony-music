@@ -1,5 +1,6 @@
 import { inArray } from "drizzle-orm"
 import AudioBrowser from "react-native-audio-browser"
+import KvStore from "expo-sqlite/kv-store"
 import { useStore } from "zustand"
 
 import { db } from "@/db"
@@ -135,6 +136,26 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
     },
   }
 )
+
+let playbackStoreFlushPromise = Promise.resolve()
+
+export function flushPlaybackStoreSnapshot(): Promise<void> {
+  const options = playbackStore.persist.getOptions()
+  if (!options.name) {
+    return Promise.resolve()
+  }
+
+  const partializedState = options.partialize?.(playbackStore.getState()) ?? playbackStore.getState()
+  const payload = JSON.stringify({ state: partializedState, version: options.version })
+
+  playbackStoreFlushPromise = playbackStoreFlushPromise.then(() => KvStore.setItem(options.name!, payload))
+  return playbackStoreFlushPromise
+}
+
+export function setPlaybackLastPosition(position: number): void {
+  playbackStore.setState({ lastPosition: position })
+  void flushPlaybackStoreSnapshot()
+}
 
 export function usePlaybackStore<T>(selector: (s: PlaybackStore) => T): T {
   return useStore(playbackStore, selector)

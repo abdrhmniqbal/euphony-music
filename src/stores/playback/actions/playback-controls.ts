@@ -10,7 +10,7 @@ import {
   getTrackIdsList,
   getUpdatedLists,
 } from "../utils"
-import { playbackStore } from "../store"
+import { playbackStore, setPlaybackLastPosition } from "../store"
 
 import { isAudioBrowserSetUp } from "@/lib/react-native-audio-browser"
 import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
@@ -27,6 +27,28 @@ export async function loadCurrentTrack() {
     if (_restoredTrackKey !== undefined && extractTrackId(_restoredTrackKey) === activeTrack.id) {
       await seekTo(lastPosition ?? 0)
     }
+  }
+}
+
+export async function restoreCurrentTrackForStartup() {
+  if (await isAudioBrowserSetUp()) {
+    let nativePlaying = false
+    try {
+      nativePlaying = AudioBrowser.getPlayingState().playing
+    } catch {
+      // safe fallback
+    }
+    playbackStore.setState({
+      _hasRestoredPosition: true,
+      isPlaying: nativePlaying,
+    })
+    return
+  }
+
+  const shouldResumePlayback = playbackStore.getState().isPlaying
+  await loadCurrentTrack()
+  if (shouldResumePlayback && playbackStore.getState().activeTrack) {
+    await AudioBrowser.play()
   }
 }
 
@@ -128,7 +150,7 @@ export async function next(naturalProgression = false) {
 
 export async function seekTo(position: number) {
   await preloadCurrentTrack()
-  playbackStore.setState({ lastPosition: position })
+  setPlaybackLastPosition(position)
   await AudioBrowser.seekTo(position)
 }
 

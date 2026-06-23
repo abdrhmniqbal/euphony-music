@@ -8,6 +8,7 @@
 
 import * as MediaLibrary from "expo-media-library/legacy"
 import { AppState, type AppStateStatus, InteractionManager } from "react-native"
+import { flushPlaybackStoreSnapshot } from "@/stores/playback/store"
 
 import { runAutoScan } from "@/modules/bootstrap/runtime"
 import { isExtraLoggingEnabled, logError, logInfo } from "@/modules/logging/service"
@@ -94,6 +95,17 @@ export function registerBootstrapListeners() {
       pendingDeferredMediaAutoScan = false
       pendingDeferredMediaAutoScanBypassThrottle = false
       clearPendingForegroundWork()
+      
+      void (async () => {
+        try {
+          await flushPlaybackStoreSnapshot()
+          if (isExtraLoggingEnabled()) {
+            logInfo("Background persistence flush completed")
+          }
+        } catch (err) {
+          logError("Failed to flush playback state on background", err)
+        }
+      })()
     }
 
     const isReturningToForeground = previousState === "background" && nextState === "active"

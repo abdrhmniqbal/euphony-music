@@ -18,7 +18,7 @@ import {
   handleSleepTimerPlaybackEnded,
   handleSleepTimerTrackChanged,
 } from "@/modules/player/sleep-timer"
-import { playbackStore } from "@/stores/playback/store"
+import { playbackStore, setPlaybackLastPosition } from "@/stores/playback/store"
 
 let playCountTimeout: ReturnType<typeof setTimeout> | null = null
 let lastAutoAdvanceAt = 0
@@ -72,7 +72,7 @@ function onActiveTrackChanged(e: {
 
 function onProgressUpdated(e: { position: number; duration: number }) {
   if (e.duration === 0) return
-  playbackStore.setState({ lastPosition: e.position })
+  setPlaybackLastPosition(e.position)
   const activeTrack = playbackStore.getState().activeTrack ?? undefined
   evaluateSleepTimerOnProgress(e.position, e.duration)
   void handleLastFmTrackChanged(activeTrack)

@@ -15,7 +15,7 @@ import { subscribePlaybackStoreToPlayerStore } from "@/modules/player/playback-s
 import { preloadRegisteredSettings } from "@/modules/settings/registry"
 import { updateSettingsState } from "@/modules/settings/store"
 import { canStartIndexingNow } from "@/modules/bootstrap/utils"
-import { loadCurrentTrack } from "@/stores/playback/actions/playback-controls"
+import { restoreCurrentTrackForStartup } from "@/stores/playback/actions/playback-controls"
 import { playbackStore, usePlaybackStore } from "@/stores/playback/store"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useViewPreferenceStore } from "@/stores/view-preference/store"
@@ -88,7 +88,7 @@ async function startRuntime() {
   registerPlaybackListeners()
 
   await playbackStore.getState().restoreActiveTrack()
-  await loadCurrentTrack()
+  await restoreCurrentTrackForStartup()
 
   const settingsStartedAt = Date.now()
   await preloadSettings()

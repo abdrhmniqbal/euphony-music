@@ -52,6 +52,7 @@ export interface PlaybackStore {
 export const PersistedFields: string[] = [
   "_restoredTrackKey",
   "lastPosition",
+  "isPlaying",
   "repeat",
   "shuffle",
   "playingFrom",
