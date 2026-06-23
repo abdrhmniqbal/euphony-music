@@ -49,23 +49,23 @@ Download the latest APK from:
 
 ### Requirements
 
-- Bun
+- Nub
 - Node.js
 - Expo / Android Studio for local Android builds
 
 ### Local setup
 
 ```bash
-bun install
-bun run start
+nub install
+nub run start
 ```
 
 Useful commands:
 
 ```bash
-bun run android
-bun run lint
-bun run format
+nub run android
+nub run lint
+nub run format
 ```
 
 ## Tech Stack

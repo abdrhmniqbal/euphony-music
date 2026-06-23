@@ -7,7 +7,7 @@ Improve project maintainability without changing behavior. Refactors should dele
 ## Guardrails
 
 - Preserve existing behavior and routes.
-- Use `pnpm` for all package/script commands.
+- Use `nub` for all package/script commands.
 - Keep changes surgical per task.
 - Add or update tests where available for moved behavior.
 - Avoid broad formatting churn.
@@ -19,8 +19,8 @@ Improve project maintainability without changing behavior. Refactors should dele
 Before and after each task, run available checks:
 
 ```bash
-pnpm lint
-pnpm typecheck
+nub lint
+nub typecheck
 ```
 
 If project scripts differ, use matching `package.json` scripts.

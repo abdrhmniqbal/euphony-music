@@ -4,7 +4,7 @@
   "private": "true",
   "main": "expo-router/entry",
   "scripts": {
-    "eas-build-pre-install": "corepack enable && corepack prepare pnpm@11.5.1 --activate && corepack prepare yarn@4.13.0 --activate",
+    "eas-build-pre-install": "npm install -g --ignore-scripts=false @nubjs/nub && corepack enable && corepack prepare yarn@4.13.0 --activate",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -92,7 +92,7 @@
     "oxlint": "^1.70.0",
     "typescript": "~6.0.3"
   },
-  "packageManager": "pnpm@11.5.1",
+  "packageManager": "nub@0.1.11",
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
@@ -102,5 +102,17 @@
         ]
       }
     }
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "nub",
+      "version": "^0.1.11",
+      "onFail": "warn"
+    }
+  },
+  "allowBuilds": {
+    "@missingcore/react-native-metadata-retriever": true,
+    "esbuild": false,
+    "react-native-audio-browser": true
   }
 }

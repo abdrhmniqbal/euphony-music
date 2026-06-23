@@ -1,7 +1,7 @@
 # Purpose: Manually creates Android development APKs with Gradle.
 # Caller: GitHub Actions workflow_dispatch.
 # Dependencies: actions/checkout, setup-node, Corepack, setup-java, Gradle cache, Android Gradle project.
-# Main Functions: Install dependencies with pnpm, sync Expo config into Android native project, build Android debug APK through Gradle, upload APK artifact.
+# Main Functions: Install dependencies with nub, sync Expo config into Android native project, build Android debug APK through Gradle, upload APK artifact.
 # Side Effects: Generates Android debug APK files and uploads workflow artifacts.
 
 name: Development Build
@@ -23,17 +23,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.13.0
-
-      - name: Setup Corepack package managers
-        run: |
-          npm install --global corepack@latest
-          corepack enable
-          corepack prepare pnpm@11.5.1 --activate
-          corepack prepare yarn@4.13.0 --activate
+      - name: Setup Nub toolkit
+        uses: nubjs/setup-nub@v0
 
       - name: Setup JDK 17
         uses: actions/setup-java@v4
@@ -45,10 +36,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: nub install --frozen-lockfile
 
       - name: Sync Expo Android project
-        run: pnpm expo prebuild --platform android
+        run: nubx expo prebuild --platform android
 
       - name: Build debug APK
         run: |
