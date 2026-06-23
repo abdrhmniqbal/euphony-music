@@ -66,6 +66,7 @@ export async function playFromTracks(options: {
     ...listInfo,
     activeKey,
     activeTrack,
+    queueContext: options.context,
   })
 
   await PlaybackControls.loadCurrentTrack()

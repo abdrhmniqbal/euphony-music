@@ -59,6 +59,7 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
         lastPosition: 0,
         playingFrom: undefined,
         playingFromName: "",
+        queueContext: null,
         orderSnapshot: [],
         queue: [],
         activeKey: undefined,
@@ -99,6 +100,7 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
 
     playingFrom: undefined,
     playingFromName: "",
+    queueContext: null,
 
     orderSnapshot: [],
     queue: [],

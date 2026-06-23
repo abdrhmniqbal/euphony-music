@@ -37,6 +37,7 @@ import { getPreviewAlbums } from "@/modules/search/utils"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { createPlaybackQueueContext } from "@/stores/playback/types"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
@@ -264,6 +265,7 @@ export default function GenreDetailsScreen() {
         isOpen={isTrackSheetOpen}
         onClose={() => setIsTrackSheetOpen(false)}
         tracks={topTracks}
+        queueContext={createPlaybackQueueContext("genre", genreName)}
       />
     </View>
   )

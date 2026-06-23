@@ -6,7 +6,7 @@
  * Side Effects: Opens dialogs/sheets, queues playback actions, and navigates to artist/album/genre routes.
  */
 
-import type { Track } from "@/modules/player/store"
+import type { PlayerQueueContext, Track } from "@/modules/player/types"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { BottomSheet, Button } from "heroui-native"
@@ -55,6 +55,7 @@ interface TrackActionSheetProps {
   onClose: () => void
   tracks?: Track[]
   playlistId?: string
+  queueContext?: PlayerQueueContext | null
   onAddToPlaylist?: (track: Track) => void
 }
 
@@ -82,6 +83,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   onClose,
   tracks,
   playlistId,
+  queueContext,
   onAddToPlaylist,
 }) => {
   const router = useRouter()
@@ -109,7 +111,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
 
   const handlePlay = async () => {
     if (track) {
-      playTrack(track, tracks)
+      playTrack(track, tracks, queueContext ?? undefined)
       onClose()
     }
   }

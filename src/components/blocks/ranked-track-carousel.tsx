@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import type { Track } from "@/modules/player/store"
+import type { PlayerQueueContext, Track } from "@/modules/player/types"
 import * as React from "react"
 
 import { View } from "react-native"
@@ -23,6 +23,7 @@ interface RankedTrackCarouselProps {
   emptyState?: EmptyStateConfig
   onItemPress?: (track: Track) => void
   onItemLongPress?: (track: Track) => void
+  queueContext?: PlayerQueueContext | null
   className?: string
 }
 
@@ -68,6 +69,7 @@ export function RankedTrackCarousel({
   emptyState,
   onItemPress,
   onItemLongPress,
+  queueContext,
   className,
 }: RankedTrackCarouselProps) {
   const currentTrackId = useCurrentTrackId()
@@ -80,9 +82,9 @@ export function RankedTrackCarousel({
         return
       }
 
-      playTrack(track, data)
+      playTrack(track, data, queueContext ?? undefined)
     },
-    [data, onItemPress]
+    [data, onItemPress, queueContext]
   )
 
   const handleLongPress = React.useCallback(

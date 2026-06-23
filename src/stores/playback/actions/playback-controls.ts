@@ -2,7 +2,7 @@ import AudioBrowser from "react-native-audio-browser"
 
 import { addPlayedMediaList } from "@/modules/history/repository"
 import { RepeatModes } from "../constants"
-import type { PlayFromSource } from "../types"
+import { createPlaybackQueueContext, type PlayFromSource } from "../types"
 import {
   arePlaybackSourceEqual,
   extractTrackId,
@@ -228,12 +228,14 @@ export async function playFromList({
   let newTrack = activeTrack
   if (isDiffTrack) newTrack = await getTrack(newTrackId)
 
+  const sourceName = await getSourceName(source)
   playbackStore.setState({
     isPlaying: true,
     ...(isDiffTrack ? { lastPosition: 0 } : {}),
     ...newListInfo,
     playingFrom: source,
-    playingFromName: await getSourceName(source),
+    playingFromName: sourceName,
+    queueContext: createPlaybackQueueContext(source.type, sourceName),
     activeKey: newTrackId,
     activeTrack: newTrack,
   })

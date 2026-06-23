@@ -10,8 +10,6 @@ import { getTracksByIds } from "@/modules/tracks/repository"
 import { playbackStore } from "@/stores/playback/store"
 import { extractTrackId } from "@/stores/playback/utils"
 
-import type { PlayerQueueContext } from "@/modules/player/types"
-
 function toPlayerTrack(track: DataTrack | undefined) {
   if (!track) return null
   return {
@@ -84,14 +82,6 @@ function syncPlayerStoreFromPlayback() {
     void refreshQueueTracks(state.queue, nextQueueSignature)
   }
 
-  let queueContext: PlayerQueueContext | null = null
-  if (state.playingFrom) {
-    queueContext = {
-      type: state.playingFrom.type as PlayerQueueContext["type"],
-      title: state.playingFromName || "",
-    }
-  }
-
   usePlayerStore.setState({
     currentTrack: toPlayerTrack(state.activeTrack),
     isPlaying: state.isPlaying,
@@ -103,7 +93,7 @@ function syncPlayerStoreFromPlayback() {
     queue: queueTracks,
     queueTrackIds: state.queue.map(extractTrackId),
     originalQueueTrackIds: state.orderSnapshot.map(extractTrackId),
-    queueContext,
+    queueContext: state.queueContext,
   })
 
   void updateColorsForImage(state.activeTrack?.artwork ?? undefined)

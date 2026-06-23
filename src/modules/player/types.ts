@@ -28,21 +28,10 @@ export interface SleepTimerState {
   lastCompletedTrackId: string | null
 }
 
-export type PlayerQueueContextType =
-  | "album"
-  | "artist"
-  | "playlist"
-  | "genre"
-  | "search"
-  | "favorites"
-  | "folder"
-  | "trackList"
-  | "external"
-
-export interface PlayerQueueContext {
-  type: PlayerQueueContextType
-  title: string
-}
+export type {
+  PlaybackQueueContext as PlayerQueueContext,
+  PlaybackQueueContextType as PlayerQueueContextType,
+} from "@/stores/playback/types"
 
 export interface Track {
   id: string

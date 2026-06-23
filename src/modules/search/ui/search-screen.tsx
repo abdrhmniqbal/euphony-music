@@ -32,6 +32,7 @@ import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-s
 import { Stack } from "@/layouts/stack"
 import { queryClient } from "@/lib/tanstack-query"
 import { libraryKeys } from "@/modules/library/keys"
+import { createSearchQueueContext } from "@/stores/playback/types"
 import {
   addRecentSearch,
   clearRecentSearches,
@@ -410,6 +411,7 @@ export default function SearchInteractionScreen() {
         isOpen={isTrackSheetOpen}
         onClose={() => setIsTrackSheetOpen(false)}
         tracks={tracks}
+        queueContext={createSearchQueueContext(t("navigation.tabs.search"))}
       />
     </View>
   )

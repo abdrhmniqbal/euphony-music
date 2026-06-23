@@ -6,12 +6,7 @@
  * Side Effects: Navigates to favorite media routes, starts favorite track playback, and toggles favorite flags.
  */
 
-type CollectionFavoriteType = Extract<FavoriteType, "artist" | "album" | "playlist">
-
-function isCollectionFavoriteType(type: FavoriteType | undefined): type is CollectionFavoriteType {
-  return type === "artist" || type === "album" || type === "playlist"
-}
-
+import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -60,6 +55,16 @@ import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { usePlayerTracks } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
+import { createFavoritesQueueContext } from "@/stores/playback/types"
+
+type CollectionFavoriteType = Extract<FavoriteType, "artist" | "album" | "playlist">
+type CollectionFavoriteEntry = FavoriteEntry & { type: CollectionFavoriteType }
+
+function isCollectionFavoriteEntry(
+  favorite: FavoriteEntry | null | undefined
+): favorite is CollectionFavoriteEntry {
+  return favorite?.type === "artist" || favorite?.type === "album" || favorite?.type === "playlist"
+}
 
 interface FavoritesListProps {
   data: FavoriteEntry[]
@@ -279,7 +284,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
           }
           const track = tracks.find((item) => item.id === favorite.id)
           if (track) {
-            playTrack(track, tracks)
+            playTrack(track, tracks, createFavoritesQueueContext(t("library.favorites")))
           }
           break
         }
@@ -318,7 +323,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
         }
       }
     },
-    [onTrackPress, router, tracks]
+    [onTrackPress, router, t, tracks]
   )
 
   const handleLongPress = useCallback((favorite: FavoriteEntry) => {
@@ -369,11 +374,8 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
     }
   }, [selectedFavorite, tracks])
 
-  const selectedCollectionFavorite = React.useMemo(() => {
-    if (selectedFavorite && isCollectionFavoriteType(selectedFavorite.type)) {
-      return selectedFavorite
-    }
-    return null
+  const selectedCollectionFavorite = React.useMemo<CollectionFavoriteEntry | null>(() => {
+    return isCollectionFavoriteEntry(selectedFavorite) ? selectedFavorite : null
   }, [selectedFavorite])
 
   return (
@@ -448,6 +450,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
         isOpen={isSheetOpen && isTrackType}
         onClose={() => setIsSheetOpen(false)}
         tracks={tracks}
+        queueContext={createFavoritesQueueContext(t("library.favorites"))}
       />
     </View>
   )

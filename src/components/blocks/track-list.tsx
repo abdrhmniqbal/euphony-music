@@ -6,7 +6,7 @@
  * Side Effects: Opens track action sheet and dispatches playback actions.
  */
 
-import type { Track } from "@/modules/player/store"
+import type { PlayerQueueContext, Track } from "@/modules/player/types"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useState } from "react"
@@ -52,6 +52,7 @@ interface TrackListProps {
   resetScrollKey?: string
   currentTrackId?: string
   playlistId?: string
+  queueContext?: PlayerQueueContext | null
   renderItemPrefix?: (track: Track, index: number, data: Track[]) => React.ReactNode
 }
 
@@ -76,6 +77,7 @@ export const TrackList: React.FC<TrackListProps> = ({
   resetScrollKey,
   currentTrackId,
   playlistId,
+  queueContext,
   renderItemPrefix,
 }) => {
   const theme = useThemeColors()
@@ -98,9 +100,9 @@ export const TrackList: React.FC<TrackListProps> = ({
         return
       }
 
-      playTrack(track, data)
+      playTrack(track, data, queueContext ?? undefined)
     },
-    [data, onTrackPress]
+    [data, onTrackPress, queueContext]
   )
 
   const showActionMenu = useCallback((track: Track) => {
@@ -178,6 +180,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         onClose={handleSheetClose}
         tracks={data}
         playlistId={playlistId}
+        queueContext={queueContext}
       />
     </View>
   )

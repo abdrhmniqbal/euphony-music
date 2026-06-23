@@ -31,6 +31,7 @@ const PLAYER_QUEUE_CONTEXT_LABEL_KEYS: Record<PlayerQueueContext["type"], string
   search: "player.playingFrom.search",
   favorites: "player.playingFrom.favorites",
   folder: "player.playingFrom.folder",
+  mix: "player.playingFrom.default",
   trackList: "player.playingFrom.trackList",
   external: "player.playingFrom.external",
 }

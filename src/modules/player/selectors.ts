@@ -61,9 +61,7 @@ export function usePlayerQueue(): Track[] {
 }
 
 export function usePlayerQueueContext() {
-  return usePlaybackStore((state): PlayerQueueContext | null =>
-    state.playingFrom ? { type: state.playingFrom.type, title: state.playingFromName } : null
-  )
+  return usePlaybackStore((state): PlayerQueueContext | null => state.queueContext)
 }
 
 export function useSleepTimerState() {

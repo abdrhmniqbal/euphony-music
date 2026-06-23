@@ -6,7 +6,7 @@
  * Side Effects: Starts indexing on refresh, updates scroll state, and starts playback from full section queues.
  */
 
-import type { Track } from "@/modules/player/store"
+import type { Track } from "@/modules/player/types"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import * as React from "react"
 
@@ -29,6 +29,10 @@ import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import {
+  createTrackListQueueContext,
+  type PlaybackQueueContext,
+} from "@/stores/playback/types"
 
 const CHUNK_SIZE = 5
 const RECENTLY_PLAYED_PREVIEW_LIMIT = 8
@@ -42,7 +46,11 @@ export default function HomeScreen() {
   const { t } = useTranslation()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const currentTrackId = useCurrentTrackId()
-  const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
+  const [selectedPlaybackAction, setSelectedPlaybackAction] = React.useState<{
+    track: Track
+    tracks: Track[]
+    queueContext: PlaybackQueueContext
+  } | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = React.useState(false)
   const {
     data: recentlyPlayedTracksData,
@@ -74,8 +82,12 @@ export default function HomeScreen() {
     await Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()])
   }
 
-  const openTrackSheet = React.useCallback((track: Track) => {
-    setSelectedTrack(track)
+  const openTrackSheet = React.useCallback((track: Track, tracks: Track[], title: string) => {
+    setSelectedPlaybackAction({
+      track,
+      tracks,
+      queueContext: createTrackListQueueContext(title),
+    })
     setIsTrackSheetOpen(true)
   }, [])
 
@@ -90,7 +102,7 @@ export default function HomeScreen() {
             title: t("home.recentlyPlayed"),
           })
         }
-        onLongPress={() => openTrackSheet(item)}
+        onLongPress={() => openTrackSheet(item, recentlyPlayedTracks, t("home.recentlyPlayed"))}
         titleClassName={currentTrackId === item.id ? "text-accent" : undefined}
         imageOverlay={currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined}
       />
@@ -153,16 +165,20 @@ export default function HomeScreen() {
                   title: t("home.topTracks"),
                 })
               }
-              onItemLongPress={openTrackSheet}
+              onItemLongPress={(track) => openTrackSheet(track, topTracks, t("home.topTracks"))}
             />
           )}
         />
       </View>
       <TrackActionSheet
-        track={selectedTrack}
+        track={selectedPlaybackAction?.track ?? null}
         isOpen={isTrackSheetOpen}
-        onClose={() => setIsTrackSheetOpen(false)}
-        tracks={recentlyPlayedTracks}
+        onClose={() => {
+          setIsTrackSheetOpen(false)
+          setSelectedPlaybackAction(null)
+        }}
+        tracks={selectedPlaybackAction?.tracks ?? []}
+        queueContext={selectedPlaybackAction?.queueContext ?? null}
       />
     </ScrollView>
   )

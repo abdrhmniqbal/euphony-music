@@ -20,6 +20,7 @@ import { formatDuration } from "@/modules/playlist/utils"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import type { Track } from "@/modules/player/types"
+import { createMixQueueContext } from "@/stores/playback/types"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
 
@@ -57,15 +58,17 @@ export default function MixDetailsScreen() {
     router.back()
   }
 
+  const queueContext = createMixQueueContext(title)
+
   function handlePlayMix() {
     if (tracks.length === 0) return
-    playTrack(tracks[0], tracks, { type: "trackList", title })
+    playTrack(tracks[0], tracks, queueContext)
   }
 
   function handleShuffleMix() {
     if (tracks.length === 0) return
     const randomIndex = Math.floor(Math.random() * tracks.length)
-    playTrack(tracks[randomIndex], tracks, { type: "trackList", title })
+    playTrack(tracks[randomIndex], tracks, queueContext)
   }
 
   function handleTrackScroll(offsetY: number) {
@@ -77,7 +80,7 @@ export default function MixDetailsScreen() {
   }
 
   function handleTrackPress(track: Track) {
-    playTrack(track, tracks, { type: "trackList", title })
+    playTrack(track, tracks, queueContext)
   }
 
   return (

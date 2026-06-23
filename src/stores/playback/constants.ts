@@ -1,6 +1,6 @@
 import type { Track } from "@/modules/tracks/types"
 
-import type { PlayFromSource } from "./types"
+import type { PlaybackQueueContext, PlayFromSource } from "./types"
 
 import type { ObjectValues } from "@/utils/types"
 
@@ -32,6 +32,8 @@ export interface PlaybackStore {
 
   playingFrom: PlayFromSource | undefined
   playingFromName: string
+  /** Display label for full player. May exist without a resolvable persisted source. */
+  queueContext: PlaybackQueueContext | null
 
   orderSnapshot: string[]
   queue: string[]
@@ -57,6 +59,7 @@ export const PersistedFields: string[] = [
   "shuffle",
   "playingFrom",
   "playingFromName",
+  "queueContext",
   "orderSnapshot",
   "queue",
   "activeKey",

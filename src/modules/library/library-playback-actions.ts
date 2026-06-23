@@ -2,6 +2,7 @@ import type { FavoriteEntry } from "@/modules/favorites/types"
 import { sortTracks } from "@/modules/library/sort-utils"
 import { playTrack } from "@/modules/player/service"
 import type { Track } from "@/modules/player/types"
+import { createFavoritesQueueContext, createTrackListQueueContext } from "@/stores/playback/types"
 import { buildFavoritesPlaybackQueue } from "./favorite-playback-queue"
 
 export function playSingleTrack({
@@ -20,23 +21,17 @@ export function playSingleTrack({
   defaultTracksTitle: string
 }) {
   if (queue && queue.length > 0) {
-    playTrack(track, queue, {
-      type: "trackList",
-      title: activeTabTitle,
-    })
+    playTrack(track, queue, createTrackListQueueContext(activeTabTitle))
     return
   }
 
   const sortedTracksQueue = sortTracks(tracks, tracksSortConfig)
   if (sortedTracksQueue.length > 0) {
-    playTrack(track, sortedTracksQueue, {
-      type: "trackList",
-      title: defaultTracksTitle,
-    })
+    playTrack(track, sortedTracksQueue, createTrackListQueueContext(defaultTracksTitle))
     return
   }
 
-  playTrack(track)
+  playTrack(track, tracks, createTrackListQueueContext(activeTabTitle || defaultTracksTitle))
 }
 
 export async function playFavoriteTrack({
@@ -53,19 +48,13 @@ export async function playFavoriteTrack({
   const queue = await buildFavoritesPlaybackQueue(filteredFavorites, tracks)
   const track = queue.find((item) => item.id === trackId)
   if (track) {
-    playTrack(track, queue, {
-      type: "favorites",
-      title: favoritesTitle,
-    })
+    playTrack(track, queue, createFavoritesQueueContext(favoritesTitle))
     return
   }
 
   const fallbackTrack = tracks.find((item) => item.id === trackId)
   if (fallbackTrack) {
-    playTrack(fallbackTrack, queue.length > 0 ? queue : tracks, {
-      type: "favorites",
-      title: favoritesTitle,
-    })
+    playTrack(fallbackTrack, queue.length > 0 ? queue : tracks, createFavoritesQueueContext(favoritesTitle))
   }
 }
 
@@ -87,10 +76,7 @@ export async function playAllTracks({
   if (activeTab === "Tracks") {
     const sortedTracksQueue = sortTracks(tracks, tracksSortConfig)
     if (sortedTracksQueue.length > 0) {
-      playTrack(sortedTracksQueue[0], sortedTracksQueue, {
-        type: "trackList",
-        title: defaultTracksTitle,
-      })
+      playTrack(sortedTracksQueue[0], sortedTracksQueue, createTrackListQueueContext(defaultTracksTitle))
     }
     return
   }
@@ -98,16 +84,13 @@ export async function playAllTracks({
   if (activeTab === "Favorites") {
     const queue = await buildFavoritesPlaybackQueue(filteredFavorites, tracks)
     if (queue.length > 0) {
-      playTrack(queue[0], queue, {
-        type: "favorites",
-        title: favoritesTitle,
-      })
+      playTrack(queue[0], queue, createFavoritesQueueContext(favoritesTitle))
     }
     return
   }
 
   if (tracks.length > 0) {
-    playTrack(tracks[0])
+    playTrack(tracks[0], tracks, createTrackListQueueContext(activeTab || defaultTracksTitle))
   }
 }
 
@@ -130,10 +113,11 @@ export async function shuffleTracks({
     const sortedTracksQueue = sortTracks(tracks, tracksSortConfig)
     if (sortedTracksQueue.length > 0) {
       const randomIndex = Math.floor(Math.random() * sortedTracksQueue.length)
-      playTrack(sortedTracksQueue[randomIndex], sortedTracksQueue, {
-        type: "trackList",
-        title: defaultTracksTitle,
-      })
+      playTrack(
+        sortedTracksQueue[randomIndex],
+        sortedTracksQueue,
+        createTrackListQueueContext(defaultTracksTitle)
+      )
     }
     return
   }
@@ -142,16 +126,13 @@ export async function shuffleTracks({
     const queue = await buildFavoritesPlaybackQueue(filteredFavorites, tracks)
     if (queue.length > 0) {
       const randomIndex = Math.floor(Math.random() * queue.length)
-      playTrack(queue[randomIndex], queue, {
-        type: "favorites",
-        title: favoritesTitle,
-      })
+      playTrack(queue[randomIndex], queue, createFavoritesQueueContext(favoritesTitle))
     }
     return
   }
 
   if (tracks.length > 0) {
     const randomIndex = Math.floor(Math.random() * tracks.length)
-    playTrack(tracks[randomIndex])
+    playTrack(tracks[randomIndex], tracks, createTrackListQueueContext(activeTab || defaultTracksTitle))
   }
 }

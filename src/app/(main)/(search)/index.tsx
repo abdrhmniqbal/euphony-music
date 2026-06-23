@@ -32,6 +32,7 @@ import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import { Card } from "heroui-native"
+import { createTrackListQueueContext } from "@/stores/playback/types"
 
 
 const RECENTLY_ADDED_LIMIT = 8
@@ -366,6 +367,7 @@ export default function SearchScreen() {
         isOpen={isTrackSheetOpen}
         onClose={() => setIsTrackSheetOpen(false)}
         tracks={recentlyAddedTracks}
+        queueContext={createTrackListQueueContext(t("search.recentlyAdded"))}
       />
     </>
   )
