@@ -34,6 +34,18 @@ subprojects { subproject ->
       compileSdk rootProject.ext.compileSdkVersion
     }
   }
+
+  subproject.configurations.all {
+    resolutionStrategy.dependencySubstitution {
+      substitute module("androidx.media3:media3-common") using module("com.github.MissingCore.media:media3-common:1.9.3-MissingCore.1")
+      substitute module("androidx.media3:media3-exoplayer") using module("com.github.MissingCore.media:media3-exoplayer:1.9.3-MissingCore.1")
+      substitute module("androidx.media3:media3-session") using module("com.github.MissingCore.media:media3-session:1.9.3-MissingCore.1")
+      substitute module("androidx.media3:media3-ui") using module("com.github.MissingCore.media:media3-ui:1.9.3-MissingCore.1")
+      substitute module("androidx.media3:media3-exoplayer-hls") using module("com.github.MissingCore.media:media3-exoplayer-hls:1.9.3-MissingCore.1")
+      substitute module("androidx.media3:media3-exoplayer-dash") using module("com.github.MissingCore.media:media3-exoplayer-dash:1.9.3-MissingCore.1")
+      substitute module("androidx.media3:media3-exoplayer-smoothstreaming") using module("com.github.MissingCore.media:media3-exoplayer-smoothstreaming:1.9.3-MissingCore.1")
+    }
+  }
 }
 
 apply plugin: "expo-root-project"
