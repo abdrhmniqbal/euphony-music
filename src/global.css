@@ -17,6 +17,22 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
     }
 
     @variant dark {
@@ -29,6 +45,22 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
     }
 
     @variant theme-default-light {
@@ -44,11 +76,11 @@
         0 0 1px 0 rgba(0, 0, 0, 0.06);
 
       /* Base Colors */
-      --background: oklch(0.9702 0 0);
+      --background: #ffffff;
       --foreground: var(--eclipse);
 
       /* Surface */
-      --surface: var(--white);
+      --surface: #ffffff;
       --surface-foreground: var(--foreground);
 
       --surface-secondary: oklch(0.9524 0.0013 286.37);
@@ -62,13 +94,13 @@
       --overlay-foreground: var(--foreground);
       --backdrop: oklch(0% 0 0 / 20%);
 
-      --muted: oklch(0.5517 0.0138 285.94);
+      --muted: #71717a;
 
-      --default: oklch(94% 0.001 286.375);
+      --default: #f4f4f5;
       --default-foreground: var(--eclipse);
 
-      --accent: oklch(0.6204 0.195 253.83);
-      --accent-foreground: var(--snow);
+      --accent: #3b82f6;
+      --accent-foreground: #ffffff;
 
       /* Form Fields */
       --field-background: var(--white);
@@ -91,7 +123,7 @@
       --segment-foreground: var(--eclipse);
 
       /* Misc Colors */
-      --border: oklch(90% 0.004 286.32);
+      --border: #e4e4e7;
       --separator: oklch(74% 0.004 286.32);
       --focus: var(--accent);
       --link: var(--foreground);
@@ -104,6 +136,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
     }
 
     @variant theme-default-dark {
@@ -113,11 +163,11 @@
       --field-shadow: 0 0 0 0 transparent inset;
 
       /* Base Colors */
-      --background: oklch(12% 0.005 285.823);
+      --background: #09090b;
       --foreground: var(--snow);
 
       /* Surface */
-      --surface: oklch(0.2103 0.0059 285.89);
+      --surface: #18181b;
       --surface-foreground: var(--foreground);
 
       --surface-secondary: oklch(0.257 0.0037 286.14);
@@ -131,13 +181,13 @@
       --overlay-foreground: var(--foreground);
       --backdrop: oklch(0% 0 0 / 20%);
 
-      --muted: oklch(70.5% 0.015 286.067);
+      --muted: #a1a1aa;
 
-      --default: oklch(27.4% 0.006 286.033);
+      --default: #27272a;
       --default-foreground: var(--snow);
 
-      --accent: oklch(0.6204 0.195 253.83);
-      --accent-foreground: var(--snow);
+      --accent: #3b82f6;
+      --accent-foreground: #ffffff;
 
       /* Form Fields */
       --field-background: oklch(0.2103 0.0059 285.89);
@@ -160,7 +210,7 @@
       --segment-foreground: var(--foreground);
 
       /* Misc Colors */
-      --border: oklch(28% 0.006 286.033);
+      --border: #27272a;
       --separator: oklch(40% 0.006 286.033);
       --focus: var(--accent);
       --link: var(--foreground);
@@ -173,6 +223,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
     }
 
     @variant theme-nord-light {
@@ -248,6 +316,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #bf616a;
+      --rainbow-1: #c8746d;
+      --rainbow-2: #d08770;
+      --rainbow-3: #d8a271;
+      --rainbow-4: #dfbc73;
+      --rainbow-5: #b6be7d;
+      --rainbow-6: #89a572;
+      --rainbow-7: #8fbcbb;
+      --rainbow-8: #88c0d0;
+      --rainbow-9: #84b0c8;
+      --rainbow-10: #81a1c1;
+      --rainbow-11: #5e81ac;
+      --rainbow-12: #7686b4;
+      --rainbow-13: #9587b1;
+      --rainbow-14: #b48ead;
+      --rainbow-15: #b9759f;
     }
 
     @variant theme-nord-dark {
@@ -317,6 +403,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #bf616a;
+      --rainbow-1: #c8746d;
+      --rainbow-2: #d08770;
+      --rainbow-3: #d8a271;
+      --rainbow-4: #dfbc73;
+      --rainbow-5: #b6be7d;
+      --rainbow-6: #89a572;
+      --rainbow-7: #8fbcbb;
+      --rainbow-8: #88c0d0;
+      --rainbow-9: #84b0c8;
+      --rainbow-10: #81a1c1;
+      --rainbow-11: #5e81ac;
+      --rainbow-12: #7686b4;
+      --rainbow-13: #9587b1;
+      --rainbow-14: #b48ead;
+      --rainbow-15: #b9759f;
     }
 
     @variant theme-dracula-light {
@@ -392,6 +496,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #CB3A2A;
+      --rainbow-1: #B7441F;
+      --rainbow-2: #A34D14;
+      --rainbow-3: #945D15;
+      --rainbow-4: #846E15;
+      --rainbow-5: #4C6F10;
+      --rainbow-6: #14710A;
+      --rainbow-7: #0D6E50;
+      --rainbow-8: #036A96;
+      --rainbow-9: #1B5BA8;
+      --rainbow-10: #334DBA;
+      --rainbow-11: #4C4BCC;
+      --rainbow-12: #644AC9;
+      --rainbow-13: #842F8B;
+      --rainbow-14: #A3144D;
+      --rainbow-15: #B7273C;
     }
 
     @variant theme-dracula-dark {
@@ -461,6 +583,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #FF5555;
+      --rainbow-1: #FF7755;
+      --rainbow-2: #f29838;
+      --rainbow-3: #F4B844;
+      --rainbow-4: #d7df21;
+      --rainbow-5: #8AE234;
+      --rainbow-6: #1dd951;
+      --rainbow-7: #2AE09C;
+      --rainbow-8: #31c4e0;
+      --rainbow-9: #64D2FF;
+      --rainbow-10: #4EA8FF;
+      --rainbow-11: #8270FF;
+      --rainbow-12: #BD93F9;
+      --rainbow-13: #D87BFF;
+      --rainbow-14: #f249ab;
+      --rainbow-15: #FF6688;
     }
     @variant theme-catppuccin-light {
       --radius: 0.5rem;
@@ -535,6 +675,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #d20f39;
+      --rainbow-1: #e64553;
+      --rainbow-2: #eb5900;
+      --rainbow-3: #ea7a23;
+      --rainbow-4: #df8e1d;
+      --rainbow-5: #88972e;
+      --rainbow-6: #348a20;
+      --rainbow-7: #0f7e85;
+      --rainbow-8: #04a5e5;
+      --rainbow-9: #209fb5;
+      --rainbow-10: #1e66f5;
+      --rainbow-11: #7287fd;
+      --rainbow-12: #8839ef;
+      --rainbow-13: #d351b0;
+      --rainbow-14: #dd7878;
+      --rainbow-15: #dc8a78;
     }
 
     @variant theme-catppuccin-dark {
@@ -604,6 +762,24 @@
       --color-accent: var(--accent);
       --color-border: var(--border);
       --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #f38ba8;
+      --rainbow-1: #eba0ac;
+      --rainbow-2: #fab387;
+      --rainbow-3: #f4c08b;
+      --rainbow-4: #e5ba65;
+      --rainbow-5: #b5d898;
+      --rainbow-6: #87ca82;
+      --rainbow-7: #73beae;
+      --rainbow-8: #89dceb;
+      --rainbow-9: #74c7ec;
+      --rainbow-10: #89b4fa;
+      --rainbow-11: #b4befe;
+      --rainbow-12: #cba6f7;
+      --rainbow-13: #f5c2e7;
+      --rainbow-14: #f2cdcd;
+      --rainbow-15: #f5e0dc;
     }
   }
 }

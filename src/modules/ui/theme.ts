@@ -2,7 +2,6 @@ import { useColorScheme } from "react-native"
 
 import { usePreferenceStore } from "@/stores/preference/store"
 import { useSettingsStore } from "@/modules/settings/store"
-import { getAppThemeDefinition } from "./theme-registry"
 
 export interface ThemeColors {
   background: string
@@ -20,14 +19,178 @@ export interface ThemeColors {
   rainbow: string[]
 }
 
+export const STATIC_THEMES: Record<string, { light: ThemeColors; dark: ThemeColors }> = {
+  default: {
+    light: {
+      background: "#ffffff",
+      foreground: "#09090b",
+      surface: "#f4f4f5",
+      muted: "#71717a",
+      accent: "#3b82f6",
+      border: "#e4e4e7",
+      default: "#f4f4f5",
+      link: "#09090b",
+      danger: "#ef4444",
+      success: "#22c55e",
+      warning: "#f59e0b",
+      accentForeground: "#ffffff",
+      backdrop: "rgba(0, 0, 0, 0.2)",
+      rainbow: [
+        "#32b842", "#24b869", "#19b8a3", "#1cbdbd", "#11a8c9", "#248eed", "#436ee8", "#5a5ae8",
+        "#8659ed", "#b64aed", "#e84697", "#e84154", "#eb5928", "#d9a42b", "#c2c423", "#6a7285"
+      ],
+    },
+    dark: {
+      background: "#09090b",
+      foreground: "#fafafa",
+      surface: "#18181b",
+      muted: "#a1a1aa",
+      accent: "#3b82f6",
+      border: "#27272a",
+      default: "#27272a",
+      link: "#fafafa",
+      danger: "#ef4444",
+      success: "#22c55e",
+      warning: "#f59e0b",
+      accentForeground: "#fafafa",
+      backdrop: "rgba(0, 0, 0, 0.2)",
+      rainbow: [
+        "#32b842", "#24b869", "#19b8a3", "#1cbdbd", "#11a8c9", "#248eed", "#436ee8", "#5a5ae8",
+        "#8659ed", "#b64aed", "#e84697", "#e84154", "#eb5928", "#d9a42b", "#c2c423", "#6a7285"
+      ],
+    },
+  },
+  nord: {
+    light: {
+      background: "#eceff4",
+      foreground: "#2e3440",
+      surface: "#e5e9f0",
+      muted: "#4c566a",
+      accent: "#5e81ac",
+      border: "#d8dee9",
+      default: "#d8dee9",
+      link: "#2e3440",
+      danger: "#bf616a",
+      success: "#a3be8c",
+      warning: "#ebcb8b",
+      accentForeground: "#eceff4",
+      backdrop: "rgba(46,52,64,0.2)",
+      rainbow: [
+        "#bf616a", "#c8746d", "#d08770", "#d8a271", "#dfbc73", "#b6be7d", "#89a572", "#8fbcbb",
+        "#88c0d0", "#84b0c8", "#81a1c1", "#5e81ac", "#7686b4", "#9587b1", "#b48ead", "#b9759f"
+      ],
+    },
+    dark: {
+      background: "#2e3440",
+      foreground: "#eceff4",
+      surface: "#3b4252",
+      muted: "#d8dee9",
+      accent: "#88c0d0",
+      border: "#4c566a",
+      default: "#434c5e",
+      link: "#eceff4",
+      danger: "#bf616a",
+      success: "#a3be8c",
+      warning: "#ebcb8b",
+      accentForeground: "#2e3440",
+      backdrop: "rgba(0,0,0,0.3)",
+      rainbow: [
+        "#bf616a", "#c8746d", "#d08770", "#d8a271", "#dfbc73", "#b6be7d", "#89a572", "#8fbcbb",
+        "#88c0d0", "#84b0c8", "#81a1c1", "#5e81ac", "#7686b4", "#9587b1", "#b48ead", "#b9759f"
+      ],
+    },
+  },
+  dracula: {
+    light: {
+      background: "#fffbeb",
+      foreground: "#1f1f1f",
+      surface: "#dedccf",
+      muted: "#6c664b",
+      accent: "#644ac9",
+      border: "#bcbab3",
+      default: "#e2deca",
+      link: "#1f1f1f",
+      danger: "#cb3a2a",
+      success: "#14710a",
+      warning: "#a34d14",
+      accentForeground: "#fffbeb",
+      backdrop: "rgba(31,31,31,0.45)",
+      rainbow: [
+        "#CB3A2A", "#B7441F", "#A34D14", "#945D15", "#846E15", "#4C6F10", "#14710A", "#0D6E50",
+        "#036A96", "#1B5BA8", "#334DBA", "#4C4BCC", "#644AC9", "#842F8B", "#A3144D", "#B7273C"
+      ],
+    },
+    dark: {
+      background: "#282a36",
+      foreground: "#f8f8f2",
+      surface: "#343746",
+      muted: "#6272a4",
+      accent: "#bd93f9",
+      border: "#44475a",
+      default: "#353747",
+      link: "#8be9fd",
+      danger: "#ff5555",
+      success: "#50fa7b",
+      warning: "#ffb86c",
+      accentForeground: "#282a36",
+      backdrop: "rgba(0,0,0,0.45)",
+      rainbow: [
+        "#FF5555", "#FF7755", "#f29838", "#F4B844", "#d7df21", "#8AE234", "#1dd951", "#2AE09C",
+        "#31c4e0", "#64D2FF", "#4EA8FF", "#8270FF", "#BD93F9", "#D87BFF", "#f249ab", "#FF6688"
+      ],
+    },
+  },
+  catppuccin: {
+    light: {
+      background: "#eff1f5",
+      foreground: "#4c4f69",
+      surface: "#e6e9ef",
+      muted: "#9ca0b0",
+      accent: "#8839ef",
+      border: "#bcc0cc",
+      default: "#ccd0da",
+      link: "#1e66f5",
+      danger: "#d20f39",
+      success: "#40a02b",
+      warning: "#df8e1d",
+      accentForeground: "#eff1f5",
+      backdrop: "rgba(76,79,105,0.2)",
+      rainbow: [
+        "#d20f39", "#e64553", "#eb5900", "#ea7a23", "#df8e1d", "#88972e", "#348a20", "#0f7e85",
+        "#04a5e5", "#209fb5", "#1e66f5", "#7287fd", "#8839ef", "#d351b0", "#dd7878", "#dc8a78"
+      ],
+    },
+    dark: {
+      background: "#1e1e2e",
+      foreground: "#cdd6f4",
+      surface: "#181825",
+      muted: "#6c7086",
+      accent: "#cba6f7",
+      border: "#45475a",
+      default: "#313244",
+      link: "#89b4fa",
+      danger: "#f38ba8",
+      success: "#a6e3a1",
+      warning: "#f9e2af",
+      accentForeground: "#1e1e2e",
+      backdrop: "rgba(0,0,0,0.3)",
+      rainbow: [
+        "#f38ba8", "#eba0ac", "#fab387", "#f4c08b", "#e5ba65", "#b5d898", "#87ca82", "#73beae",
+        "#89dceb", "#74c7ec", "#89b4fa", "#b4befe", "#cba6f7", "#f5c2e7", "#f2cdcd", "#f5e0dc"
+      ],
+    },
+  },
+}
+
 export function useThemeColors(): ThemeColors {
   const themeMode = usePreferenceStore((state) => state.theme)
   const themeId = useSettingsStore((state) => state.themeConfig.themeId)
   const systemScheme = useColorScheme()
 
-  // Fast evaluation of dark mode matching Uniwind's adaptive resolution
   const isDark = themeMode === "dark" || (themeMode === "system" && systemScheme === "dark")
+  const activeTheme = STATIC_THEMES[themeId] || STATIC_THEMES.default
 
-  const appTheme = getAppThemeDefinition(themeId)
-  return isDark ? appTheme.tokens.dark : appTheme.tokens.light
+  return isDark ? activeTheme.dark : activeTheme.light
 }
+
+

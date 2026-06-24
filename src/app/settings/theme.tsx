@@ -18,11 +18,10 @@ import { useSettingsStore } from "@/modules/settings/store"
 import {
   APP_THEMES,
   type AppThemeDefinition,
-  type AppThemeTokensVariant,
 } from "@/modules/ui/theme-registry"
-import { useThemeColors } from "@/modules/ui/theme"
+import { useThemeColors, STATIC_THEMES, type ThemeColors } from "@/modules/ui/theme"
 
-function MockAppScreen({ colors }: { colors: AppThemeTokensVariant }) {
+function MockAppScreen({ colors }: { colors: ThemeColors }) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background, padding: 6, gap: 6 }}>
       {/* Top Header Mock */}
@@ -153,7 +152,12 @@ function ThemePreviewSwatch({
   themeDef: AppThemeDefinition
   isDarkMode: boolean
 }) {
-  const colors = isDarkMode ? themeDef.tokens.dark : themeDef.tokens.light
+  const previewColors = STATIC_THEMES[themeDef.id]
+  const colors = previewColors
+    ? isDarkMode
+      ? previewColors.dark
+      : previewColors.light
+    : STATIC_THEMES.default.light
 
   return (
     <ListGroup.ItemPrefix className="mr-4 self-center">

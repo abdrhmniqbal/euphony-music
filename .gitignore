@@ -39,3 +39,5 @@ yarn-error.*
 codedb.snapshot
 app-example
 .tmp/
+
+plans
