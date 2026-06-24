@@ -22,7 +22,7 @@ export async function cycleRepeat() {
 }
 
 export async function toggleShuffle() {
-  const { shuffle, orderSnapshot, queue, activeKey } = playbackStore.getState()
+  const { shuffle, orderSnapshot, queue, activeKey, queuePosition } = playbackStore.getState()
   const newShuffleStatus = !shuffle
 
   if (queue.length === 0 || !activeKey) {
@@ -31,37 +31,45 @@ export async function toggleShuffle() {
   }
 
   let updatedQueue: string[] = queue
-  let isOrderSnapshot = false
-  if (newShuffleStatus) updatedQueue = shuffleArray(queue)
-  else if (orderSnapshot.length === queue.length) {
-    const referenceSet = orderSnapshot.reduce(
-      (map, tId) => {
-        if (map[tId]) map[tId]++
-        else map[tId] = 1
-        return map
+  let newQueuePosition = queuePosition
+
+  if (newShuffleStatus) {
+    const played = queue.slice(0, newQueuePosition + 1)
+    const remaining = queue.slice(newQueuePosition + 1)
+    updatedQueue = [...played, ...shuffleArray(remaining)]
+  } else if (orderSnapshot.length === queue.length) {
+    const played = queue.slice(0, newQueuePosition + 1)
+    const remaining = queue.slice(newQueuePosition + 1)
+
+    const remainingCounts = remaining.reduce(
+      (acc, id) => {
+        acc[id] = (acc[id] || 0) + 1
+        return acc
       },
       {} as Record<string, number>
     )
-    const canSwitch = queue.every((tKey) => {
-      const tId = extractTrackId(tKey)
-      if (referenceSet[tId] === undefined) return false
-      referenceSet[tId]--
-      if (referenceSet[tId] === 0) delete referenceSet[tId]
-      return true
-    })
-    if (canSwitch) {
-      isOrderSnapshot = true
+
+    const orderedRemaining: string[] = []
+    for (const id of orderSnapshot) {
+      if (remainingCounts[id] && remainingCounts[id] > 0) {
+        orderedRemaining.push(id)
+        remainingCounts[id]--
+      }
+    }
+
+    if (orderedRemaining.length === remaining.length) {
+      updatedQueue = [...played, ...orderedRemaining]
+    } else {
       updatedQueue = orderSnapshot
+      newQueuePosition = updatedQueue.findIndex((id) => id === activeKey)
+      if (newQueuePosition === -1) newQueuePosition = 0
     }
   }
-
-  const trackKey = isOrderSnapshot ? extractTrackId(activeKey) : activeKey
 
   playbackStore.setState({
     shuffle: newShuffleStatus,
     queue: updatedQueue,
-    activeKey: trackKey,
-    queuePosition: updatedQueue.findIndex((id) => id === trackKey),
+    queuePosition: newQueuePosition,
     numQueuedNext: 0,
   })
 }

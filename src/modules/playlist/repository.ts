@@ -81,14 +81,16 @@ async function replacePlaylistTrackMembership(
     return
   }
 
-  await database.insert(playlistTracks).values(toPlaylistTrackRows(playlistId, trackIds, now))
+  const rows = toPlaylistTrackRows(playlistId, trackIds, now)
+  const chunkSize = 100 // Avoid SQLite variable limits (5 params per row = 500 params)
+
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize)
+    await database.insert(playlistTracks).values(chunk)
+  }
 }
 
-async function recomputePlaylistStats(
-  database: PlaylistWriteDb,
-  playlistId: string,
-  now: number
-) {
+async function recomputePlaylistStats(database: PlaylistWriteDb, playlistId: string, now: number) {
   const [stats] = await database
     .select({
       trackCount: sql<number>`count(${playlistTracks.id})`,
@@ -119,7 +121,10 @@ async function resequencePlaylistTracks(database: PlaylistWriteDb, playlistId: s
     const playlistTrack = remainingTracks[i]
     if (!playlistTrack) continue
 
-    await database.update(playlistTracks).set({ position: i }).where(eq(playlistTracks.id, playlistTrack.id))
+    await database
+      .update(playlistTracks)
+      .set({ position: i })
+      .where(eq(playlistTracks.id, playlistTrack.id))
   }
 }
 

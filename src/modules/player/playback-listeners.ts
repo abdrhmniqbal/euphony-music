@@ -18,6 +18,7 @@ import {
   handleSleepTimerPlaybackEnded,
   handleSleepTimerTrackChanged,
 } from "@/modules/player/sleep-timer"
+import { preferenceStore } from "@/stores/preference/store"
 import { playbackStore, setPlaybackLastPosition } from "@/stores/playback/store"
 
 let playCountTimeout: ReturnType<typeof setTimeout> | null = null
@@ -47,25 +48,23 @@ function onActiveTrackChanged(e: {
   lastSleepTimerTrackId = currentTrackId
   void handleLastFmTrackChanged(currentTrack)
 
-  const { lastPosition } = playbackStore.getState()
   if (playCountTimeout !== null) clearTimeout(playCountTimeout)
-  if (lastPosition < 10) {
-    playCountTimeout = setTimeout(
-      async () => {
-        const trackId = await addPlayedTrack(activeTrackUri)
-        if (trackId) {
-          await invalidateTrackQueries(queryClient, { trackId })
-          await queryClient.invalidateQueries({
-            queryKey: ["history-recently-played"],
-          })
-          await queryClient.invalidateQueries({
-            queryKey: ["history-top-tracks"],
-          })
-        }
-      },
-      (Math.min(e.track.duration!, 10) - lastPosition) * 1000
-    )
-  }
+
+  const { minSeconds } = preferenceStore.getState()
+  const targetSeconds = Math.min(e.track.duration ?? minSeconds, minSeconds)
+
+  playCountTimeout = setTimeout(async () => {
+    const trackId = await addPlayedTrack(activeTrackUri)
+    if (trackId) {
+      await invalidateTrackQueries(queryClient, { trackId })
+      await queryClient.invalidateQueries({
+        queryKey: ["history-recently-played"],
+      })
+      await queryClient.invalidateQueries({
+        queryKey: ["history-top-tracks"],
+      })
+    }
+  }, targetSeconds * 1000)
 
   void handleCrossfadeTrackActivated()
 }

@@ -21,6 +21,10 @@ export function useCurrentTrackId() {
   return usePlaybackStore((state) => state.activeTrack?.id)
 }
 
+export function useCurrentTrackKey() {
+  return usePlaybackStore((state) => state.activeKey)
+}
+
 export function useHasCurrentTrack() {
   return usePlaybackStore((state) => state.activeTrack !== undefined)
 }
@@ -56,8 +60,8 @@ export function usePlayerTracks(): Track[] {
   return usePlayerStore((state) => state.tracks)
 }
 
-export function usePlayerQueue(): Track[] {
-  return usePlayerStore((state) => state.queue)
+export function usePlayerQueue(): string[] {
+  return usePlayerStore((state) => state.queueKeys)
 }
 
 export function usePlayerQueueContext() {
@@ -70,18 +74,15 @@ export function useSleepTimerState() {
 
 export function usePlayerQueueInfo() {
   const queue = usePlayerQueue()
-  const currentTrackId = useCurrentTrackId()
+  const currentIndex = usePlaybackStore((state) => state.queuePosition)
+  const currentTrackKey = useCurrentTrackKey()
 
   return useMemo(() => {
-    const currentIndex = currentTrackId
-      ? queue.findIndex((track) => track.id === currentTrackId)
-      : -1
-
     return {
       queue,
       currentIndex,
-      currentTrackId: currentTrackId ?? null,
+      currentTrackKey: currentTrackKey ?? null,
       upNext: currentIndex >= 0 ? queue.slice(currentIndex + 1) : queue,
     }
-  }, [currentTrackId, queue])
+  }, [currentTrackKey, queue, currentIndex])
 }

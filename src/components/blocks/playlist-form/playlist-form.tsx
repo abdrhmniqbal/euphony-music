@@ -3,7 +3,7 @@ import type { Track } from "@/modules/player/types"
 import { Button, Input, ListGroup, PressableFeedback, Separator, TextArea } from "heroui-native"
 
 import { Image } from "expo-image"
-import { Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import ReorderableList, { useIsActive, useReorderableDrag } from "react-native-reorderable-list"
 import LocalAddIcon from "@/components/icons/local/add"
@@ -48,7 +48,11 @@ function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSele
         <ListGroup.ItemPrefix>
           <View className="size-14 overflow-hidden rounded-xl bg-surface">
             {track.image ? (
-              <Image source={{ uri: track.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+              <Image
+                source={{ uri: track.image }}
+                style={{ width: "100%", height: "100%" }}
+                contentFit="cover"
+              />
             ) : (
               <View className="flex-1 items-center justify-center">
                 <LocalMusicNoteSolidIcon fill="none" width={22} height={22} color={theme.muted} />
@@ -123,7 +127,9 @@ export function PlaylistForm({
 
       <View className="flex-row items-center justify-between">
         <Text className="text-lg font-bold text-foreground">
-          {t("library.count.track", { count: selectedTracksList.length })}
+          {t("library.count.track", {
+            count: selectedTracksList.length,
+          })}
         </Text>
         <Button variant="ghost" onPress={openTrackSheet}>
           <View className="flex-row items-center gap-2">
@@ -136,21 +142,22 @@ export function PlaylistForm({
   )
 
   return (
-    <View className="flex-1 bg-background px-4 py-4">
+    <ScrollView
+      className="flex-1 bg-background"
+      contentContainerClassName="px-4 pt-4 pb-56"
+      keyboardShouldPersistTaps="handled"
+    >
+      {header}
       {selectedTracksList.length === 0 ? (
-        <View className="flex-1">
-          {header}
-          <EmptyState
-            icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
-            title={t("library.empty.tracksSelectedTitle")}
-            message={t("library.empty.selectedTracksMessage")}
-            className="py-8"
-          />
-        </View>
+        <EmptyState
+          icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+          title={t("library.empty.tracksSelectedTitle")}
+          message={t("library.empty.selectedTracksMessage")}
+          className="py-8"
+        />
       ) : (
-        <ListGroup className="flex-1">
+        <ListGroup>
           <ReorderableList
-            ListHeaderComponent={header}
             data={selectedTracksList}
             onReorder={({ from, to }) => reorderSelectedTracks(from, to)}
             renderItem={({ item, index }) => (
@@ -158,14 +165,12 @@ export function PlaylistForm({
             )}
             keyExtractor={(item) => item.id}
             shouldUpdateActiveItem
-            style={{ flex: 1 }}
-            scrollEnabled
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: 220 }}
+            scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           />
         </ListGroup>
       )}
-    </View>
+    </ScrollView>
   )
 }

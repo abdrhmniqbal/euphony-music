@@ -22,29 +22,40 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { skipToQueueItem } from "@/modules/player/controls"
 import { moveInQueue, removeFromQueue } from "@/modules/player/queue"
+import { extractTrackId } from "@/stores/playback/utils"
+import { usePlaybackStore } from "@/stores/playback/store"
 import { useCurrentTrack, usePlayerQueueInfo } from "@/modules/player/selectors"
-import { type Track, usePlayerStore } from "@/modules/player/store"
+import { usePlayerStore } from "@/modules/player/store"
+
+import { useQuery } from "@tanstack/react-query"
+import { maybeGetTrack } from "@/modules/tracks/repository"
+import { toPlayerTrack } from "@/modules/player/playback-subscriber"
 
 interface QueueItemProps {
-  track: Track
+  trackKey: string
   index: number
   onPress: (index: number) => void
   onRemove: (trackId: string) => void
 }
 
-export const QueueItem: React.FC<QueueItemProps> = ({
-  track,
-  index,
-  onPress,
-  onRemove,
-}) => {
-  const isCurrentTrack = usePlayerStore((state) => state.currentTrack?.id === track.id)
-  const isPlayedTrack = usePlayerStore((state) => {
-    if (!state.currentTrack) return false
-    const currIdx = state.queue.findIndex((t) => t.id === state.currentTrack!.id)
-    return currIdx >= 0 && index < currIdx
+export const QueueItem: React.FC<QueueItemProps> = ({ trackKey, index, onPress, onRemove }) => {
+  const trackId = extractTrackId(trackKey)
+  const currentTrackState = usePlayerStore((state) => state.currentTrack)
+  const currentIndex = usePlaybackStore((state) => state.queuePosition)
+  const isCurrentTrack = index === currentIndex
+  const isPlayedTrack = index < currentIndex
+
+  const { data: dbTrack } = useQuery({
+    queryKey: ["track", "queue-item", trackId],
+    queryFn: async () => {
+      const t = await maybeGetTrack(trackId)
+      return t ? toPlayerTrack(t) : null
+    },
+    staleTime: 1000 * 60 * 60, // 1 hour
   })
-  
+
+  const track = dbTrack ?? (isCurrentTrack ? currentTrackState : null)
+
   const drag = useReorderableDrag()
   const handleDragPress = useCallback(
     (event: { stopPropagation: () => void }) => {
@@ -56,13 +67,17 @@ export const QueueItem: React.FC<QueueItemProps> = ({
   const handleRemovePress = useCallback(
     (event: { stopPropagation: () => void }) => {
       event.stopPropagation()
-      onRemove(track.id)
+      onRemove(trackId)
     },
-    [onRemove, track.id]
+    [onRemove, trackId]
   )
   const handlePress = useCallback(() => {
     onPress(index)
   }, [onPress, index])
+
+  if (!track) {
+    return <View style={{ height: 64 }} className="justify-center px-4" />
+  }
 
   return (
     <TrackRow
@@ -118,9 +133,9 @@ export const QueueView: React.FC = () => {
     void skipToQueueItem(index)
   }, [])
   const renderItem = useCallback(
-    ({ item, index }: { item: Track; index: number }) => (
+    ({ item, index }: { item: string; index: number }) => (
       <MemoizedQueueItem
-        track={item}
+        trackKey={item}
         index={index}
         onPress={handlePlayFromQueue}
         onRemove={handleRemove}
@@ -161,7 +176,7 @@ export const QueueView: React.FC = () => {
         <ReorderableList
           ref={listRef}
           data={queue}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item}
           initialScrollIndex={currentIndex >= 0 ? currentIndex : undefined}
           onReorder={handleReorder}
           renderItem={renderItem}

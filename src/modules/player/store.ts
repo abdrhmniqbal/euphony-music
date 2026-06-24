@@ -28,6 +28,7 @@ export interface PlayerState {
   playbackRefreshVersion: number
   repeatMode: RepeatModeType
   queueTrackIds: string[]
+  queueKeys: string[]
   originalQueueTrackIds: string[]
   immediateQueueTrackIds: string[]
   queue: Track[]
@@ -57,6 +58,7 @@ export const usePlayerStore = create<PlayerState>(() => ({
   playbackRefreshVersion: 0,
   repeatMode: "off",
   queueTrackIds: [],
+  queueKeys: [],
   originalQueueTrackIds: [],
   immediateQueueTrackIds: [],
   queue: [],
