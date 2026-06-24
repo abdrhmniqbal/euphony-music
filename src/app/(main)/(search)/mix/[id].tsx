@@ -1,15 +1,19 @@
 import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useCallback } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import Animated from "react-native-reanimated"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
+import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
+import { Button } from "heroui-native"
 import { EmptyState } from "@/components/ui/empty-state"
 import { screenEnterTransition } from "@/constants/animations"
 import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
@@ -17,6 +21,7 @@ import { Stack } from "@/layouts/stack"
 import { playTrack } from "@/modules/player/service"
 import { useDailyMix, useForYouMix } from "@/modules/mixes/queries"
 import { formatDuration } from "@/modules/playlist/utils"
+import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import type { Track } from "@/modules/player/types"
@@ -32,6 +37,7 @@ export default function MixDetailsScreen() {
   const mixId = id ?? "daily"
 
   const [showHeaderTitle, setShowHeaderTitle] = useState(false)
+  const [showActionSheet, setShowActionSheet] = useState(false)
 
   const isDaily = mixId === "daily"
   const { data: dailyMix, isLoading: isDailyLoading } = useDailyMix()
@@ -71,6 +77,13 @@ export default function MixDetailsScreen() {
     playTrack(tracks[randomIndex], tracks, queueContext)
   }
 
+  const handleSaveToPlaylist = useCallback(() => {
+    setShowActionSheet(false)
+    const trackIds = tracks.map((t) => t.id)
+    setPlaylistFormDraft(trackIds, null)
+    router.push("/playlist/form")
+  }, [tracks, router])
+
   function handleTrackScroll(offsetY: number) {
     handleScroll(offsetY)
     const shouldShow = offsetY > HEADER_COLLAPSE_THRESHOLD
@@ -90,6 +103,22 @@ export default function MixDetailsScreen() {
           title: showHeaderTitle ? title : "",
           headerBackVisible: false,
           headerLeft: () => <BackButton className="-ml-2" onPress={handleBack} />,
+          headerRight: () =>
+            tracks.length > 0 ? (
+              <Button
+                variant="ghost"
+                isIconOnly
+                onPress={() => setShowActionSheet(true)}
+                className="-mr-2"
+              >
+                <LocalMoreHorizontalCircleSolidIcon
+                  fill="none"
+                  width={24}
+                  height={24}
+                  color={theme.foreground}
+                />
+              </Button>
+            ) : null,
         }}
       />
 
@@ -148,13 +177,45 @@ export default function MixDetailsScreen() {
         listEmpty={
           !isLoading ? (
             <EmptyState
-              icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+              icon={
+                <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              }
               title={t("library.empty.noTracksTitle", "No tracks yet")}
-              message={t("library.empty.noTracksMessage", "This mix could not be built because there isn't enough library data.")}
+              message={t(
+                "library.empty.noTracksMessage",
+                "This mix could not be built because there isn't enough library data."
+              )}
             />
           ) : null
         }
       />
+
+      <CollectionActionSheet
+        visible={showActionSheet}
+        onOpenChange={setShowActionSheet}
+        type="mix"
+        id={mixId}
+        name={title}
+        subtitle={description}
+        images={images}
+        trackCount={tracks.length}
+        hideFavoriteAction
+      >
+        <Button
+          variant="ghost"
+          onPress={handleSaveToPlaylist}
+          className="h-13 w-full justify-start px-0"
+        >
+          <View className="flex-row items-center gap-4 px-1">
+            <View className="w-6 items-center justify-center">
+              <LocalPlaylistSolidIcon fill="none" width={24} height={24} color={theme.foreground} />
+            </View>
+            <Text className="text-base font-medium text-foreground">
+              {t("track.addToPlaylist")}
+            </Text>
+          </View>
+        </Button>
+      </CollectionActionSheet>
     </View>
   )
 }

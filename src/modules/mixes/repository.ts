@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2"
 import type { Track } from "@/modules/player/types"
-import { asc, desc, eq } from "drizzle-orm"
+import { asc, desc, eq, inArray } from "drizzle-orm"
 
 import { db } from "@/db/client"
 import { mixTracks, mixes, playHistory, tracks } from "@/db/schema"
@@ -89,10 +89,12 @@ function getMixVisual(seed: number, reserved?: { colorIndex: number; shape: MixS
     shape: MIX_SHAPES[(baseShapeIndex + offset) % MIX_SHAPES.length],
   }))
 
-  return candidates.find((candidate) => {
-    if (!reserved) return true
-    return candidate.colorIndex !== reserved.colorIndex || candidate.shape !== reserved.shape
-  }) ?? { colorIndex: baseColorIndex, shape: MIX_SHAPES[baseShapeIndex] }
+  return (
+    candidates.find((candidate) => {
+      if (!reserved) return true
+      return candidate.colorIndex !== reserved.colorIndex || candidate.shape !== reserved.shape
+    }) ?? { colorIndex: baseColorIndex, shape: MIX_SHAPES[baseShapeIndex] }
+  )
 }
 
 function toMixShape(shape: string): MixShape {
@@ -329,7 +331,10 @@ async function generateDailyMixTracks(seed: number) {
     .map((track) => transformDBTrackToTrack(track))
 
   if (seedTracks.length === 0) {
-    return shuffle((await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)), seed).slice(0, MIX_LIMIT)
+    return shuffle(
+      (await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)),
+      seed
+    ).slice(0, MIX_LIMIT)
   }
 
   return generateMix(seedTracks, seed)
@@ -342,7 +347,10 @@ async function generateForYouMixTracks(seed: number) {
     .map((track) => transformDBTrackToTrack(track))
 
   if (topLibraryTracks.length === 0) {
-    return shuffle((await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)), seed).slice(0, MIX_LIMIT)
+    return shuffle(
+      (await listLibraryTracks()).map((track) => transformDBTrackToTrack(track)),
+      seed
+    ).slice(0, MIX_LIMIT)
   }
 
   return generateMix(topLibraryTracks, seed)
@@ -356,7 +364,9 @@ export async function getDailyMix(): Promise<PersistedMix> {
 
   const seed = getDaySeed()
   const forYouMixRow = await db.query.mixes.findFirst({ where: eq(mixes.id, FOR_YOU_MIX_ID) })
-  const reserved = forYouMixRow ? { colorIndex: forYouMixRow.colorIndex, shape: toMixShape(forYouMixRow.shape) } : undefined
+  const reserved = forYouMixRow
+    ? { colorIndex: forYouMixRow.colorIndex, shape: toMixShape(forYouMixRow.shape) }
+    : undefined
   const visual = getMixVisual(seed, reserved)
   const mixTracksList = await generateDailyMixTracks(seed)
 
@@ -390,7 +400,9 @@ export async function getForYouMix(): Promise<PersistedMix> {
 
   const seed = getWeekSeed()
   const dailyMixRow = await db.query.mixes.findFirst({ where: eq(mixes.id, DAILY_MIX_ID) })
-  const reserved = dailyMixRow ? { colorIndex: dailyMixRow.colorIndex, shape: toMixShape(dailyMixRow.shape) } : undefined
+  const reserved = dailyMixRow
+    ? { colorIndex: dailyMixRow.colorIndex, shape: toMixShape(dailyMixRow.shape) }
+    : undefined
   const visual = getMixVisual(seed, reserved)
   const mixTracksList = await generateForYouMixTracks(seed)
 
@@ -423,3 +435,11 @@ export async function forceUpdateMixes(): Promise<void> {
   })
 }
 
+export async function getMixTrackIds(mixId: string): Promise<Array<{ id: string }>> {
+  const rows = await db
+    .select({ trackId: mixTracks.trackId })
+    .from(mixTracks)
+    .where(eq(mixTracks.mixId, mixId))
+    .orderBy(asc(mixTracks.position))
+  return rows.map((r) => ({ id: r.trackId }))
+}

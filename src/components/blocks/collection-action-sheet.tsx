@@ -32,7 +32,7 @@ import { showAppToast } from "@/modules/ui/toast"
 interface CollectionActionSheetProps {
   visible: boolean
   onOpenChange: (open: boolean) => void
-  type: "album" | "artist" | "folder" | "genre" | "playlist"
+  type: "album" | "artist" | "folder" | "genre" | "playlist" | "mix"
   id: string
   name: string
   subtitle?: string
@@ -80,7 +80,8 @@ export function CollectionActionSheet({
   const theme = useThemeColors()
   const toggleFavoriteMutation = useToggleFavorite()
 
-  const favoriteType: FavoriteType = type === "genre" || type === "folder" ? "track" : type
+  const favoriteType: FavoriteType =
+    type === "genre" || type === "folder" || type === "mix" ? "track" : type
   const resolvedFavoriteId = favoriteId || id
   const favoriteItemId = hideFavoriteAction ? "" : resolvedFavoriteId
   const { data: isFavoriteData = false } = useIsFavorite(favoriteType, favoriteItemId)
@@ -124,7 +125,7 @@ export function CollectionActionSheet({
         <BottomSheet.Overlay />
         <BottomSheet.Content backgroundClassName="bg-surface" className="pb-8">
           <View className="mb-4 mt-2 flex-row items-center gap-3 px-1">
-            {type === "playlist" ? (
+            {type === "playlist" || type === "mix" ? (
               <View className="h-14 w-14 overflow-hidden rounded-lg bg-surface-secondary">
                 <PlaylistArtwork images={resolvePlaylistArtworkImages(images, image)} />
               </View>
@@ -154,7 +155,12 @@ export function CollectionActionSheet({
               <MenuRow
                 icon={
                   isFavorite ? (
-                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+                    <LocalFavouriteSolidIcon
+                      fill="none"
+                      width={24}
+                      height={24}
+                      color={theme.danger}
+                    />
                   ) : (
                     <LocalFavouriteIcon
                       fill="none"

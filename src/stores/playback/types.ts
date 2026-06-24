@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-export type MediaType = "album" | "artist" | "folder" | "genre" | "playlist" | "track"
+export type MediaType = "album" | "artist" | "folder" | "genre" | "playlist" | "track" | "mix"
 
 export interface PlayFromSource {
   type: Exclude<MediaType, "track">

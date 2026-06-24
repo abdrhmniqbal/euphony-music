@@ -10,7 +10,7 @@ import type { Track } from "@/modules/player/store"
 import type { DBTrack } from "@/types/database"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 
-import { Input, PressableFeedback } from "heroui-native"
+import { Input, PressableFeedback, Button, Card } from "heroui-native"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
@@ -20,6 +20,8 @@ import { ContentSection } from "@/components/blocks/content-section"
 import { MediaCarousel } from "@/components/blocks/media-carousel"
 import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
 import LocalSearchIcon from "@/components/icons/local/search"
+import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
@@ -28,10 +30,10 @@ import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useTracks } from "@/modules/tracks/queries"
 import { useDailyMix, useForYouMix } from "@/modules/mixes/queries"
+import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import { transformDBTrackToTrack } from "@/utils/transformers"
-import { Card } from "heroui-native"
 import { createTrackListQueueContext } from "@/stores/playback/types"
 
 const RECENTLY_ADDED_LIMIT = 8
@@ -43,6 +45,14 @@ export default function SearchScreen() {
   const currentTrackId = useCurrentTrackId()
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
+  const [showMixActionSheet, setShowMixActionSheet] = useState(false)
+  const [activeMix, setActiveMix] = useState<{
+    id: string
+    title: string
+    description: string
+    images: string[]
+    tracks: Track[]
+  } | null>(null)
 
   const { data: dailyMix } = useDailyMix()
   const { data: forYouMix } = useForYouMix()
@@ -82,6 +92,38 @@ export default function SearchScreen() {
   const handleSearchPress = () => {
     router.push("/(main)/(search)/search")
   }
+
+  const handleMixLongPress = useCallback(
+    (mixId: string) => {
+      const isDaily = mixId === "daily"
+      const mixTracks = isDaily ? dailyMixTracks : forYouMixTracks
+      const mixImages = isDaily ? dailyMixImages : forYouMixImages
+      const mixTitle = isDaily
+        ? t("home.topTracks.dailyMix", "Daily Mix")
+        : t("home.topTracks.forYouMix", "For You Mix")
+      const mixDescription = isDaily
+        ? t("home.topTracks.dailyMixDesc", "Fresh from your recent listening")
+        : t("home.topTracks.forYouMixDesc", "Built from your longer-term taste")
+
+      setActiveMix({
+        id: mixId,
+        title: mixTitle,
+        description: mixDescription,
+        images: mixImages,
+        tracks: mixTracks,
+      })
+      setShowMixActionSheet(true)
+    },
+    [dailyMixTracks, dailyMixImages, forYouMixTracks, forYouMixImages, t]
+  )
+
+  const handleSaveMixToPlaylist = useCallback(() => {
+    if (!activeMix) return
+    setShowMixActionSheet(false)
+    const trackIds = activeMix.tracks.map((t) => t.id)
+    setPlaylistFormDraft(trackIds, null)
+    router.push("/playlist/form")
+  }, [activeMix, router])
 
   const dailyMixTracks = useMemo(() => dailyMix?.tracks ?? [], [dailyMix])
   const forYouMixTracks = useMemo(() => forYouMix?.tracks ?? [], [forYouMix])
@@ -143,6 +185,7 @@ export default function SearchScreen() {
         <View className="mb-6 px-4 flex-row gap-3">
           <PressableFeedback
             onPress={() => router.push("/(main)/(search)/mix/daily" as any)}
+            onLongPress={() => handleMixLongPress("daily")}
             className="flex-1 active:opacity-80"
           >
             <Card className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0">
@@ -243,6 +286,7 @@ export default function SearchScreen() {
 
           <PressableFeedback
             onPress={() => router.push("/(main)/(search)/mix/foryou" as any)}
+            onLongPress={() => handleMixLongPress("foryou")}
             className="flex-1 active:opacity-80"
           >
             <Card className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0">
@@ -369,6 +413,39 @@ export default function SearchScreen() {
         tracks={recentlyAddedTracks}
         queueContext={createTrackListQueueContext(t("search.recentlyAdded"))}
       />
+      {activeMix && (
+        <CollectionActionSheet
+          visible={showMixActionSheet}
+          onOpenChange={setShowMixActionSheet}
+          type="mix"
+          id={activeMix.id}
+          name={activeMix.title}
+          subtitle={activeMix.description}
+          images={activeMix.images}
+          trackCount={activeMix.tracks.length}
+          hideFavoriteAction
+        >
+          <Button
+            variant="ghost"
+            onPress={handleSaveMixToPlaylist}
+            className="h-13 w-full justify-start px-0"
+          >
+            <View className="flex-row items-center gap-4 px-1">
+              <View className="w-6 items-center justify-center">
+                <LocalPlaylistSolidIcon
+                  fill="none"
+                  width={24}
+                  height={24}
+                  color={theme.foreground}
+                />
+              </View>
+              <Text className="text-base font-medium text-foreground">
+                {t("track.addToPlaylist")}
+              </Text>
+            </View>
+          </Button>
+        </CollectionActionSheet>
+      )}
     </>
   )
 }

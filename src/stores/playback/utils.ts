@@ -17,6 +17,7 @@ import {
 import { getSortedFolderTracks } from "@/modules/library/repository"
 import { getSortedGenreTracks } from "@/modules/genres/repository"
 import { getPlaylistTracks } from "@/modules/playlist/repository"
+import { getMixTrackIds } from "@/modules/mixes/repository"
 import { getSortedTracks } from "@/modules/tracks/repository"
 import { FavoritesPlaylistKey, ReservedNames, ReservedPlaylists } from "@/modules/media/constants"
 import { i18n } from "@/modules/localization/i18n"
@@ -63,6 +64,7 @@ export async function getTrackIdsList({ type, id }: PlayFromSource) {
     else if (type === "artist") trackIds = await getSortedArtistTracks(id, true)
     else if (type === "folder") trackIds = await getSortedFolderTracks(id, true)
     else if (type === "genre") trackIds = await getSortedGenreTracks(id, true)
+    else if (type === "mix") trackIds = await getMixTrackIds(id)
     else if (ReservedNames.has(id)) trackIds = await getSortedTracks(true)
     else trackIds = await getPlaylistTracks(id, true)
   } catch (error) {
