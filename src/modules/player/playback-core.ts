@@ -35,7 +35,7 @@ export async function playFromTracks(options: {
 }) {
   const trackIds = options.tracks.map((t) => t.id)
   const listInfo = getUpdatedLists(trackIds, options.shuffle, options.track.id)
-  const activeKey = listInfo.queue[0]
+  const activeKey = listInfo.queue[listInfo.queuePosition]
 
   let activeTrack: DataTrack | undefined
   if (options.track.isExternal && options.track.id === extractTrackId(activeKey!)) {
