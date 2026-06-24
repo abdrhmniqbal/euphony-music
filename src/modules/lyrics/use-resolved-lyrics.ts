@@ -39,7 +39,7 @@ export function useResolvedLyrics(track: Track | null) {
           }
         }
 
-        const source = await resolveTrackLyricsSource(sourceTrack)
+        const source = resolveTrackLyricsSource(sourceTrack)
         return source ?? null
       },
       placeholderData: () => {
