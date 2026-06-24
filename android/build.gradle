@@ -12,11 +12,27 @@ buildscript {
   }
 }
 
+ext {
+  compileSdkVersion = (findProperty('android.compileSdkVersion') ?: findProperty('AudioBrowser_compileSdkVersion') ?: 36).toInteger()
+  targetSdkVersion = (findProperty('android.targetSdkVersion') ?: findProperty('AudioBrowser_targetSdkVersion') ?: 36).toInteger()
+  minSdkVersion = (findProperty('android.minSdkVersion') ?: findProperty('AudioBrowser_minSdkVersion') ?: 24).toInteger()
+  ndkVersion = findProperty('android.ndkVersion') ?: findProperty('AudioBrowser_ndkVersion') ?: '28.2.13676358'
+  kotlinVersion = findProperty('android.kotlinVersion') ?: findProperty('AudioBrowser_kotlinVersion') ?: '2.2.21'
+}
+
 allprojects {
   repositories {
     google()
     mavenCentral()
     maven { url 'https://jitpack.io' }
+  }
+}
+
+subprojects { subproject ->
+  subproject.plugins.withId('com.android.library') {
+    subproject.android {
+      compileSdk rootProject.ext.compileSdkVersion
+    }
   }
 }
 

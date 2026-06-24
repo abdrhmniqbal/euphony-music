@@ -9,9 +9,6 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "audit:effects": "node scripts/audit-effects.mjs",
-    "audit:large-files": "node scripts/audit-large-files.mjs",
-    "audit:scroll-map": "node scripts/audit-scroll-map.mjs",
     "generate:licenses": "node scripts/generate-open-source-licenses.mjs",
     "knip": "knip",
     "lint": "oxlint .",
@@ -59,7 +56,7 @@
     "react-dom": "19.2.3",
     "react-i18next": "17.0.8",
     "react-native": "0.85.3",
-    "react-native-audio-browser": "github:MissingCore/react-native-audio-browser#f202a8f0acad8e1051fc70d0f31206c1851b7a8d",
+    "react-native-audio-browser": "github:MissingCore/react-native-audio-browser#a76b91f1a2d39c692070b692dba7e6baa8df13ca",
     "react-native-enriched-markdown": "^0.5.0",
     "react-native-file-viewer-turbo": "^0.7.4",
     "react-native-gesture-handler": "3.0.0",
@@ -92,7 +89,6 @@
     "oxlint": "^1.70.0",
     "typescript": "~6.0.3"
   },
-  "packageManager": "nub@0.1.11",
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
@@ -112,7 +108,12 @@
   },
   "allowBuilds": {
     "@missingcore/react-native-metadata-retriever": true,
-    "esbuild": false,
+    "esbuild": true,
     "react-native-audio-browser": true
-  }
+  },
+  "trustedDependencies": [
+    "@missingcore/react-native-metadata-retriever",
+    "esbuild",
+    "react-native-audio-browser"
+  ]
 }
