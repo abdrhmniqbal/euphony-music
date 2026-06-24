@@ -27,18 +27,24 @@ import { type Track, usePlayerStore } from "@/modules/player/store"
 
 interface QueueItemProps {
   track: Track
-  isPlayedTrack: boolean
-  onPress: () => void
-  onRemove: () => void
+  index: number
+  onPress: (index: number) => void
+  onRemove: (trackId: string) => void
 }
 
 export const QueueItem: React.FC<QueueItemProps> = ({
   track,
-  isPlayedTrack,
+  index,
   onPress,
   onRemove,
 }) => {
   const isCurrentTrack = usePlayerStore((state) => state.currentTrack?.id === track.id)
+  const isPlayedTrack = usePlayerStore((state) => {
+    if (!state.currentTrack) return false
+    const currIdx = state.queue.findIndex((t) => t.id === state.currentTrack!.id)
+    return currIdx >= 0 && index < currIdx
+  })
+  
   const drag = useReorderableDrag()
   const handleDragPress = useCallback(
     (event: { stopPropagation: () => void }) => {
@@ -50,15 +56,18 @@ export const QueueItem: React.FC<QueueItemProps> = ({
   const handleRemovePress = useCallback(
     (event: { stopPropagation: () => void }) => {
       event.stopPropagation()
-      onRemove()
+      onRemove(track.id)
     },
-    [onRemove]
+    [onRemove, track.id]
   )
+  const handlePress = useCallback(() => {
+    onPress(index)
+  }, [onPress, index])
 
   return (
     <TrackRow
       track={track}
-      onPress={onPress}
+      onPress={handlePress}
       leftAction={
         <PressableFeedback onPressIn={handleDragPress} className="p-2 opacity-60">
           <LocalDragDropVerticalIcon fill="none" width={24} height={24} color="white" />
@@ -112,12 +121,12 @@ export const QueueView: React.FC = () => {
     ({ item, index }: { item: Track; index: number }) => (
       <MemoizedQueueItem
         track={item}
-        isPlayedTrack={currentIndex >= 0 && index < currentIndex}
-        onPress={() => handlePlayFromQueue(index)}
-        onRemove={() => handleRemove(item.id)}
+        index={index}
+        onPress={handlePlayFromQueue}
+        onRemove={handleRemove}
       />
     ),
-    [currentIndex, handlePlayFromQueue, handleRemove]
+    [handlePlayFromQueue, handleRemove]
   )
   if (!currentTrack || queue.length === 0) {
     return (
