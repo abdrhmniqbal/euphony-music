@@ -73,10 +73,18 @@ export async function getTrackIdsList({ type, id }: PlayFromSource) {
 }
 
 export function getUpdatedLists(newPlayingList: string[], shuffle: boolean, startTrackId?: string) {
-  const usedList = shuffle ? shuffleArray(newPlayingList) : newPlayingList
+  let usedList = newPlayingList
+  let newLocation = 0
 
-  const newLocation =
-    startTrackId !== undefined ? usedList.findIndex((tId) => startTrackId === tId) : -1
+  if (shuffle) {
+    const remaining = newPlayingList.filter((id) => id !== startTrackId)
+    const shuffledRemaining = shuffleArray(remaining)
+    usedList = startTrackId !== undefined ? [startTrackId, ...shuffledRemaining] : shuffledRemaining
+    newLocation = 0
+  } else {
+    newLocation =
+      startTrackId !== undefined ? usedList.findIndex((tId) => startTrackId === tId) : -1
+  }
 
   return {
     orderSnapshot: newPlayingList,
