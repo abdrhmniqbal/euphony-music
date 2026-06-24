@@ -498,22 +498,22 @@
       --color-link: var(--link);
 
       /* Rainbow */
-      --rainbow-0: #CB3A2A;
-      --rainbow-1: #B7441F;
-      --rainbow-2: #A34D14;
-      --rainbow-3: #945D15;
-      --rainbow-4: #846E15;
-      --rainbow-5: #4C6F10;
-      --rainbow-6: #14710A;
-      --rainbow-7: #0D6E50;
-      --rainbow-8: #036A96;
-      --rainbow-9: #1B5BA8;
-      --rainbow-10: #334DBA;
-      --rainbow-11: #4C4BCC;
-      --rainbow-12: #644AC9;
-      --rainbow-13: #842F8B;
-      --rainbow-14: #A3144D;
-      --rainbow-15: #B7273C;
+      --rainbow-0: #cb3a2a;
+      --rainbow-1: #b7441f;
+      --rainbow-2: #a34d14;
+      --rainbow-3: #945d15;
+      --rainbow-4: #846e15;
+      --rainbow-5: #4c6f10;
+      --rainbow-6: #14710a;
+      --rainbow-7: #0d6e50;
+      --rainbow-8: #036a96;
+      --rainbow-9: #1b5ba8;
+      --rainbow-10: #334dba;
+      --rainbow-11: #4c4bcc;
+      --rainbow-12: #644ac9;
+      --rainbow-13: #842f8b;
+      --rainbow-14: #a3144d;
+      --rainbow-15: #b7273c;
     }
 
     @variant theme-dracula-dark {
@@ -585,22 +585,22 @@
       --color-link: var(--link);
 
       /* Rainbow */
-      --rainbow-0: #FF5555;
-      --rainbow-1: #FF7755;
+      --rainbow-0: #ff5555;
+      --rainbow-1: #ff7755;
       --rainbow-2: #f29838;
-      --rainbow-3: #F4B844;
+      --rainbow-3: #f4b844;
       --rainbow-4: #d7df21;
-      --rainbow-5: #8AE234;
+      --rainbow-5: #8ae234;
       --rainbow-6: #1dd951;
-      --rainbow-7: #2AE09C;
+      --rainbow-7: #2ae09c;
       --rainbow-8: #31c4e0;
-      --rainbow-9: #64D2FF;
-      --rainbow-10: #4EA8FF;
-      --rainbow-11: #8270FF;
-      --rainbow-12: #BD93F9;
-      --rainbow-13: #D87BFF;
+      --rainbow-9: #64d2ff;
+      --rainbow-10: #4ea8ff;
+      --rainbow-11: #8270ff;
+      --rainbow-12: #bd93f9;
+      --rainbow-13: #d87bff;
       --rainbow-14: #f249ab;
-      --rainbow-15: #FF6688;
+      --rainbow-15: #ff6688;
     }
     @variant theme-catppuccin-light {
       --radius: 0.5rem;

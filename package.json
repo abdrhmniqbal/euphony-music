@@ -89,16 +89,6 @@
     "oxlint": "^1.70.0",
     "typescript": "~6.0.3"
   },
-  "expo": {
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        "listUnknownPackages": false,
-        "exclude": [
-          "react-native-audio-browser"
-        ]
-      }
-    }
-  },
   "devEngines": {
     "packageManager": {
       "name": "nub",
@@ -110,6 +100,16 @@
     "@missingcore/react-native-metadata-retriever": true,
     "esbuild": true,
     "react-native-audio-browser": true
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false,
+        "exclude": [
+          "react-native-audio-browser"
+        ]
+      }
+    }
   },
   "trustedDependencies": [
     "@missingcore/react-native-metadata-retriever",

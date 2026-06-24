@@ -226,7 +226,12 @@ export default function AlbumDetailsScreen() {
                     isIconOnly
                   >
                     {isAlbumFavorite ? (
-                      <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+                      <LocalFavouriteSolidIcon
+                        fill="none"
+                        width={24}
+                        height={24}
+                        color={theme.danger}
+                      />
                     ) : (
                       <LocalFavouriteIcon
                         fill="none"

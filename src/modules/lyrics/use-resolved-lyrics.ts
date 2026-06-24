@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import type { Track } from "@/modules/player/types"
-import { resolveTrackLyricsSource, fetchAndPersistLyrics, loadLyricsFromDatabase } from "@/modules/lyrics/source"
+import {
+  resolveTrackLyricsSource,
+  fetchAndPersistLyrics,
+  loadLyricsFromDatabase,
+} from "@/modules/lyrics/source"
 import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/view-utils"
 import { queryClient } from "@/lib/tanstack-query"
 

@@ -2,11 +2,7 @@ import type { FavoriteEntry } from "@/modules/favorites/types"
 import type { Track } from "@/modules/player/types"
 import { getPlaylistTrackIdsByPlaylistIds } from "@/modules/playlist/repository"
 
-function appendUniqueTrack(
-  queue: Track[],
-  seenTrackIds: Set<string>,
-  track: Track | undefined
-) {
+function appendUniqueTrack(queue: Track[], seenTrackIds: Set<string>, track: Track | undefined) {
   if (!track || seenTrackIds.has(track.id)) {
     return
   }
@@ -22,9 +18,7 @@ export async function buildFavoritesPlaybackQueue(
   const queue: Track[] = []
   const seenTrackIds = new Set<string>()
   const trackById = new Map(tracks.map((track) => [track.id, track]))
-  const playlistFavorites = favoriteEntries.filter(
-    (favorite) => favorite.type === "playlist"
-  )
+  const playlistFavorites = favoriteEntries.filter((favorite) => favorite.type === "playlist")
   const playlistRows = await getPlaylistTrackIdsByPlaylistIds(
     playlistFavorites.map((favorite) => favorite.id)
   )

@@ -64,8 +64,8 @@ The facts the executor needs, inlined — never "as discussed" or "see audit":
 
 ## Commands you will need
 
-| Purpose   | Command                 | Expected on success |
-| --------- | ----------------------- | ------------------- |
+| Purpose   | Command                | Expected on success |
+| --------- | ---------------------- | ------------------- |
 | Install   | `nub install`          | exit 0              |
 | Typecheck | `nub typecheck`        | exit 0, no errors   |
 | Tests     | `nub test -- <filter>` | all pass            |

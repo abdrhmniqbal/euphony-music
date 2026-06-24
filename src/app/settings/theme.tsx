@@ -15,10 +15,7 @@ import { useUniwind } from "uniwind"
 import LocalTickIcon from "@/components/icons/local/tick"
 import { setThemeConfig } from "@/modules/settings/theme"
 import { useSettingsStore } from "@/modules/settings/store"
-import {
-  APP_THEMES,
-  type AppThemeDefinition,
-} from "@/modules/ui/theme-registry"
+import { APP_THEMES, type AppThemeDefinition } from "@/modules/ui/theme-registry"
 import { useThemeColors, STATIC_THEMES, type ThemeColors } from "@/modules/ui/theme"
 
 function MockAppScreen({ colors }: { colors: ThemeColors }) {

@@ -50,17 +50,11 @@ export async function fetchAndPersistLyrics(track: Track): Promise<string | null
       const data = await response.json()
       const fetchedLyrics = data.syncedLyrics || data.plainLyrics || ""
 
-      await db
-        .update(tracks)
-        .set({ lyrics: fetchedLyrics })
-        .where(eq(tracks.id, track.id))
+      await db.update(tracks).set({ lyrics: fetchedLyrics }).where(eq(tracks.id, track.id))
 
       return fetchedLyrics
     } else if (response.status === 404) {
-      await db
-        .update(tracks)
-        .set({ lyrics: "" })
-        .where(eq(tracks.id, track.id))
+      await db.update(tracks).set({ lyrics: "" }).where(eq(tracks.id, track.id))
     }
   } catch (error) {
     logWarn("Failed to fetch lyrics from LRCLIB", {
@@ -78,7 +72,7 @@ export async function loadLyricsFromDatabase(trackId: string): Promise<string | 
       where: eq(tracks.id, trackId),
       columns: { lyrics: true },
     })
-    
+
     return dbTrack?.lyrics ?? null
   } catch (error) {
     logWarn("Failed to hydrate lyrics from database fallback", {

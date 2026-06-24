@@ -488,7 +488,10 @@ export default function ArtistDetailsScreen() {
               )}
 
               {artistRecord?.bio && (
-                <ArtistInfoSection title={t("library.artistInfo", "About")} bio={artistRecord.bio} />
+                <ArtistInfoSection
+                  title={t("library.artistInfo", "About")}
+                  bio={artistRecord.bio}
+                />
               )}
             </Animated.View>
           </ScrollView>

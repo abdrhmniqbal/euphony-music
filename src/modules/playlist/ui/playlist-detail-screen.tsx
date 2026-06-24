@@ -251,7 +251,12 @@ export default function PlaylistDetailsScreen() {
               <View className="-mr-2 flex-row gap-4">
                 <Button onPress={toggleFavorite} variant="ghost" className="-mr-2" isIconOnly>
                   {isFavorite ? (
-                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+                    <LocalFavouriteSolidIcon
+                      fill="none"
+                      width={24}
+                      height={24}
+                      color={theme.danger}
+                    />
                   ) : (
                     <LocalFavouriteIcon
                       fill="none"

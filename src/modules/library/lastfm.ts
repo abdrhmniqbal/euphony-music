@@ -49,7 +49,11 @@ async function fetchLastFmPageImage(artistName: string, artistUrl?: string) {
     }
     return image
   } catch (err) {
-    logError("fetchLastFmPageImage: failed to fetch or parse", err instanceof Error ? err : new Error(String(err)), { url })
+    logError(
+      "fetchLastFmPageImage: failed to fetch or parse",
+      err instanceof Error ? err : new Error(String(err)),
+      { url }
+    )
     return undefined
   }
 }
@@ -63,7 +67,7 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
       image: await fetchLastFmPageImage(artistName),
     }
   }
-  
+
   try {
     const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=${encodeURIComponent(
       artistName
@@ -71,12 +75,15 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
     const response = await fetch(url)
     if (!response.ok) {
       const errText = await response.text().catch(() => "")
-      logError("fetchLastFmArtistInfo: API response not ok", undefined, { status: response.status, body: errText })
+      logError("fetchLastFmArtistInfo: API response not ok", undefined, {
+        status: response.status,
+        body: errText,
+      })
       return {
         image: await fetchLastFmPageImage(artistName),
       }
     }
-    
+
     const data = await response.json()
     const artist = data?.artist
     if (!artist) {
@@ -85,11 +92,11 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
         image: await fetchLastFmPageImage(artistName),
       }
     }
-    
+
     // Extract bio
     const bioSummary = artist.bio?.summary
     const bioText = bioSummary ? bioSummary.replace(/<a\b[^>]*>(.*?)<\/a>/gi, "").trim() : undefined
-    
+
     let artistUrl = artist.url
     const images = artist.image
     let imageUrl: string | undefined
@@ -109,7 +116,11 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
       }
     }
 
-    if (!imageUrl && typeof artist?.image?.["#text"] === "string" && artist.image["#text"].trim().length > 0) {
+    if (
+      !imageUrl &&
+      typeof artist?.image?.["#text"] === "string" &&
+      artist.image["#text"].trim().length > 0
+    ) {
       imageUrl = artist.image["#text"]
     }
 
@@ -130,16 +141,25 @@ export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmA
 
     // Do not use Last.fm default/no-image fallback assets if the scraper failed too.
     // e.g. "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png" or typical grey stars.
-    if (imageUrl && (imageUrl.includes("2a96cbd8b46e442fc41c2b86b821562f") || imageUrl.includes("noimage") || imageUrl.includes("default_artist"))) {
+    if (
+      imageUrl &&
+      (imageUrl.includes("2a96cbd8b46e442fc41c2b86b821562f") ||
+        imageUrl.includes("noimage") ||
+        imageUrl.includes("default_artist"))
+    ) {
       imageUrl = undefined
     }
-    
+
     return {
       bio: bioText,
       image: imageUrl || undefined,
     }
   } catch (err) {
-    logError("fetchLastFmArtistInfo: general failure", err instanceof Error ? err : new Error(String(err)), { artistName })
+    logError(
+      "fetchLastFmArtistInfo: general failure",
+      err instanceof Error ? err : new Error(String(err)),
+      { artistName }
+    )
     return {
       image: await fetchLastFmPageImage(artistName),
     }

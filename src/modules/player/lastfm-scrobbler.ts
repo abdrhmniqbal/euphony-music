@@ -44,7 +44,9 @@ export async function handleTrackChanged(track: Track | undefined) {
 
     const duration = track.duration || 0
     if (duration < scrobbleConfig.minimumTrackDurationSeconds) {
-      logInfo(`Last.fm: Track ${track.name} ignored (shorter than minimum duration: ${duration}s < ${scrobbleConfig.minimumTrackDurationSeconds}s)`)
+      logInfo(
+        `Last.fm: Track ${track.name} ignored (shorter than minimum duration: ${duration}s < ${scrobbleConfig.minimumTrackDurationSeconds}s)`
+      )
       return
     }
 
@@ -65,12 +67,17 @@ export async function handleTrackChanged(track: Track | undefined) {
       sessionKey,
     }
 
-    logInfo(`Last.fm: Initialized scrobbler for ${track.name} (threshold: ${scrobbleThresholdSeconds}s)`)
+    logInfo(
+      `Last.fm: Initialized scrobbler for ${track.name} (threshold: ${scrobbleThresholdSeconds}s)`
+    )
 
     // Send now playing instantly
     await sendNowPlaying()
   } catch (error) {
-    logError("Last.fm: failed to initialize track scrobble", error instanceof Error ? error : new Error(String(error)))
+    logError(
+      "Last.fm: failed to initialize track scrobble",
+      error instanceof Error ? error : new Error(String(error))
+    )
   }
 }
 
@@ -120,7 +127,10 @@ async function sendNowPlaying() {
 
     logInfo(`Last.fm: Now playing updated for "${title}"`)
   } catch (error) {
-    logError(`Last.fm: Now playing update failed for "${title}"`, error instanceof Error ? error : new Error(String(error)))
+    logError(
+      `Last.fm: Now playing update failed for "${title}"`,
+      error instanceof Error ? error : new Error(String(error))
+    )
   }
 }
 
@@ -152,7 +162,10 @@ async function sendScrobble() {
 
     logInfo(`Last.fm: Scrobbled "${title}"`)
   } catch (error) {
-    logError(`Last.fm: Scrobble failed for "${title}"`, error instanceof Error ? error : new Error(String(error)))
+    logError(
+      `Last.fm: Scrobble failed for "${title}"`,
+      error instanceof Error ? error : new Error(String(error))
+    )
     // Allow retry later in this session if it failed due to network
     current.scrobbleSent = false
   }

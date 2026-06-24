@@ -108,7 +108,6 @@ export async function getTopTracksByPeriod(
       timeThreshold = getStartOfLocalMonth()
     }
 
-
     const history = await db.query.playHistory.findMany({
       where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
       with: {

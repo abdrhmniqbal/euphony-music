@@ -138,10 +138,13 @@ export function flushPlaybackStoreSnapshot(): Promise<void> {
     return Promise.resolve()
   }
 
-  const partializedState = options.partialize?.(playbackStore.getState()) ?? playbackStore.getState()
+  const partializedState =
+    options.partialize?.(playbackStore.getState()) ?? playbackStore.getState()
   const payload = JSON.stringify({ state: partializedState, version: options.version })
 
-  playbackStoreFlushPromise = playbackStoreFlushPromise.then(() => KvStore.setItem(options.name!, payload))
+  playbackStoreFlushPromise = playbackStoreFlushPromise.then(() =>
+    KvStore.setItem(options.name!, payload)
+  )
   return playbackStoreFlushPromise
 }
 

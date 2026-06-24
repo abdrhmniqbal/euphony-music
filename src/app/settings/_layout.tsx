@@ -6,20 +6,20 @@
  * Side Effects: Navigates back, closes settings, or replaces with root route.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router";
-import { PressableFeedback } from "heroui-native";
-import { useTranslation } from "react-i18next";
+import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { PressableFeedback } from "heroui-native"
+import { useTranslation } from "react-i18next"
 
-import LocalCancelIcon from "@/components/icons/local/cancel";
-import { BackButton } from "@/components/patterns/back-button";
-import { Stack } from "@/layouts/stack";
+import LocalCancelIcon from "@/components/icons/local/cancel"
+import { BackButton } from "@/components/patterns/back-button"
+import { Stack } from "@/layouts/stack"
 import {
   getCenteredRootScreenOptions,
   getDefaultNativeStackOptions,
   getDrillDownScreenOptions,
-} from "@/modules/navigation/stack";
-import { SETTINGS_SCREEN_TITLE_KEYS } from "@/modules/settings/routes";
-import { useThemeColors } from "@/modules/ui/theme";
+} from "@/modules/navigation/stack"
+import { SETTINGS_SCREEN_TITLE_KEYS } from "@/modules/settings/routes"
+import { useThemeColors } from "@/modules/ui/theme"
 
 const DETAIL_SETTINGS_SCREENS = [
   "appearance",
@@ -43,20 +43,20 @@ const DETAIL_SETTINGS_SCREENS = [
   "lastfm",
   "backup",
   "auto-backup",
-] as const;
+] as const
 
 export default function SettingsLayout() {
-  const theme = useThemeColors();
-  const router = useRouter();
-  const { t } = useTranslation();
+  const theme = useThemeColors()
+  const router = useRouter()
+  const { t } = useTranslation()
   const handleClose = () => {
     if (router.canGoBack?.()) {
-      router.back();
-      return;
+      router.back()
+      return
     }
 
-    router.replace("/");
-  };
+    router.replace("/")
+  }
 
   return (
     <Stack screenOptions={getDefaultNativeStackOptions(theme)}>
@@ -66,12 +66,7 @@ export default function SettingsLayout() {
           title: t(SETTINGS_SCREEN_TITLE_KEYS.index),
           headerLeft: () => (
             <PressableFeedback onPress={handleClose} hitSlop={20}>
-              <LocalCancelIcon
-                fill="none"
-                width={24}
-                height={24}
-                color={theme.foreground}
-              />
+              <LocalCancelIcon fill="none" width={24} height={24} color={theme.foreground} />
             </PressableFeedback>
           ),
         })}
@@ -80,14 +75,11 @@ export default function SettingsLayout() {
         <Stack.Screen
           key={screenName}
           name={screenName}
-          options={getDrillDownScreenOptions(
-            t(SETTINGS_SCREEN_TITLE_KEYS[screenName]),
-            () => (
-              <BackButton className="-ml-2" />
-            ),
-          )}
+          options={getDrillDownScreenOptions(t(SETTINGS_SCREEN_TITLE_KEYS[screenName]), () => (
+            <BackButton className="-ml-2" />
+          ))}
         />
       ))}
     </Stack>
-  );
+  )
 }

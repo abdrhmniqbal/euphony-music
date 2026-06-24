@@ -61,15 +61,19 @@ export default function AutoBackupSettingsScreen() {
             <ListGroup.ItemContent>
               <View className="mb-3 flex-row items-center justify-between">
                 <ListGroup.ItemTitle>{t("settings.autoBackup.customInterval")}</ListGroup.ItemTitle>
-                <Text className="text-sm font-medium text-foreground">{formatHours(customHours)}</Text>
+                <Text className="text-sm font-medium text-foreground">
+                  {formatHours(customHours)}
+                </Text>
               </View>
               <Slider
                 minValue={1}
                 maxValue={720}
                 step={1}
                 value={customHours}
-                onChange={(value) => setCustomHours(Array.isArray(value) ? value[0] ?? 1 : value)}
-                onChangeEnd={(value) => void handleIntervalSelect(Array.isArray(value) ? value[0] ?? 1 : value)}
+                onChange={(value) => setCustomHours(Array.isArray(value) ? (value[0] ?? 1) : value)}
+                onChangeEnd={(value) =>
+                  void handleIntervalSelect(Array.isArray(value) ? (value[0] ?? 1) : value)
+                }
               >
                 <Slider.Track className="h-2 rounded-full bg-border">
                   <Slider.Fill className="rounded-full bg-accent" />

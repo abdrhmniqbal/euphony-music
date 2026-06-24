@@ -108,7 +108,9 @@ export default function AudioSettingsScreen() {
               title={t("settings.audio.resumeAfterCall")}
               description={t("settings.audio.resumeAfterCallDescription")}
               isSelected={audioPlaybackConfig.resumeAfterCall}
-              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("resumeAfterCall", isSelected)}
+              onSelectedChange={(isSelected) =>
+                updateAudioPlaybackConfig("resumeAfterCall", isSelected)
+              }
             />
           </SettingsHighlight>
           <Separator className="mx-4" />
@@ -117,7 +119,9 @@ export default function AudioSettingsScreen() {
               title={t("settings.audio.resumeOnStart")}
               description={t("settings.audio.resumeOnStartDescription")}
               isSelected={audioPlaybackConfig.resumeOnStart}
-              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("resumeOnStart", isSelected)}
+              onSelectedChange={(isSelected) =>
+                updateAudioPlaybackConfig("resumeOnStart", isSelected)
+              }
             />
           </SettingsHighlight>
           <Separator className="mx-4" />
@@ -126,7 +130,9 @@ export default function AudioSettingsScreen() {
               title={t("settings.audio.resumeOnReopen")}
               description={t("settings.audio.resumeOnReopenDescription")}
               isSelected={audioPlaybackConfig.resumeOnReopen}
-              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("resumeOnReopen", isSelected)}
+              onSelectedChange={(isSelected) =>
+                updateAudioPlaybackConfig("resumeOnReopen", isSelected)
+              }
             />
           </SettingsHighlight>
           <Separator className="mx-4" />
@@ -164,7 +170,9 @@ export default function AudioSettingsScreen() {
               title={t("settings.audio.pauseInCall")}
               description={t("settings.audio.pauseInCallDescription")}
               isSelected={audioPlaybackConfig.pauseInCall}
-              onSelectedChange={(isSelected) => updateAudioPlaybackConfig("pauseInCall", isSelected)}
+              onSelectedChange={(isSelected) =>
+                updateAudioPlaybackConfig("pauseInCall", isSelected)
+              }
             />
           </SettingsHighlight>
           <Separator className="mx-4" />
@@ -222,34 +230,34 @@ export default function AudioSettingsScreen() {
               <SettingsHighlight id="crossfadeDuration">
                 <ListGroup.Item>
                   <ListGroup.ItemContent>
-                  <View className="mb-3 flex-row items-center justify-between">
-                    <ListGroup.ItemTitle>{t("settings.audio.duration")}</ListGroup.ItemTitle>
-                    <Text className="text-sm font-medium text-foreground">
-                      {Math.round(resolvedSliderValue)}s
+                    <View className="mb-3 flex-row items-center justify-between">
+                      <ListGroup.ItemTitle>{t("settings.audio.duration")}</ListGroup.ItemTitle>
+                      <Text className="text-sm font-medium text-foreground">
+                        {Math.round(resolvedSliderValue)}s
+                      </Text>
+                    </View>
+                    <Slider
+                      minValue={1}
+                      maxValue={12}
+                      step={1}
+                      value={resolvedSliderValue}
+                      onChange={(value) => {
+                        setSliderValue(getSliderNumericValue(value))
+                      }}
+                      onChangeEnd={(value) => {
+                        void handleCrossfadeSlidingComplete(getSliderNumericValue(value))
+                      }}
+                    >
+                      <Slider.Track className="h-2 rounded-full bg-border">
+                        <Slider.Fill className="rounded-full bg-accent" />
+                        <Slider.Thumb />
+                      </Slider.Track>
+                    </Slider>
+                    <Text className="mt-2 text-xs text-muted">
+                      {t("settings.audio.durationHint")}
                     </Text>
-                  </View>
-                  <Slider
-                    minValue={1}
-                    maxValue={12}
-                    step={1}
-                    value={resolvedSliderValue}
-                    onChange={(value) => {
-                      setSliderValue(getSliderNumericValue(value))
-                    }}
-                    onChangeEnd={(value) => {
-                      void handleCrossfadeSlidingComplete(getSliderNumericValue(value))
-                    }}
-                  >
-                    <Slider.Track className="h-2 rounded-full bg-border">
-                      <Slider.Fill className="rounded-full bg-accent" />
-                      <Slider.Thumb />
-                    </Slider.Track>
-                  </Slider>
-                  <Text className="mt-2 text-xs text-muted">
-                    {t("settings.audio.durationHint")}
-                  </Text>
-                </ListGroup.ItemContent>
-              </ListGroup.Item>
+                  </ListGroup.ItemContent>
+                </ListGroup.Item>
               </SettingsHighlight>
             </>
           ) : null}

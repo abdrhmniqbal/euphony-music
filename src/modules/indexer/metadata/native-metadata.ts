@@ -150,7 +150,7 @@ export async function extractMetadata(
 ): Promise<ExtractedMetadata> {
   const metadata = await getMetadata(uri, metadataFields).catch(() => null)
   const artwork = await getArtwork(uri).catch(() => null)
-  
+
   let lyrics: string | undefined = undefined
   const sidecarCandidates = getSidecarCandidates(uri)
   for (const candidate of sidecarCandidates) {

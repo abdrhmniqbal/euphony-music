@@ -33,7 +33,10 @@ interface MenuRowProps {
 
 function MenuRow({ icon, label, onPress, trailing }: MenuRowProps) {
   return (
-    <PressableFeedback className="h-14 flex-row items-center gap-3 active:opacity-50" onPress={onPress}>
+    <PressableFeedback
+      className="h-14 flex-row items-center gap-3 active:opacity-50"
+      onPress={onPress}
+    >
       <View className="w-6 items-center justify-center">{icon}</View>
       <Text className="flex-1 text-base font-medium text-foreground">{label}</Text>
       {trailing ? <View>{trailing}</View> : null}

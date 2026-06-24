@@ -84,7 +84,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
   const fontScale = useUIStore((state) => state.playerLyricsFontScale)
 
   const { data: resolvedLyrics = null } = useResolvedLyrics(track)
-  
+
   const playbackTime = usePlaybackCurrentTime()
   const isPlaying = useIsPlaying()
   const playbackDuration = usePlaybackDuration()
@@ -110,19 +110,15 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
   const [viewportHeight, setViewportHeight] = React.useState(0)
   const layoutCacheKey = `${track?.id ?? ""}:${effectiveMode}:${fontScale}`
 
-  const {
-    scrollViewRef,
-    setSyncedLineOffset,
-    handleUserScrollStart,
-    handleUserScrollEnd,
-  } = useLyricsAutoScroll({
-    layoutCacheKey,
-    effectiveMode,
-    fontScale,
-    activeSyncedLineIndex,
-    activeLine,
-    viewportHeight,
-  })
+  const { scrollViewRef, setSyncedLineOffset, handleUserScrollStart, handleUserScrollEnd } =
+    useLyricsAutoScroll({
+      layoutCacheKey,
+      effectiveMode,
+      fontScale,
+      activeSyncedLineIndex,
+      activeLine,
+      viewportHeight,
+    })
 
   const handleToggleKaraoke = React.useCallback(() => {
     if (!hasSyncedLyrics) {

@@ -143,7 +143,11 @@ const TimedMarkupLineRow: React.FC<{
   const fontWeight = isActive ? "700" : "600"
 
   return (
-    <PressableFeedback onPress={handlePress} className="py-1 active:opacity-85" onLayout={handleLayout}>
+    <PressableFeedback
+      onPress={handlePress}
+      className="py-1 active:opacity-85"
+      onLayout={handleLayout}
+    >
       {canRenderWordProgress ? (
         <View
           style={{

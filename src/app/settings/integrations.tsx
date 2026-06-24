@@ -15,7 +15,9 @@ export default function IntegrationsSettingsScreen() {
           <ListGroup.Item onPress={() => router.push("/settings/lastfm")}>
             <ListGroup.ItemContent>
               <ListGroup.ItemTitle>{t("settings.routes.lastfm.title")}</ListGroup.ItemTitle>
-              <ListGroup.ItemDescription>{t("settings.routes.lastfm.description")}</ListGroup.ItemDescription>
+              <ListGroup.ItemDescription>
+                {t("settings.routes.lastfm.description")}
+              </ListGroup.ItemDescription>
             </ListGroup.ItemContent>
             <ListGroup.ItemSuffix />
           </ListGroup.Item>

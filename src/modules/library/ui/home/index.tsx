@@ -6,92 +6,84 @@
  * Side Effects: Starts indexing on refresh, updates local folder/filter state, and starts context-aware playback.
  */
 
-import * as React from "react";
-import {
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
-  View,
-} from "react-native";
+import * as React from "react"
+import { type NativeScrollEvent, type NativeSyntheticEvent, View } from "react-native"
 import Animated, {
   FadeInLeft,
   FadeInRight,
   FadeOutLeft,
   FadeOutRight,
-} from "react-native-reanimated";
-import { useTranslation } from "react-i18next";
-import { AlbumsTab } from "@/components/blocks/albums-tab";
-import { ArtistsTab } from "@/components/blocks/artists-tab";
-import { FavoritesList } from "@/components/blocks/favorites-list";
-import { FolderList } from "@/components/blocks/folder-list";
-import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row";
-import { PlaylistList } from "@/components/blocks/playlist-list";
-import { SortSheet } from "@/components/blocks/sort-sheet";
-import { TracksTab } from "@/components/blocks/tracks-tab";
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet";
-import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control";
-import {
-  handleScroll,
-  handleScrollStart,
-  handleScrollStop,
-} from "@/modules/ui/store";
-import { useThemeColors } from "@/modules/ui/theme";
+} from "react-native-reanimated"
+import { useTranslation } from "react-i18next"
+import { AlbumsTab } from "@/components/blocks/albums-tab"
+import { ArtistsTab } from "@/components/blocks/artists-tab"
+import { FavoritesList } from "@/components/blocks/favorites-list"
+import { FolderList } from "@/components/blocks/folder-list"
+import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
+import { PlaylistList } from "@/components/blocks/playlist-list"
+import { SortSheet } from "@/components/blocks/sort-sheet"
+import { TracksTab } from "@/components/blocks/tracks-tab"
+import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
+import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useThemeColors } from "@/modules/ui/theme"
 
-import { useLibraryHomeState } from "./use-library-home-state";
-import { LibraryHeader } from "./library-header";
-import { LibraryTabBar } from "./library-tab-bar";
-import { LibraryGenresSection } from "./library-genres-section";
+import { useLibraryHomeState } from "./use-library-home-state"
+import { LibraryHeader } from "./library-header"
+import { LibraryTabBar } from "./library-tab-bar"
+import { LibraryGenresSection } from "./library-genres-section"
 
 export default function LibraryScreen() {
-  const { t } = useTranslation();
-  const theme = useThemeColors();
+  const { t } = useTranslation()
+  const theme = useThemeColors()
 
-  const state = useLibraryHomeState();
+  const state = useLibraryHomeState()
 
-  const [tabTransitionDirection, setTabTransitionDirection] = React.useState<1 | -1>(1);
+  const [tabTransitionDirection, setTabTransitionDirection] = React.useState<1 | -1>(1)
 
   const handleActiveTabChange = (nextTab: typeof state.activeTab) => {
-    const currentIndex = state.visibleTabs.indexOf(state.activeTab);
-    const nextIndex = state.visibleTabs.indexOf(nextTab);
-    const direction: 1 | -1 = nextIndex >= currentIndex ? 1 : -1;
+    const currentIndex = state.visibleTabs.indexOf(state.activeTab)
+    const nextIndex = state.visibleTabs.indexOf(nextTab)
+    const direction: 1 | -1 = nextIndex >= currentIndex ? 1 : -1
 
-    setTabTransitionDirection(direction);
-    state.setActiveTab(nextTab);
-  };
+    setTabTransitionDirection(direction)
+    state.setActiveTab(nextTab)
+  }
 
   const [actionSheetConfig, setActionSheetConfig] = React.useState<{
-    visible: boolean;
-    type: "album" | "artist" | "genre" | "playlist";
-    id: string;
-    name: string;
-    subtitle?: string;
-    image?: string;
-    trackCount?: number;
-    hideFavoriteAction?: boolean;
-  } | null>(null);
+    visible: boolean
+    type: "album" | "artist" | "genre" | "playlist"
+    id: string
+    name: string
+    subtitle?: string
+    image?: string
+    trackCount?: number
+    hideFavoriteAction?: boolean
+  } | null>(null)
 
   const handleListScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    handleScroll(event.nativeEvent.contentOffset.y);
-  };
+    handleScroll(event.nativeEvent.contentOffset.y)
+  }
 
   const sharedListEvents = {
     onScroll: handleListScroll,
     onScrollBeginDrag: handleScrollStart,
     onScrollEndDrag: handleScrollStop,
     onMomentumScrollEnd: handleScrollStop,
-  } as const;
+  } as const
 
   const listContentContainerStyle = {
     paddingBottom: state.libraryListBottomPadding,
-  };
+  }
 
   const refreshControl = (
     <ThemedRefreshControl
       refreshing={state.isRefreshing}
       onRefresh={() => {
-        void state.handleRefresh();
+        void state.handleRefresh()
       }}
     />
-  );
+  )
 
   function renderTabContent() {
     switch (state.activeTab) {
@@ -104,7 +96,7 @@ export default function LibraryScreen() {
             refreshControl={refreshControl}
             {...sharedListEvents}
           />
-        );
+        )
       case "Albums":
         return (
           <AlbumsTab
@@ -119,13 +111,13 @@ export default function LibraryScreen() {
                 subtitle: album.artist,
                 image: album.image,
                 trackCount: album.trackCount,
-              });
+              })
             }}
             contentBottomPadding={state.libraryListBottomPadding}
             refreshControl={refreshControl}
             {...sharedListEvents}
           />
-        );
+        )
       case "Artists":
         return (
           <ArtistsTab
@@ -142,13 +134,13 @@ export default function LibraryScreen() {
                 }),
                 image: artist.image,
                 trackCount: artist.trackCount,
-              });
+              })
             }}
             contentBottomPadding={state.libraryListBottomPadding}
             refreshControl={refreshControl}
             {...sharedListEvents}
           />
-        );
+        )
       case "Genres":
         return (
           <LibraryGenresSection
@@ -161,9 +153,7 @@ export default function LibraryScreen() {
             genresEmptyMessage={t("home.empty.recentlyPlayedMessage")}
             onGenrePress={state.openGenre}
             onGenreLongPress={(genreName) => {
-              const genreObj = state.sortedGenres.find(
-                (g) => g.title === genreName,
-              );
+              const genreObj = state.sortedGenres.find((g) => g.title === genreName)
               setActionSheetConfig({
                 visible: true,
                 type: "genre",
@@ -172,10 +162,10 @@ export default function LibraryScreen() {
                 subtitle: t("library.genre"),
                 trackCount: genreObj?.trackCount || 0,
                 hideFavoriteAction: true,
-              });
+              })
             }}
           />
-        );
+        )
       case "Playlists":
         return (
           <PlaylistList
@@ -193,14 +183,14 @@ export default function LibraryScreen() {
                 }),
                 image: playlist.image,
                 trackCount: playlist.trackCount,
-              });
+              })
             }}
             contentContainerStyle={listContentContainerStyle}
             resetScrollKey={state.listResetScrollKey}
             refreshControl={refreshControl}
             {...sharedListEvents}
           />
-        );
+        )
       case "Folders":
         return (
           <FolderList
@@ -209,7 +199,7 @@ export default function LibraryScreen() {
             breadcrumbs={state.folderBreadcrumbs}
             onFolderPress={(folder) => {
               if (folder.path) {
-                state.openFolder(folder.path);
+                state.openFolder(folder.path)
               }
             }}
             onBackPress={state.goBackFolder}
@@ -220,7 +210,7 @@ export default function LibraryScreen() {
             refreshControl={refreshControl}
             {...sharedListEvents}
           />
-        );
+        )
       case "Favorites":
         return (
           <FavoritesList
@@ -229,16 +219,16 @@ export default function LibraryScreen() {
             selectedTypes={state.activeFavoriteTypeFilters}
             onSelectedTypesChange={state.handleFavoriteTypeFiltersChange}
             onTrackPress={(trackId) => {
-              void state.playFavoriteTrack(trackId);
+              void state.playFavoriteTrack(trackId)
             }}
             contentContainerStyle={listContentContainerStyle}
             resetScrollKey={state.listResetScrollKey}
             refreshControl={refreshControl}
             {...sharedListEvents}
           />
-        );
+        )
       default:
-        return null;
+        return null
     }
   }
 
@@ -246,9 +236,7 @@ export default function LibraryScreen() {
     <>
       <SortSheet
         visible={state.sortModalVisible}
-        onOpenChange={(open) =>
-          open ? state.setSortModalVisible(true) : state.closeSortModal()
-        }
+        onOpenChange={(open) => (open ? state.setSortModalVisible(true) : state.closeSortModal())}
         currentField={state.sortConfig.field}
         currentOrder={state.sortConfig.order}
         onSelect={state.handleSortSelect}
@@ -308,12 +296,10 @@ export default function LibraryScreen() {
           visible={actionSheetConfig.visible}
           onOpenChange={(visible) => {
             if (!visible) {
-              setActionSheetConfig(null);
-              return;
+              setActionSheetConfig(null)
+              return
             }
-            setActionSheetConfig((prev) =>
-              prev ? { ...prev, visible } : prev,
-            );
+            setActionSheetConfig((prev) => (prev ? { ...prev, visible } : prev))
           }}
           type={actionSheetConfig.type}
           id={actionSheetConfig.id}
@@ -325,5 +311,5 @@ export default function LibraryScreen() {
         />
       )}
     </>
-  );
+  )
 }

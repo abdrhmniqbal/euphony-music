@@ -71,14 +71,7 @@ export function useLyricsAutoScroll({
       fallbackY: activeSyncedLineIndex * 52 * fontScale,
       viewportHeight,
     })
-  }, [
-    layoutCacheKey,
-    activeLine,
-    viewportHeight,
-    isSyncedMode,
-    activeSyncedLineIndex,
-    fontScale,
-  ])
+  }, [layoutCacheKey, activeLine, viewportHeight, isSyncedMode, activeSyncedLineIndex, fontScale])
 
   return {
     scrollViewRef,

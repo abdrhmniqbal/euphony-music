@@ -6,17 +6,14 @@ import {
   parseTimedMarkupLines,
   splitLyricsLines,
 } from "@/modules/lyrics"
-import {
-  findSyncedLineIndex,
-  findTimedMarkupLineIndex,
-} from "@/modules/lyrics/view-utils"
+import { findSyncedLineIndex, findTimedMarkupLineIndex } from "@/modules/lyrics/view-utils"
 import { useUIStore } from "@/modules/ui/store"
 
 export type LyricsMode = "static" | "synced" | "timedMarkup"
 
 export function useLyricsPresentation(resolvedLyrics: string | null, playbackTime: number) {
   const karaokeEnabled = useUIStore((state) => state.playerLyricsKaraokeEnabled)
-  
+
   const timedMarkupLines = React.useMemo(
     () => (resolvedLyrics ? parseTimedMarkupLines(resolvedLyrics) : []),
     [resolvedLyrics]
@@ -31,7 +28,7 @@ export function useLyricsPresentation(resolvedLyrics: string | null, playbackTim
     () => (hasTimedMarkupLyrics ? [] : splitLyricsLines(resolvedLyrics)),
     [hasTimedMarkupLyrics, resolvedLyrics]
   )
-  
+
   const syncedLines = React.useMemo(
     () => (hasTimedMarkupLyrics ? [] : parseSyncedLyricsLines(resolvedLyrics)),
     [hasTimedMarkupLyrics, resolvedLyrics]

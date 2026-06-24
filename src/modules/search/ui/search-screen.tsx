@@ -270,7 +270,10 @@ export default function SearchInteractionScreen() {
 
   function handleArtistLongPress(artist: SearchArtistResult) {
     dismissKeyboard()
-    const action = resolveArtistLongPress(artist, t("library.count.track", { count: artist.trackCount }))
+    const action = resolveArtistLongPress(
+      artist,
+      t("library.count.track", { count: artist.trackCount })
+    )
     if (action.sheet) {
       setActionSheetConfig(action.sheet as any)
     }
@@ -278,7 +281,10 @@ export default function SearchInteractionScreen() {
 
   function handleArtistPress(artist: SearchArtistResult) {
     dismissKeyboard()
-    const action = resolveArtistPress(artist, t("library.count.track", { count: artist.trackCount }))
+    const action = resolveArtistPress(
+      artist,
+      t("library.count.track", { count: artist.trackCount })
+    )
     if (action.recentSearch) {
       pushRecentSearch(action.recentSearch)
     }
@@ -308,7 +314,10 @@ export default function SearchInteractionScreen() {
 
   function handlePlaylistLongPress(playlist: SearchPlaylistResult) {
     dismissKeyboard()
-    const action = resolvePlaylistLongPress(playlist, t("library.count.track", { count: playlist.trackCount }))
+    const action = resolvePlaylistLongPress(
+      playlist,
+      t("library.count.track", { count: playlist.trackCount })
+    )
     if (action.sheet) {
       setActionSheetConfig(action.sheet as any)
     }
@@ -316,7 +325,10 @@ export default function SearchInteractionScreen() {
 
   function handlePlaylistPress(playlist: SearchPlaylistResult) {
     dismissKeyboard()
-    const action = resolvePlaylistPress(playlist, t("library.count.track", { count: playlist.trackCount }))
+    const action = resolvePlaylistPress(
+      playlist,
+      t("library.count.track", { count: playlist.trackCount })
+    )
     if (action.recentSearch) {
       pushRecentSearch(action.recentSearch)
     }

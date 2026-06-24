@@ -60,7 +60,6 @@ export default function TopTracksScreen() {
       })
     : null
 
-
   function getPeriodLabel(p: TopTracksPeriod) {
     switch (p) {
       case "day":
@@ -204,7 +203,9 @@ export default function TopTracksScreen() {
               >
                 <Text
                   className={
-                    period === opt ? "text-base font-semibold text-accent" : "text-base font-medium text-foreground"
+                    period === opt
+                      ? "text-base font-semibold text-accent"
+                      : "text-base font-medium text-foreground"
                   }
                 >
                   {getPeriodLabel(opt)}

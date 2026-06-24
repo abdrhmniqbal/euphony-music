@@ -20,15 +20,18 @@ export const BottomSheetInput = forwardRef<TextInputType, BottomSheetInputProps>
   } = props
 
   // Replicate input classNames from heroui-native
-  const baseClass = "min-h-12 px-3 rounded-2xl text-foreground font-normal border-[1.5px] focus:border-accent"
-  const variantClass = variant === "primary"
-    ? "bg-field border-field-border ios:shadow-field android:shadow-sm"
-    : "bg-default border-default"
-  
+  const baseClass =
+    "min-h-12 px-3 rounded-2xl text-foreground font-normal border-[1.5px] focus:border-accent"
+  const variantClass =
+    variant === "primary"
+      ? "bg-field border-field-border ios:shadow-field android:shadow-sm"
+      : "bg-default border-default"
+
   const invalidClass = isInvalid ? "border-danger focus:border-danger" : ""
   const disabledClass = isDisabled ? "opacity-50" : ""
 
-  const combinedClassName = `${baseClass} ${variantClass} ${invalidClass} ${disabledClass} ${className}`.trim()
+  const combinedClassName =
+    `${baseClass} ${variantClass} ${invalidClass} ${disabledClass} ${className}`.trim()
 
   return (
     <BottomSheetTextInput

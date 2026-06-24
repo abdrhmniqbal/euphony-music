@@ -61,7 +61,12 @@ export function SettingsHighlight({ id, children }: { id: string; children: Reac
   }, [params.highlight, id, animOpacity])
 
   React.useEffect(() => {
-    if (params.highlight !== id || hasScrolled.current || !scrollViewRef?.current || !containerRef?.current) {
+    if (
+      params.highlight !== id ||
+      hasScrolled.current ||
+      !scrollViewRef?.current ||
+      !containerRef?.current
+    ) {
       return
     }
 

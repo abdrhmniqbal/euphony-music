@@ -7,14 +7,7 @@
  */
 
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import {
-  BottomSheet,
-  Button,
-  Chip,
-  ListGroup,
-  Separator,
-  TagGroup,
-} from "heroui-native"
+import { BottomSheet, Button, Chip, ListGroup, Separator, TagGroup } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"

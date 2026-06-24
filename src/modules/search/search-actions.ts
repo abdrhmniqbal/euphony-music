@@ -129,10 +129,7 @@ export function resolveArtistLongPress(
   }
 }
 
-export function resolveAlbumPress(
-  album: SearchAlbumResult,
-  albumLabel: string
-): SearchAction {
+export function resolveAlbumPress(album: SearchAlbumResult, albumLabel: string): SearchAction {
   return {
     recentSearch: {
       query: album.title,

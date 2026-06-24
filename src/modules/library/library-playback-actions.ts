@@ -54,7 +54,11 @@ export async function playFavoriteTrack({
 
   const fallbackTrack = tracks.find((item) => item.id === trackId)
   if (fallbackTrack) {
-    playTrack(fallbackTrack, queue.length > 0 ? queue : tracks, createFavoritesQueueContext(favoritesTitle))
+    playTrack(
+      fallbackTrack,
+      queue.length > 0 ? queue : tracks,
+      createFavoritesQueueContext(favoritesTitle)
+    )
   }
 }
 
@@ -76,7 +80,11 @@ export async function playAllTracks({
   if (activeTab === "Tracks") {
     const sortedTracksQueue = sortTracks(tracks, tracksSortConfig)
     if (sortedTracksQueue.length > 0) {
-      playTrack(sortedTracksQueue[0], sortedTracksQueue, createTrackListQueueContext(defaultTracksTitle))
+      playTrack(
+        sortedTracksQueue[0],
+        sortedTracksQueue,
+        createTrackListQueueContext(defaultTracksTitle)
+      )
     }
     return
   }
@@ -133,6 +141,10 @@ export async function shuffleTracks({
 
   if (tracks.length > 0) {
     const randomIndex = Math.floor(Math.random() * tracks.length)
-    playTrack(tracks[randomIndex], tracks, createTrackListQueueContext(activeTab || defaultTracksTitle))
+    playTrack(
+      tracks[randomIndex],
+      tracks,
+      createTrackListQueueContext(activeTab || defaultTracksTitle)
+    )
   }
 }

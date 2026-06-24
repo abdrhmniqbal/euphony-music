@@ -248,7 +248,6 @@ export const mixes = sqliteTable("mixes", {
     .$defaultFn(() => Date.now()),
 })
 
-
 export const mixTracks = sqliteTable(
   "mix_tracks",
   {

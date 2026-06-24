@@ -115,7 +115,10 @@ export default function AdvancedSettingsScreen() {
       setIsForceUpdateMixesDialogOpen(false)
       showAppToast(
         t("settings.advanced.forceUpdateMixesCompleteTitle", "Mixes reset"),
-        t("settings.advanced.forceUpdateMixesCompleteDescription", "Daily Mix and For You Mix will rebuild from current listening data.")
+        t(
+          "settings.advanced.forceUpdateMixesCompleteDescription",
+          "Daily Mix and For You Mix will rebuild from current listening data."
+        )
       )
     } catch {
       showAppToast(
@@ -267,7 +270,10 @@ export default function AdvancedSettingsScreen() {
                   {t("settings.advanced.forceUpdateMixes", "Force update mixes")}
                 </ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
-                  {t("settings.advanced.forceUpdateMixesDescription", "Discard and regenerate Daily Mix and For You Mix immediately.")}
+                  {t(
+                    "settings.advanced.forceUpdateMixesDescription",
+                    "Discard and regenerate Daily Mix and For You Mix immediately."
+                  )}
                 </ListGroup.ItemDescription>
               </ListGroup.ItemContent>
             </ListGroup.Item>
@@ -405,17 +411,19 @@ export default function AdvancedSettingsScreen() {
         </Dialog.Portal>
       </Dialog>
 
-      <Dialog
-        isOpen={isForceUpdateMixesDialogOpen}
-        onOpenChange={setIsForceUpdateMixesDialogOpen}
-      >
+      <Dialog isOpen={isForceUpdateMixesDialogOpen} onOpenChange={setIsForceUpdateMixesDialogOpen}>
         <Dialog.Portal>
           <Dialog.Overlay />
           <Dialog.Content className="gap-4">
             <View className="gap-1.5">
-              <Dialog.Title>{t("settings.advanced.forceUpdateMixesDialogTitle", "Force update mixes?")}</Dialog.Title>
+              <Dialog.Title>
+                {t("settings.advanced.forceUpdateMixesDialogTitle", "Force update mixes?")}
+              </Dialog.Title>
               <Dialog.Description>
-                {t("settings.advanced.forceUpdateMixesDialogDescription", "This will discard the current Daily Mix and For You Mix and force them to regenerate from your latest history and library taste. Your play history itself will stay unchanged.")}
+                {t(
+                  "settings.advanced.forceUpdateMixesDialogDescription",
+                  "This will discard the current Daily Mix and For You Mix and force them to regenerate from your latest history and library taste. Your play history itself will stay unchanged."
+                )}
               </Dialog.Description>
             </View>
             <View className="flex-row justify-end gap-3">

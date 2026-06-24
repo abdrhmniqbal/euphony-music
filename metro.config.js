@@ -31,7 +31,7 @@ const uniwindConfig = withUniwindConfig(config, {
     "theme-dracula-light",
     "theme-dracula-dark",
     "theme-catppuccin-light",
-    "theme-catppuccin-dark"
+    "theme-catppuccin-dark",
   ],
 })
 

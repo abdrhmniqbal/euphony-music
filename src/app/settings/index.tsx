@@ -73,7 +73,10 @@ export default function SettingsScreen() {
     <SettingsScrollView keyboardShouldPersistTaps="handled">
       <View className="gap-2">
         <View className="relative">
-          <View pointerEvents="none" className="absolute inset-y-0 left-1 z-20 w-10 items-center justify-center">
+          <View
+            pointerEvents="none"
+            className="absolute inset-y-0 left-1 z-20 w-10 items-center justify-center"
+          >
             <LocalSearchIcon fill="none" width={24} height={24} color={theme.foreground} />
           </View>
           <Input
@@ -114,7 +117,9 @@ export default function SettingsScreen() {
               <SettingsNavigationRow
                 key={entry.id}
                 title={entry.title}
-                description={entry.section ? `${entry.section} · ${entry.description}` : entry.description}
+                description={
+                  entry.section ? `${entry.section} · ${entry.description}` : entry.description
+                }
                 onPress={() => openSearchResult(entry.route, entry.highlight)}
               />
             ))}

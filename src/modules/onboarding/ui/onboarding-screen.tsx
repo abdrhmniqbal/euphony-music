@@ -12,7 +12,6 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
 import { Uniwind } from "uniwind"
 
-
 import { startIndexing } from "@/modules/indexer/service"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import {
@@ -54,7 +53,6 @@ export default function OnboardingScreen() {
   const [selectedMode, setSelectedMode] = React.useState<FolderFilterMode>(
     pendingConfig.whitelist.length > 0 ? "whitelist" : "blacklist"
   )
-
 
   const activeFolders =
     selectedMode === "whitelist" ? pendingConfig.whitelist : pendingConfig.blacklist
@@ -149,7 +147,7 @@ export default function OnboardingScreen() {
         copyToCacheDirectory: true,
       })
       if (result.canceled || !result.assets[0]?.uri) return
-      
+
       const success = await restorePreferencesFromFile(result.assets[0].uri)
       if (success) {
         showAppToast("Restore Successful", "Preferences restored.")
@@ -212,7 +210,9 @@ export default function OnboardingScreen() {
               foregroundColor={theme.foreground}
               mutedColor={theme.muted}
               getModeLabel={getModeLabel}
-              onToggleMode={() => setUnifiedMode(selectedMode === "whitelist" ? "blacklist" : "whitelist")}
+              onToggleMode={() =>
+                setUnifiedMode(selectedMode === "whitelist" ? "blacklist" : "whitelist")
+              }
               onPickFolder={pickFolder}
               onRemoveFolder={removeFolder}
             />
@@ -235,12 +235,7 @@ export default function OnboardingScreen() {
             />
           )}
 
-          {step === 3 && (
-            <RestoreStep
-              stepTitle={stepTitle}
-              onRestore={handleOnboardingRestore}
-            />
-          )}
+          {step === 3 && <RestoreStep stepTitle={stepTitle} onRestore={handleOnboardingRestore} />}
         </View>
       </ScrollView>
 
@@ -257,7 +252,6 @@ export default function OnboardingScreen() {
           </Button>
         ) : null}
       </View>
-
     </SafeAreaView>
   )
 }

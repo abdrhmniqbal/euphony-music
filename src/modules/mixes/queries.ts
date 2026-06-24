@@ -9,17 +9,23 @@ export const mixKeys = {
 }
 
 export function useDailyMix() {
-  return useQuery({
-    queryKey: mixKeys.daily(),
-    queryFn: getDailyMix,
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours
-  }, queryClient)
+  return useQuery(
+    {
+      queryKey: mixKeys.daily(),
+      queryFn: getDailyMix,
+      staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    },
+    queryClient
+  )
 }
 
 export function useForYouMix() {
-  return useQuery({
-    queryKey: mixKeys.forYou(),
-    queryFn: getForYouMix,
-    staleTime: 7 * 24 * 60 * 60 * 1000, // 7 days
-  }, queryClient)
+  return useQuery(
+    {
+      queryKey: mixKeys.forYou(),
+      queryFn: getForYouMix,
+      staleTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    },
+    queryClient
+  )
 }

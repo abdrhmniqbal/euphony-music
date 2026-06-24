@@ -312,13 +312,8 @@ export function PlayerActionSheet({
   }
 
   const handleSaveQueueToPlaylist = () => {
-    const queueTrackIds = Array.from(
-      new Set(
-        (queue.length > 0 ? queue : [track])
-          .filter((item): item is Track => item !== null && item.isExternal !== true)
-          .map((item) => item.id)
-      )
-    )
+    const queueTrackIds =
+      queue.length > 0 ? queue : track && track.isExternal !== true ? [track.id] : []
 
     onOpenChange(false)
     setIsPlaylistPickerOpen(false)

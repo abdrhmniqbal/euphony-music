@@ -276,11 +276,7 @@ export default function FolderFiltersScreen() {
                   {t("settings.library.filterModeDescription")}
                 </Card.Description>
               </View>
-              <Button
-                variant="secondary"
-                onPress={toggleMode}
-                isDisabled={isIndexing}
-              >
+              <Button variant="secondary" onPress={toggleMode} isDisabled={isIndexing}>
                 {getModeLabel()}
               </Button>
             </View>
@@ -351,7 +347,6 @@ export default function FolderFiltersScreen() {
           {isIndexing ? t("settings.library.indexing") : t("settings.library.applyFilter")}
         </Button>
       </View>
-
     </View>
   )
 }

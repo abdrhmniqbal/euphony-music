@@ -1,55 +1,52 @@
-import { Checkbox, ListGroup, PressableFeedback, Separator } from "heroui-native";
-import React, { useCallback, useMemo } from "react";
-import { View } from "react-native";
+import { Checkbox, ListGroup, PressableFeedback, Separator } from "heroui-native"
+import React, { useCallback, useMemo } from "react"
+import { View } from "react-native"
 import ReorderableList, {
   reorderItems,
   useIsActive,
   useReorderableDrag,
-} from "react-native-reorderable-list";
-import { Gesture } from "react-native-gesture-handler";
-import { useTranslation } from "react-i18next";
+} from "react-native-reorderable-list"
+import { Gesture } from "react-native-gesture-handler"
+import { useTranslation } from "react-i18next"
 
-import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical";
-import { useSettingsStore } from "@/modules/settings/store";
-import { setLibraryTabsConfig } from "@/modules/settings/library-tabs";
-import type {
-  LibraryTabSettingsItem,
-  LibraryTabsConfig,
-} from "@/modules/library/tabs";
-import { useThemeColors } from "@/modules/ui/theme";
+import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
+import { useSettingsStore } from "@/modules/settings/store"
+import { setLibraryTabsConfig } from "@/modules/settings/library-tabs"
+import type { LibraryTabSettingsItem, LibraryTabsConfig } from "@/modules/library/tabs"
+import { useThemeColors } from "@/modules/ui/theme"
 
 interface LibraryTabItemProps {
-  item: LibraryTabSettingsItem;
-  index: number;
-  onToggle: (id: string, visible: boolean) => void;
+  item: LibraryTabSettingsItem
+  index: number
+  onToggle: (id: string, visible: boolean) => void
 }
 
 function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
-  const { t } = useTranslation();
-  const theme = useThemeColors();
-  const drag = useReorderableDrag();
-  const isActive = useIsActive();
+  const { t } = useTranslation()
+  const theme = useThemeColors()
+  const drag = useReorderableDrag()
+  const isActive = useIsActive()
 
   const label = useMemo(() => {
     switch (item.id) {
       case "Tracks":
-        return t("settings.library.tabsTracks");
+        return t("settings.library.tabsTracks")
       case "Albums":
-        return t("settings.library.tabsAlbums");
+        return t("settings.library.tabsAlbums")
       case "Artists":
-        return t("settings.library.tabsArtists");
+        return t("settings.library.tabsArtists")
       case "Genres":
-        return t("settings.library.tabsGenres");
+        return t("settings.library.tabsGenres")
       case "Playlists":
-        return t("settings.library.tabsPlaylists");
+        return t("settings.library.tabsPlaylists")
       case "Folders":
-        return t("settings.library.tabsFolders");
+        return t("settings.library.tabsFolders")
       case "Favorites":
-        return t("settings.library.tabsFavorites");
+        return t("settings.library.tabsFavorites")
       default:
-        return item.id;
+        return item.id
     }
-  }, [item.id, t]);
+  }, [item.id, t])
 
   return (
     <>
@@ -72,44 +69,43 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
         </ListGroup.ItemContent>
       </ListGroup.Item>
     </>
-  );
+  )
 }
 
 export default function LibraryTabsSettingsScreen() {
   const libraryTabsConfig = useSettingsStore(
-    (state) => state.libraryTabsConfig,
-  ) as unknown as LibraryTabsConfig;
-  const theme = useThemeColors();
+    (state) => state.libraryTabsConfig
+  ) as unknown as LibraryTabsConfig
+  const theme = useThemeColors()
 
   const handleReorder = useCallback(
     ({ from, to }: { from: number; to: number }) => {
-      const nextTabs = reorderItems(libraryTabsConfig.tabs, from, to);
-      void setLibraryTabsConfig({ tabs: nextTabs });
+      const nextTabs = reorderItems(libraryTabsConfig.tabs, from, to)
+      void setLibraryTabsConfig({ tabs: nextTabs })
     },
-    [libraryTabsConfig.tabs],
-  );
+    [libraryTabsConfig.tabs]
+  )
 
   const handleToggle = useCallback(
     (id: string, visible: boolean) => {
-      const nextTabs = libraryTabsConfig.tabs.map(
-        (tab: LibraryTabSettingsItem) =>
-          tab.id === id ? { ...tab, visible } : tab,
-      );
-      void setLibraryTabsConfig({ tabs: nextTabs });
+      const nextTabs = libraryTabsConfig.tabs.map((tab: LibraryTabSettingsItem) =>
+        tab.id === id ? { ...tab, visible } : tab
+      )
+      void setLibraryTabsConfig({ tabs: nextTabs })
     },
-    [libraryTabsConfig.tabs],
-  );
+    [libraryTabsConfig.tabs]
+  )
 
   const renderItem = useCallback(
     ({ item, index }: { item: LibraryTabSettingsItem; index: number }) => (
       <LibraryTabItem item={item} index={index} onToggle={handleToggle} />
     ),
-    [handleToggle],
-  );
+    [handleToggle]
+  )
 
   const panGesture = useMemo(() => {
-    return Gesture.Pan().activateAfterLongPress(200);
-  }, []);
+    return Gesture.Pan().activateAfterLongPress(200)
+  }, [])
 
   return (
     <View className="flex-1 bg-background px-4 py-4">
@@ -127,5 +123,5 @@ export default function LibraryTabsSettingsScreen() {
         />
       </ListGroup>
     </View>
-  );
+  )
 }

@@ -95,7 +95,7 @@ export function registerBootstrapListeners() {
       pendingDeferredMediaAutoScan = false
       pendingDeferredMediaAutoScanBypassThrottle = false
       clearPendingForegroundWork()
-      
+
       void (async () => {
         try {
           await flushPlaybackStoreSnapshot()

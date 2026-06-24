@@ -8,7 +8,11 @@ import { Directory, File } from "expo-file-system"
 import { showAppToast } from "@/modules/ui/toast"
 import { i18n } from "@/modules/localization/i18n"
 import { getSettingsState, updateSettingsState } from "@/modules/settings/store"
-import { createSettingsConfigFile, loadSettingsConfig, saveSettingsConfig } from "@/modules/settings/repository"
+import {
+  createSettingsConfigFile,
+  loadSettingsConfig,
+  saveSettingsConfig,
+} from "@/modules/settings/repository"
 import type { AutoBackupConfig } from "@/modules/settings/types"
 import { backupPreferencesToFile } from "./backup"
 
@@ -27,10 +31,20 @@ export const DEFAULT_AUTO_BACKUP_CONFIG: AutoBackupConfig = {
 function sanitizeConfig(config: unknown): AutoBackupConfig {
   const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
   return {
-    enabled: typeof source.enabled === "boolean" ? source.enabled : DEFAULT_AUTO_BACKUP_CONFIG.enabled,
-    intervalHours: typeof source.intervalHours === "number" ? source.intervalHours : DEFAULT_AUTO_BACKUP_CONFIG.intervalHours,
-    lastBackupAt: typeof source.lastBackupAt === "number" ? source.lastBackupAt : DEFAULT_AUTO_BACKUP_CONFIG.lastBackupAt,
-    targetDirectoryUri: typeof source.targetDirectoryUri === "string" ? source.targetDirectoryUri : DEFAULT_AUTO_BACKUP_CONFIG.targetDirectoryUri,
+    enabled:
+      typeof source.enabled === "boolean" ? source.enabled : DEFAULT_AUTO_BACKUP_CONFIG.enabled,
+    intervalHours:
+      typeof source.intervalHours === "number"
+        ? source.intervalHours
+        : DEFAULT_AUTO_BACKUP_CONFIG.intervalHours,
+    lastBackupAt:
+      typeof source.lastBackupAt === "number"
+        ? source.lastBackupAt
+        : DEFAULT_AUTO_BACKUP_CONFIG.lastBackupAt,
+    targetDirectoryUri:
+      typeof source.targetDirectoryUri === "string"
+        ? source.targetDirectoryUri
+        : DEFAULT_AUTO_BACKUP_CONFIG.targetDirectoryUri,
   }
 }
 
@@ -44,7 +58,11 @@ export async function ensureAutoBackupConfigLoaded(): Promise<AutoBackupConfig> 
   if (loadPromise) return loadPromise
 
   loadPromise = (async () => {
-    const next = await loadSettingsConfig(AUTO_BACKUP_FILE, DEFAULT_AUTO_BACKUP_CONFIG, sanitizeConfig)
+    const next = await loadSettingsConfig(
+      AUTO_BACKUP_FILE,
+      DEFAULT_AUTO_BACKUP_CONFIG,
+      sanitizeConfig
+    )
     updateSettingsState({ autoBackupConfig: next })
     hasLoadedConfig = true
     return next
@@ -55,7 +73,9 @@ export async function ensureAutoBackupConfigLoaded(): Promise<AutoBackupConfig> 
   return result
 }
 
-export async function setAutoBackupConfig(updates: Partial<AutoBackupConfig>): Promise<AutoBackupConfig> {
+export async function setAutoBackupConfig(
+  updates: Partial<AutoBackupConfig>
+): Promise<AutoBackupConfig> {
   await ensureAutoBackupConfigLoaded()
   const current = getSettingsState().autoBackupConfig
   const next = sanitizeConfig({ ...current, ...updates })
@@ -85,11 +105,11 @@ export async function runAutoBackupCheck(force = false): Promise<boolean> {
 
     // Write to document tree
     const targetDir = new Directory(config.targetDirectoryUri)
-    
+
     const filename = `autobackup-${now}.json`
     const createdFile = targetDir.createFile(filename, "application/json")
     await createdFile.write(content, { encoding: "utf8" })
-    
+
     // Save state
     await setAutoBackupConfig({ lastBackupAt: now })
     return true

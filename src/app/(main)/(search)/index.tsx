@@ -34,7 +34,6 @@ import { transformDBTrackToTrack } from "@/utils/transformers"
 import { Card } from "heroui-native"
 import { createTrackListQueueContext } from "@/stores/playback/types"
 
-
 const RECENTLY_ADDED_LIMIT = 8
 
 export default function SearchScreen() {
@@ -44,7 +43,7 @@ export default function SearchScreen() {
   const currentTrackId = useCurrentTrackId()
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
-  
+
   const { data: dailyMix } = useDailyMix()
   const { data: forYouMix } = useForYouMix()
 
@@ -52,7 +51,6 @@ export default function SearchScreen() {
     sortBy: "dateAdded",
     sortOrder: "desc",
   })
-
 
   const recentlyAddedTracks = useMemo(
     () => (dbTracks as DBTrack[]).map(transformDBTrackToTrack),
@@ -147,9 +145,7 @@ export default function SearchScreen() {
             onPress={() => router.push("/(main)/(search)/mix/daily" as any)}
             className="flex-1 active:opacity-80"
           >
-            <Card
-              className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0"
-            >
+            <Card className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0">
               <View className="absolute inset-0 bg-surface-secondary">
                 <PlaylistArtwork images={dailyMixImages} />
               </View>
@@ -174,7 +170,10 @@ export default function SearchScreen() {
                   {dailyMixPattern === "grid" && (
                     <View className="absolute inset-0 flex-row flex-wrap gap-2 p-1.5">
                       {Array.from({ length: 12 }).map((_, index) => (
-                        <View key={`daily-grid-${index}`} className="h-6 w-6 rounded-sm bg-white/5" />
+                        <View
+                          key={`daily-grid-${index}`}
+                          className="h-6 w-6 rounded-sm bg-white/5"
+                        />
                       ))}
                     </View>
                   )}
@@ -246,9 +245,7 @@ export default function SearchScreen() {
             onPress={() => router.push("/(main)/(search)/mix/foryou" as any)}
             className="flex-1 active:opacity-80"
           >
-            <Card
-              className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0"
-            >
+            <Card className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0">
               <View className="absolute inset-0 bg-surface-secondary">
                 <PlaylistArtwork images={forYouMixImages} />
               </View>
@@ -273,7 +270,10 @@ export default function SearchScreen() {
                   {forYouMixPattern === "grid" && (
                     <View className="absolute inset-0 flex-row flex-wrap gap-2 p-1.5">
                       {Array.from({ length: 12 }).map((_, index) => (
-                        <View key={`foryou-grid-${index}`} className="h-6 w-6 rounded-sm bg-white/5" />
+                        <View
+                          key={`foryou-grid-${index}`}
+                          className="h-6 w-6 rounded-sm bg-white/5"
+                        />
                       ))}
                     </View>
                   )}

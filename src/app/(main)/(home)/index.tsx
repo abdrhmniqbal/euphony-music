@@ -29,10 +29,7 @@ import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
-import {
-  createTrackListQueueContext,
-  type PlaybackQueueContext,
-} from "@/stores/playback/types"
+import { createTrackListQueueContext, type PlaybackQueueContext } from "@/stores/playback/types"
 
 const CHUNK_SIZE = 5
 const RECENTLY_PLAYED_PREVIEW_LIMIT = 8
