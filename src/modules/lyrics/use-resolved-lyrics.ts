@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import type { Track } from "@/modules/player/types"
-import { resolveTrackLyricsSource } from "@/modules/lyrics/source"
+import { resolveTrackLyricsSource, fetchAndPersistLyrics, loadLyricsFromDatabase } from "@/modules/lyrics/source"
 import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/view-utils"
-import { logWarn } from "@/modules/logging/service"
 import { queryClient } from "@/lib/tanstack-query"
 
 export function useResolvedLyrics(track: Track | null) {
@@ -19,28 +18,33 @@ export function useResolvedLyrics(track: Track | null) {
       staleTime: Infinity,
       queryFn: async () => {
         let sourceTrack = track
-        if (sourceTrack?.id && !sourceTrack.lyrics) {
-          try {
-            const { db } = await import("@/db/client")
-            const { tracks } = await import("@/db/schema")
-            const { eq } = await import("drizzle-orm")
-            const dbTrack = await db.query.tracks.findFirst({
-              where: eq(tracks.id, sourceTrack.id),
-              columns: { lyrics: true },
-            })
-            if (dbTrack?.lyrics) {
-              sourceTrack = { ...sourceTrack, lyrics: dbTrack.lyrics }
-            }
-          } catch (error) {
-            logWarn("Failed to hydrate lyrics from database fallback", {
-              error,
-              trackId: sourceTrack.id,
-            })
+        if (sourceTrack?.id && (sourceTrack.lyrics === undefined || sourceTrack.lyrics === null)) {
+          const dbLyrics = await loadLyricsFromDatabase(sourceTrack.id)
+          if (dbLyrics !== null) {
+            sourceTrack = { ...sourceTrack, lyrics: dbLyrics }
           }
         }
 
-        const source = resolveTrackLyricsSource(sourceTrack)
-        return source ?? null
+        if (sourceTrack?.lyrics) {
+          const source = resolveTrackLyricsSource(sourceTrack)
+          if (source) {
+            return source
+          }
+        }
+
+        if (sourceTrack?.lyrics === "") {
+          return null
+        }
+
+        if (sourceTrack?.id && sourceTrack.title) {
+          const fetchedLyrics = await fetchAndPersistLyrics(sourceTrack)
+          if (fetchedLyrics) {
+            sourceTrack = { ...sourceTrack, lyrics: fetchedLyrics }
+            return resolveTrackLyricsSource(sourceTrack) ?? null
+          }
+        }
+
+        return null
       },
       placeholderData: () => {
         const metadataLyrics = track?.lyrics
