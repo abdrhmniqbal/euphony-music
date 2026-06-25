@@ -9,7 +9,7 @@
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { useTranslation } from "react-i18next"
 
-import LocalSettingsIcon from "@/components/icons/local/settings"
+import LocalSettings01Icon from "@/components/icons/local/settings-01"
 import { BackButton } from "@/components/patterns/back-button"
 import { StackHeaderActions } from "@/components/patterns/stack-header-actions"
 import { Stack } from "@/layouts/stack"
@@ -41,7 +41,7 @@ export default function SearchLayout() {
                   key: "settings",
                   onPress: () => router.push("/settings"),
                   icon: (
-                    <LocalSettingsIcon
+                    <LocalSettings01Icon
                       fill="none"
                       width={24}
                       height={24}

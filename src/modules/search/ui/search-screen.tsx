@@ -27,7 +27,7 @@ import {
   type SearchTab,
 } from "@/components/blocks/search-results"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
-import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
+import LocalArrowLeft02Icon from "@/components/icons/local/arrow-left-02"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import { Stack } from "@/layouts/stack"
 import { queryClient } from "@/lib/tanstack-query"
@@ -91,7 +91,7 @@ function HeaderSearchInput({
           accessibilityRole="button"
           accessibilityLabel={t("common.goBack")}
         >
-          <LocalArrowLeftIcon fill="none" width={24} height={24} color={theme.foreground} />
+          <LocalArrowLeft02Icon fill="none" width={24} height={24} color={theme.foreground} />
         </PressableFeedback>
 
         <Input

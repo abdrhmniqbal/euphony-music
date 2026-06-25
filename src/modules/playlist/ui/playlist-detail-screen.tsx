@@ -25,8 +25,8 @@ import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
+import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { collectPlaylistImages } from "@/modules/playlist/repository"
@@ -51,6 +51,8 @@ import {
 } from "@/modules/playlist/utils"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import LocalEdit02Icon from "@/components/icons/local/edit-02"
+import LocalDelete02Icon from "@/components/icons/local/delete-02"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
 type PlaylistTrackSortField = TrackSortField | "playlistAddedAt"
@@ -225,7 +227,7 @@ export default function PlaylistDetailsScreen() {
 
     return (
       <EmptyState
-        icon={<LocalPlaylistSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+        icon={<LocalPlaylist02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         title={t("library.playlistNotFound")}
         message={t("library.playlistRemovedMessage")}
         className="mt-12"
@@ -267,7 +269,7 @@ export default function PlaylistDetailsScreen() {
                   )}
                 </Button>
                 <Button variant="ghost" isIconOnly onPress={() => setShowActionSheet(true)}>
-                  <LocalMoreHorizontalCircleSolidIcon
+                  <LocalMoreHorizontalCircle01SolidIcon
                     fill="none"
                     width={24}
                     height={24}
@@ -313,7 +315,7 @@ export default function PlaylistDetailsScreen() {
                       <PlaylistArtwork
                         images={playlistImages}
                         fallback={
-                          <LocalPlaylistSolidIcon
+                          <LocalPlaylist02SolidIcon
                             fill="none"
                             width={48}
                             height={48}
@@ -373,9 +375,12 @@ export default function PlaylistDetailsScreen() {
               router.push({ pathname: "/playlist/form", params: { id: playlist.id } })
             }}
           >
-            <Text className="text-base font-medium text-foreground">
-              {t("playlist.editPlaylist")}
-            </Text>
+            <View className="flex-row items-center gap-4 px-1">
+              <LocalEdit02Icon fill="none" width={22} height={22} color={theme.muted} />
+              <Text className="text-base font-medium text-foreground">
+                {t("playlist.editPlaylist")}
+              </Text>
+            </View>
           </Button>
           <Button
             variant="ghost"
@@ -385,9 +390,12 @@ export default function PlaylistDetailsScreen() {
               setShowDeleteDialog(true)
             }}
           >
-            <Text className="text-base font-medium text-danger">
-              {t("playlist.deletePlaylist")}
-            </Text>
+            <View className="flex-row items-center gap-4 px-1">
+              <LocalDelete02Icon fill="none" width={22} height={22} color={theme.danger} />
+              <Text className="text-base font-medium text-danger">
+                {t("playlist.deletePlaylist")}
+              </Text>
+            </View>
           </Button>
         </CollectionActionSheet>
         <DeletePlaylistDialog

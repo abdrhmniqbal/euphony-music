@@ -3,7 +3,7 @@ import { Button } from "heroui-native"
 import { BackButton } from "@/components/patterns/back-button"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
+import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 import { cn } from "@/utils/common"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -86,7 +86,7 @@ export function ArtistDetailHeader({
             className={cn("-mr-2", !isHeaderSolid && "rounded-full bg-black/35")}
             isIconOnly
           >
-            <LocalMoreHorizontalCircleSolidIcon
+            <LocalMoreHorizontalCircle01SolidIcon
               fill="none"
               width={24}
               height={24}

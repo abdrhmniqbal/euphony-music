@@ -17,8 +17,8 @@ import { resolvePlayerTransitionId } from "@/modules/player/transition"
 import { useThemeColors } from "@/modules/ui/theme"
 import { setPlayerExpandedView } from "@/modules/ui/store"
 
-import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid"
-import LocalQueueIcon from "../icons/local/queue"
+import LocalMusicNote04SolidIcon from "../icons/local/music-note-04-solid"
+import LocalPlaylist03Icon from "../icons/local/playlist-03"
 
 const BoundaryPressableFeedback = Transition.createBoundaryComponent(PressableFeedback)
 
@@ -41,7 +41,7 @@ function MiniPlayerArtwork({ image, mutedColor }: MiniPlayerArtworkProps) {
           contentFit="cover"
         />
       ) : (
-        <LocalMusicNoteSolidIcon fill="none" width={20} height={20} color={mutedColor} />
+        <LocalMusicNote04SolidIcon fill="none" width={20} height={20} color={mutedColor} />
       )}
     </View>
   )
@@ -87,7 +87,7 @@ function MiniPlayerControls({ isPlaying, foregroundColor, onOpenQueue }: MiniPla
         <LocalNextSolidIcon fill="none" width={24} height={24} color={foregroundColor} />
       </PressableFeedback>
       <PressableFeedback onPress={onOpenQueue} className="p-2 active:opacity-60">
-        <LocalQueueIcon fill="none" width={22} height={22} color={foregroundColor} />
+        <LocalPlaylist03Icon fill="none" width={22} height={22} color={foregroundColor} />
       </PressableFeedback>
     </View>
   )

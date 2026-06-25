@@ -18,9 +18,9 @@ import { useTranslation } from "react-i18next"
 import { ContentSection } from "@/components/blocks/content-section"
 
 import { MediaCarousel } from "@/components/blocks/media-carousel"
-import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
-import LocalSearchIcon from "@/components/icons/local/search"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
+import LocalSearch01Icon from "@/components/icons/local/search-01"
+import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { TrackRow } from "@/components/patterns/track-row"
@@ -35,6 +35,7 @@ import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import { createTrackListQueueContext } from "@/stores/playback/types"
+import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
 
 const RECENTLY_ADDED_LIMIT = 8
 
@@ -165,7 +166,7 @@ export default function SearchScreen() {
       >
         <View className="relative my-6 px-3">
           <View className="absolute top-1/2 left-7 z-10 -translate-y-1/2">
-            <LocalSearchIcon fill="none" width={24} height={24} color={theme.muted} />
+            <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
           </View>
           <Input
             value=""
@@ -391,7 +392,7 @@ export default function SearchScreen() {
           data={recentlyAddedPreviewTracks}
           onViewMore={() => router.push("/(main)/(search)/recently-added")}
           emptyState={{
-            icon: <LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
+            icon: <LocalClock01SolidIcon fill="none" width={48} height={48} color={theme.muted} />,
             title: t("search.empty.recentlyAddedTitle"),
             message: t("search.empty.recentlyAddedMessage"),
           }}
@@ -432,12 +433,7 @@ export default function SearchScreen() {
           >
             <View className="flex-row items-center gap-4 px-1">
               <View className="w-6 items-center justify-center">
-                <LocalPlaylistSolidIcon
-                  fill="none"
-                  width={24}
-                  height={24}
-                  color={theme.foreground}
-                />
+                <LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />
               </View>
               <Text className="text-base font-medium text-foreground">
                 {t("track.addToPlaylist")}

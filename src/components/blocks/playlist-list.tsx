@@ -15,9 +15,9 @@ import Transition from "react-native-screen-transitions"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
-import LocalAddIcon from "@/components/icons/local/add"
+import LocalAdd01Icon from "@/components/icons/local/add-01"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import {
   PlaylistArtwork,
   resolvePlaylistArtworkImages,
@@ -106,7 +106,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     () => (
       <Item key="create" onPress={handleCreate}>
         <ItemImage className="items-center justify-center bg-surface">
-          <LocalAddIcon fill="none" width={24} height={24} color={theme.foreground} />
+          <LocalAdd01Icon fill="none" width={24} height={24} color={theme.foreground} />
         </ItemImage>
         <ItemContent>
           <ItemTitle>{t("playlist.newPlaylist")}</ItemTitle>
@@ -166,7 +166,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     () =>
       data.length === 0 ? (
         <EmptyState
-          icon={<LocalPlaylistSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+          icon={<LocalPlaylist02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
           title={t("library.empty.playlistsTitle")}
           message={t("library.empty.playlistsMessage")}
         />

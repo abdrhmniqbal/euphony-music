@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 
 import { type BlurEvent, findNodeHandle, type FocusEvent, TextInput, View } from "react-native"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
-import LocalSearchIcon from "@/components/icons/local/search"
+import LocalSearch01Icon from "@/components/icons/local/search-01"
 
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -62,7 +62,7 @@ export function SheetSearchInput({ inputKey, searchQuery, setSearchQuery }: Shee
           onBlur={handleOnBlur}
         />
         <View className="absolute left-3.5" pointerEvents="none">
-          <LocalSearchIcon fill="none" width={20} height={20} color={theme.muted} />
+          <LocalSearch01Icon fill="none" width={20} height={20} color={theme.muted} />
         </View>
         {searchQuery.length > 0 ? (
           <PressableFeedback

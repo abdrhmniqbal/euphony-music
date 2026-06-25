@@ -1,12 +1,18 @@
 import { Text, View } from "react-native"
 import { BottomSheet, PressableFeedback } from "heroui-native"
 
-import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
-import LocalQueueIcon from "@/components/icons/local/queue"
+import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
+import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
+import LocalQueue01Icon from "@/components/icons/local/queue-01"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import { useThemeColors } from "@/modules/ui/theme"
+import LocalClockFadingIcon from "@/components/icons/local/clock-fading"
+import LocalUserIcon from "@/components/icons/local/user"
+import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
+import LocalVynil02Icon from "@/components/icons/local/vynil-02"
+import LocalPlaylist03Icon from "@/components/icons/local/playlist-03"
+import LocalAddCircleIcon from "@/components/icons/local/add-circle"
 
 interface PlayerActionMenuProps {
   sleepTimerSummary: string
@@ -58,28 +64,28 @@ export function PlayerActionMenu({
   return (
     <BottomSheet.Content backgroundClassName="bg-surface" className="gap-1">
       <MenuRow
-        icon={<LocalClockSolidIcon fill="none" width={20} height={20} color={theme.muted} />}
+        icon={<LocalClockFadingIcon fill="none" width={22} height={22} color={theme.muted} />}
         label={labels.sleepTimer}
         onPress={onOpenSleepTimer}
         trailing={<Text className="text-sm text-muted">{sleepTimerSummary}</Text>}
       />
       <MenuRow
-        icon={<LocalUserSolidIcon fill="none" width={20} height={20} color={theme.muted} />}
+        icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.muted} />}
         label={labels.goToArtist}
         onPress={onOpenArtistChooser}
       />
       <MenuRow
-        icon={<LocalMusicNoteSolidIcon fill="none" width={20} height={20} color={theme.muted} />}
+        icon={<LocalVynil02Icon fill="none" width={22} height={22} color={theme.muted} />}
         label={labels.goToAlbum}
         onPress={onOpenAlbum}
       />
       <MenuRow
-        icon={<LocalPlaylistSolidIcon fill="none" width={20} height={20} color={theme.muted} />}
+        icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />}
         label={labels.addToPlaylist}
         onPress={onOpenPlaylistPicker}
       />
       <MenuRow
-        icon={<LocalQueueIcon fill="none" width={20} height={20} color={theme.muted} />}
+        icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={theme.muted} />}
         label={labels.saveQueueToPlaylist}
         onPress={onSaveQueueToPlaylist}
       />

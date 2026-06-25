@@ -12,7 +12,7 @@ import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useUniwind } from "uniwind"
 
-import LocalTickIcon from "@/components/icons/local/tick"
+import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { setThemeConfig } from "@/modules/settings/theme"
 import { useSettingsStore } from "@/modules/settings/store"
 import { APP_THEMES, type AppThemeDefinition } from "@/modules/ui/theme-registry"
@@ -192,7 +192,7 @@ export default function ThemeSettingsScreen() {
                 </ListGroup.ItemContent>
                 {selectedThemeId === appTheme.id && (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 )}
               </ListGroup.Item>

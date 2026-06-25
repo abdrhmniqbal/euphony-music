@@ -6,8 +6,8 @@ import type { GestureResponderEvent } from "react-native"
 import { useTranslation } from "react-i18next"
 import { cn } from "tailwind-variants"
 
-import LocalArrowDownIcon from "@/components/icons/local/arrow-down"
-import LocalArrowUpIcon from "@/components/icons/local/arrow-up"
+import LocalArrowDown02Icon from "@/components/icons/local/arrow-down-02"
+import LocalArrowUp02Icon from "@/components/icons/local/arrow-up-02"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export interface SortOption<T extends string> {
@@ -111,9 +111,9 @@ function SortSheetTrigger({
     >
       <Text className={cn("text-sm font-medium text-muted", textClassName)}>{label}</Text>
       {currentOrder === "asc" ? (
-        <LocalArrowUpIcon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
+        <LocalArrowUp02Icon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
       ) : (
-        <LocalArrowDownIcon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
+        <LocalArrowDown02Icon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
       )}
     </PressableFeedback>
   )
@@ -166,9 +166,9 @@ function SortSheetContent<T extends string>({
               {currentField === option.field && (
                 <Button variant="ghost" isIconOnly>
                   {currentOrder === "asc" ? (
-                    <LocalArrowUpIcon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalArrowUp02Icon fill="none" width={24} height={24} color={theme.accent} />
                   ) : (
-                    <LocalArrowDownIcon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalArrowDown02Icon fill="none" width={24} height={24} color={theme.accent} />
                   )}
                 </Button>
               )}

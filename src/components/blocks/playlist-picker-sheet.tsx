@@ -13,9 +13,9 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { LEGEND_LIST_PICKER_CONFIG } from "@/components/blocks/legend-list-config"
-import LocalAddIcon from "@/components/icons/local/add"
+import LocalAdd01Icon from "@/components/icons/local/add-01"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
-import LocalSearchIcon from "@/components/icons/local/search"
+import LocalSearch01Icon from "@/components/icons/local/search-01"
 import {
   PlaylistArtwork,
   resolvePlaylistArtworkImages,
@@ -102,7 +102,7 @@ function PlaylistPickerSearchInput({
           onBlur={handleOnBlur}
         />
         <View className="absolute left-3.5" pointerEvents="none">
-          <LocalSearchIcon fill="none" width={20} height={20} color={theme.muted} />
+          <LocalSearch01Icon fill="none" width={20} height={20} color={theme.muted} />
         </View>
         {searchQuery.length > 0 ? (
           <PressableFeedback
@@ -238,7 +238,9 @@ export function PlaylistPickerSheet({
             ListEmptyComponent={() => (
               <View className="pt-6">
                 <EmptyState
-                  icon={<LocalSearchIcon fill="none" width={40} height={40} color={theme.muted} />}
+                  icon={
+                    <LocalSearch01Icon fill="none" width={40} height={40} color={theme.muted} />
+                  }
                   title={t("library.empty.playlistsFoundTitle")}
                   message={
                     normalizedQuery.length > 0
@@ -254,7 +256,7 @@ export function PlaylistPickerSheet({
           <View className="border-t border-border/60 px-4 pt-3 pb-3">
             <Button variant="secondary" onPress={onCreatePlaylist} isDisabled={isSelecting}>
               <View className="flex-row items-center gap-2">
-                <LocalAddIcon fill="none" width={18} height={18} color={theme.foreground} />
+                <LocalAdd01Icon fill="none" width={18} height={18} color={theme.foreground} />
                 <Text className="font-semibold text-foreground">
                   {t("playlist.createNewPlaylist")}
                 </Text>

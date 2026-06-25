@@ -18,9 +18,9 @@ import { Text } from "react-native"
 import Transition from "react-native-screen-transitions"
 
 import LocalCheckmarkCircleSolidIcon from "@/components/icons/local/checkmark-circle-solid"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import {
   PlaylistArtwork,
   resolvePlaylistArtworkImages,
@@ -120,7 +120,7 @@ function SearchResultRow({
         <Transition.Boundary.Target>
           <ItemImage
             icon={
-              <LocalVynilSolidIcon
+              <LocalVynil02SolidIcon
                 fill="none"
                 width={ICON_SIZES.listFallback}
                 height={ICON_SIZES.listFallback}
@@ -135,16 +135,6 @@ function SearchResultRow({
           <ItemTitle>{item.album.title || t("library.unknownAlbum")}</ItemTitle>
           <ItemDescription>{item.album.artist || t("library.unknownArtist")}</ItemDescription>
         </ItemContent>
-        {item.album.isVerified && (
-          <ItemAction>
-            <LocalCheckmarkCircleSolidIcon
-              fill="none"
-              width={20}
-              height={20}
-              color={theme.accent}
-            />
-          </ItemAction>
-        )}
       </Item>
     )
   }
@@ -187,7 +177,7 @@ function SearchResultRow({
     >
       <ItemImage
         icon={
-          <LocalMusicNoteSolidIcon
+          <LocalMusicNote04SolidIcon
             fill="none"
             width={ICON_SIZES.listFallback}
             height={ICON_SIZES.listFallback}

@@ -20,9 +20,9 @@ import { ContentSection } from "@/components/blocks/content-section"
 import { MediaCarousel } from "@/components/blocks/media-carousel"
 import { RankedTrackCarousel } from "@/components/blocks/ranked-track-carousel"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
+import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { MusicCard } from "@/components/patterns/music-card"
 import { screenEnterTransition } from "@/constants/animations"
 import { Stack } from "@/layouts/stack"
@@ -121,7 +121,7 @@ export default function GenreDetailsScreen() {
         title={album.name}
         subtitle={subtitle}
         image={album.image}
-        icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+        icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         onPress={() =>
           router.push({
             pathname: "/album/[name]",
@@ -150,7 +150,7 @@ export default function GenreDetailsScreen() {
               isIconOnly
               onPress={() => setShowActionSheet(true)}
             >
-              <LocalMoreHorizontalCircleSolidIcon
+              <LocalMoreHorizontalCircle01SolidIcon
                 fill="none"
                 width={24}
                 height={24}
@@ -190,7 +190,7 @@ export default function GenreDetailsScreen() {
             }
             emptyState={{
               icon: (
-                <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+                <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
               ),
               title: t("home.empty.topTracksTitle"),
               message: t("library.genreTopTracksMessage", {
@@ -219,7 +219,9 @@ export default function GenreDetailsScreen() {
             data={previewAlbums}
             onViewMore={() => router.push({ pathname: "./albums", params: { name: genreName } })}
             emptyState={{
-              icon: <LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
+              icon: (
+                <LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              ),
               title: t("library.empty.albumsFoundTitle"),
               message: t("library.genreAlbumsUnavailable", {
                 genre: genreName,

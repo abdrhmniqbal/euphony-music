@@ -11,7 +11,7 @@ import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import Animated, { useDerivedValue, useAnimatedStyle, withTiming } from "react-native-reanimated"
 
-import LocalCancelIcon from "@/components/icons/local/cancel"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import { useThemeColors } from "@/modules/ui/theme"
 import { stopIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
@@ -67,7 +67,7 @@ function IndexingProgressToast(props: ToastComponentProps) {
           </View>
 
           <PressableFeedback onPress={stopIndexing} className="p-1 active:opacity-50" hitSlop={8}>
-            <LocalCancelIcon fill="none" width={18} height={18} color={theme.muted} />
+            <LocalCancel01Icon fill="none" width={18} height={18} color={theme.muted} />
           </PressableFeedback>
         </View>
 

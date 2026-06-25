@@ -6,10 +6,10 @@ import { Image } from "expo-image"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import ReorderableList, { useIsActive, useReorderableDrag } from "react-native-reorderable-list"
-import LocalAddIcon from "@/components/icons/local/add"
-import LocalCancelIcon from "@/components/icons/local/cancel"
+import LocalAdd01Icon from "@/components/icons/local/add-01"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -55,7 +55,7 @@ function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSele
               />
             ) : (
               <View className="flex-1 items-center justify-center">
-                <LocalMusicNoteSolidIcon fill="none" width={22} height={22} color={theme.muted} />
+                <LocalMusicNote04SolidIcon fill="none" width={22} height={22} color={theme.muted} />
               </View>
             )}
           </View>
@@ -73,7 +73,7 @@ function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSele
           }}
           className="p-1 opacity-60"
         >
-          <LocalCancelIcon fill="none" width={20} height={20} color={theme.muted} />
+          <LocalCancel01Icon fill="none" width={20} height={20} color={theme.muted} />
         </PressableFeedback>
       </ListGroup.Item>
     </>
@@ -133,7 +133,7 @@ export function PlaylistForm({
         </Text>
         <Button variant="ghost" onPress={openTrackSheet}>
           <View className="flex-row items-center gap-2">
-            <LocalAddIcon fill="none" width={18} height={18} color={theme.foreground} />
+            <LocalAdd01Icon fill="none" width={18} height={18} color={theme.foreground} />
             <Text className="font-semibold text-foreground">{t("playlist.addTracks")}</Text>
           </View>
         </Button>
@@ -150,7 +150,9 @@ export function PlaylistForm({
       {header}
       {selectedTracksList.length === 0 ? (
         <EmptyState
-          icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+          icon={
+            <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+          }
           title={t("library.empty.tracksSelectedTitle")}
           message={t("library.empty.selectedTracksMessage")}
           className="py-8"

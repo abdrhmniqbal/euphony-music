@@ -11,7 +11,7 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from "react-native-reanimated"
-import LocalMicIcon from "@/components/icons/local/mic"
+import LocalMic01Icon from "@/components/icons/local/mic-01"
 import { EmptyState } from "@/components/ui/empty-state"
 import {
   useIsPlaying,
@@ -180,7 +180,7 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
         className="-mx-2 my-3 flex-1 justify-center"
       >
         <EmptyState
-          icon={<LocalMicIcon fill="none" width={36} height={36} color={theme.muted} />}
+          icon={<LocalMic01Icon fill="none" width={36} height={36} color={theme.muted} />}
           title={t("library.empty.lyricsTitle")}
           message={t("library.empty.lyricsMessage")}
           className="py-0"

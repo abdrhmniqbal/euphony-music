@@ -15,7 +15,7 @@ import LocalPauseCircleSolidIcon from "@/components/icons/local/pause-circle-sol
 import LocalPlayCircleSolidIcon from "@/components/icons/local/play-circle-solid"
 import LocalPreviousSolidIcon from "@/components/icons/local/previous-solid"
 import LocalRepeatIcon from "@/components/icons/local/repeat"
-import LocalRepeatOneIcon from "@/components/icons/local/repeat-one"
+import LocalRepeatOne01Icon from "@/components/icons/local/repeat-one-01"
 import LocalShuffleIcon from "@/components/icons/local/shuffle"
 import {
   isCastConnected,
@@ -97,7 +97,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
         className={cn(repeatMode === "off" && "opacity-60")}
       >
         {getRepeatIcon(repeatMode) === "repeat-once" ? (
-          <LocalRepeatOneIcon
+          <LocalRepeatOne01Icon
             fill="none"
             width={24}
             height={24}

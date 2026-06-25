@@ -14,7 +14,7 @@ import Animated from "react-native-reanimated"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
@@ -123,7 +123,7 @@ export default function GenreTopTracksScreen() {
         >
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("home.empty.topTracksYetTitle")}
             message={t("library.genreTopTracksLongMessage", {

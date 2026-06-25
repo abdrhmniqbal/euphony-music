@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
-import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
+import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { useRecentlyPlayedTracks } from "@/modules/history/queries"
@@ -77,7 +77,7 @@ export default function RecentlyPlayedScreen() {
     <View className="flex-1 bg-background">
       {history.length === 0 ? (
         <EmptyState
-          icon={<LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+          icon={<LocalClock01SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
           title={t("home.empty.recentlyPlayedTitle")}
           message={t("home.empty.recentlyPlayedLongMessage")}
           className="mt-12 px-4"

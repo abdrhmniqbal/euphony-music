@@ -13,12 +13,12 @@ import Animated, { useDerivedValue, useAnimatedStyle, withTiming } from "react-n
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { MiniPlayer } from "@/components/blocks/mini-player"
-import LocalHomeIcon from "@/components/icons/local/home"
-import LocalHomeSolidIcon from "@/components/icons/local/home-solid"
+import LocalHome09Icon from "@/components/icons/local/home-09"
+import LocalHome09SolidIcon from "@/components/icons/local/home-09-solid"
 import LocalLibraryIcon from "@/components/icons/local/library"
 import LocalLibrarySolidIcon from "@/components/icons/local/library-solid"
-import LocalSearchIcon from "@/components/icons/local/search"
-import LocalSearchSolidIcon from "@/components/icons/local/search-solid"
+import LocalSearch01Icon from "@/components/icons/local/search-01"
+import LocalSearch01SolidIcon from "@/components/icons/local/search-01-solid"
 import { getTabBarBottomPadding, getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/constants/layout"
 import { useUIStore } from "@/modules/ui/store"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -100,9 +100,9 @@ export default function MainLayout() {
           title: t("navigation.tabs.home"),
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalHomeSolidIcon fill="none" color={color} width={size} height={size} />
+              <LocalHome09SolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalHomeIcon fill="none" color={color} width={size} height={size} />
+              <LocalHome09Icon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />
@@ -112,9 +112,9 @@ export default function MainLayout() {
           title: t("navigation.tabs.search"),
           tabBarIcon: ({ color, size, focused }) =>
             focused ? (
-              <LocalSearchSolidIcon fill="none" color={color} width={size} height={size} />
+              <LocalSearch01SolidIcon fill="none" color={color} width={size} height={size} />
             ) : (
-              <LocalSearchIcon fill="none" color={color} width={size} height={size} />
+              <LocalSearch01Icon fill="none" color={color} width={size} height={size} />
             ),
         }}
       />

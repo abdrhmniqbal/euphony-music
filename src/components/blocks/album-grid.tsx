@@ -18,7 +18,7 @@ import {
   LEGEND_LIST_GRID_HORIZONTAL_CONFIG,
 } from "@/components/blocks/legend-list-config"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import {
   MediaItem as Item,
@@ -147,7 +147,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
       <Transition.Boundary.Target>
         <ItemImage
           icon={
-            <LocalVynilSolidIcon
+            <LocalVynil02SolidIcon
               fill="none"
               width={ICON_SIZES.largeCardFallback}
               height={ICON_SIZES.largeCardFallback}
@@ -171,7 +171,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
     return (
       <EmptyState
         icon={
-          <LocalVynilSolidIcon
+          <LocalVynil02SolidIcon
             fill="none"
             width={ICON_SIZES.emptyState}
             height={ICON_SIZES.emptyState}
@@ -207,7 +207,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
                 <Transition.Boundary.Target>
                   <ItemImage
                     icon={
-                      <LocalVynilSolidIcon
+                      <LocalVynil02SolidIcon
                         fill="none"
                         width={ICON_SIZES.mediumCardFallback}
                         height={ICON_SIZES.mediumCardFallback}

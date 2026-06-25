@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
 import { GenreCard } from "@/components/patterns/genre-card"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import type { GenreCategory } from "@/modules/genres/types"
 
 interface LibraryGenresSectionProps {
@@ -75,7 +75,9 @@ export function LibraryGenresSection({
           </View>
         ) : (
           <EmptyState
-            icon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={mutedColor} />}
+            icon={
+              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={mutedColor} />
+            }
             title={genresEmptyTitle}
             message={genresEmptyMessage}
             className="mt-8"

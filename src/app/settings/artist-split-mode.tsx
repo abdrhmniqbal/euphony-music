@@ -11,7 +11,7 @@ import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalTickIcon from "@/components/icons/local/tick"
+import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { rebuildSplitRelationsForConfig } from "@/modules/indexer/service"
 import { setSplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
@@ -60,7 +60,7 @@ export default function ArtistSplitModeScreen() {
                 </ListGroup.ItemContent>
                 {config.artistSplitMode === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

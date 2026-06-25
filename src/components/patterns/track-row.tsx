@@ -3,7 +3,7 @@ import type { Track } from "@/modules/player/store"
 
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { MediaItem } from "@/components/ui/media-item"
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -57,7 +57,7 @@ export function TrackRow({
       {showCover ? (
         <MediaItem.Image
           icon={
-            <LocalMusicNoteSolidIcon
+            <LocalMusicNote04SolidIcon
               fill="none"
               width={fallbackIconSize}
               height={fallbackIconSize}

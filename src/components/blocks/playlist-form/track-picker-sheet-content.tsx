@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next"
 
 import { LEGEND_LIST_PICKER_CONFIG } from "@/components/blocks/legend-list-config"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 
 import { useThemeColors } from "@/modules/ui/theme"
@@ -77,7 +77,7 @@ export function TrackPickerSheetContent({
         ListEmptyComponent={() => (
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("library.empty.tracksFoundTitle")}
             message={t("search.tryDifferentKeyword")}

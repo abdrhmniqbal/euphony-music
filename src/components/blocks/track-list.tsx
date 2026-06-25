@@ -24,7 +24,7 @@ import {
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { MemoizedTrackListItem } from "@/components/patterns/track-list-item"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useCurrentTrackId } from "@/modules/player/selectors"
@@ -158,7 +158,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         ListEmptyComponent={
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("library.empty.tracksTitle")}
             message={t("library.empty.tracksMessage")}

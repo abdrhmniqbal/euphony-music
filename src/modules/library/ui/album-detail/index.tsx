@@ -17,8 +17,8 @@ import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { screenEnterTransition } from "@/constants/animations"
@@ -148,7 +148,7 @@ export default function AlbumDetailsScreen() {
 
     return (
       <EmptyState
-        icon={<LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+        icon={<LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         title={t("library.empty.albumsFoundTitle")}
         message={t("library.empty.albumsFoundTitle")}
         className="mt-12"
@@ -242,7 +242,7 @@ export default function AlbumDetailsScreen() {
                     )}
                   </Button>
                   <Button variant="ghost" isIconOnly onPress={() => setShowActionSheet(true)}>
-                    <LocalMoreHorizontalCircleSolidIcon
+                    <LocalMoreHorizontalCircle01SolidIcon
                       fill="none"
                       width={24}
                       height={24}
@@ -313,7 +313,7 @@ export default function AlbumDetailsScreen() {
                         />
                       ) : (
                         <View className="h-full w-full items-center justify-center">
-                          <LocalVynilSolidIcon
+                          <LocalVynil02SolidIcon
                             fill="none"
                             width={48}
                             height={48}

@@ -30,9 +30,9 @@ import { CollectionActionSheet } from "@/components/blocks/collection-action-she
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import {
   PlaylistArtwork,
   resolvePlaylistArtworkImages,
@@ -126,7 +126,7 @@ const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({ favorite }) 
       return (
         <ItemImage
           icon={
-            <LocalVynilSolidIcon
+            <LocalVynil02SolidIcon
               fill="none"
               width={ICON_SIZES.listFallback}
               height={ICON_SIZES.listFallback}
@@ -143,7 +143,7 @@ const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({ favorite }) 
       return (
         <ItemImage
           icon={
-            <LocalMusicNoteSolidIcon
+            <LocalMusicNote04SolidIcon
               fill="none"
               width={ICON_SIZES.listFallback}
               height={ICON_SIZES.listFallback}

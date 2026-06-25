@@ -22,22 +22,20 @@ import {
   type ArtistPickerSheetItem,
 } from "@/components/blocks/artist-picker-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
-import LocalAddIcon from "@/components/icons/local/add"
-import LocalCancelIcon from "@/components/icons/local/cancel"
-import LocalDeleteSolidIcon from "@/components/icons/local/delete-solid"
+import LocalAdd01Icon from "@/components/icons/local/add-01"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
+import LocalDelete01SolidIcon from "@/components/icons/local/delete-01-solid"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalNextSolidIcon from "@/components/icons/local/next-solid"
-import LocalPlaySolidIcon from "@/components/icons/local/play-solid"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import LocalSlidersVerticalIcon from "@/components/icons/local/sliders-vertical"
 import LocalUserIcon from "@/components/icons/local/user"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useIsFavorite } from "@/modules/favorites/queries"
-import { playTrack } from "@/modules/player/service"
 import { addToQueue, queueTrackNext } from "@/modules/player/queue"
 import { useRemoveTrackFromPlaylist } from "@/modules/playlist/mutations"
 import { usePlaylistPickerSelection } from "@/modules/playlist/use-picker-selection"
@@ -48,6 +46,12 @@ import { useSettingsStore } from "@/modules/settings/store"
 import { splitArtistsValue } from "@/modules/settings/split-multiple-values"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { TrackMetadataSheet } from "@/modules/tracks/ui/track-metadata-sheet"
+import LocalNextIcon from "../icons/local/next"
+import LocalAddCircleIcon from "../icons/local/add-circle"
+import LocalPlaylist02Icon from "../icons/local/playlist-02"
+import LocalVynil02Icon from "../icons/local/vynil-02"
+import LocalInfoIcon from "../icons/local/info"
+import LocalDelete02Icon from "../icons/local/delete-02"
 
 interface TrackActionSheetProps {
   track: Track | null
@@ -81,9 +85,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   track,
   isOpen,
   onClose,
-  tracks,
   playlistId,
-  queueContext,
   onAddToPlaylist,
 }) => {
   const router = useRouter()
@@ -108,13 +110,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const [artistSelectionItems, setArtistSelectionItems] = useState<ArtistPickerSheetItem[]>([])
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false)
-
-  const handlePlay = async () => {
-    if (track) {
-      playTrack(track, tracks, queueContext ?? undefined)
-      onClose()
-    }
-  }
 
   const handleToggleFavorite = () => {
     if (track) {
@@ -345,7 +340,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                   />
                 ) : (
                   <View className="h-full w-full items-center justify-center bg-default">
-                    <LocalMusicNoteSolidIcon
+                    <LocalMusicNote04SolidIcon
                       fill="none"
                       width={ICON_SIZES.sheetArtworkFallback}
                       height={ICON_SIZES.sheetArtworkFallback}
@@ -366,13 +361,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
             <View className="gap-1">
               <MenuRow
                 icon={
-                  <LocalPlaySolidIcon fill="none" width={22} height={22} color={theme.foreground} />
-                }
-                label={t("common.play")}
-                onPress={handlePlay}
-              />
-              <MenuRow
-                icon={
                   isFavorite ? (
                     <LocalFavouriteSolidIcon
                       fill="none"
@@ -381,37 +369,25 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                       color={theme.danger}
                     />
                   ) : (
-                    <LocalFavouriteIcon
-                      fill="none"
-                      width={22}
-                      height={22}
-                      color={theme.foreground}
-                    />
+                    <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.muted} />
                   )
                 }
                 label={isFavorite ? t("track.removeFromFavorites") : t("track.addToFavorites")}
                 onPress={handleToggleFavorite}
               />
               <MenuRow
-                icon={<LocalAddIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                icon={<LocalNextIcon fill="none" width={22} height={22} color={theme.muted} />}
+                label={t("track.playNext")}
+                onPress={handlePlayNext}
+              />
+              <MenuRow
+                icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={theme.muted} />}
                 label={t("track.addToQueue")}
                 onPress={handleAddToQueue}
               />
               <MenuRow
                 icon={
-                  <LocalNextSolidIcon fill="none" width={22} height={22} color={theme.foreground} />
-                }
-                label={t("track.playNext")}
-                onPress={handlePlayNext}
-              />
-              <MenuRow
-                icon={
-                  <LocalPlaylistSolidIcon
-                    fill="none"
-                    width={22}
-                    height={22}
-                    color={theme.foreground}
-                  />
+                  <LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />
                 }
                 label={t("track.addToPlaylist")}
                 onPress={handleAddToPlaylist}
@@ -419,7 +395,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               {playlistId ? (
                 <MenuRow
                   icon={
-                    <LocalCancelIcon fill="none" width={22} height={22} color={theme.foreground} />
+                    <LocalCancel01Icon fill="none" width={22} height={22} color={theme.muted} />
                   }
                   label={t("track.removeFromPlaylist")}
                   onPress={() => {
@@ -428,19 +404,12 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 />
               ) : null}
               <MenuRow
-                icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.foreground} />}
+                icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.muted} />}
                 label={t("player.menu.goToArtist")}
                 onPress={() => handleOpenArtistSelection(artistNames)}
               />
               <MenuRow
-                icon={
-                  <LocalVynilSolidIcon
-                    fill="none"
-                    width={22}
-                    height={22}
-                    color={theme.foreground}
-                  />
-                }
+                icon={<LocalVynil02Icon fill="none" width={22} height={22} color={theme.muted} />}
                 label={t("player.menu.goToAlbum")}
                 onPress={() => {
                   if (albumNames.length > 0 && albumNames[0]) {
@@ -449,19 +418,12 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 }}
               />
               <MenuRow
-                icon={
-                  <LocalSlidersVerticalIcon
-                    fill="none"
-                    width={22}
-                    height={22}
-                    color={theme.foreground}
-                  />
-                }
+                icon={<LocalInfoIcon fill="none" width={22} height={22} color={theme.muted} />}
                 label={t("track.viewMetadata")}
                 onPress={() => setIsMetadataSheetOpen(true)}
               />
               <MenuRow
-                icon={<LocalDeleteSolidIcon fill="none" width={22} height={22} color="red" />}
+                icon={<LocalDelete02Icon fill="none" width={22} height={22} color="red" />}
                 label={t("track.deleteFromDevice")}
                 onPress={handleOpenDeleteDialog}
                 colorClassName="text-danger"

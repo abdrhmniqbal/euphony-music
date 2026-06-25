@@ -8,9 +8,9 @@ import Animated from "react-native-reanimated"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackList } from "@/components/blocks/track-list"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
+import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
+import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { Button } from "heroui-native"
@@ -26,6 +26,7 @@ import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 import type { Track } from "@/modules/player/types"
 import { createMixQueueContext } from "@/stores/playback/types"
+import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
 
@@ -111,7 +112,7 @@ export default function MixDetailsScreen() {
                 onPress={() => setShowActionSheet(true)}
                 className="-mr-2"
               >
-                <LocalMoreHorizontalCircleSolidIcon
+                <LocalMoreHorizontalCircle01SolidIcon
                   fill="none"
                   width={24}
                   height={24}
@@ -178,7 +179,7 @@ export default function MixDetailsScreen() {
           !isLoading ? (
             <EmptyState
               icon={
-                <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+                <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
               }
               title={t("library.empty.noTracksTitle", "No tracks yet")}
               message={t(
@@ -208,7 +209,7 @@ export default function MixDetailsScreen() {
         >
           <View className="flex-row items-center gap-4 px-1">
             <View className="w-6 items-center justify-center">
-              <LocalPlaylistSolidIcon fill="none" width={24} height={24} color={theme.foreground} />
+              <LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />
             </View>
             <Text className="text-base font-medium text-foreground">
               {t("track.addToPlaylist")}

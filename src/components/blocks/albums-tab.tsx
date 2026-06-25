@@ -5,7 +5,7 @@ import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { type Album, AlbumGrid } from "@/components/blocks/album-grid"
 import { LibraryTabState } from "@/components/blocks/library-tab-state"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { sortAlbums } from "@/modules/library/sort-utils"
 import { useAlbums } from "@/modules/library/queries"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -93,7 +93,7 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
   return (
     <LibraryTabState
       hasData={albums.length > 0}
-      emptyIcon={<LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+      emptyIcon={<LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
       emptyTitle={t("library.empty.albumsTitle")}
       emptyMessage={t("library.empty.albumsMessage")}
     >

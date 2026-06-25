@@ -13,7 +13,6 @@ export interface SearchArtistResult {
   name: string
   type: string
   followerCount: number
-  isVerified: boolean
   trackCount: number
   image?: string
 }
@@ -22,7 +21,6 @@ export interface SearchAlbumResult {
   id: string
   title: string
   artist: string
-  isVerified: boolean
   image?: string
 }
 

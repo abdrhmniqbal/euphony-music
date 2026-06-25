@@ -16,8 +16,8 @@ import { ContentSection } from "@/components/blocks/content-section"
 import { MediaCarousel } from "@/components/blocks/media-carousel"
 import { RankedTrackCarousel } from "@/components/blocks/ranked-track-carousel"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
-import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
@@ -126,7 +126,7 @@ export default function HomeScreen() {
           data={recentlyPlayedPreviewTracks}
           onViewMore={() => router.push("/(main)/(home)/recently-played")}
           emptyState={{
-            icon: <LocalClockSolidIcon fill="none" width={48} height={48} color={theme.muted} />,
+            icon: <LocalClock01SolidIcon fill="none" width={48} height={48} color={theme.muted} />,
             title: t("home.empty.recentlyPlayedTitle"),
             message: t("home.empty.recentlyPlayedMessage"),
           }}
@@ -147,7 +147,7 @@ export default function HomeScreen() {
           onViewMore={() => router.push("/(main)/(home)/top-tracks")}
           emptyState={{
             icon: (
-              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
             ),
             title: t("home.empty.topTracksTitle"),
             message: t("home.empty.topTracksMessage"),

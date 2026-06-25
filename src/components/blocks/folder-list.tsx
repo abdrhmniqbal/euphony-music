@@ -20,7 +20,7 @@ import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
-import LocalFolderSolidIcon from "@/components/icons/local/folder-solid"
+import LocalFolder01SolidIcon from "@/components/icons/local/folder-01-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import {
   MediaItem as Item,
@@ -35,7 +35,7 @@ import { useThemeColors } from "@/modules/ui/theme"
 import { formatDuration } from "@/utils/format"
 import { mergeText } from "@/utils/merge-text"
 
-import LocalMusicNoteSolidIcon from "../icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "../icons/local/music-note-04-solid"
 
 export interface Folder {
   id: string
@@ -123,7 +123,7 @@ export const FolderList: React.FC<FolderListProps> = ({
     >
       <ItemImage
         icon={
-          <LocalFolderSolidIcon
+          <LocalFolder01SolidIcon
             fill="none"
             width={ICON_SIZES.listFallback}
             height={ICON_SIZES.listFallback}
@@ -145,7 +145,7 @@ export const FolderList: React.FC<FolderListProps> = ({
     <Item key={track.id} onPress={() => handleTrackPress(track)}>
       <ItemImage
         icon={
-          <LocalMusicNoteSolidIcon
+          <LocalMusicNote04SolidIcon
             fill="none"
             width={ICON_SIZES.listFallback}
             height={ICON_SIZES.listFallback}
@@ -184,7 +184,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   if (!hasEntries) {
     return (
       <EmptyState
-        icon={<LocalFolderSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+        icon={<LocalFolder01SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
         title={t("library.empty.foldersTitle")}
         message={t("library.empty.foldersMessage")}
       />

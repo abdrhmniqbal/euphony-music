@@ -12,7 +12,7 @@ import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalAddIcon from "@/components/icons/local/add"
+import LocalAdd01Icon from "@/components/icons/local/add-01"
 import { BottomSheetInput } from "@/components/ui/bottom-sheet-input"
 import { rebuildSplitRelationsForConfig } from "@/modules/indexer/service"
 import { setSplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
@@ -96,7 +96,7 @@ function TagEditorSheetContent({
           className="h-12 w-12"
           onPress={addValue}
         >
-          <LocalAddIcon fill="none" width={22} height={22} color={theme.foreground} />
+          <LocalAdd01Icon fill="none" width={22} height={22} color={theme.foreground} />
         </Button>
       </View>
     </>

@@ -11,7 +11,7 @@ import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalTickIcon from "@/components/icons/local/tick"
+import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   setTrackDurationFilterConfig,
@@ -127,7 +127,7 @@ export default function TrackDurationFilterScreen() {
                 </ListGroup.ItemContent>
                 {config.mode === option.value && (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 )}
               </ListGroup.Item>

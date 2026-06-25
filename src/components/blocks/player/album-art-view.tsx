@@ -4,7 +4,7 @@ import * as React from "react"
 import { View } from "react-native"
 
 import Animated, { Layout } from "react-native-reanimated"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { useThemeColors } from "@/modules/ui/theme"
 
 interface AlbumArtViewProps {
@@ -28,7 +28,7 @@ export const AlbumArtView: React.FC<AlbumArtViewProps> = ({ currentTrack }) => {
           />
         ) : (
           <View className="h-full w-full items-center justify-center bg-surface">
-            <LocalMusicNoteSolidIcon fill="none" width={120} height={120} color={theme.muted} />
+            <LocalMusicNote04SolidIcon fill="none" width={120} height={120} color={theme.muted} />
           </View>
         )}
       </Animated.View>

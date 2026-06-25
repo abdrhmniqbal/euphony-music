@@ -15,8 +15,8 @@ import { useTranslation } from "react-i18next"
 import Animated from "react-native-reanimated"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
-import LocalArrowDownIcon from "@/components/icons/local/arrow-down"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalArrowDown02Icon from "@/components/icons/local/arrow-down-02"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
@@ -121,7 +121,7 @@ export default function TopTracksScreen() {
         >
           <EmptyState
             icon={
-              <LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
             }
             title={t("home.empty.topTracksYetTitle")}
             message={t("home.empty.topTracksYetMessage")}
@@ -162,7 +162,12 @@ export default function TopTracksScreen() {
                   <Text className="text-3xl font-bold text-foreground">
                     {getPeriodLabel(period)}
                   </Text>
-                  <LocalArrowDownIcon fill="none" width={20} height={20} color={theme.foreground} />
+                  <LocalArrowDown02Icon
+                    fill="none"
+                    width={20}
+                    height={20}
+                    color={theme.foreground}
+                  />
                 </PressableFeedback>
 
                 <PlaybackActionsRow

@@ -435,7 +435,6 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
         name: artist.name,
         type: "Artist",
         followerCount: 0,
-        isVerified: false,
         trackCount: artist.trackCount ?? 0,
         image: artist.artwork || undefined,
       })),
@@ -443,7 +442,6 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
         id: album.id,
         title: album.title,
         artist: album.artist?.name || "Unknown Artist",
-        isVerified: false,
         image: album.artwork || undefined,
       })),
       playlists: playlistResults.map((playlist) => ({

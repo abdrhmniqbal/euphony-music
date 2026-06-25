@@ -13,11 +13,11 @@ import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import type { TFunction } from "i18next"
 
-import LocalCancelIcon from "@/components/icons/local/cancel"
-import LocalClockSolidIcon from "@/components/icons/local/clock-solid"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
+import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
+import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import LocalUserIcon from "@/components/icons/local/user"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import {
   PlaylistArtwork,
   resolvePlaylistArtworkImages,
@@ -102,7 +102,7 @@ function RecentSearchRow({ item, icon, mutedColor, onPress, onRemove }: RecentSe
         </View>
       </ItemContent>
       <ItemAction className="p-2" onPress={() => onRemove(item.id)}>
-        <LocalCancelIcon fill="none" width={20} height={20} color={mutedColor} />
+        <LocalCancel01Icon fill="none" width={20} height={20} color={mutedColor} />
       </ItemAction>
     </Item>
   )
@@ -123,11 +123,11 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
         case "artist":
           return <LocalUserIcon fill="none" width={24} height={24} color={theme.muted} />
         case "album":
-          return <LocalVynilSolidIcon fill="none" width={24} height={24} color={theme.muted} />
+          return <LocalVynil02SolidIcon fill="none" width={24} height={24} color={theme.muted} />
         case "playlist":
-          return <LocalPlaylistSolidIcon fill="none" width={24} height={24} color={theme.muted} />
+          return <LocalPlaylist02SolidIcon fill="none" width={24} height={24} color={theme.muted} />
         default:
-          return <LocalClockSolidIcon fill="none" width={24} height={24} color={theme.muted} />
+          return <LocalClock01SolidIcon fill="none" width={24} height={24} color={theme.muted} />
       }
     },
     [theme.muted]

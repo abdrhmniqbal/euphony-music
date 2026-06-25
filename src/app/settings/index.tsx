@@ -12,8 +12,8 @@ import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalCancelIcon from "@/components/icons/local/cancel"
-import LocalSearchIcon from "@/components/icons/local/search"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
+import LocalSearch01Icon from "@/components/icons/local/search-01"
 import { useThemeColors } from "@/modules/ui/theme"
 
 import { SETTINGS_CATEGORY_ROUTES } from "@/modules/settings/routes"
@@ -77,7 +77,7 @@ export default function SettingsScreen() {
             pointerEvents="none"
             className="absolute inset-y-0 left-1 z-20 w-10 items-center justify-center"
           >
-            <LocalSearchIcon fill="none" width={24} height={24} color={theme.foreground} />
+            <LocalSearch01Icon fill="none" width={24} height={24} color={theme.foreground} />
           </View>
           <Input
             value={query}
@@ -95,7 +95,7 @@ export default function SettingsScreen() {
               onPress={() => setQuery("")}
               className="absolute inset-y-0 right-2.5 justify-center p-1"
             >
-              <LocalCancelIcon fill="none" width={18} height={18} color={theme.muted} />
+              <LocalCancel01Icon fill="none" width={18} height={18} color={theme.muted} />
             </PressableFeedback>
           )}
         </View>

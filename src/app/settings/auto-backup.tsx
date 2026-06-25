@@ -3,7 +3,7 @@ import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalTickIcon from "@/components/icons/local/tick"
+import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { setAutoBackupConfig } from "@/modules/settings/auto-backup"
 import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -50,7 +50,7 @@ export default function AutoBackupSettingsScreen() {
                 </ListGroup.ItemContent>
                 {(config.enabled ? config.intervalHours : 0) === opt.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTickIcon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

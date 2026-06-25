@@ -7,7 +7,7 @@ import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { LibraryTabState } from "@/components/blocks/library-tab-state"
 import { TrackList } from "@/components/blocks/track-list"
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { sortTracks } from "@/modules/library/sort-utils"
 import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -66,7 +66,9 @@ export const TracksTab: React.FC<TracksTabProps> = ({
   return (
     <LibraryTabState
       hasData={tracks.length > 0}
-      emptyIcon={<LocalMusicNoteSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+      emptyIcon={
+        <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+      }
       emptyTitle={t("library.empty.tracksTitle")}
       emptyMessage={t("library.empty.tracksMessage")}
     >

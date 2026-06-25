@@ -6,7 +6,7 @@ import { cn } from "tailwind-variants"
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/modules/ui/theme"
 
-import LocalPlaylistSolidIcon from "../icons/local/playlist-solid"
+import LocalPlaylist02SolidIcon from "../icons/local/playlist-02-solid"
 
 interface PlaylistArtworkProps {
   images?: string[]
@@ -71,7 +71,7 @@ export function PlaylistArtwork({ images, className, fallback }: PlaylistArtwork
     return (
       <View className={cn("h-full w-full items-center justify-center bg-surface", className)}>
         {fallback || (
-          <LocalPlaylistSolidIcon
+          <LocalPlaylist02SolidIcon
             fill="none"
             width={ICON_SIZES.listFallback}
             height={ICON_SIZES.listFallback}

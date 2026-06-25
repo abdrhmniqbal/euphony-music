@@ -15,8 +15,6 @@ import type { FavoriteType } from "@/modules/favorites/types"
 
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalNextSolidIcon from "@/components/icons/local/next-solid"
-import LocalPlaylistSolidIcon from "@/components/icons/local/playlist-solid"
 import {
   PlaylistArtwork,
   resolvePlaylistArtworkImages,
@@ -28,6 +26,9 @@ import { getTrackIdsList } from "@/stores/playback/utils"
 import { Queue } from "@/stores/playback/actions"
 import { useThemeColors } from "@/modules/ui/theme"
 import { showAppToast } from "@/modules/ui/toast"
+import LocalNextIcon from "../icons/local/next"
+import LocalPlaylist02Icon from "../icons/local/playlist-02"
+import LocalAddCircleIcon from "../icons/local/add-circle"
 
 interface CollectionActionSheetProps {
   visible: boolean
@@ -157,17 +158,12 @@ export function CollectionActionSheet({
                   isFavorite ? (
                     <LocalFavouriteSolidIcon
                       fill="none"
-                      width={24}
-                      height={24}
+                      width={22}
+                      height={22}
                       color={theme.danger}
                     />
                   ) : (
-                    <LocalFavouriteIcon
-                      fill="none"
-                      width={24}
-                      height={24}
-                      color={theme.foreground}
-                    />
+                    <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.muted} />
                   )
                 }
                 label={isFavorite ? t("track.removeFromFavorites") : t("track.addToFavorites")}
@@ -175,21 +171,12 @@ export function CollectionActionSheet({
               />
             )}
             <MenuRow
-              icon={
-                <LocalNextSolidIcon fill="none" width={24} height={24} color={theme.foreground} />
-              }
+              icon={<LocalNextIcon fill="none" width={22} height={22} color={theme.muted} />}
               label={t("track.playNext")}
               onPress={handlePlayNext}
             />
             <MenuRow
-              icon={
-                <LocalPlaylistSolidIcon
-                  fill="none"
-                  width={24}
-                  height={24}
-                  color={theme.foreground}
-                />
-              }
+              icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={theme.muted} />}
               label={t("track.addToQueue")}
               onPress={handleAddQueue}
             />

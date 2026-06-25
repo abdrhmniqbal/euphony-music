@@ -3,7 +3,7 @@ import { type Href } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { Button } from "heroui-native"
 
-import LocalArrowLeftIcon from "@/components/icons/local/arrow-left"
+import LocalArrowLeft02Icon from "@/components/icons/local/arrow-left-02"
 import { useThemeColors } from "@/modules/ui/theme"
 
 interface BackButtonProps {
@@ -40,7 +40,7 @@ export function BackButton({
 
   return (
     <Button onPress={handlePress} variant={variant} className={className} isIconOnly>
-      <LocalArrowLeftIcon
+      <LocalArrowLeft02Icon
         fill="none"
         width={24}
         height={24}

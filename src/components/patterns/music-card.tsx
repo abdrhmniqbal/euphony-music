@@ -4,7 +4,7 @@ import { PressableFeedback } from "heroui-native"
 import { Text, View } from "react-native"
 import { cn } from "tailwind-variants"
 
-import LocalMusicNoteSolidIcon from "@/components/icons/local/music-note-solid"
+import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { Card } from "@/components/ui/card"
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -50,7 +50,7 @@ export function MusicCard({
         ) : (
           <View className="h-full w-full items-center justify-center bg-surface">
             {icon ?? (
-              <LocalMusicNoteSolidIcon
+              <LocalMusicNote04SolidIcon
                 fill="none"
                 width={ICON_SIZES.mediumCardFallback}
                 height={ICON_SIZES.mediumCardFallback}

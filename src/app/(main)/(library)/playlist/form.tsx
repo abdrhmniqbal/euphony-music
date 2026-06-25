@@ -15,7 +15,7 @@ import { View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { PlaylistForm } from "@/components/blocks/playlist-form/playlist-form"
 import { TrackPickerSheetContent } from "@/components/blocks/playlist-form/track-picker-sheet-content"
-import LocalTickIcon from "@/components/icons/local/tick"
+import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { BackButton } from "@/components/patterns/back-button"
 import { Stack } from "@/layouts/stack"
 import {
@@ -92,7 +92,7 @@ function PlaylistFormEditor({
               isIconOnly
               isDisabled={!canSave || isSaving}
             >
-              <LocalTickIcon
+              <LocalTick02Icon
                 fill="none"
                 width={24}
                 height={24}

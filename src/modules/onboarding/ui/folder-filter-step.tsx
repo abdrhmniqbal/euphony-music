@@ -2,9 +2,9 @@ import { Button, Card, ListGroup, Separator } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import LocalAddIcon from "@/components/icons/local/add"
-import LocalCancelIcon from "@/components/icons/local/cancel"
-import LocalFolderSolidIcon from "@/components/icons/local/folder-solid"
+import LocalAdd01Icon from "@/components/icons/local/add-01"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
+import LocalFolder01SolidIcon from "@/components/icons/local/folder-01-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { getFolderNameFromPath, type FolderFilterMode } from "@/modules/settings/folder-filters"
 
@@ -54,7 +54,7 @@ export function FolderFilterStep({
         </Text>
         <Button variant="ghost" onPress={onPickFolder}>
           <View className="flex-row items-center gap-2">
-            <LocalAddIcon fill="none" width={18} height={18} color={foregroundColor} />
+            <LocalAdd01Icon fill="none" width={18} height={18} color={foregroundColor} />
             <Text className="font-semibold text-foreground">
               {t("settings.library.addNewFolder")}
             </Text>
@@ -64,7 +64,7 @@ export function FolderFilterStep({
 
       {activeFolders.length === 0 ? (
         <EmptyState
-          icon={<LocalFolderSolidIcon fill="none" width={40} height={40} color={mutedColor} />}
+          icon={<LocalFolder01SolidIcon fill="none" width={40} height={40} color={mutedColor} />}
           title={t("settings.library.noFoldersAdded")}
           message={t("settings.library.noFoldersAddedMessage")}
           className="mt-1"
@@ -85,7 +85,7 @@ export function FolderFilterStep({
                     isIconOnly
                     hitSlop={8}
                   >
-                    <LocalCancelIcon fill="none" width={18} height={18} color={mutedColor} />
+                    <LocalCancel01Icon fill="none" width={18} height={18} color={mutedColor} />
                   </Button>
                 </ListGroup.ItemSuffix>
               </ListGroup.Item>

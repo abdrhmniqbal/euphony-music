@@ -12,9 +12,9 @@ import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import LocalAddIcon from "@/components/icons/local/add"
-import LocalCancelIcon from "@/components/icons/local/cancel"
-import LocalFolderSolidIcon from "@/components/icons/local/folder-solid"
+import LocalAdd01Icon from "@/components/icons/local/add-01"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
+import LocalFolder01SolidIcon from "@/components/icons/local/folder-01-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
@@ -106,7 +106,7 @@ function FolderRow({
             hitSlop={8}
             isIconOnly
           >
-            <LocalCancelIcon fill="none" width={18} height={18} color={removeIconColor} />
+            <LocalCancel01Icon fill="none" width={18} height={18} color={removeIconColor} />
           </Button>
         </ListGroup.ItemSuffix>
       </ListGroup.Item>
@@ -290,7 +290,7 @@ export default function FolderFiltersScreen() {
               isDisabled={isIndexing}
               className="flex-1"
             >
-              <LocalAddIcon fill="none" width={24} height={24} color={theme.accent} />
+              <LocalAdd01Icon fill="none" width={24} height={24} color={theme.accent} />
               <Button.Label>{t("settings.library.addNewFolder")}</Button.Label>
             </Button>
           </Card.Footer>
@@ -311,7 +311,7 @@ export default function FolderFiltersScreen() {
 
         {folderPaths.length === 0 ? (
           <EmptyState
-            icon={<LocalFolderSolidIcon fill="none" width={40} height={40} color={theme.muted} />}
+            icon={<LocalFolder01SolidIcon fill="none" width={40} height={40} color={theme.muted} />}
             title={t("settings.library.noFoldersAdded")}
             message={t("settings.library.noFoldersAddedMessage")}
             className="mt-4"

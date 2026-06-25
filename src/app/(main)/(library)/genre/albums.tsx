@@ -17,7 +17,7 @@ import Animated from "react-native-reanimated"
 import { type Album, AlbumGrid } from "@/components/blocks/album-grid"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { SortSheet } from "@/components/blocks/sort-sheet"
-import LocalVynilSolidIcon from "@/components/icons/local/vynil-solid"
+import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
@@ -147,7 +147,9 @@ export default function GenreAlbumsScreen() {
             className="px-6 py-4"
           >
             <EmptyState
-              icon={<LocalVynilSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+              icon={
+                <LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              }
               title={t("library.empty.albumsFoundTitle")}
               message={t("library.genreAlbumsUnavailable", {
                 genre: genreName,

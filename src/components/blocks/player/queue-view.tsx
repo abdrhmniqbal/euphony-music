@@ -15,7 +15,7 @@ import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated"
 import ReorderableList, { useReorderableDrag } from "react-native-reorderable-list"
 import { cn } from "tailwind-variants"
 
-import LocalCancelIcon from "@/components/icons/local/cancel"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
 import { TrackRow } from "@/components/patterns/track-row"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -101,7 +101,7 @@ export const QueueItem: React.FC<QueueItemProps> = ({ trackKey, index, onPress, 
         <View className="flex-row items-center">
           {!isCurrentTrack ? (
             <PressableFeedback onPress={handleRemovePress} className="p-2 opacity-60">
-              <LocalCancelIcon fill="none" width={24} height={24} color="white" />
+              <LocalCancel01Icon fill="none" width={24} height={24} color="white" />
             </PressableFeedback>
           ) : null}
         </View>

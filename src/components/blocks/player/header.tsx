@@ -21,7 +21,7 @@ import Animated, {
 } from "react-native-reanimated"
 import type { SharedValue } from "react-native-reanimated"
 
-import LocalMoreHorizontalCircleSolidIcon from "@/components/icons/local/more-horizontal-circle-solid"
+import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 
 const PLAYER_QUEUE_CONTEXT_LABEL_KEYS: Record<PlayerQueueContext["type"], string> = {
   album: "player.playingFrom.album",
@@ -120,7 +120,7 @@ export const PlayerHeader: React.FC<PlayerHeaderProps> = ({
 
       {onOpenMore ? (
         <PressableFeedback onPress={onOpenMore} className="absolute right-0 z-20 p-1">
-          <LocalMoreHorizontalCircleSolidIcon fill="none" width={24} height={24} color="white" />
+          <LocalMoreHorizontalCircle01SolidIcon fill="none" width={24} height={24} color="white" />
         </PressableFeedback>
       ) : null}
 

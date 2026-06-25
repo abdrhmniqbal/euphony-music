@@ -162,8 +162,8 @@
       "playlist": "$t(term.playlistLabel)"
     },
     "openSearch": "Open search",
-    "landingPlaceholder": "Search for tracks, artists, albums...",
-    "searchPlaceholder": "Tracks, artists, albums...",
+    "landingPlaceholder": "What do you want to listen to?",
+    "searchPlaceholder": "What do you want to listen to?",
     "recentSearches": "Recent Searches",
     "recentlyAdded": "Recently Added",
     "tryDifferentKeyword": "Try a different keyword.",
