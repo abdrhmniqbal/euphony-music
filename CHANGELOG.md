@@ -2,6 +2,88 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.0.0-rc.1] - 2026-06-25
+
+### ✨ New Features
+
+- Adaptive theme system with Nord, Catppuccin (Latte/Mocha), Dracula, and Alucard variants. (@abdrhmniqbal)
+- Last.fm integration with artist bio, artwork, scrobbling, and auth via Elysia proxy service. (@abdrhmniqbal)
+- Daily Mix and For You Mix with custom layouts and persisted state in SQLite. (@abdrhmniqbal)
+- Collection action sheet support and artwork grid for mixes. (@abdrhmniqbal)
+- Backup and Restore settings with automatic backup option. (@abdrhmniqbal)
+- Onboarding flow with theme, folder filters, permissions, and battery settings. (@abdrhmniqbal)
+- Search indexing, auto-scroll, and UI highlights. (@abdrhmniqbal)
+- Top tracks timespan picker and chart update time display. (@abdrhmniqbal)
+- Album artist metadata support. (@abdrhmniqbal)
+- Play and shuffle buttons on artist details page. (@abdrhmniqbal)
+- Expand media action sheets across library views. (@abdrhmniqbal)
+- Improve track action sheet design. (@abdrhmniqbal)
+- Library tabs reorderable and toggleable via settings. (@abdrhmniqbal)
+- Force update mixes setting action with danger dialog. (@abdrhmniqbal)
+- Reset search history option in settings. (@abdrhmniqbal)
+- User feedback feature. (@abdrhmniqbal)
+- Polled progress for time indicator. (@abdrhmniqbal)
+- Fallback to lrclib API when local lyrics are missing. (@abdrhmniqbal)
+- Extract and persist lyrics during indexing instead of playback runtime. (@abdrhmniqbal)
+
+### ⚙️ Changes
+
+- Rewrite playback stack and remove legacy session engine. (@abdrhmniqbal)
+- Rewrite Last.fm auth to route through Elysia proxy service. (@abdrhmniqbal)
+- Migrate to react-native-audio-browser from react-native-audio-api. (@abdrhmniqbal)
+- Upgrade Expo to SDK 56. (@abdrhmniqbal)
+- Migrate linting and formatting to oxlint and oxfmt. (@abdrhmniqbal)
+- Migrate package manager to nub. (@abdrhmniqbal)
+- Large-scale refactor of player, indexer, settings, bootstrap, and shared repositories. (@abdrhmniqbal)
+- Smooth crossfade volume ramps with easeInOutCubic curve and 50ms interval. (@abdrhmniqbal)
+- Direction-aware entering/exiting animations for library tabs. (@abdrhmniqbal)
+- Slide animation on library tab changes. (@abdrhmniqbal)
+- Icons on player action menu. (@abdrhmniqbal)
+- Defer cached track loading and startup scan for better performance. (@abdrhmniqbal)
+- Stable renderItem for queue view. (@abdrhmniqbal)
+- Redesign track metadata sheet UI. (@abdrhmniqbal)
+- Redesign lastfm integration flow with shared bottom sheet inputs. (@abdrhmniqbal)
+- Refine backup UI flow and consolidate automatic backup options. (@abdrhmniqbal)
+- Redesign settings layout by intent grouping. (@abdrhmniqbal)
+- Split themes to separate files and improve rainbow color contrast. (@abdrhmniqbal)
+- Remove outer border boxes on settings to match borderless style. (@abdrhmniqbal)
+- Refine what's new typography. (@abdrhmniqbal)
+
+### 🧩 Fixes
+
+- Fix shuffle state when starting playback with shuffle enabled. (@abdrhmniqbal)
+- Fix player queue rendering, shuffle settings, history scrobbling, and playlist form layout. (@abdrhmniqbal)
+- Fix clean playback queue context labels. (@abdrhmniqbal)
+- Fix map played-from queueContext in store subscriber. (@abdrhmniqbal)
+- Fix preserve playback on reopen. (@abdrhmniqbal)
+- Fix restore startup playback and settings state. (@abdrhmniqbal)
+- Fix avoid duplicate mix visual presets. (@abdrhmniqbal)
+- Fix random blank screen after navigation by disabling freezeOnBlur. (@abdrhmniqbal)
+- Fix playlist form track list scrollable. (@abdrhmniqbal)
+- Fix prevent local track artwork from overwriting lastfm artist artwork. (@abdrhmniqbal)
+- Fix split albums by effective album artist. (@abdrhmniqbal)
+- Fix preserve lastfm artist artwork during recount. (@abdrhmniqbal)
+- Fix autocorrect lastfm lookups and drop invalid fallback art. (@abdrhmniqbal)
+- Fix ignore lastfm placeholder images and scrape real page artwork. (@abdrhmniqbal)
+- Fix gate lastfm refresh by scan mode. (@abdrhmniqbal)
+- Fix provide user-agent for last.fm scrape and fallback properly. (@abdrhmniqbal)
+- Fix switch last.fm auth to mobile flow. (@abdrhmniqbal)
+- Fix move restore backup to final step without redundant CTA. (@abdrhmniqbal)
+- Fix avoid duplicate unsplit artist entries in indexer. (@abdrhmniqbal)
+- Fix improve artist detail overlay contrast. (@abdrhmniqbal)
+- Fix speed up external file playback handoff. (@abdrhmniqbal)
+- Fix enforce sleep timer track-end and play-count playback stop. (@abdrhmniqbal)
+- Fix preserve playback when app is dismissed. (@abdrhmniqbal)
+- Fix register startune music deep link scheme. (@abdrhmniqbal)
+- Fix restore notification player deep link. (@abdrhmniqbal)
+- Fix correct repeat mode behavior at queue end and on manual skips. (@abdrhmniqbal)
+- Fix parse indexed metadata year from date-like values. (@abdrhmniqbal)
+- Fix stabilize queue sync and trim bootstrap. (@abdrhmniqbal)
+- Fix recycleItems warning on legend list. (@abdrhmniqbal)
+- Fix strip malformed utf-16 prefix at source in lyrics. (@abdrhmniqbal)
+- Fix build issues caused by missing generated files and invalid media3 version. (@abdrhmniqbal)
+- Fix CI build lifecycle difference from nub. (@abdrhmniqbal)
+
 ## [v0.3.0] - 2026-05-03
 
 ### ✨ New Features
