@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import Animated from "react-native-reanimated"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
+import { MenuRow } from "@/components/ui/menu-row"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
@@ -202,20 +203,11 @@ export default function MixDetailsScreen() {
         trackCount={tracks.length}
         hideFavoriteAction
       >
-        <Button
-          variant="ghost"
+        <MenuRow
+          icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />}
+          label={t("track.addToPlaylist")}
           onPress={handleSaveToPlaylist}
-          className="h-13 w-full justify-start px-0"
-        >
-          <View className="flex-row items-center gap-4 px-1">
-            <View className="w-6 items-center justify-center">
-              <LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />
-            </View>
-            <Text className="text-base font-medium text-foreground">
-              {t("track.addToPlaylist")}
-            </Text>
-          </View>
-        </Button>
+        />
       </CollectionActionSheet>
     </View>
   )

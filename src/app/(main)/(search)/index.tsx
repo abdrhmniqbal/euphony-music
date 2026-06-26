@@ -10,7 +10,7 @@ import type { Track } from "@/modules/player/store"
 import type { DBTrack } from "@/types/database"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 
-import { Input, PressableFeedback, Button, Card } from "heroui-native"
+import { Input, PressableFeedback, Card } from "heroui-native"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
@@ -21,6 +21,7 @@ import { MediaCarousel } from "@/components/blocks/media-carousel"
 import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
 import LocalSearch01Icon from "@/components/icons/local/search-01"
 import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
+import { MenuRow } from "@/components/ui/menu-row"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { TrackRow } from "@/components/patterns/track-row"
@@ -99,17 +100,15 @@ export default function SearchScreen() {
       const isDaily = mixId === "daily"
       const mixTracks = isDaily ? dailyMixTracks : forYouMixTracks
       const mixImages = isDaily ? dailyMixImages : forYouMixImages
-      const mixTitle = isDaily
-        ? t("home.topTracks.dailyMix", "Daily Mix")
-        : t("home.topTracks.forYouMix", "For You Mix")
-      const mixDescription = isDaily
-        ? t("home.topTracks.dailyMixDesc", "Fresh from your recent listening")
-        : t("home.topTracks.forYouMixDesc", "Built from your longer-term taste")
 
       setActiveMix({
         id: mixId,
-        title: mixTitle,
-        description: mixDescription,
+        title: isDaily
+          ? t("home.topTracks.dailyMix", "Daily Mix")
+          : t("home.topTracks.forYouMix", "For You Mix"),
+        description: isDaily
+          ? t("home.topTracks.dailyMixDesc", "Fresh from your recent listening")
+          : t("home.topTracks.forYouMixDesc", "Built from your longer-term taste"),
         images: mixImages,
         tracks: mixTracks,
       })
@@ -117,6 +116,12 @@ export default function SearchScreen() {
     },
     [dailyMixTracks, dailyMixImages, forYouMixTracks, forYouMixImages, t]
   )
+
+  const handleCloseMixSheet = useCallback(() => {
+    setShowMixActionSheet(false)
+    // Defer cleanup so in-flight callbacks still have activeMix
+    setTimeout(() => setActiveMix(null), 350)
+  }, [])
 
   const handleSaveMixToPlaylist = useCallback(() => {
     if (!activeMix) return
@@ -414,34 +419,25 @@ export default function SearchScreen() {
         tracks={recentlyAddedTracks}
         queueContext={createTrackListQueueContext(t("search.recentlyAdded"))}
       />
-      {activeMix && (
-        <CollectionActionSheet
-          visible={showMixActionSheet}
-          onOpenChange={setShowMixActionSheet}
-          type="mix"
-          id={activeMix.id}
-          name={activeMix.title}
-          subtitle={activeMix.description}
-          images={activeMix.images}
-          trackCount={activeMix.tracks.length}
-          hideFavoriteAction
-        >
-          <Button
-            variant="ghost"
-            onPress={handleSaveMixToPlaylist}
-            className="h-13 w-full justify-start px-0"
-          >
-            <View className="flex-row items-center gap-4 px-1">
-              <View className="w-6 items-center justify-center">
-                <LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />
-              </View>
-              <Text className="text-base font-medium text-foreground">
-                {t("track.addToPlaylist")}
-              </Text>
-            </View>
-          </Button>
-        </CollectionActionSheet>
-      )}
+      <CollectionActionSheet
+        visible={showMixActionSheet}
+        onOpenChange={(v) => {
+          if (!v) handleCloseMixSheet()
+        }}
+        type="mix"
+        id={activeMix?.id ?? ""}
+        name={activeMix?.title ?? ""}
+        subtitle={activeMix?.description ?? ""}
+        images={activeMix?.images}
+        trackCount={activeMix?.tracks.length ?? 0}
+        hideFavoriteAction
+      >
+        <MenuRow
+          icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />}
+          label={t("track.addToPlaylist")}
+          onPress={handleSaveMixToPlaylist}
+        />
+      </CollectionActionSheet>
     </>
   )
 }

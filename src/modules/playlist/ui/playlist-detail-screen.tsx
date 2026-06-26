@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import Animated from "react-native-reanimated"
 
+import { MenuRow } from "@/components/ui/menu-row"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { DeletePlaylistDialog } from "@/components/blocks/delete-playlist-dialog"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
@@ -367,36 +368,23 @@ export default function PlaylistDetailsScreen() {
           images={collectPlaylistImages(playlist)}
           trackCount={playlist.trackCount || 0}
         >
-          <Button
-            variant="ghost"
-            className="h-14 w-full justify-start px-0"
+          <MenuRow
+            icon={<LocalEdit02Icon fill="none" width={22} height={22} color={theme.muted} />}
+            label={t("playlist.editPlaylist")}
             onPress={() => {
               setShowActionSheet(false)
               router.push({ pathname: "/playlist/form", params: { id: playlist.id } })
             }}
-          >
-            <View className="flex-row items-center gap-4 px-1">
-              <LocalEdit02Icon fill="none" width={22} height={22} color={theme.muted} />
-              <Text className="text-base font-medium text-foreground">
-                {t("playlist.editPlaylist")}
-              </Text>
-            </View>
-          </Button>
-          <Button
-            variant="ghost"
-            className="h-14 w-full justify-start px-0"
+          />
+          <MenuRow
+            icon={<LocalDelete02Icon fill="none" width={22} height={22} color={theme.danger} />}
+            label={t("playlist.deletePlaylist")}
             onPress={() => {
               setShowActionSheet(false)
               setShowDeleteDialog(true)
             }}
-          >
-            <View className="flex-row items-center gap-4 px-1">
-              <LocalDelete02Icon fill="none" width={22} height={22} color={theme.danger} />
-              <Text className="text-base font-medium text-danger">
-                {t("playlist.deletePlaylist")}
-              </Text>
-            </View>
-          </Button>
+            colorClassName="text-danger"
+          />
         </CollectionActionSheet>
         <DeletePlaylistDialog
           isOpen={showDeleteDialog}

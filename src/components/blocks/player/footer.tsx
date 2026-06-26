@@ -12,9 +12,9 @@ import { View } from "react-native"
 import { cn } from "tailwind-variants"
 
 import LocalMic01Icon from "@/components/icons/local/mic-01"
-import LocalQueue01Icon from "@/components/icons/local/queue-01"
 import { togglePlayerExpandedView, useUIStore } from "@/modules/ui/store"
 import { useThemeColors } from "@/modules/ui/theme"
+import LocalPlaylist03Icon from "@/components/icons/local/playlist-03"
 
 export const PlayerFooter: React.FC = () => {
   const playerExpandedView = useUIStore((state) => state.playerExpandedView)
@@ -37,7 +37,7 @@ export const PlayerFooter: React.FC = () => {
         onPress={() => togglePlayerExpandedView("queue")}
         className={cn(playerExpandedView !== "queue" && "opacity-60")}
       >
-        <LocalQueue01Icon
+        <LocalPlaylist03Icon
           fill="none"
           width={24}
           height={24}

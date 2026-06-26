@@ -9,7 +9,6 @@
 import type { PlayerQueueContext, Track } from "@/modules/player/types"
 import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { BottomSheet, Button } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
 
@@ -21,8 +20,9 @@ import {
   ArtistPickerSheet,
   type ArtistPickerSheetItem,
 } from "@/components/blocks/artist-picker-sheet"
+import { MenuRow } from "@/components/ui/menu-row"
+import { ActionSheet } from "@/components/ui/action-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
-import LocalAdd01Icon from "@/components/icons/local/add-01"
 import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import LocalDelete01SolidIcon from "@/components/icons/local/delete-01-solid"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
@@ -61,24 +61,6 @@ interface TrackActionSheetProps {
   playlistId?: string
   queueContext?: PlayerQueueContext | null
   onAddToPlaylist?: (track: Track) => void
-}
-
-interface MenuRowProps {
-  icon: React.ReactNode
-  label: string
-  onPress: () => void
-  colorClassName?: string
-}
-
-function MenuRow({ icon, label, onPress, colorClassName = "text-foreground" }: MenuRowProps) {
-  return (
-    <Button variant="ghost" onPress={onPress} className="h-13 w-full justify-start px-0">
-      <View className="flex-row items-center gap-4 px-1">
-        <View className="w-6 items-center justify-center">{icon}</View>
-        <Text className={`text-base font-medium ${colorClassName}`}>{label}</Text>
-      </View>
-    </Button>
-  )
 }
 
 export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
@@ -297,12 +279,9 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
 
   if (!track) {
     return (
-      <BottomSheet isOpen={false} onOpenChange={() => {}}>
-        <BottomSheet.Portal>
-          <BottomSheet.Overlay />
-          <BottomSheet.Content />
-        </BottomSheet.Portal>
-      </BottomSheet>
+      <ActionSheet.Root isOpen={false} onOpenChange={() => {}}>
+        <ActionSheet.Content />
+      </ActionSheet.Root>
     )
   }
 
@@ -311,7 +290,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
 
   return (
     <>
-      <BottomSheet
+      <ActionSheet.Root
         isOpen={isOpen}
         onOpenChange={(open) => {
           if (open) {
@@ -322,116 +301,108 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
           onClose()
         }}
       >
-        <BottomSheet.Portal>
-          <BottomSheet.Overlay />
-          <BottomSheet.Content
-            snapPoints={["70%"]}
-            enableDynamicSizing={true}
-            contentContainerClassName="px-5 pt-2 pb-5"
-            backgroundClassName="bg-surface"
-          >
-            <View className="mb-5 flex-row items-center gap-4">
-              <View className="h-18 w-18 overflow-hidden rounded-xl bg-default">
-                {track.image ? (
-                  <Image
-                    source={{ uri: track.image }}
-                    style={{ width: "100%", height: "100%" }}
-                    contentFit="cover"
+        <ActionSheet.Content
+          snapPoints={["70%"]}
+          enableDynamicSizing={true}
+          contentContainerClassName="px-5 pt-2 pb-5"
+        >
+          <View className="mb-5 flex-row items-center gap-4">
+            <View className="h-18 w-18 overflow-hidden rounded-xl bg-default">
+              {track.image ? (
+                <Image
+                  source={{ uri: track.image }}
+                  style={{ width: "100%", height: "100%" }}
+                  contentFit="cover"
+                />
+              ) : (
+                <View className="h-full w-full items-center justify-center bg-default">
+                  <LocalMusicNote04SolidIcon
+                    fill="none"
+                    width={ICON_SIZES.sheetArtworkFallback}
+                    height={ICON_SIZES.sheetArtworkFallback}
+                    color={theme.muted}
+                  />
+                </View>
+              )}
+            </View>
+            <View className="flex-1 gap-1">
+              <Text className="text-xl leading-7 font-bold text-foreground">{track.title}</Text>
+              <Text className="text-sm text-muted">{fallbackArtist}</Text>
+              <Text className="text-xs text-muted/90" numberOfLines={1}>
+                {fallbackAlbum}
+              </Text>
+            </View>
+          </View>
+
+          <View className="gap-1">
+            <MenuRow
+              icon={
+                isFavorite ? (
+                  <LocalFavouriteSolidIcon
+                    fill="none"
+                    width={22}
+                    height={22}
+                    color={theme.danger}
                   />
                 ) : (
-                  <View className="h-full w-full items-center justify-center bg-default">
-                    <LocalMusicNote04SolidIcon
-                      fill="none"
-                      width={ICON_SIZES.sheetArtworkFallback}
-                      height={ICON_SIZES.sheetArtworkFallback}
-                      color={theme.muted}
-                    />
-                  </View>
-                )}
-              </View>
-              <View className="flex-1 gap-1">
-                <Text className="text-xl leading-7 font-bold text-foreground">{track.title}</Text>
-                <Text className="text-sm text-muted">{fallbackArtist}</Text>
-                <Text className="text-xs text-muted/90" numberOfLines={1}>
-                  {fallbackAlbum}
-                </Text>
-              </View>
-            </View>
-
-            <View className="gap-1">
+                  <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.muted} />
+                )
+              }
+              label={isFavorite ? t("track.removeFromFavorites") : t("track.addToFavorites")}
+              onPress={handleToggleFavorite}
+            />
+            <MenuRow
+              icon={<LocalNextIcon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("track.playNext")}
+              onPress={handlePlayNext}
+            />
+            <MenuRow
+              icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("track.addToQueue")}
+              onPress={handleAddToQueue}
+            />
+            <MenuRow
+              icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("track.addToPlaylist")}
+              onPress={handleAddToPlaylist}
+            />
+            {playlistId ? (
               <MenuRow
-                icon={
-                  isFavorite ? (
-                    <LocalFavouriteSolidIcon
-                      fill="none"
-                      width={22}
-                      height={22}
-                      color={theme.danger}
-                    />
-                  ) : (
-                    <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.muted} />
-                  )
-                }
-                label={isFavorite ? t("track.removeFromFavorites") : t("track.addToFavorites")}
-                onPress={handleToggleFavorite}
-              />
-              <MenuRow
-                icon={<LocalNextIcon fill="none" width={22} height={22} color={theme.muted} />}
-                label={t("track.playNext")}
-                onPress={handlePlayNext}
-              />
-              <MenuRow
-                icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={theme.muted} />}
-                label={t("track.addToQueue")}
-                onPress={handleAddToQueue}
-              />
-              <MenuRow
-                icon={
-                  <LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />
-                }
-                label={t("track.addToPlaylist")}
-                onPress={handleAddToPlaylist}
-              />
-              {playlistId ? (
-                <MenuRow
-                  icon={
-                    <LocalCancel01Icon fill="none" width={22} height={22} color={theme.muted} />
-                  }
-                  label={t("track.removeFromPlaylist")}
-                  onPress={() => {
-                    void handleRemoveFromPlaylist()
-                  }}
-                />
-              ) : null}
-              <MenuRow
-                icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.muted} />}
-                label={t("player.menu.goToArtist")}
-                onPress={() => handleOpenArtistSelection(artistNames)}
-              />
-              <MenuRow
-                icon={<LocalVynil02Icon fill="none" width={22} height={22} color={theme.muted} />}
-                label={t("player.menu.goToAlbum")}
+                icon={<LocalCancel01Icon fill="none" width={22} height={22} color={theme.muted} />}
+                label={t("track.removeFromPlaylist")}
                 onPress={() => {
-                  if (albumNames.length > 0 && albumNames[0]) {
-                    handleOpenAlbum(albumNames[0])
-                  }
+                  void handleRemoveFromPlaylist()
                 }}
               />
-              <MenuRow
-                icon={<LocalInfoIcon fill="none" width={22} height={22} color={theme.muted} />}
-                label={t("track.viewMetadata")}
-                onPress={() => setIsMetadataSheetOpen(true)}
-              />
-              <MenuRow
-                icon={<LocalDelete02Icon fill="none" width={22} height={22} color="red" />}
-                label={t("track.deleteFromDevice")}
-                onPress={handleOpenDeleteDialog}
-                colorClassName="text-danger"
-              />
-            </View>
-          </BottomSheet.Content>
-        </BottomSheet.Portal>
-      </BottomSheet>
+            ) : null}
+            <MenuRow
+              icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("player.menu.goToArtist")}
+              onPress={() => handleOpenArtistSelection(artistNames)}
+            />
+            <MenuRow
+              icon={<LocalVynil02Icon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("player.menu.goToAlbum")}
+              onPress={() => {
+                if (albumNames.length > 0 && albumNames[0]) {
+                  handleOpenAlbum(albumNames[0])
+                }
+              }}
+            />
+            <MenuRow
+              icon={<LocalInfoIcon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("track.viewMetadata")}
+              onPress={() => setIsMetadataSheetOpen(true)}
+            />
+            <MenuRow
+              icon={<LocalDelete02Icon fill="none" width={22} height={22} color="red" />}
+              label={t("track.deleteFromDevice")}
+              onPress={handleOpenDeleteDialog}
+              colorClassName="text-danger"
+            />
+          </View>
+        </ActionSheet.Content>
+      </ActionSheet.Root>
 
       <TrackMetadataSheet
         track={track}

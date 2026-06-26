@@ -15,6 +15,7 @@ import {
 import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { BottomSheet, Button, PressableFeedback, Slider, Switch } from "heroui-native"
+import { ActionSheet } from "@/components/ui/action-sheet"
 import { useQueries } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
 import { Platform, Text, View } from "react-native"
@@ -338,26 +339,23 @@ export function PlayerActionSheet({
 
   return (
     <>
-      <BottomSheet isOpen={visible} onOpenChange={onOpenChange}>
-        <BottomSheet.Portal>
-          <BottomSheet.Overlay />
-          <PlayerActionMenu
-            sleepTimerSummary={sleepTimerSummary}
-            labels={{
-              sleepTimer: t("player.sleepTimer.title"),
-              goToArtist: t("player.menu.goToArtist"),
-              goToAlbum: t("player.menu.goToAlbum"),
-              addToPlaylist: t("track.addToPlaylist"),
-              saveQueueToPlaylist: t("playlist.saveQueueToPlaylist"),
-            }}
-            onOpenSleepTimer={handleOpenSleepTimerSheet}
-            onOpenArtistChooser={handleOpenArtistChooser}
-            onOpenAlbum={handleOpenAlbum}
-            onOpenPlaylistPicker={handleOpenPlaylistPicker}
-            onSaveQueueToPlaylist={handleSaveQueueToPlaylist}
-          />
-        </BottomSheet.Portal>
-      </BottomSheet>
+      <ActionSheet.Root isOpen={visible} onOpenChange={onOpenChange}>
+        <PlayerActionMenu
+          sleepTimerSummary={sleepTimerSummary}
+          labels={{
+            sleepTimer: t("player.sleepTimer.title"),
+            goToArtist: t("player.menu.goToArtist"),
+            goToAlbum: t("player.menu.goToAlbum"),
+            addToPlaylist: t("track.addToPlaylist"),
+            saveQueueToPlaylist: t("playlist.saveQueueToPlaylist"),
+          }}
+          onOpenSleepTimer={handleOpenSleepTimerSheet}
+          onOpenArtistChooser={handleOpenArtistChooser}
+          onOpenAlbum={handleOpenAlbum}
+          onOpenPlaylistPicker={handleOpenPlaylistPicker}
+          onSaveQueueToPlaylist={handleSaveQueueToPlaylist}
+        />
+      </ActionSheet.Root>
 
       <SleepTimerSection
         isOpen={isSleepTimerOpen}
