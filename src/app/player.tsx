@@ -124,7 +124,11 @@ export default function PlayerRoute() {
     setPlayerExpandedView("artwork")
     setIsActionSheetOpen(false)
     setIsArtistSelectionOpen(false)
-    router.back()
+    if (router.canGoBack()) {
+      router.back()
+    } else {
+      router.replace("/(main)/(home)")
+    }
   }
 
   const handleNavigateAway = () => {
