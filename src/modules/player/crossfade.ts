@@ -12,8 +12,14 @@ import { getSettingsState } from "@/modules/settings/store"
 import AudioBrowser from "react-native-audio-browser"
 
 import { getCurrentTrackState, getQueueTrackIdsState, getRepeatModeState } from "./store"
-
-const FULL_VOLUME = 1
+import {
+  FULL_VOLUME,
+  MIN_FADE_SECONDS,
+  SILENT_VOLUME,
+  clampVolume,
+  easeInOutCubic,
+  getFadeDurationSeconds,
+} from "./crossfade-math"
 
 type PlaybackState =
   | "none"
@@ -27,9 +33,7 @@ type PlaybackState =
   | "buffering"
 
 const RESET_VOLUME_STATES = new Set<PlaybackState>(["paused", "stopped", "ended", "none", "error"])
-const SILENT_VOLUME = 0
 const DUCKED_VOLUME = 0.25
-const MIN_FADE_SECONDS = 0.75
 const SHORT_FADE_SECONDS = 0.2
 const FADE_STEP_MS = 50
 
@@ -38,18 +42,6 @@ let activeRampId = 0
 let activeRampResolve: (() => void) | null = null
 let fadingOutTrackId: string | null = null
 let shouldFadeInNextTrack = false
-
-function clampVolume(value: number) {
-  if (!Number.isFinite(value)) {
-    return FULL_VOLUME
-  }
-
-  return Math.max(SILENT_VOLUME, Math.min(FULL_VOLUME, value))
-}
-
-function easeInOutCubic(value: number) {
-  return value < 0.5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2
-}
 
 function clearVolumeRamp() {
   activeRampId += 1
@@ -101,17 +93,6 @@ async function startVolumeRamp(toVolume: number, durationSeconds: number) {
       }
     }, FADE_STEP_MS)
   })
-}
-
-function getFadeDurationSeconds(duration: number, requestedSeconds: number) {
-  if (!Number.isFinite(duration) || duration <= 0) {
-    return requestedSeconds
-  }
-
-  return Math.max(
-    MIN_FADE_SECONDS,
-    Math.min(requestedSeconds, Math.max(MIN_FADE_SECONDS, duration / 2))
-  )
 }
 
 function hasNextQueueTrack() {

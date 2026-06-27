@@ -15,7 +15,10 @@
     "lint:fix": "oxlint . --fix",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
-    "audit:filenames": "node scripts/check-filenames-kebab-case.mjs"
+    "audit:filenames": "node scripts/check-filenames-kebab-case.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "oxlint . && vitest run"
   },
   "dependencies": {
     "@animatereactnative/marquee": "^0.5.2",
@@ -90,7 +93,8 @@
     "knip": "^5.83.1",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.9"
   },
   "devEngines": {
     "packageManager": {

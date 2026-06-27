@@ -16,6 +16,7 @@ import { handleTrackActivated } from "@/modules/player/activity"
 import { resetCrossfadeVolume } from "@/modules/player/crossfade"
 import { playFromTracks, setupPlaybackCore } from "@/modules/player/playback-core"
 import { beginPlayerQueueReplacement, endPlayerQueueReplacement } from "@/modules/player/runtime"
+import { allTracksShareValue, buildPlaybackQueue, inferQueueContext } from "./queue-context"
 import {
   EXTERNAL_TRACK_ID_PREFIX,
   type PlayerQueueContext,
@@ -31,67 +32,6 @@ import { getIsShuffledState, getTracksState, setTracksState } from "./store"
 
 let isPlayerReady = false
 let setupPlayerPromise: Promise<void> | null = null
-
-function buildPlaybackQueue(tracks: Track[], selectedTrackId: string) {
-  const selectedTrackIndex = tracks.findIndex((track) => track.id === selectedTrackId)
-  const currentTrackIndex = selectedTrackIndex >= 0 ? selectedTrackIndex : 0
-  const queue = tracks.slice(currentTrackIndex).concat(tracks.slice(0, currentTrackIndex))
-
-  return {
-    queue,
-    queueTrackIds: queue.map((track) => track.id),
-  }
-}
-
-function allTracksShareValue(tracks: Track[], getValue: (track: Track) => string | undefined) {
-  const values = tracks
-    .map((track) => getValue(track)?.trim())
-    .filter((value): value is string => Boolean(value))
-
-  if (values.length !== tracks.length || values.length === 0) {
-    return false
-  }
-
-  const firstValue = values[0]
-  if (!firstValue) {
-    return false
-  }
-
-  return values.every((value) => value.toLowerCase() === firstValue.toLowerCase())
-}
-
-function inferQueueContext(
-  track: Track,
-  tracks: Track[],
-  providedContext?: PlayerQueueContext
-): PlayerQueueContext | null {
-  const providedTitle = providedContext?.title.trim()
-  if (providedContext && providedTitle) {
-    return { ...providedContext, title: providedTitle }
-  }
-
-  if (track.isExternal) {
-    return { type: "external", title: track.title }
-  }
-
-  if (
-    track.album?.trim() &&
-    (allTracksShareValue(tracks, (item) => item.albumId) ||
-      allTracksShareValue(tracks, (item) => item.album))
-  ) {
-    return { type: "album", title: track.album.trim() }
-  }
-
-  if (
-    track.artist?.trim() &&
-    (allTracksShareValue(tracks, (item) => item.artistId) ||
-      allTracksShareValue(tracks, (item) => item.artist))
-  ) {
-    return { type: "artist", title: track.artist.trim() }
-  }
-
-  return null
-}
 
 export async function setupPlayer() {
   if (isPlayerReady) {

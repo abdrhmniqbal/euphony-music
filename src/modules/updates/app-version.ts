@@ -8,12 +8,10 @@
 
 import * as Application from "expo-application"
 
-const PREVIEW_VERSION_PATTERN = /(?:^|[-.])(alpha|beta|rc|preview)(?:$|[-.\d])/i
+import { isPreviewReleaseVersion } from "./version-compare"
+
+export { isPreviewReleaseVersion }
 
 export function getCurrentAppVersion() {
   return Application.nativeApplicationVersion || ""
-}
-
-export function isPreviewReleaseVersion(version: string) {
-  return PREVIEW_VERSION_PATTERN.test(version)
 }

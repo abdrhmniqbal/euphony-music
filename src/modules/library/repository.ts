@@ -27,6 +27,7 @@ import {
 } from "@/db/track-relations"
 import { collectPlaylistImages } from "@/modules/playlist/repository"
 import { getDominantAlbumArtworkMap, selectDominantArtwork } from "./artwork"
+import { toDataAlbum, toDataArtist } from "./mappers"
 
 import type { SearchResults } from "./types"
 
@@ -458,19 +459,6 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
   }
 }
 
-function toDataAlbum(
-  row: typeof albums.$inferSelect & { artist?: { name: string } | null }
-): import("@/modules/library/data-types").Album {
-  return {
-    id: row.id,
-    name: row.title,
-    artwork: row.artwork ?? null,
-    artists: row.artist?.name ? [row.artist.name] : [],
-    isFavorite: row.isFavorite === 1,
-    trackCount: row.trackCount ?? 0,
-  }
-}
-
 export type AlbumDetail = {
   id: string
   name: string
@@ -479,19 +467,6 @@ export type AlbumDetail = {
   isFavorite: boolean
   trackCount: number
   year: string | null
-}
-
-function toDataArtist(
-  row: typeof artists.$inferSelect
-): import("@/modules/library/data-types").Artist {
-  return {
-    id: row.id,
-    name: row.name,
-    artwork: row.artwork ?? null,
-    isFavorite: row.isFavorite === 1,
-    trackCount: row.trackCount ?? 0,
-    albumCount: row.albumCount ?? 0,
-  }
 }
 
 export async function getAlbum(id: string) {
