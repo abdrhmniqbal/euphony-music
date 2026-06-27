@@ -1,5 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "tags": ["-lintignore"],
-  "ignore": [".agent/**", ".agents/**", ".opencode/**", "*.config.js", "*.config.ts"]
+  "ignore": [".agents/**", "*.config.js", "*.config.ts"]
 }

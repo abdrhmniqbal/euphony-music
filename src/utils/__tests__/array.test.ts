@@ -16,6 +16,9 @@ describe("chunkArray", () => {
   })
 
   it("preserves element order", () => {
-    expect(chunkArray(["a", "b", "c", "d"], 2)).toEqual([["a", "b"], ["c", "d"]])
+    expect(chunkArray(["a", "b", "c", "d"], 2)).toEqual([
+      ["a", "b"],
+      ["c", "d"],
+    ])
   })
 })

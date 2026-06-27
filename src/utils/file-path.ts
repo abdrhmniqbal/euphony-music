@@ -78,4 +78,3 @@ export async function resolvePlayableFileUri(uri: string): Promise<string> {
 
   return toFileUri(uri)
 }
-
