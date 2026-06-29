@@ -89,69 +89,87 @@ export const FolderList: React.FC<FolderListProps> = ({
     contentContainerStyle,
   ])
 
-  const handlePress = (folder: Folder) => {
-    onFolderPress?.(folder)
-  }
-
-  const handleTrackPress = (track: Track) => {
-    onTrackPress?.(track)
-  }
-
-  const formatItemCount = (count: number) => t("library.count.item", { count })
-
-  const renderFolderItem = (item: Folder) => (
-    <Item
-      key={item.id}
-      onPress={() => handlePress(item)}
-      onLongPress={() => handleLongPress(item)}
-    >
-      <ItemImage
-        icon={
-          <LocalFolder01SolidIcon
-            fill="none"
-            width={ICON_SIZES.listFallback}
-            height={ICON_SIZES.listFallback}
-            color={theme.muted}
-          />
-        }
-      />
-      <ItemContent>
-        <ItemTitle>{item.name}</ItemTitle>
-        <ItemDescription>{formatItemCount(item.fileCount)}</ItemDescription>
-      </ItemContent>
-      <ItemAction>
-        <LocalChevronRightIcon fill="none" width={24} height={24} color={theme.muted} />
-      </ItemAction>
-    </Item>
+  const handlePress = React.useCallback(
+    (folder: Folder) => {
+      onFolderPress?.(folder)
+    },
+    [onFolderPress]
   )
 
-  const renderTrackItem = (track: Track) => (
-    <Item key={track.id} onPress={() => handleTrackPress(track)}>
-      <ItemImage
-        icon={
-          <LocalMusicNote04SolidIcon
-            fill="none"
-            width={ICON_SIZES.listFallback}
-            height={ICON_SIZES.listFallback}
-            color={theme.muted}
-          />
-        }
-        image={track.image}
-      />
-      <ItemContent>
-        <ItemTitle>{track.title || track.filename || t("library.unknownTrack")}</ItemTitle>
-        <ItemDescription>
-          {mergeText([
-            track.artist || t("library.unknownArtist"),
-            formatDuration(track.duration || 0),
-          ])}
-        </ItemDescription>
-      </ItemContent>
-    </Item>
+  const handleTrackPress = React.useCallback(
+    (track: Track) => {
+      onTrackPress?.(track)
+    },
+    [onTrackPress]
+  )
+
+  const renderFolderItem = React.useCallback(
+    (item: Folder) => (
+      <Item
+        key={item.id}
+        onPress={() => handlePress(item)}
+        onLongPress={() => handleLongPress(item)}
+      >
+        <ItemImage
+          icon={
+            <LocalFolder01SolidIcon
+              fill="none"
+              width={ICON_SIZES.listFallback}
+              height={ICON_SIZES.listFallback}
+              color={theme.muted}
+            />
+          }
+        />
+        <ItemContent>
+          <ItemTitle>{item.name}</ItemTitle>
+          <ItemDescription>
+            {t("library.count.item", { count: item.fileCount })}
+          </ItemDescription>
+        </ItemContent>
+        <ItemAction>
+          <LocalChevronRightIcon fill="none" width={24} height={24} color={theme.muted} />
+        </ItemAction>
+      </Item>
+    ),
+    [handleLongPress, handlePress, theme.muted, t]
+  )
+
+  const renderTrackItem = React.useCallback(
+    (track: Track) => (
+      <Item key={track.id} onPress={() => handleTrackPress(track)}>
+        <ItemImage
+          icon={
+            <LocalMusicNote04SolidIcon
+              fill="none"
+              width={ICON_SIZES.listFallback}
+              height={ICON_SIZES.listFallback}
+              color={theme.muted}
+            />
+          }
+          image={track.image}
+        />
+        <ItemContent>
+          <ItemTitle>{track.title || track.filename || t("library.unknownTrack")}</ItemTitle>
+          <ItemDescription>
+            {mergeText([
+              track.artist || t("library.unknownArtist"),
+              formatDuration(track.duration || 0),
+            ])}
+          </ItemDescription>
+        </ItemContent>
+      </Item>
+    ),
+    [handleTrackPress, theme.muted, t]
   )
 
   const hasEntries = data.length > 0 || tracks.length > 0
   const hasNestedPath = breadcrumbs.length > 0
+  const renderItem = React.useCallback(
+    ({ item }: LegendListRenderItemProps<FolderListItem>) =>
+      item.type === "folder" ? renderFolderItem(item.folder) : renderTrackItem(item.track),
+    [renderFolderItem, renderTrackItem]
+  )
+
   const listData: FolderListItem[] = [
     ...data.map((folder) => ({
       id: `folder-${folder.id}`,
@@ -183,9 +201,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         data={listData}
         keyExtractor={(item) => item.id}
         getItemType={(item) => item.type}
-        renderItem={({ item }: LegendListRenderItemProps<FolderListItem>) =>
-          item.type === "folder" ? renderFolderItem(item.folder) : renderTrackItem(item.track)
-        }
+        renderItem={renderItem}
         contentContainerStyle={listContentContainerStyle}
         {...autoHideScrollProps}
         scrollEventThrottle={16}
@@ -252,7 +268,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         type="folder"
         id={selectedFolder?.path ?? selectedFolder?.id ?? ""}
         name={selectedFolder?.name ?? ""}
-        subtitle={selectedFolder ? formatItemCount(selectedFolder.fileCount) : undefined}
+        subtitle={selectedFolder ? t("library.count.item", { count: selectedFolder.fileCount }) : undefined}
         trackCount={selectedFolder?.fileCount ?? 0}
         hideFavoriteAction
       />

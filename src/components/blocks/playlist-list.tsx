@@ -78,8 +78,6 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     onCreatePlaylist?.()
   }, [onCreatePlaylist])
 
-  const formatTrackCount = useCallback((count: number) => t("library.count.track", { count }), [t])
-
   const renderCreateButton = useCallback(
     () => (
       <Item key="create" onPress={handleCreate}>
@@ -109,14 +107,14 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         </Transition.Boundary.Target>
         <ItemContent>
           <ItemTitle>{item.title}</ItemTitle>
-          <ItemDescription>{formatTrackCount(item.trackCount)}</ItemDescription>
+          <ItemDescription>{t("library.count.track", { count: item.trackCount })}</ItemDescription>
         </ItemContent>
         <ItemAction>
           <LocalChevronRightIcon fill="none" width={24} height={24} color={theme.muted} />
         </ItemAction>
       </Item>
     ),
-    [formatTrackCount, handleLongPress, handlePress, theme.muted]
+    [handleLongPress, handlePress, theme.muted, t]
   )
 
   const listData: PlaylistListRow[] = useMemo(
@@ -180,7 +178,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         type="playlist"
         id={selectedPlaylist?.id ?? ""}
         name={selectedPlaylist?.title ?? ""}
-        subtitle={selectedPlaylist ? formatTrackCount(selectedPlaylist.trackCount) : undefined}
+        subtitle={selectedPlaylist ? t("library.count.track", { count: selectedPlaylist.trackCount }) : undefined}
         image={selectedPlaylist?.image}
         images={selectedPlaylist?.images}
         trackCount={selectedPlaylist?.trackCount ?? 0}
