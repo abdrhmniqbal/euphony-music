@@ -21,13 +21,8 @@ export function SettingsScrollView({
   const scrollViewRef = React.useRef<ScrollView>(null)
   const containerRef = React.useRef<View>(null)
 
-  const contextValue = React.useMemo(
-    () => ({ scrollViewRef, containerRef }),
-    [scrollViewRef, containerRef]
-  )
-
   return (
-    <SettingsScrollViewContext.Provider value={contextValue}>
+    <SettingsScrollViewContext.Provider value={{ scrollViewRef, containerRef }}>
       <ScrollView
         ref={scrollViewRef}
         className="flex-1 bg-background"
