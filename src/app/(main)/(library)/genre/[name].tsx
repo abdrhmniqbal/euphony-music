@@ -33,26 +33,10 @@ import { playTrack } from "@/modules/player/service"
 import { useGenreDetails } from "@/modules/search/queries"
 import { getPreviewAlbums } from "@/modules/search/utils"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
+import { getSafeRouteName } from "@/modules/navigation/route-params"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { createPlaybackQueueContext } from "@/stores/playback/types"
-
-function getSafeRouteName(value: string | string[] | undefined) {
-  const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
-  try {
-    return {
-      value: decodeURIComponent(raw),
-      raw,
-      decodeFailed: false,
-    }
-  } catch {
-    return {
-      value: raw,
-      raw,
-      decodeFailed: true,
-    }
-  }
-}
 
 const CHUNK_SIZE = 5
 const TOP_TRACKS_PREVIEW_LIMIT = 25

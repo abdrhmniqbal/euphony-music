@@ -24,25 +24,9 @@ import { useIndexerStore } from "@/modules/indexer/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
 import { useGenreTopTracks } from "@/modules/search/queries"
+import { getSafeRouteName } from "@/modules/navigation/route-params"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
-
-function getSafeRouteName(value: string | string[] | undefined) {
-  const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
-  try {
-    return {
-      value: decodeURIComponent(raw),
-      raw,
-      decodeFailed: false,
-    }
-  } catch {
-    return {
-      value: raw,
-      raw,
-      decodeFailed: true,
-    }
-  }
-}
 
 export default function GenreTopTracksScreen() {
   const { t } = useTranslation()

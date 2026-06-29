@@ -30,25 +30,9 @@ import { sortAlbums } from "@/modules/library/sort-utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { useGenreAlbums } from "@/modules/search/queries"
 import { mapAlbumsToGridData } from "@/modules/search/utils"
+import { getSafeRouteName } from "@/modules/navigation/route-params"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
-
-function getSafeRouteName(value: string | string[] | undefined) {
-  const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
-  try {
-    return {
-      value: decodeURIComponent(raw),
-      raw,
-      decodeFailed: false,
-    }
-  } catch {
-    return {
-      value: raw,
-      raw,
-      decodeFailed: true,
-    }
-  }
-}
 
 export default function GenreAlbumsScreen() {
   const { t } = useTranslation()
@@ -198,25 +182,23 @@ export default function GenreAlbumsScreen() {
 
         <SortSheet.Content options={ALBUM_SORT_OPTIONS} />
       </View>
-      {selectedAlbum && (
-        <CollectionActionSheet
-          visible={isAlbumSheetOpen}
-          onOpenChange={(visible) => {
-            if (!visible) {
-              setIsAlbumSheetOpen(false)
-              setSelectedAlbum(null)
-              return
-            }
-            setIsAlbumSheetOpen(visible)
-          }}
-          type="album"
-          id={selectedAlbum.id}
-          name={selectedAlbum.title}
-          subtitle={selectedAlbum.artist}
-          image={selectedAlbum.image}
-          trackCount={selectedAlbum.trackCount}
-        />
-      )}
+      <CollectionActionSheet
+        visible={isAlbumSheetOpen && Boolean(selectedAlbum)}
+        onOpenChange={(visible) => {
+          if (!visible) {
+            setIsAlbumSheetOpen(false)
+            setSelectedAlbum(null)
+            return
+          }
+          setIsAlbumSheetOpen(visible)
+        }}
+        type="album"
+        id={selectedAlbum?.id ?? ""}
+        name={selectedAlbum?.title ?? ""}
+        subtitle={selectedAlbum?.artist}
+        image={selectedAlbum?.image}
+        trackCount={selectedAlbum?.trackCount ?? 0}
+      />
     </SortSheet>
   )
 }

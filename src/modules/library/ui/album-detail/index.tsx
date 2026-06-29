@@ -32,6 +32,7 @@ import { ALBUM_TRACK_SORT_OPTIONS } from "@/modules/library/sort-constants"
 import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort-store"
 import { sortTracks } from "@/modules/library/sort-utils"
 import { useTracksByAlbumName } from "@/modules/library/queries"
+import { getSafeRouteName } from "@/modules/navigation/route-params"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { usePlayerTracks } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
@@ -43,23 +44,6 @@ const HEADER_COLLAPSE_THRESHOLD = 120
 
 function getRandomIndex(max: number) {
   return Math.floor(Math.random() * max)
-}
-
-function getSafeRouteName(value: string | string[] | undefined) {
-  const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
-  try {
-    return {
-      value: decodeURIComponent(raw),
-      raw,
-      decodeFailed: false,
-    }
-  } catch {
-    return {
-      value: raw,
-      raw,
-      decodeFailed: true,
-    }
-  }
 }
 
 export default function AlbumDetailsScreen() {

@@ -73,6 +73,7 @@ import {
 import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { getSafeRouteName } from "@/modules/navigation/route-params"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
 import { cn } from "@/utils/common"
@@ -86,24 +87,6 @@ function setAnimatedValue<T>(target: { value: T }, nextValue: T) {
 function getRandomTrackIndex(trackCount: number) {
   return Math.floor(Math.random() * trackCount)
 }
-
-function getSafeRouteName(value: string | string[] | undefined) {
-  const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
-  try {
-    return {
-      value: decodeURIComponent(raw),
-      raw,
-      decodeFailed: false,
-    }
-  } catch {
-    return {
-      value: raw,
-      raw,
-      decodeFailed: true,
-    }
-  }
-}
-
 function trackMatchesArtistName(
   track: Track,
   normalizedArtistName: string,
