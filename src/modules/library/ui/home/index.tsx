@@ -143,18 +143,6 @@ export default function LibraryScreen() {
             genresEmptyTitle={t("library.empty.genresFoundTitle")}
             genresEmptyMessage={t("home.empty.recentlyPlayedMessage")}
             onGenrePress={state.openGenre}
-            onGenreLongPress={(genreName) => {
-              const genreObj = state.sortedGenres.find((g) => g.title === genreName)
-              setActionSheetConfig({
-                visible: true,
-                type: "genre",
-                id: genreName,
-                name: genreName,
-                subtitle: t("library.genre"),
-                trackCount: genreObj?.trackCount || 0,
-                hideFavoriteAction: true,
-              })
-            }}
           />
         )
       case "Playlists":

@@ -21,7 +21,6 @@ interface LibraryGenresSectionProps {
   genresEmptyTitle: string
   genresEmptyMessage: string
   onGenrePress: (genreName: string) => void
-  onGenreLongPress?: (genreName: string) => void
 }
 
 export function LibraryGenresSection({
@@ -33,7 +32,6 @@ export function LibraryGenresSection({
   genresEmptyTitle,
   genresEmptyMessage,
   onGenrePress,
-  onGenreLongPress,
 }: LibraryGenresSectionProps) {
   const { t } = useTranslation()
   const [selectedGenre, setSelectedGenre] = React.useState<GenreCategory | null>(null)
