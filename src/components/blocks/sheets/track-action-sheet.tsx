@@ -99,9 +99,8 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
         }}
       >
         <ActionSheet.Content
-          snapPoints={["70%"]}
           enableDynamicSizing={true}
-          contentContainerClassName="px-5 pt-2 pb-5"
+          contentContainerClassName="px-5 pt-2 pb-safe-offset-4"
         >
           <View className="mb-5 flex-row items-center gap-4">
             <View className="h-18 w-18 overflow-hidden rounded-xl bg-default">
