@@ -6,7 +6,7 @@ import { db } from "@/db/client"
 import { genres, trackGenres, tracks } from "@/db/schema"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
-import { getGenreRainbowColor, getGenreShape } from "./constants"
+import { getGenreDbNames, getGenreRainbowColor, getGenreShape, resolveGenreName } from "./constants"
 import type { GenreAlbumInfo, GenreVisual } from "./types"
 
 function getFallbackGenreVisual(name: string): GenreVisual {
@@ -24,7 +24,7 @@ function normalizeGenreName(name: string | null | undefined): string | null {
   }
 
   const trimmedName = name.trim()
-  return trimmedName.length > 0 ? trimmedName : null
+  return trimmedName.length > 0 ? resolveGenreName(trimmedName) : null
 }
 
 async function listActiveGenreRows() {
@@ -149,10 +149,10 @@ export async function getAllGenreVisuals(): Promise<GenreVisual[]> {
 
 export async function getTopTracksByGenre(genre: string, limit = 25): Promise<Track[]> {
   try {
-    const trimmedGenre = genre.trim()
+    const dbNames = getGenreDbNames(genre)
 
     const matchingGenres = await db.query.genres.findMany({
-      where: (g, { sql }) => sql`${g.name} LIKE ${trimmedGenre}`,
+      where: (g, { inArray }) => inArray(g.name, dbNames),
       columns: { id: true },
     })
 
@@ -201,10 +201,10 @@ export async function getTopTracksByGenre(genre: string, limit = 25): Promise<Tr
 
 export async function getAllTracksByGenre(genre: string): Promise<Track[]> {
   try {
-    const trimmedGenre = genre.trim()
+    const dbNames = getGenreDbNames(genre)
 
     const matchingGenres = await db.query.genres.findMany({
-      where: (g, { sql }) => sql`${g.name} LIKE ${trimmedGenre}`,
+      where: (g, { inArray }) => inArray(g.name, dbNames),
       columns: { id: true },
     })
 
@@ -252,10 +252,10 @@ export async function getAllTracksByGenre(genre: string): Promise<Track[]> {
 
 export async function getAlbumsByGenre(genre: string): Promise<GenreAlbumInfo[]> {
   try {
-    const trimmedGenre = genre.trim()
+    const dbNames = getGenreDbNames(genre)
 
     const matchingGenres = await db.query.genres.findMany({
-      where: (g, { sql }) => sql`LOWER(${g.name}) LIKE LOWER(${trimmedGenre})`,
+      where: (g, { inArray }) => inArray(g.name, dbNames),
       columns: { id: true },
     })
 
@@ -348,11 +348,13 @@ export async function getSortedGenreTracks<TOnlyIds extends boolean | undefined 
   id: string,
   onlyIds?: TOnlyIds
 ) {
+  const dbNames = getGenreDbNames(id)
+
   const rels = await db
     .select({ trackId: trackGenres.trackId })
     .from(trackGenres)
     .innerJoin(genres, eq(trackGenres.genreId, genres.id))
-    .where(eq(genres.name, id))
+    .where(inArray(genres.name, dbNames))
 
   const trackIds = rels.map((r) => r.trackId)
   if (trackIds.length === 0) return [] as TOnlyIds extends true ? Array<{ id: string }> : never[]

@@ -150,8 +150,6 @@ export default function ArtistDetailsScreen() {
   )
   const [sortModalVisible, setSortModalVisible] = useState(false)
   const [showActionSheet, setShowActionSheet] = useState(false)
-  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
-  const [isAlbumSheetOpen, setIsAlbumSheetOpen] = useState(false)
   const scrollY = useSharedValue(0)
   const currentTrack = useCurrentTrack()
   const allTracks = usePlayerTracks()
@@ -461,10 +459,6 @@ export default function ArtistDetailsScreen() {
                     horizontal
                     data={sortedAlbums}
                     onAlbumPress={openAlbum}
-                    onAlbumLongPress={(album) => {
-                      setSelectedAlbum(album)
-                      setIsAlbumSheetOpen(true)
-                    }}
                   />
                 </View>
               )}
@@ -479,10 +473,6 @@ export default function ArtistDetailsScreen() {
                     horizontal
                     data={sortedFeaturedOnAlbums}
                     onAlbumPress={openAlbum}
-                    onAlbumLongPress={(album) => {
-                      setSelectedAlbum(album)
-                      setIsAlbumSheetOpen(true)
-                    }}
                   />
                 </View>
               )}
@@ -550,10 +540,6 @@ export default function ArtistDetailsScreen() {
           <AlbumGrid
             data={displayedAlbums}
             onAlbumPress={openAlbum}
-            onAlbumLongPress={(album) => {
-              setSelectedAlbum(album)
-              setIsAlbumSheetOpen(true)
-            }}
             resetScrollKey={`${artistId || artistName}-${activeView}-${sortConfig.field}-${sortConfig.order}`}
             contentContainerStyle={{
               paddingBottom: 200,
@@ -625,25 +611,6 @@ export default function ArtistDetailsScreen() {
           }
         />
       </View>
-      {selectedAlbum && (
-        <CollectionActionSheet
-          visible={isAlbumSheetOpen}
-          onOpenChange={(visible) => {
-            if (!visible) {
-              setIsAlbumSheetOpen(false)
-              setSelectedAlbum(null)
-              return
-            }
-            setIsAlbumSheetOpen(visible)
-          }}
-          type="album"
-          id={selectedAlbum.id}
-          name={selectedAlbum.title}
-          subtitle={selectedAlbum.artist}
-          image={selectedAlbum.image}
-          trackCount={selectedAlbum.trackCount}
-        />
-      )}
     </SortSheet>
   )
 }

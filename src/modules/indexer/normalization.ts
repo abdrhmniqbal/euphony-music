@@ -6,6 +6,7 @@
  * Side Effects: None.
  */
 
+import { resolveGenreName } from "@/modules/genres/constants"
 import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
 
 interface NormalizableMetadata {
@@ -60,13 +61,14 @@ function normalizeGenres(genres: string[]): string[] {
       continue
     }
 
-    const key = normalizedGenre.toLowerCase()
+    const resolved = resolveGenreName(normalizedGenre)
+    const key = resolved.toLowerCase()
     if (seen.has(key)) {
       continue
     }
 
     seen.add(key)
-    normalized.push(normalizedGenre)
+    normalized.push(resolved)
   }
 
   return normalized

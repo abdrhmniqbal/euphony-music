@@ -6,6 +6,7 @@
  * Side Effects: None.
  */
 
+import { resolveGenreName } from "@/modules/genres/constants"
 import type { Album, Artist, Track } from "@/modules/player/types"
 import type { DBAlbum, DBArtist, DBTrack } from "@/types/database"
 
@@ -37,7 +38,9 @@ export function transformDBTrackToTrack(dbTrack: DBTrack): Track {
     ...(dbTrack.featuredArtists?.map((entry) => entry.artist?.name) ?? []),
   ])
   const albumArtist = dbTrack.album?.artist?.name?.trim() || artist
-  const genre = joinUniqueValues(dbTrack.genres?.map((entry) => entry.genre?.name) ?? [])
+  const genre = joinUniqueValues(
+    dbTrack.genres?.map((entry) => (entry.genre?.name ? resolveGenreName(entry.genre.name) : null)) ?? []
+  )
 
   return {
     id: dbTrack.id,
