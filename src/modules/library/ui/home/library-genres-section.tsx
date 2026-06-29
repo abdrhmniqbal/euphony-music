@@ -33,7 +33,7 @@ export function LibraryGenresSection({
   genresEmptyTitle,
   genresEmptyMessage,
   onGenrePress,
-  onGenreLongPress,
+  _onGenreLongPress,
 }: LibraryGenresSectionProps) {
   const { t } = useTranslation()
   const [selectedGenre, setSelectedGenre] = React.useState<GenreCategory | null>(null)
@@ -84,23 +84,21 @@ export function LibraryGenresSection({
           />
         )}
       </ScrollView>
-      {isSheetOpen && selectedGenre && (
-        <CollectionActionSheet
-          visible={isSheetOpen}
-          onOpenChange={(open) => {
-            if (!open) {
-              closeSheet()
-            }
-          }}
-          type="genre"
-          id={selectedGenre.title}
-          name={selectedGenre.title}
-          subtitle={t("library.genre")}
-          trackCount={selectedGenre.trackCount}
-          favoriteId={selectedGenre.title}
-          hideFavoriteAction
-        />
-      )}
+      <CollectionActionSheet
+        visible={isSheetOpen && Boolean(selectedGenre)}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeSheet()
+          }
+        }}
+        type="genre"
+        id={selectedGenre?.title ?? ""}
+        name={selectedGenre?.title ?? ""}
+        subtitle={t("library.genre")}
+        trackCount={selectedGenre?.trackCount ?? 0}
+        favoriteId={selectedGenre?.title ?? ""}
+        hideFavoriteAction
+      />
     </>
   )
 }
