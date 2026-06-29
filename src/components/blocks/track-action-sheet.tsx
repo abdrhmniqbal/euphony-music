@@ -6,60 +6,37 @@
  * Side Effects: Opens dialogs/sheets, queues playback actions, and navigates to artist/album/genre routes.
  */
 
-import type { PlayerQueueContext, Track } from "@/modules/player/types"
+import type { Track } from "@/modules/player/types"
 import { Image } from "expo-image"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import * as React from "react"
-import { useState } from "react"
-
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { DeleteTrackDialog } from "@/components/blocks/delete-track-dialog"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
-import {
-  ValueNavigationSheet,
-  type ValueNavigationSheetItem,
-} from "@/components/blocks/value-navigation-sheet"
+import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { MenuRow } from "@/components/ui/menu-row"
 import { ActionSheet } from "@/components/ui/action-sheet"
-import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
+import { useTrackActions } from "@/components/blocks/use-track-actions"
+import { TrackMetadataSheet } from "@/modules/tracks/ui/track-metadata-sheet"
 import LocalCancel01Icon from "@/components/icons/local/cancel-01"
-import LocalDelete01SolidIcon from "@/components/icons/local/delete-01-solid"
+import LocalDelete02Icon from "@/components/icons/local/delete-02"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
-import LocalNextSolidIcon from "@/components/icons/local/next-solid"
-import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
-import LocalSlidersVerticalIcon from "@/components/icons/local/sliders-vertical"
+import LocalVynil02Icon from "@/components/icons/local/vynil-02"
 import LocalUserIcon from "@/components/icons/local/user"
-import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
+import LocalNextIcon from "@/components/icons/local/next"
+import LocalAddCircleIcon from "@/components/icons/local/add-circle"
+import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
+import LocalInfoIcon from "@/components/icons/local/info"
 import { ICON_SIZES } from "@/constants/icon-sizes"
-import { useToggleFavorite } from "@/modules/favorites/mutations"
-import { useIsFavorite } from "@/modules/favorites/queries"
-import { addToQueue, queueTrackNext } from "@/modules/player/queue"
-import { useRemoveTrackFromPlaylist } from "@/modules/playlist/mutations"
-import { usePlaylistPickerSelection } from "@/modules/playlist/use-picker-selection"
-import { showAppToast } from "@/modules/ui/toast"
-import { useTrack } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-import { useSettingsStore } from "@/modules/settings/store"
-import { splitArtistsValue } from "@/modules/settings/split-multiple-values"
-import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
-import { TrackMetadataSheet } from "@/modules/tracks/ui/track-metadata-sheet"
-import LocalNextIcon from "../icons/local/next"
-import LocalAddCircleIcon from "../icons/local/add-circle"
-import LocalPlaylist02Icon from "../icons/local/playlist-02"
-import LocalVynil02Icon from "../icons/local/vynil-02"
-import LocalInfoIcon from "../icons/local/info"
-import LocalDelete02Icon from "../icons/local/delete-02"
 
 interface TrackActionSheetProps {
   track: Track | null
   isOpen: boolean
   onClose: () => void
-  tracks?: Track[]
   playlistId?: string
-  queueContext?: PlayerQueueContext | null
   onAddToPlaylist?: (track: Track) => void
 }
 
@@ -70,212 +47,33 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   playlistId,
   onAddToPlaylist,
 }) => {
-  const router = useRouter()
   const { t } = useTranslation()
   const theme = useThemeColors()
-  const toggleFavoriteMutation = useToggleFavorite()
-  const removeTrackFromPlaylistMutation = useRemoveTrackFromPlaylist()
-
-  const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [favoriteOverrides, setFavoriteOverrides] = useState<Record<string, boolean>>({})
-
-  const favoriteTrackId = track?.id || ""
-  const { data: isFavoriteData = track?.isFavorite ?? false } = useIsFavorite(
-    "track",
-    favoriteTrackId
-  )
-  const isFavorite = track ? (favoriteOverrides[track.id] ?? Boolean(isFavoriteData)) : false
-  const { data: fullTrackData } = useTrack(track?.id ?? "")
-  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
-
-  const [artistSelectionItems, setArtistSelectionItems] = useState<ValueNavigationSheetItem[]>([])
-  const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
-  const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false)
-
-  const handleToggleFavorite = () => {
-    if (track) {
-      const newState = !isFavorite
-      setFavoriteOverrides((prev) => ({ ...prev, [track.id]: newState }))
-      void toggleFavoriteMutation.mutateAsync({
-        type: "track",
-        itemId: track.id,
-        isCurrentlyFavorite: isFavorite,
-        name: track.title,
-        subtitle: track.artist,
-        image: track.image,
-      })
-    }
-  }
-
-  const handlePlayNext = async () => {
-    if (track) {
-      await queueTrackNext(track)
-      onClose()
-    }
-  }
-
-  const handleAddToQueue = async () => {
-    if (track) {
-      await addToQueue(track)
-      onClose()
-    }
-  }
-
-  const handleAddToPlaylist = () => {
-    if (!track) {
-      return
-    }
-
-    if (onAddToPlaylist) {
-      onAddToPlaylist(track)
-      onClose()
-      return
-    }
-
-    setIsPlaylistPickerOpen(true)
-  }
-
-  const handleRemoveFromPlaylist = async () => {
-    if (!track || !playlistId) {
-      return
-    }
-
-    await removeTrackFromPlaylistMutation.mutateAsync({
-      playlistId,
-      trackId: track.id,
-    })
-    onClose()
-  }
-
-  const handleOpenDeleteDialog = () => {
-    if (!track) {
-      return
-    }
-
-    setIsPlaylistPickerOpen(false)
-    setIsDeleteDialogOpen(true)
-    onClose()
-  }
-
-  const showPlaylistToast = (title: string, description?: string) => {
-    showAppToast(title, description)
-  }
-
-  const { isSelecting, handleSelectPlaylist } = usePlaylistPickerSelection({
-    trackId: track?.id,
-    onSelectionApplied: () => {
-      setIsPlaylistPickerOpen(false)
-      onClose()
-    },
-    showPlaylistToast,
-  })
-
-  const handleCreatePlaylist = () => {
-    setIsPlaylistPickerOpen(false)
-    onClose()
-    router.push("/playlist/form")
-  }
-
-  const handleOpenArtist = (artistName: string) => {
-    const normalizedArtistName = artistName.trim()
-    if (!normalizedArtistName) {
-      return
-    }
-
-    setIsArtistSelectionOpen(false)
-    router.push({
-      pathname: "/artist/[name]",
-      params: { name: normalizedArtistName },
-    })
-    onClose()
-  }
-
-  const handleOpenAlbum = (albumName: string) => {
-    const normalizedAlbumName = albumName.trim()
-    if (!normalizedAlbumName) {
-      return
-    }
-
-    router.push({
-      pathname: "/album/[name]",
-      params: {
-        name: normalizedAlbumName,
-        transitionId: resolveAlbumTransitionId({
-          id: track?.albumId,
-          title: normalizedAlbumName,
-        }),
-      },
-    })
-    onClose()
-  }
-
-  function dedupeValues(values: string[]) {
-    const seen = new Set<string>()
-    return values.filter((value) => {
-      const key = value.toLowerCase()
-      if (seen.has(key)) {
-        return false
-      }
-
-      seen.add(key)
-      return true
-    })
-  }
-
-  const artistNames = (() => {
-    const relationNames = [
-      fullTrackData?.artist?.name?.trim(),
-      ...(fullTrackData?.featuredArtists?.map((entry) => entry.artist?.name?.trim()) ?? []),
-    ].filter((value): value is string => Boolean(value))
-
-    if (relationNames.length > 0) {
-      return dedupeValues(relationNames)
-    }
-
-    const fallbackNames = splitArtistsValue(track?.artist, splitMultipleValueConfig)
-    return fallbackNames.length > 0 ? dedupeValues(fallbackNames) : []
-  })()
-
-  const albumNames = (() => {
-    const relationAlbumName = fullTrackData?.album?.title?.trim()
-    if (relationAlbumName) {
-      return [relationAlbumName]
-    }
-
-    const fallbackAlbumName = track?.album?.trim()
-    return fallbackAlbumName ? [fallbackAlbumName] : []
-  })()
-
-  const handleOpenArtistSelection = (values: string[]) => {
-    const normalized = dedupeValues(
-      values.map((value) => value.trim()).filter((value) => value.length > 0)
-    )
-    if (normalized.length === 0) {
-      return
-    }
-
-    if (normalized.length === 1) {
-      handleOpenArtist(normalized[0] || "")
-      return
-    }
-
-    const richArtistItems = buildArtistPickerItems(
-      {
-        artwork: fullTrackData?.artwork,
-        albumArtwork: fullTrackData?.album?.artwork,
-        artist: fullTrackData?.artist,
-        featuredArtists: fullTrackData?.featuredArtists,
-      },
-      normalized,
-      (count) => t("library.count.track", { count })
-    )
-
-    setArtistSelectionItems(
-      richArtistItems.length > 0 ? richArtistItems : normalized.map((value) => ({ value }))
-    )
-    setIsArtistSelectionOpen(true)
-  }
+  const {
+    isFavorite,
+    albumNames,
+    isPlaylistPickerOpen,
+    setIsPlaylistPickerOpen,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    isArtistSelectionOpen,
+    setIsArtistSelectionOpen,
+    isMetadataSheetOpen,
+    setIsMetadataSheetOpen,
+    artistSelectionItems,
+    isSelecting,
+    handleToggleFavorite,
+    handlePlayNext,
+    handleAddToQueue,
+    handleAddToPlaylist,
+    handleRemoveFromPlaylist,
+    handleOpenDeleteDialog,
+    handleOpenArtistSelection,
+    handleOpenAlbum,
+    handleOpenArtist,
+    handleCreatePlaylist,
+    handleSelectPlaylist,
+  } = useTrackActions({ track, playlistId, onClose, onAddToPlaylist })
 
   if (!track) {
     return (
@@ -296,7 +94,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
           if (open) {
             return
           }
-
           setIsPlaylistPickerOpen(false)
           onClose()
         }}
@@ -378,7 +175,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
             <MenuRow
               icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.muted} />}
               label={t("player.menu.goToArtist")}
-              onPress={() => handleOpenArtistSelection(artistNames)}
+              onPress={handleOpenArtistSelection}
             />
             <MenuRow
               icon={<LocalVynil02Icon fill="none" width={22} height={22} color={theme.muted} />}
