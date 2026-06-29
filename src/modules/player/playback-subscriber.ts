@@ -7,13 +7,27 @@ import { updateColorsForImage } from "@/modules/player/colors"
 import { usePlayerStore } from "@/modules/player/store"
 import { playbackStore } from "@/stores/playback/store"
 import { extractTrackId } from "@/stores/playback/utils"
+import { getSettingsState } from "@/modules/settings/store"
+import {
+  formatArtistsForDisplay,
+  splitArtistsValue,
+} from "@/modules/settings/split-multiple-values"
 
 export function toPlayerTrack(track: DataTrack | undefined) {
   if (!track) return null
+
+  let artistName = track.rawArtistName || track.artistName || undefined
+  if (track.rawArtistName || track.artistName) {
+    const rawArtist = track.rawArtistName || track.artistName || ""
+    const splitConfig = getSettingsState().splitMultipleValueConfig
+    const artistNames = splitArtistsValue(rawArtist, splitConfig)
+    artistName = formatArtistsForDisplay(rawArtist, artistNames, splitConfig.artistSplitMode)
+  }
+
   return {
     id: track.id,
     title: track.name,
-    artist: track.artistName ?? undefined,
+    artist: artistName,
     artistId: track.artistName ?? undefined,
     album: track.albumName ?? undefined,
     albumId: track.albumId ?? undefined,
@@ -22,10 +36,11 @@ export function toPlayerTrack(track: DataTrack | undefined) {
     image: track.artwork ?? undefined,
     isExternal: false,
     isDeleted: false,
-    artistName: track.artistName,
+    artistName: artistName,
     albumName: track.albumName,
     artwork: track.artwork,
     artists: track.artists,
+    rawArtistName: track.rawArtistName,
   } as const
 }
 

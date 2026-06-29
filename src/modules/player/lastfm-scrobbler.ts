@@ -5,6 +5,11 @@ import {
   LASTFM_SERVICE_URL,
 } from "@/modules/settings/lastfm-integration"
 import type { Track } from "@/modules/tracks/types"
+import {
+  formatArtistsForDisplay,
+  splitArtistsValue,
+} from "@/modules/settings/split-multiple-values"
+import { getSettingsState } from "@/modules/settings/store"
 
 interface CurrentScrobble {
   trackId: string
@@ -28,7 +33,8 @@ export async function handleTrackChanged(track: Track | undefined) {
   }
 
   current = null
-  if (!track || !track.name || !track.artistName) {
+  const rawArtist = track?.rawArtistName || track?.artistName
+  if (!track || !track.name || !rawArtist) {
     return
   }
 
@@ -53,10 +59,18 @@ export async function handleTrackChanged(track: Track | undefined) {
     const delayPercent = scrobbleConfig.scrobbleDelayPercent
     const scrobbleThresholdSeconds = Math.round((duration * delayPercent) / 100)
 
+    const splitConfig = getSettingsState().splitMultipleValueConfig
+    const artistNames = splitArtistsValue(rawArtist, splitConfig)
+    const displayArtist = formatArtistsForDisplay(
+      rawArtist,
+      artistNames,
+      splitConfig.artistSplitMode
+    )
+
     current = {
       trackId: track.id,
       title: track.name,
-      artist: track.artistName,
+      artist: displayArtist,
       album: track.albumName ?? undefined,
       duration,
       startedAt: Math.floor(Date.now() / 1000),

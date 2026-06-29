@@ -17,6 +17,7 @@ export type Track = CommonTrack & {
   rawArtistName?: string | null
   albumId?: string | null
   parentFolder?: string | null
+  isFavorite?: boolean
 }
 
 export type SortedTrack = Track

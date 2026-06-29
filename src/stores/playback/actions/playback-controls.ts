@@ -20,7 +20,9 @@ export async function loadCurrentTrack() {
   const { _hasRestoredPosition, _restoredTrackKey, lastPosition, activeTrack } =
     playbackStore.getState()
   if (!activeTrack) return
-  await AudioBrowser.load(await applyReplayGainToTrack(activeTrack))
+  const nativeTrack = await applyReplayGainToTrack(activeTrack)
+  await AudioBrowser.load(nativeTrack)
+  AudioBrowser.updateNowPlaying(nativeTrack)
 
   if (!_hasRestoredPosition) {
     playbackStore.setState({ _hasRestoredPosition: true })
@@ -241,6 +243,10 @@ export async function playFromList({
   })
 
   if (isDiffTrack || !(await isAudioBrowserSetUp())) await loadCurrentTrack()
+
+  if (newTrack) {
+    AudioBrowser.updateNowPlaying(await applyReplayGainToTrack(newTrack))
+  }
   await AudioBrowser.play()
 
   addPlayedMediaList(source)

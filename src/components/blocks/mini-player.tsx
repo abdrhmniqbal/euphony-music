@@ -17,6 +17,11 @@ import { resolvePlayerTransitionId } from "@/modules/player/transition"
 import { useThemeColors } from "@/modules/ui/theme"
 import { setPlayerExpandedView } from "@/modules/ui/store"
 
+import { useSettingsStore } from "@/modules/settings/store"
+import {
+  formatArtistsForDisplay,
+  splitArtistsValue,
+} from "@/modules/settings/split-multiple-values"
 import LocalMusicNote04SolidIcon from "../icons/local/music-note-04-solid"
 import LocalPlaylist03Icon from "../icons/local/playlist-03"
 
@@ -54,15 +59,21 @@ interface MiniPlayerMetaProps {
 
 function MiniPlayerMeta({ title, artist }: MiniPlayerMetaProps) {
   const { t } = useTranslation()
+  const currentTrack = useCurrentTrack()
+  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
+  const artistName = React.useMemo(() => {
+    const rawArtist = currentTrack?.rawArtistName || currentTrack?.artistName || artist
+    if (!rawArtist) {
+      return t("library.unknownArtist")
+    }
+    const splitNames = splitArtistsValue(rawArtist, splitMultipleValueConfig)
+    return formatArtistsForDisplay(rawArtist, splitNames, splitMultipleValueConfig.artistSplitMode)
+  }, [currentTrack?.rawArtistName, currentTrack?.artistName, artist, splitMultipleValueConfig, t])
 
   return (
     <View className="flex-1 overflow-hidden">
       <MarqueeText text={title} className="text-[15px] font-bold text-foreground" speed={0.6} />
-      <MarqueeText
-        text={artist || t("library.unknownArtist")}
-        className="text-[13px] text-muted"
-        speed={0.5}
-      />
+      <MarqueeText text={artistName} className="text-[13px] text-muted" speed={0.5} />
     </View>
   )
 }

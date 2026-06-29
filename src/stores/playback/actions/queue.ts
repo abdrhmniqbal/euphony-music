@@ -93,7 +93,9 @@ export async function removeIds(ids: string[]) {
     if (!newActiveTrack) return
 
     await bgWait(250)
-    AudioBrowser.load(await applyReplayGainToTrack(newActiveTrack))
+    const nativeTrack = await applyReplayGainToTrack(newActiveTrack)
+    AudioBrowser.load(nativeTrack)
+    AudioBrowser.updateNowPlaying(nativeTrack)
   }
 
   playbackStore.setState({
@@ -150,7 +152,11 @@ export async function synchronize() {
     activeTrack: newTrack,
   })
 
-  if (isDiffTrack) AudioBrowser.load(await applyReplayGainToTrack(newTrack))
+  if (isDiffTrack) {
+    const nativeTrack = await applyReplayGainToTrack(newTrack)
+    AudioBrowser.load(nativeTrack)
+    AudioBrowser.updateNowPlaying(nativeTrack)
+  }
 }
 
 function isWithin(min: number, value: number, max: number) {

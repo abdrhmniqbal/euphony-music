@@ -11,6 +11,11 @@ import { and, asc, desc, eq, inArray, like, or, sql } from "drizzle-orm"
 
 import { db } from "@/db/client"
 import { playHistory, playlistTracks, trackArtists, trackGenres, tracks } from "@/db/schema"
+import { getSettingsState } from "@/modules/settings/store"
+import {
+  formatArtistsForDisplay,
+  splitArtistsValue,
+} from "@/modules/settings/split-multiple-values"
 
 import type { DrizzleFilter, TracksSortOptions } from "@/modules/library/data-types"
 import type { BulkQueriedTrack, SortedTrack, Track, TrackFilter } from "./types"
@@ -190,12 +195,26 @@ type TrackRow = typeof tracks.$inferSelect & {
 }
 
 function toDataTrack(row: TrackRow): Track {
+  let displayArtistName = row.artist?.name ?? null
+  let displayArtists = row.artist?.name ? [row.artist.name] : null
+
+  if (row.artist?.name) {
+    const splitConfig = getSettingsState().splitMultipleValueConfig
+    const splitNames = splitArtistsValue(row.artist.name, splitConfig)
+    displayArtists = splitNames
+    displayArtistName = formatArtistsForDisplay(
+      row.artist.name,
+      splitNames,
+      splitConfig.artistSplitMode
+    )
+  }
+
   return {
     id: row.id,
     name: row.title,
     artwork: row.artwork ?? null,
-    artists: row.artist?.name ? [row.artist.name] : null,
-    artistName: row.artist?.name ?? null,
+    artists: displayArtists,
+    artistName: displayArtistName,
     albumName: row.album?.title ?? null,
     albumId: row.albumId ?? null,
     uri: row.uri,

@@ -85,6 +85,10 @@ export default function PlayerRoute() {
       return []
     }
 
+    if (splitMultipleValueConfig.artistSplitMode === "original") {
+      return [currentTrack.artist]
+    }
+
     return splitArtistsValue(currentTrack.artist, splitMultipleValueConfig)
   }, [
     currentTrack?.artist,

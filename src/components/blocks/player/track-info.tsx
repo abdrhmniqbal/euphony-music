@@ -20,6 +20,11 @@ import { MarqueeText } from "@/components/ui/marquee-text"
 import { useIsFavorite } from "@/modules/favorites/queries"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useThemeColors } from "@/modules/ui/theme"
+import { useSettingsStore } from "@/modules/settings/store"
+import {
+  formatArtistsForDisplay,
+  splitArtistsValue,
+} from "@/modules/settings/split-multiple-values"
 
 interface TrackInfoProps {
   track: Track
@@ -37,9 +42,19 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false, on
   )
   const toggleFavoriteMutation = useToggleFavorite()
   const isFavorite = Boolean(isFavoriteQuery)
+  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
   const titleClassName = cn("mb-1 font-bold text-white", compact ? "text-xl" : "text-2xl")
   const artistClassName = cn("text-white/60", compact ? "text-base" : "text-lg")
-  const artistName = track.artist || t("library.unknownArtist")
+
+  const artistName = React.useMemo(() => {
+    if (!track.rawArtistName && !track.artist) {
+      return t("library.unknownArtist")
+    }
+    const rawArtist = track.rawArtistName || track.artist || ""
+    const splitNames = splitArtistsValue(rawArtist, splitMultipleValueConfig)
+    return formatArtistsForDisplay(rawArtist, splitNames, splitMultipleValueConfig.artistSplitMode)
+  }, [track.rawArtistName, track.artist, splitMultipleValueConfig, t])
+
   const isArtistPressable = Boolean(onPressArtist && track.artist?.trim())
 
   return (
