@@ -119,7 +119,7 @@ export function GridList<T>({
         {...LEGEND_LIST_GRID_CONFIG}
         estimatedItemSize={estimatedSize}
       />
-      {selected && renderSheet(selected, closeSheet, isSheetOpen)}
+      {renderSheet(selected, closeSheet, isSheetOpen)}
     </View>
   )
 }

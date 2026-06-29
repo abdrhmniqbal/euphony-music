@@ -196,11 +196,11 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
             }
           }}
           type="album"
-          id={selected.id}
-          name={selected.title}
-          subtitle={selected.artist}
-          image={selected.image}
-          trackCount={selected.trackCount}
+          id={selected?.id ?? ""}
+          name={selected?.title ?? ""}
+          subtitle={selected?.artist}
+          image={selected?.image}
+          trackCount={selected?.trackCount ?? 0}
         />
       )}
       scrollEnabled={scrollEnabled}

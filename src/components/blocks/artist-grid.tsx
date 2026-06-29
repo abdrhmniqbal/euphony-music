@@ -90,11 +90,11 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
             }
           }}
           type="artist"
-          id={selected.id}
-          name={selected.name}
-          subtitle={formatTrackCount(selected.trackCount)}
-          image={selected.image}
-          trackCount={selected.trackCount}
+          id={selected?.id ?? ""}
+          name={selected?.name ?? ""}
+          subtitle={selected ? formatTrackCount(selected.trackCount) : undefined}
+          image={selected?.image}
+          trackCount={selected?.trackCount ?? 0}
         />
       )}
       scrollEnabled={scrollEnabled}
