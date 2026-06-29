@@ -4,7 +4,7 @@
 
 Offline-first local music player built with Expo + React Native.
 
-[![Release](https://img.shields.io/github/v/release/abdrhmniqbal/startune-music?label=stable)](https://github.com/abdrhmniqbal/startune-music/releases/latest)
+[![Release](https://img.shields.io/github/v/release/abdrhmniqbal/startune-music?label=latest)](https://github.com/abdrhmniqbal/startune-music/releases/latest)
 [![Pre-release](https://img.shields.io/github/v/release/abdrhmniqbal/startune-music?include_prereleases&label=pre-release)](https://github.com/abdrhmniqbal/startune-music/releases)
 [![Downloads](https://img.shields.io/github/downloads/abdrhmniqbal/startune-music/total)](https://github.com/abdrhmniqbal/startune-music/releases)
 [![Expo SDK](https://img.shields.io/badge/Expo-SDK%2056-000020?logo=expo)](https://docs.expo.dev)
@@ -15,22 +15,17 @@ Startune Music is a local-library music player focused on offline playback, fast
 
 ## Features
 
-- Offline-first local playback with queue, repeat, shuffle, seeking, and background audio
+- Offline-first local playback with queue, repeat, shuffle, crossfade, seeking, and background audio
 - Library browsing for tracks, albums, artists, genres, playlists, favorites, and folders
-- Genre detail flows with top tracks and recommended albums
+- Smart mixes (Daily Mix and For You Mix) built from listening history
+- Synchronized lyrics (TTML, `.lrc`, embedded) with LRCLib auto-fetch fallback
+- Last.fm integration for scrobbling, artist bios, and artwork scraping
 - Playlist creation, editing, reordering, and playlist-aware track actions
-- Rich player surfaces: mini player, full player, queue view, lyrics, and metadata sheet
-- Indexing with progress notifications, auto-scan, force reindex, and scoped filtering
-- Folder whitelist/blacklist filtering and track-duration filters
-- Theme and settings controls for playback behavior, indexing behavior, notifications, and logging
+- Rich player surfaces: mini player, full player, queue view, and metadata sheet
+- Indexing with progress notifications, auto-scan, scoped folder filtering, and track-duration filters
+- Multiple color themes (Catppuccin, Dracula, Nord, Alucard) and extensive customization
+- Backup and restore settings and preferences
 - Search with recent searches, recently added tracks, and direct navigation into media detail screens
-
-## Screenshots
-
-Screenshots and release assets are published on the GitHub releases page:
-
-- Latest release: https://github.com/abdrhmniqbal/startune-music/releases/latest
-- Full release history: https://github.com/abdrhmniqbal/startune-music/releases
 
 ## Changelog
 
@@ -49,7 +44,7 @@ Download the latest APK from:
 
 ### Requirements
 
-- Nub
+- `nub` package manager
 - Node.js
 - Expo / Android Studio for local Android builds
 
@@ -63,9 +58,12 @@ nub run start
 Useful commands:
 
 ```bash
-nub run android
-nub run lint
-nub run format
+nub run android      # Build and run on Android
+nub run lint         # Lint using oxlint
+nub run format       # Format files using oxfmt
+nub run format:check # Validate file formatting
+nub run test         # Run unit tests via vitest
+nub run check        # Run lint + tests
 ```
 
 ## Tech Stack
@@ -78,7 +76,7 @@ nub run format
 - Drizzle ORM + Expo SQLite
 - HeroUI Native
 - Legend List
-- React Native Track Player
+- React Native Audio Browser
 
 ## Contributing
 
