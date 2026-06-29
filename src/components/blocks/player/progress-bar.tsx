@@ -9,12 +9,7 @@
 import * as React from "react"
 import { Text, TextInput, type TextInputProps, View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
-import {
-  useCastState,
-  useMediaStatus,
-  useRemoteMediaClient,
-  useStreamPosition,
-} from "react-native-google-cast"
+import { useMediaStatus, useStreamPosition } from "react-native-google-cast"
 import Animated, {
   Layout,
   runOnJS,
@@ -25,9 +20,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 
-import { isCastConnected, seekCastPlayback } from "@/modules/cast/service"
-import { seekTo } from "@/modules/player/controls"
 import { usePlaybackProgressState } from "@/modules/player/selectors"
+import { useCastAwarePlayback } from "./use-cast-aware-playback"
 
 type AnimatedTimeInputProps = TextInputProps & { text?: string }
 
@@ -43,15 +37,13 @@ interface ProgressBarProps {
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({ compact = false }) => {
   const { currentTime, duration } = usePlaybackProgressState()
-  const castState = useCastState()
-  const remoteMediaClient = useRemoteMediaClient()
-  const mediaStatus = useMediaStatus()
+  const { isCasting, seek: seekPlayback } = useCastAwarePlayback(false)
   const castStreamPosition = useStreamPosition()
   const seekProgress = useSharedValue(0)
   const isSeeking = useSharedValue(false)
   const barWidth = useSharedValue(0)
   const pressed = useSharedValue(false)
-  const isCasting = isCastConnected(castState, remoteMediaClient)
+  const mediaStatus = useMediaStatus()
   const castDuration = Number(mediaStatus?.mediaInfo?.streamDuration ?? 0)
   const effectiveCurrentTime = Number(isCasting ? (castStreamPosition ?? 0) : (currentTime ?? 0))
   const effectiveDuration = Number(isCasting ? castDuration : (duration ?? 0))
@@ -69,15 +61,6 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ compact = false }) => 
   const displayProgress = useDerivedValue(() =>
     isSeeking.value ? seekProgress.value : liveProgress.value
   )
-
-  const seekPlayback = async (seekTime: number) => {
-    if (isCasting) {
-      await seekCastPlayback(remoteMediaClient, seekTime)
-      return
-    }
-
-    await seekTo(seekTime)
-  }
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
