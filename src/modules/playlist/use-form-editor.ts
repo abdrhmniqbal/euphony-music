@@ -149,21 +149,12 @@ export function usePlaylistFormEditor({
     setIsTrackSheetOpen(true)
   }, [selectedTrackIds])
 
-  const handleTrackSheetOpenChange = React.useCallback(
-    (open: boolean) => {
-      if (open) {
-        setDraftSelectedTracks(new Set(selectedTrackIds))
-        setIsTrackSheetOpen(true)
-        return
-      }
-
-      setIsTrackSheetOpen(false)
-      setSearchQuery("")
-      setSearchInputKey((prev) => prev + 1) // force <Input> remount to clear internal state
-      setDraftSelectedTracks(new Set(selectedTrackIds))
-    },
-    [selectedTrackIds]
-  )
+  const handleTrackSheetClose = React.useCallback(() => {
+    setIsTrackSheetOpen(false)
+    setSearchQuery("")
+    setSearchInputKey((prev) => prev + 1) // force <Input> remount to clear internal state
+    setDraftSelectedTracks(new Set(selectedTrackIds))
+  }, [selectedTrackIds])
 
   const applyTrackSheetSelection = React.useCallback(() => {
     setSelectedTrackIds((prev) => {
@@ -229,7 +220,7 @@ export function usePlaylistFormEditor({
     toggleSelectedTrack,
     reorderSelectedTracks,
     openTrackSheet,
-    handleTrackSheetOpenChange,
+    handleTrackSheetClose,
     toggleDraftTrack,
     applyTrackSheetSelection,
     clearDraftTrackSelection,

@@ -63,7 +63,7 @@ function PlaylistFormEditor({
     toggleSelectedTrack,
     reorderSelectedTracks,
     openTrackSheet,
-    handleTrackSheetOpenChange,
+    handleTrackSheetClose,
     toggleDraftTrack,
     applyTrackSheetSelection,
     clearDraftTrackSelection,
@@ -113,7 +113,7 @@ function PlaylistFormEditor({
         openTrackSheet={openTrackSheet}
       />
 
-      <BottomSheet isOpen={isTrackSheetOpen} onOpenChange={handleTrackSheetOpenChange}>
+      <BottomSheet isOpen={isTrackSheetOpen} onOpenChange={(open) => { if (!open) handleTrackSheetClose() }}>
         <BottomSheet.Portal>
           <BottomSheet.Overlay />
           <TrackPickerSheetContent
