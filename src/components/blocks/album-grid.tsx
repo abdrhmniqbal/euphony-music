@@ -1,12 +1,11 @@
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
+import { GridList } from "@/components/blocks/grid-list"
 import * as React from "react"
 import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   type RefreshControlProps,
   type StyleProp,
-  StyleSheet,
-  useWindowDimensions,
   View,
   type ViewStyle,
 } from "react-native"
@@ -14,13 +13,12 @@ import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import {
-  LEGEND_LIST_GRID_CONFIG,
   LEGEND_LIST_GRID_HORIZONTAL_CONFIG,
 } from "@/components/blocks/legend-list-config"
-import { useActionSheet } from "@/components/blocks/use-action-sheet"
+
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
-import { EmptyState } from "@/components/ui/empty-state"
 import {
   MediaItem as Item,
   MediaItemContent as ItemContent,
@@ -64,9 +62,6 @@ interface AlbumGridProps {
   resetScrollKey?: string
 }
 
-const GAP = 16
-const NUM_COLUMNS = 2
-const HORIZONTAL_PADDING = 32
 const HORIZONTAL_ROW_HEIGHT = 208
 
 export const AlbumGrid: React.FC<AlbumGridProps> = ({
@@ -92,16 +87,6 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
   const { t } = useTranslation()
   const { selected: selectedAlbum, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Album>()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const { width: windowWidth } = useWindowDimensions()
-  const itemWidth = (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
-  const estimatedAlbumItemHeight = itemWidth + 52
-  const gridContentContainerStyle = StyleSheet.flatten([
-    { paddingBottom: 8 },
-    contentContainerStyle,
-  ])
-  const handlePress = (album: Album) => {
-    onAlbumPress?.(album)
-  }
 
   const sheet = (
     <CollectionActionSheet
@@ -125,54 +110,6 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
       item.albumArtist || item.artist,
       item.trackCount > 0 ? t("library.count.track", { count: item.trackCount }) : null,
     ])
-  }
-
-  const renderAlbumItem = (item: Album) => (
-    <Item
-      variant="grid"
-      className="w-full"
-      boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
-      onPress={() => handlePress(item)}
-      onLongPress={() => handleLongPress(item)}
-    >
-      <Transition.Boundary.Target>
-        <ItemImage
-          icon={
-            <LocalVynil02SolidIcon
-              fill="none"
-              width={ICON_SIZES.largeCardFallback}
-              height={ICON_SIZES.largeCardFallback}
-              color={theme.muted}
-            />
-          }
-          image={item.image}
-          className="aspect-square w-full rounded-md"
-        />
-      </Transition.Boundary.Target>
-      <ItemContent className="mt-1">
-        <ItemTitle className="text-sm normal-case" numberOfLines={1}>
-          {item.title}
-        </ItemTitle>
-        <ItemDescription numberOfLines={1}>{getAlbumMetaText(item)}</ItemDescription>
-      </ItemContent>
-    </Item>
-  )
-
-  if (data.length === 0) {
-    return (
-      <EmptyState
-        icon={
-          <LocalVynil02SolidIcon
-            fill="none"
-            width={ICON_SIZES.emptyState}
-            height={ICON_SIZES.emptyState}
-            color={theme.muted}
-          />
-        }
-        title={t("library.empty.albumsTitle")}
-        message={t("library.empty.albumsMessage")}
-      />
-    )
   }
 
   if (horizontal) {
@@ -232,44 +169,86 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <LegendList
-        ref={listRef}
-        {...listBehaviorProps}
-        data={data}
-        renderItem={({ item, index }: LegendListRenderItemProps<Album>) => {
-          const column = index % NUM_COLUMNS
-          return (
-            <View
-              style={{
-                width: itemWidth,
-                marginRight: column < NUM_COLUMNS - 1 ? GAP : 0,
-                marginBottom: GAP,
-              }}
-            >
-              {renderAlbumItem(item)}
-            </View>
-          )
-        }}
-        keyExtractor={(item) => item.id}
-        scrollEnabled={scrollEnabled}
-        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-        ListHeaderComponent={listHeader}
-        ListFooterComponent={listFooter}
-        numColumns={NUM_COLUMNS}
-        contentContainerStyle={gridContentContainerStyle}
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onMomentumScrollEnd={onMomentumScrollEnd}
-        scrollEventThrottle={scrollEventThrottle}
-        refreshControl={refreshControl || undefined}
-        style={{ flex: 1, minHeight: 1 }}
-        className={containerClassName}
-        {...LEGEND_LIST_GRID_CONFIG}
-        estimatedItemSize={estimatedAlbumItemHeight}
-      />
-      {sheet}
-    </View>
+    <GridList
+      data={data}
+      keyExtractor={(item: Album) => item.id}
+      numColumns={2}
+      gap={16}
+      estimatedItemHeight={(w: number) => w + 52}
+      emptyState={{
+        icon: (
+          <LocalVynil02SolidIcon
+            fill="none"
+            width={ICON_SIZES.emptyState}
+            height={ICON_SIZES.emptyState}
+            color={theme.muted}
+          />
+        ),
+        title: t("library.empty.albumsTitle"),
+        message: t("library.empty.albumsMessage"),
+      }}
+      renderSheet={(selected, closeSheet, isOpen) => (
+        <CollectionActionSheet
+          visible={isOpen && Boolean(selected)}
+          onOpenChange={(open) => {
+            if (!open) {
+              closeSheet()
+            }
+          }}
+          type="album"
+          id={selected.id}
+          name={selected.title}
+          subtitle={selected.artist}
+          image={selected.image}
+          trackCount={selected.trackCount}
+        />
+      )}
+      scrollEnabled={scrollEnabled}
+      containerClassName={containerClassName}
+      listHeader={listHeader}
+      listFooter={listFooter}
+      contentContainerStyle={contentContainerStyle}
+      showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+      scrollEventThrottle={scrollEventThrottle}
+      onScroll={onScroll}
+      onScrollBeginDrag={onScrollBeginDrag}
+      onScrollEndDrag={onScrollEndDrag}
+      onMomentumScrollEnd={onMomentumScrollEnd}
+      refreshControl={refreshControl}
+      resetScrollKey={resetScrollKey}
+      renderItem={(item, { onLongPress, itemWidth, column }) => (
+        <View style={{ width: itemWidth, marginRight: column < 1 ? 16 : 0, marginBottom: 16 }}>
+          <Item
+            variant="grid"
+            boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
+            onPress={() => onAlbumPress?.(item)}
+            onLongPress={onLongPress}
+          >
+            <Transition.Boundary.Target>
+              <ItemImage
+                icon={
+                  <LocalVynil02SolidIcon
+                    fill="none"
+                    width={ICON_SIZES.largeCardFallback}
+                    height={ICON_SIZES.largeCardFallback}
+                    color={theme.muted}
+                  />
+                }
+                image={item.image}
+                className="aspect-square w-full rounded-md"
+              />
+            </Transition.Boundary.Target>
+            <ItemContent className="mt-1">
+              <ItemTitle className="text-sm normal-case" numberOfLines={1}>
+                {item.title}
+              </ItemTitle>
+              <ItemDescription numberOfLines={1}>
+                {getAlbumMetaText(item)}
+              </ItemDescription>
+            </ItemContent>
+          </Item>
+        </View>
+      )}
+    />
   )
 }

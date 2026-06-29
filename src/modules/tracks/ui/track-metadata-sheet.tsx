@@ -10,7 +10,6 @@ import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-so
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
-import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { useTrack } from "@/modules/tracks/queries"
 import { useSettingsStore } from "@/modules/settings/store"
 import { resolvePlayableFileUri } from "@/utils/file-path"
