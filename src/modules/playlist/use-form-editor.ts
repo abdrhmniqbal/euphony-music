@@ -52,6 +52,8 @@ export function usePlaylistFormEditor({
     () => new Set(initialSelectedTrackIds)
   )
   const [isTrackSheetOpen, setIsTrackSheetOpen] = React.useState(false)
+  // Bumped to remount <Input key={searchInputKey}>, clearing internal state
+  // (react-native TextInput doesn't expose a reliable imperative reset)
   const [searchInputKey, setSearchInputKey] = React.useState(0)
   const [searchQuery, setSearchQuery] = React.useState("")
 
@@ -157,7 +159,7 @@ export function usePlaylistFormEditor({
 
       setIsTrackSheetOpen(false)
       setSearchQuery("")
-      setSearchInputKey((prev) => prev + 1)
+      setSearchInputKey((prev) => prev + 1) // force <Input> remount to clear internal state
       setDraftSelectedTracks(new Set(selectedTrackIds))
     },
     [selectedTrackIds]
@@ -175,7 +177,7 @@ export function usePlaylistFormEditor({
     })
     setIsTrackSheetOpen(false)
     setSearchQuery("")
-    setSearchInputKey((prev) => prev + 1)
+    setSearchInputKey((prev) => prev + 1) // force <Input> remount
   }, [allTracks, draftSelectedTracks])
 
   const clearDraftTrackSelection = React.useCallback(() => {
