@@ -33,7 +33,7 @@ import { useTracks } from "@/modules/tracks/queries"
 import { useDailyMix, useForYouMix } from "@/modules/mixes/queries"
 import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import { createTrackListQueueContext } from "@/stores/playback/types"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
@@ -155,6 +155,8 @@ export default function SearchScreen() {
   const dailyMixPattern = dailyMix?.shape ?? "circles"
   const forYouMixPattern = forYouMix?.shape ?? "circles"
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <>
       <ScrollView
@@ -163,11 +165,7 @@ export default function SearchScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
-        onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-        onScrollBeginDrag={handleScrollStart}
-        onMomentumScrollEnd={handleScrollStop}
-        onScrollEndDrag={handleScrollStop}
-        scrollEventThrottle={16}
+        {...autoHideScrollProps}
       >
         <View className="relative my-6 px-3">
           <View className="absolute top-1/2 left-7 z-10 -translate-y-1/2">

@@ -31,7 +31,7 @@ import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime
 import { useGenreAlbums } from "@/modules/search/queries"
 import { mapAlbumsToGridData } from "@/modules/search/utils"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
@@ -123,6 +123,8 @@ export default function GenreAlbumsScreen() {
     return selected ? t(selected.label) : t("library.sort")
   }
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <SortSheet
       visible={sortModalVisible}
@@ -170,10 +172,7 @@ export default function GenreAlbumsScreen() {
               paddingHorizontal: 16,
               paddingBottom: 200,
             }}
-            onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-            onScrollBeginDrag={handleScrollStart}
-            onMomentumScrollEnd={handleScrollStop}
-            onScrollEndDrag={handleScrollStop}
+            {...autoHideScrollProps}
             refreshControl={
               <ThemedRefreshControl
                 refreshing={isIndexing || isLoading || isFetching}

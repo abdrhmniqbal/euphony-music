@@ -36,7 +36,7 @@ import { useGenreDetails } from "@/modules/search/queries"
 import { getPreviewAlbums } from "@/modules/search/utils"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { createPlaybackQueueContext } from "@/stores/playback/types"
 
 function getSafeRouteName(value: string | string[] | undefined) {
@@ -138,6 +138,8 @@ export default function GenreDetailsScreen() {
     )
   }
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <View className="flex-1 bg-background">
       <Stack.Screen
@@ -166,11 +168,7 @@ export default function GenreDetailsScreen() {
         contentContainerStyle={{
           paddingBottom: 200,
         }}
-        onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-        onScrollBeginDrag={handleScrollStart}
-        onMomentumScrollEnd={handleScrollStop}
-        onScrollEndDrag={handleScrollStop}
-        scrollEventThrottle={16}
+        {...autoHideScrollProps}
         refreshControl={
           <ThemedRefreshControl
             refreshing={isIndexing || isLoading || isFetching}

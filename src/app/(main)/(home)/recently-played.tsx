@@ -20,7 +20,7 @@ import { useIndexerStore } from "@/modules/indexer/store"
 import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 const RECENTLY_PLAYED_SCREEN_LIMIT = 50
 
@@ -73,6 +73,8 @@ export default function RecentlyPlayedScreen() {
     })
   }
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <View className="flex-1 bg-background">
       {history.length === 0 ? (
@@ -88,10 +90,7 @@ export default function RecentlyPlayedScreen() {
           onTrackPress={playHistoryTrack}
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
           currentTrackId={currentTrackId ?? undefined}
-          onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-          onScrollBeginDrag={handleScrollStart}
-          onMomentumScrollEnd={handleScrollStop}
-          onScrollEndDrag={handleScrollStop}
+          {...autoHideScrollProps}
           refreshControl={
             <ThemedRefreshControl
               refreshing={isIndexing || isLoading || isFetching}

@@ -25,7 +25,7 @@ import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime
 import { playTrack } from "@/modules/player/service"
 import { useGenreTopTracks } from "@/modules/search/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 function getSafeRouteName(value: string | string[] | undefined) {
   const raw = Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
@@ -108,6 +108,8 @@ export default function GenreTopTracksScreen() {
     })
   }
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <View className="flex-1 bg-background">
       <Stack.Screen
@@ -138,10 +140,7 @@ export default function GenreTopTracksScreen() {
           onTrackPress={playGenreTrack}
           showNumbers
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
-          onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-          onScrollBeginDrag={handleScrollStart}
-          onMomentumScrollEnd={handleScrollStop}
-          onScrollEndDrag={handleScrollStop}
+          {...autoHideScrollProps}
           refreshControl={
             <ThemedRefreshControl
               refreshing={isIndexing || isLoading || isFetching}

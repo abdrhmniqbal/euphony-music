@@ -21,7 +21,7 @@ import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import type { DBTrack } from "@/types/database"
 
@@ -83,6 +83,8 @@ export default function RecentlyAddedScreen() {
     })
   }
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <View className="flex-1 bg-background">
       {tracks.length === 0 ? (
@@ -98,10 +100,7 @@ export default function RecentlyAddedScreen() {
           onTrackPress={playRecentlyAddedTrack}
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
           currentTrackId={currentTrackId ?? undefined}
-          onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-          onScrollBeginDrag={handleScrollStart}
-          onMomentumScrollEnd={handleScrollStop}
-          onScrollEndDrag={handleScrollStop}
+          {...autoHideScrollProps}
           refreshControl={
             <ThemedRefreshControl
               refreshing={isIndexing || isLoading || isFetching}

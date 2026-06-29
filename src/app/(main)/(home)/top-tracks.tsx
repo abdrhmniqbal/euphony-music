@@ -25,7 +25,7 @@ import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 const TOP_TRACKS_LIMIT = 50
 
@@ -110,6 +110,8 @@ export default function TopTracksScreen() {
     })
   }
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <View className="flex-1 bg-background">
       {currentTracks.length === 0 ? (
@@ -143,10 +145,7 @@ export default function TopTracksScreen() {
               paddingBottom: 200,
               paddingHorizontal: 16,
             }}
-            onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-            onScrollBeginDrag={handleScrollStart}
-            onMomentumScrollEnd={handleScrollStop}
-            onScrollEndDrag={handleScrollStop}
+            {...autoHideScrollProps}
             refreshControl={
               <ThemedRefreshControl
                 refreshing={isIndexing || isLoading || isFetching}

@@ -28,7 +28,7 @@ import { useIndexerStore } from "@/modules/indexer/store"
 import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { createTrackListQueueContext, type PlaybackQueueContext } from "@/stores/playback/types"
 
 const CHUNK_SIZE = 5
@@ -106,16 +106,14 @@ export default function HomeScreen() {
     )
   }
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   return (
     <ScrollView
       className="flex-1 bg-background"
       contentContainerStyle={{ paddingBottom: 220 }}
       contentInsetAdjustmentBehavior="automatic"
-      onScroll={(e) => handleScroll(e.nativeEvent.contentOffset.y)}
-      onScrollBeginDrag={handleScrollStart}
-      onMomentumScrollEnd={handleScrollStop}
-      onScrollEndDrag={handleScrollStop}
-      scrollEventThrottle={16}
+      {...autoHideScrollProps}
       refreshControl={
         <ThemedRefreshControl refreshing={isIndexing || isLoading} onRefresh={refresh} />
       }

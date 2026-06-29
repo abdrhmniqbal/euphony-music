@@ -24,7 +24,7 @@ import { useDailyMix, useForYouMix } from "@/modules/mixes/queries"
 import { formatDuration } from "@/modules/playlist/utils"
 import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import type { Track } from "@/modules/player/types"
 import { createMixQueueContext } from "@/stores/playback/types"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
@@ -86,8 +86,10 @@ export default function MixDetailsScreen() {
     router.push("/playlist/form")
   }, [tracks, router])
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   function handleTrackScroll(offsetY: number) {
-    handleScroll(offsetY)
+    autoHideScrollProps.onScroll({ nativeEvent: { contentOffset: { y: offsetY } } } as any)
     const shouldShow = offsetY > HEADER_COLLAPSE_THRESHOLD
     if (shouldShow !== showHeaderTitle) {
       setShowHeaderTitle(shouldShow)
@@ -131,10 +133,8 @@ export default function MixDetailsScreen() {
         hideCover={false}
         hideArtist={false}
         contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
+        {...autoHideScrollProps}
         onScroll={(e) => handleTrackScroll(e.nativeEvent.contentOffset.y)}
-        onScrollBeginDrag={handleScrollStart}
-        onMomentumScrollEnd={handleScrollStop}
-        onScrollEndDrag={handleScrollStop}
         listHeader={
           <>
             <View
