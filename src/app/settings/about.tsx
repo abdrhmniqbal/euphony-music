@@ -15,7 +15,6 @@ import { useState } from "react"
 
 import appIcon from "@/assets/icon.png"
 import {
-  SettingsActionRow,
   SettingsHighlight,
   SettingsListGroup,
   SettingsNavigationRow,
@@ -89,7 +88,7 @@ export default function AboutSettingsScreen() {
         </Text>
         <SettingsListGroup>
           <SettingsHighlight id="updates">
-            <SettingsActionRow
+            <SettingsNavigationRow
               title={t("settings.about.checkForUpdates")}
               description={
                 isCheckingForUpdates
@@ -131,14 +130,14 @@ export default function AboutSettingsScreen() {
           {t("settings.about.sections.project", "Project & Legal")}
         </Text>
         <SettingsListGroup>
-          <SettingsActionRow
+          <SettingsNavigationRow
             title={t("settings.about.github")}
             description={t("settings.about.repositoryDescription")}
             onPress={() => {
               void Linking.openURL(repositoryUrl)
             }}
           />
-          <SettingsActionRow
+          <SettingsNavigationRow
             title={t("settings.about.helpTranslate")}
             description={t("settings.about.helpTranslateDescription")}
             onPress={() => {

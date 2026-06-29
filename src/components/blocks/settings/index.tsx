@@ -160,31 +160,6 @@ export function SettingsNavigationRow({
   )
 }
 
-export function SettingsActionRow({
-  title,
-  description,
-  onPress,
-  disabled,
-}: {
-  title: string
-  description?: string | null
-  onPress: () => void
-  disabled?: boolean
-}) {
-  // Navigation row already includes a chevron suffix (if configured that way),
-  // but if we need a distinct Action Row (e.g. for "Check for updates"), it usually just relies on the ItemSuffix being present/absent.
-  // We'll mimic the current codebase which just leaves ListGroup.ItemSuffix empty to render a chevron.
-  return (
-    <ListGroup.Item onPress={onPress} disabled={disabled}>
-      <ListGroup.ItemContent>
-        <ListGroup.ItemTitle>{title}</ListGroup.ItemTitle>
-        {description ? <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription> : null}
-      </ListGroup.ItemContent>
-      <ListGroup.ItemSuffix />
-    </ListGroup.Item>
-  )
-}
-
 export function SettingsSwitchRow({
   title,
   description,
