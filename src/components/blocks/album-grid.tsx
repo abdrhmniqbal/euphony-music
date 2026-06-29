@@ -217,37 +217,41 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
       refreshControl={refreshControl}
       resetScrollKey={resetScrollKey}
       renderItem={(item, { onLongPress, itemWidth, column }) => (
-        <View style={{ width: itemWidth, marginRight: column < 1 ? 16 : 0, marginBottom: 16 }}>
-          <Item
-            variant="grid"
-            boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
-            onPress={() => onAlbumPress?.(item)}
-            onLongPress={onLongPress}
-          >
-            <Transition.Boundary.Target>
-              <ItemImage
-                icon={
-                  <LocalVynil02SolidIcon
-                    fill="none"
-                    width={ICON_SIZES.largeCardFallback}
-                    height={ICON_SIZES.largeCardFallback}
-                    color={theme.muted}
-                  />
-                }
-                image={item.image}
-                className="aspect-square w-full rounded-md"
-              />
-            </Transition.Boundary.Target>
-            <ItemContent className="mt-1">
-              <ItemTitle className="text-sm normal-case" numberOfLines={1}>
-                {item.title}
-              </ItemTitle>
-              <ItemDescription numberOfLines={1}>
-                {getAlbumMetaText(item)}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-        </View>
+        <Item
+          variant="grid"
+          className="w-full"
+          style={{
+            width: itemWidth,
+            marginRight: column < 1 ? 16 : 0,
+            marginBottom: 16,
+          }}
+          boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
+          onPress={() => onAlbumPress?.(item)}
+          onLongPress={onLongPress}
+        >
+          <Transition.Boundary.Target>
+            <ItemImage
+              icon={
+                <LocalVynil02SolidIcon
+                  fill="none"
+                  width={ICON_SIZES.largeCardFallback}
+                  height={ICON_SIZES.largeCardFallback}
+                  color={theme.muted}
+                />
+              }
+              image={item.image}
+              className="aspect-square w-full rounded-md"
+            />
+          </Transition.Boundary.Target>
+          <ItemContent className="mt-1">
+            <ItemTitle className="text-sm normal-case" numberOfLines={1}>
+              {item.title}
+            </ItemTitle>
+            <ItemDescription numberOfLines={1}>
+              {getAlbumMetaText(item)}
+            </ItemDescription>
+          </ItemContent>
+        </Item>
       )}
     />
   )

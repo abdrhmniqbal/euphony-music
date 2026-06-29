@@ -77,7 +77,7 @@ export default function SettingsScreen() {
             pointerEvents="none"
             className="absolute inset-y-0 left-1 z-20 w-10 items-center justify-center"
           >
-            <LocalSearch01Icon fill="none" width={24} height={24} color={theme.foreground} />
+            <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
           </View>
           <Input
             value={query}

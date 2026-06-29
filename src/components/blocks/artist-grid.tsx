@@ -4,7 +4,6 @@ import {
   type NativeSyntheticEvent,
   type RefreshControlProps,
   type StyleProp,
-  View,
   type ViewStyle,
 } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -107,37 +106,40 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
       onMomentumScrollEnd={onMomentumScrollEnd}
       refreshControl={refreshControl}
       renderItem={(item, { onLongPress, itemWidth, column }) => (
-        <View style={{ width: itemWidth, marginRight: column < 2 ? 12 : 0, marginBottom: 12 }}>
-          <Item
-            variant="grid"
-            boundaryId={resolveArtistTransitionId({ id: item.id, name: item.name })}
-            onPress={() => onArtistPress?.(item)}
-            onLongPress={onLongPress}
-          >
-            <Transition.Boundary.Target>
-              <ItemImage
-                icon={
-                  <LocalUserSolidIcon
-                    fill="none"
-                    width={ICON_SIZES.gridFallback}
-                    height={ICON_SIZES.gridFallback}
-                    color={theme.muted}
-                  />
-                }
-                image={item.image}
-                className="aspect-square w-full rounded-full bg-default"
-              />
-            </Transition.Boundary.Target>
-            <ItemContent className="mt-1 items-center">
-              <ItemTitle className="text-center text-sm normal-case" numberOfLines={1}>
-                {item.name}
-              </ItemTitle>
-              <ItemDescription className="text-center">
-                {formatTrackCount(item.trackCount)}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-        </View>
+        <Item
+          variant="grid"
+          style={{
+            width: itemWidth,
+            marginRight: column < 2 ? 12 : 0,
+            marginBottom: 12,
+          }}
+          boundaryId={resolveArtistTransitionId({ id: item.id, name: item.name })}
+          onPress={() => onArtistPress?.(item)}
+          onLongPress={onLongPress}
+        >
+          <Transition.Boundary.Target>
+            <ItemImage
+              icon={
+                <LocalUserSolidIcon
+                  fill="none"
+                  width={ICON_SIZES.gridFallback}
+                  height={ICON_SIZES.gridFallback}
+                  color={theme.muted}
+                />
+              }
+              image={item.image}
+              className="aspect-square w-full rounded-full bg-default"
+            />
+          </Transition.Boundary.Target>
+          <ItemContent className="mt-1 items-center">
+            <ItemTitle className="text-center text-sm normal-case" numberOfLines={1}>
+              {item.name}
+            </ItemTitle>
+            <ItemDescription className="text-center">
+              {formatTrackCount(item.trackCount)}
+            </ItemDescription>
+          </ItemContent>
+        </Item>
       )}
     />
   )
