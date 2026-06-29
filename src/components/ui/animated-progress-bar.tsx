@@ -6,10 +6,16 @@
  * Side Effects: Runs native-thread progress animations and optional completion callback.
  */
 
-import type { AnimatedProgressBarProps } from "./animated-progress-bar-types"
 import { LinearGradient } from "expo-linear-gradient"
 import * as React from "react"
-import { Text, useWindowDimensions, View } from "react-native"
+import {
+  Text,
+  useWindowDimensions,
+  View,
+  type DimensionValue,
+  type TextStyle,
+  type ViewStyle,
+} from "react-native"
 
 import Animated, {
   Easing,
@@ -22,6 +28,26 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { useThemeColors } from "@/modules/ui/theme"
+
+export interface AnimatedProgressBarProps {
+  progress: number
+  animationDuration?: number
+  width?: DimensionValue
+  height?: number
+  progressColor?: string
+  trackColor?: string
+  borderRadius?: number
+  showPercentage?: boolean
+  percentagePosition?: "left" | "right" | "top" | "bottom" | "inside"
+  percentageTextStyle?: TextStyle
+  containerStyle?: ViewStyle
+  formatPercentage?: (value: number) => string
+  indeterminate?: boolean
+  pulsate?: boolean
+  useGradient?: boolean
+  gradientColors?: string[]
+  onAnimationComplete?: () => void
+}
 
 const styles = {
   container: {

@@ -45,4 +45,4 @@ export function SectionHeader({ title, className, onViewMore }: SectionHeaderPro
   )
 }
 
-export const SectionTitle = SectionHeader
+

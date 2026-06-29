@@ -51,7 +51,7 @@ import { Stack } from "@/layouts/stack"
 import { BackButton } from "@/components/patterns/back-button"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
-import { SectionTitle } from "@/components/ui/section-header"
+import { SectionHeader } from "@/components/ui/section-header"
 import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
 import { SCREEN_SECTION_HEADING_GAP, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
 import {
@@ -428,7 +428,7 @@ export default function ArtistDetailsScreen() {
               style={{ paddingTop: SCREEN_SECTION_TOP_SPACING }}
             >
               <View className="px-6">
-                <SectionTitle title={t("library.tracks")} onViewMore={() => navigateTo("tracks")} />
+                <SectionHeader title={t("library.tracks")} onViewMore={() => navigateTo("tracks")} />
                 <PlaybackActionsRow
                   onPlay={playAllTracks}
                   onShuffle={shuffleTracks}
@@ -451,7 +451,7 @@ export default function ArtistDetailsScreen() {
 
               {sortedAlbums.length > 0 && (
                 <View className="mt-8 px-6">
-                  <SectionTitle
+                  <SectionHeader
                     title={t("library.albums")}
                     onViewMore={() => navigateTo("albums")}
                   />
@@ -465,7 +465,7 @@ export default function ArtistDetailsScreen() {
 
               {sortedFeaturedOnAlbums.length > 0 && (
                 <View className="mt-8 px-6">
-                  <SectionTitle
+                  <SectionHeader
                     title={t("library.featuredOn")}
                     onViewMore={() => navigateTo("featuredOn")}
                   />

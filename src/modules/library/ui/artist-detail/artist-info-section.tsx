@@ -1,6 +1,6 @@
 import { Text, View } from "react-native"
 
-import { SectionTitle } from "@/components/ui/section-header"
+import { SectionHeader } from "@/components/ui/section-header"
 
 interface ArtistInfoSectionProps {
   title: string
@@ -14,7 +14,7 @@ export function ArtistInfoSection({ title, bio }: ArtistInfoSectionProps) {
 
   return (
     <View className="mt-8 px-6">
-      <SectionTitle title={title} />
+      <SectionHeader title={title} />
       <View className="overflow-hidden rounded-2xl bg-surface p-4">
         <Text className="text-sm leading-5 text-foreground">{bio}</Text>
       </View>

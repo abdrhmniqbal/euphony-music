@@ -35,6 +35,8 @@ export function MarqueeText({
 
   return (
     <View onLayout={onContainerLayout} style={{ width: "100%", overflow: "hidden" }}>
+      {/* Hidden measurement view — renders text offscreen at max width so
+          onLayout reports true text width without layout thrashing. */}
       <View
         style={{
           position: "absolute",
