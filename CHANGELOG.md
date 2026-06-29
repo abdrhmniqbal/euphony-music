@@ -2,6 +2,32 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.0.0-rc.2] - 2026-06-29
+
+### ✨ New Features
+
+- Add custom order sort option to playlist details screen. (@abdrhmniqbal)
+- Add update timestamp display on mixes detail page. (@abdrhmniqbal)
+
+### ⚙️ Changes
+
+- Perform large-scale codebase refactoring to improve modularity, component composition, and layout consistency. (@abdrhmniqbal)
+- Refactor playback player state and actions into dedicated hooks (`useSleepTimerDraft`, `useCastAwarePlayback`, `useQueueTracks`). (@abdrhmniqbal)
+- Refactor playlist creation flow using `@tanstack/react-form` for robust form state management. (@abdrhmniqbal)
+- Centralize sheet components to `/sheets` and consolidate action sheet state under `useActionSheet` and `useTrackActions` hooks. (@abdrhmniqbal)
+- Restructured settings pages using modular `SettingsListGroup` layout blocks and unified switch/navigation rows. (@abdrhmniqbal)
+- Collapse triplicated list elements into generic components (`GridList` for grids, `LibraryTab` for tab views). (@abdrhmniqbal)
+- Collapse duplicated search details layouts into a shared detail stack, and extract `MixCard` for pattern rendering. (@abdrhmniqbal)
+- Centralize safe route name decoding with `getSafeRouteName` to eliminate duplicated decoding logic. (@abdrhmniqbal)
+
+### 🧩 Fixes
+
+- Fix mixes cache expiry by resetting staleTime so daily/weekly DB regeneration is respected. (@abdrhmniqbal)
+- Fix conditional sheet mounting bugs in library genres and album detail views that caused crashes or interaction failures. (@abdrhmniqbal)
+- Fix full player dismissability when launching from external file deep-links. (@abdrhmniqbal)
+- Fix action sheet clipping due to conflicting snap points. (@abdrhmniqbal)
+- Fix multi-artist split name display formatting issues. (@abdrhmniqbal)
+
 ## [v1.0.0-rc.1] - 2026-06-25
 
 ### ✨ New Features
