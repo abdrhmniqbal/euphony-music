@@ -166,21 +166,9 @@ export default function PlaylistFormScreen() {
     router.replace("/(main)/(library)")
   }
 
-  if (isEditMode && isEditPlaylistLoading) {
+  if (isEditMode && (isEditPlaylistLoading || !playlistToEdit)) {
     return (
-      <View className="flex-1 bg-background pt-4">
-        <Stack.Screen
-          options={{
-            title: t("playlist.editPlaylist"),
-          }}
-        />
-      </View>
-    )
-  }
-
-  if (isEditMode && !playlistToEdit) {
-    return (
-      <View className="flex-1 bg-background">
+      <View className={isEditPlaylistLoading ? "flex-1 bg-background pt-4" : "flex-1 bg-background"}>
         <Stack.Screen
           options={{
             title: t("playlist.editPlaylist"),
