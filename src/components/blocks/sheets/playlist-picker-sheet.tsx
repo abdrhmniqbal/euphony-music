@@ -171,7 +171,7 @@ export function PlaylistPickerSheet({
             )}
           />
 
-          <View className="border-t border-border/60 px-4 pt-3 pb-3">
+          <View className="border-t border-default-soft-hover px-4 pt-3 pb-3">
             <Button variant="secondary" onPress={onCreatePlaylist} isDisabled={isSelecting}>
               <View className="flex-row items-center gap-2">
                 <LocalAdd01Icon fill="none" width={18} height={18} color={theme.foreground} />
@@ -208,14 +208,15 @@ function PlaylistPickerSearchInput({
           ref={inputRef}
           placeholder={t("playlist.searchPlaceholder")}
           onChangeText={setSearchQuery}
-          className="flex-1 pr-10 pl-10"
+          className="flex-1 pr-10 pl-12"
+          variant="secondary"
           autoCapitalize="none"
           autoCorrect={false}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
         />
         <View className="absolute left-3.5" pointerEvents="none">
-          <LocalSearch01Icon fill="none" width={20} height={20} color={theme.muted} />
+          <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
         </View>
         {searchQuery.length > 0 ? (
           <PressableFeedback

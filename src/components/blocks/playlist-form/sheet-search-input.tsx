@@ -23,14 +23,15 @@ export function SheetSearchInput({ inputKey, searchQuery, setSearchQuery }: Shee
           ref={inputRef}
           placeholder={t("playlist.searchTracksPlaceholder")}
           onChangeText={setSearchQuery}
-          className="flex-1 pr-10 pl-10"
+          className="flex-1 pr-10 pl-12"
+          variant="secondary"
           autoCapitalize="none"
           autoCorrect={false}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
         />
         <View className="absolute left-3.5" pointerEvents="none">
-          <LocalSearch01Icon fill="none" width={20} height={20} color={theme.muted} />
+          <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
         </View>
         {searchQuery.length > 0 ? (
           <PressableFeedback

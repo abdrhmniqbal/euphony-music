@@ -87,7 +87,7 @@ export function TrackPickerSheetContent({
         {...LEGEND_LIST_PICKER_CONFIG}
       />
       <View
-        className="border-t border-border/60 px-4 pt-3"
+        className="border-t border-default-soft-hover px-4 pt-3"
         style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       >
         <View className="mb-2 flex-row items-center justify-between">

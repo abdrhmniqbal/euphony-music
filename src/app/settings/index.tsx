@@ -12,7 +12,6 @@ import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import LocalSearch01Icon from "@/components/icons/local/search-01"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -23,6 +22,7 @@ import {
   SettingsNavigationRow,
   SettingsScrollView,
 } from "@/components/blocks/settings"
+import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 
 function normalizeSearchText(value: string) {
   return value.toLocaleLowerCase().replace(/\s+/g, " ").trim()
@@ -95,7 +95,7 @@ export default function SettingsScreen() {
               onPress={() => setQuery("")}
               className="absolute inset-y-0 right-2.5 justify-center p-1"
             >
-              <LocalCancel01Icon fill="none" width={18} height={18} color={theme.muted} />
+              <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={theme.muted} />
             </PressableFeedback>
           )}
         </View>
