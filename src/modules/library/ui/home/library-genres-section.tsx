@@ -84,20 +84,23 @@ export function LibraryGenresSection({
           />
         )}
       </ScrollView>
-      <CollectionActionSheet
-        visible={isSheetOpen && Boolean(selectedGenre)}
-        onOpenChange={(open) => {
-          if (!open) {
-            closeSheet()
-          }
-        }}
-        type="genre"
-        id={selectedGenre?.title ?? ""}
-        name={selectedGenre?.title ?? ""}
-        subtitle={t("library.genre")}
-        trackCount={selectedGenre?.trackCount ?? 0}
-        hideFavoriteAction
-      />
+      {isSheetOpen && selectedGenre && (
+        <CollectionActionSheet
+          visible={isSheetOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              closeSheet()
+            }
+          }}
+          type="genre"
+          id={selectedGenre.title}
+          name={selectedGenre.title}
+          subtitle={t("library.genre")}
+          trackCount={selectedGenre.trackCount}
+          favoriteId={selectedGenre.title}
+          hideFavoriteAction
+        />
+      )}
     </>
   )
 }
