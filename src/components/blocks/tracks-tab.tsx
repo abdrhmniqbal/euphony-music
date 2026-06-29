@@ -5,14 +5,13 @@ import type { Track } from "@/modules/player/store"
 import type { DBTrack } from "@/types/database"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
-import { LibraryTabState } from "@/components/ui/library-tab-state"
+import { LibraryTab } from "@/components/ui/library-tab"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { sortTracks } from "@/modules/library/sort-utils"
 import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 import { transformDBTrackToTrack } from "@/utils/transformers"
-
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 interface TracksTabProps {
@@ -30,6 +29,7 @@ export const TracksTab: React.FC<TracksTabProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
+  const autoHideScrollProps = useAutoHideHeaderScroll()
 
   const { data: dbTracks = [] } = useTracks()
 
@@ -50,8 +50,6 @@ export const TracksTab: React.FC<TracksTabProps> = ({
     [tracks, effectiveSortConfig]
   )
 
-  const autoHideScrollProps = useAutoHideHeaderScroll()
-
   const handleTrackPress = React.useCallback(
     (track: Track) => {
       onTrackPress?.(track, sortedTracks)
@@ -60,22 +58,22 @@ export const TracksTab: React.FC<TracksTabProps> = ({
   )
 
   return (
-    <LibraryTabState
+    <LibraryTab
       hasData={tracks.length > 0}
       emptyIcon={
         <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
       }
       emptyTitle={t("library.empty.tracksTitle")}
       emptyMessage={t("library.empty.tracksMessage")}
+      contentBottomPadding={contentBottomPadding}
+      resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
+      refreshControl={refreshControl}
+      autoHideScrollProps={autoHideScrollProps}
     >
       <TrackList
         data={sortedTracks}
         onTrackPress={handleTrackPress}
-        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
-        resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
-        refreshControl={refreshControl}
-        {...autoHideScrollProps}
       />
-    </LibraryTabState>
+    </LibraryTab>
   )
 }

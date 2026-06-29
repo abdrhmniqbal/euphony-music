@@ -4,12 +4,11 @@ import type { SortConfig } from "@/modules/library/sort-types"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { type Album, AlbumGrid } from "@/components/blocks/album-grid"
-import { LibraryTabState } from "@/components/ui/library-tab-state"
+import { LibraryTab } from "@/components/ui/library-tab"
 import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { sortAlbums } from "@/modules/library/sort-utils"
 import { useAlbums } from "@/modules/library/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 type AlbumOrderByField = Parameters<typeof useAlbums>[0]
@@ -45,6 +44,7 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
+  const autoHideScrollProps = useAutoHideHeaderScroll()
   const effectiveSortConfig = React.useMemo<SortConfig>(
     () =>
       sortConfig ?? {
@@ -77,8 +77,6 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
     [albums, effectiveSortConfig]
   )
 
-  const autoHideScrollProps = useAutoHideHeaderScroll()
-
   const handleAlbumPress = React.useCallback(
     (album: Album) => {
       onAlbumPress?.(album)
@@ -87,21 +85,21 @@ export const AlbumsTab: React.FC<AlbumsTabProps> = ({
   )
 
   return (
-    <LibraryTabState
+    <LibraryTab
       hasData={albums.length > 0}
       emptyIcon={<LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
       emptyTitle={t("library.empty.albumsTitle")}
       emptyMessage={t("library.empty.albumsMessage")}
+      contentBottomPadding={contentBottomPadding}
+      resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
+      refreshControl={refreshControl}
+      autoHideScrollProps={autoHideScrollProps}
     >
       <AlbumGrid
         data={sortedAlbums}
         onAlbumPress={handleAlbumPress}
         onAlbumLongPress={onAlbumLongPress}
-        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
-        resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
-        refreshControl={refreshControl}
-        {...autoHideScrollProps}
       />
-    </LibraryTabState>
+    </LibraryTab>
   )
 }

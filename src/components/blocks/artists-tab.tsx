@@ -12,12 +12,11 @@ import type { SortConfig } from "@/modules/library/sort-types"
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { type Artist, ArtistGrid } from "@/components/blocks/artist-grid"
-import { LibraryTabState } from "@/components/ui/library-tab-state"
+import { LibraryTab } from "@/components/ui/library-tab"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import { sortArtists } from "@/modules/library/sort-utils"
 import { useArtists } from "@/modules/library/queries"
 import { useThemeColors } from "@/modules/ui/theme"
-
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 type ArtistOrderByField = Parameters<typeof useArtists>[0]
@@ -51,6 +50,7 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
+  const autoHideScrollProps = useAutoHideHeaderScroll()
   const effectiveSortConfig = React.useMemo<SortConfig>(
     () =>
       sortConfig ?? {
@@ -80,8 +80,6 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
     [artists, effectiveSortConfig]
   )
 
-  const autoHideScrollProps = useAutoHideHeaderScroll()
-
   const handleArtistPress = React.useCallback(
     (artist: Artist) => {
       onArtistPress?.(artist)
@@ -90,21 +88,21 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
   )
 
   return (
-    <LibraryTabState
+    <LibraryTab
       hasData={artists.length > 0}
       emptyIcon={<LocalUserSolidIcon fill="none" width={48} height={48} color={theme.muted} />}
       emptyTitle={t("library.empty.artistsTitle")}
       emptyMessage={t("library.empty.artistsMessage")}
+      contentBottomPadding={contentBottomPadding}
+      resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
+      refreshControl={refreshControl}
+      autoHideScrollProps={autoHideScrollProps}
     >
       <ArtistGrid
         data={sortedArtists}
         onArtistPress={handleArtistPress}
         onArtistLongPress={onArtistLongPress}
-        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
-        resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
-        refreshControl={refreshControl}
-        {...autoHideScrollProps}
       />
-    </LibraryTabState>
+    </LibraryTab>
   )
 }
