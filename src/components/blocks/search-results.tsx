@@ -13,23 +13,21 @@ import type {
 } from "@/modules/library/types"
 import type { Track } from "@/modules/player/store"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
-import { Chip, PressableFeedback } from "heroui-native"
+import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 
-import { useCallback, useMemo, useState } from "react"
-import { Keyboard, ScrollView, Text, View } from "react-native"
+import { useCallback, useMemo } from "react"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { LEGEND_LIST_SECTION_CONFIG } from "@/components/blocks/legend-list-config"
+import { SearchResultsTabBar, type SearchTab } from "@/components/blocks/search-results-tab-bar"
 import { MemoizedSearchResultRow } from "@/components/patterns/search-result-row"
 
 export type {
   SearchAlbumResult,
   SearchArtistResult,
   SearchPlaylistResult,
-} from "@/modules/library/types"
-
-const SEARCH_TABS = ["All", "Track", "Album", "Artist", "Playlist"] as const
-export type SearchTab = (typeof SEARCH_TABS)[number]
+}
 
 interface SearchResultsProps {
   tracks: Track[]
@@ -99,7 +97,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   playlists,
   query,
   isLoading: _isLoading = false,
-  activeTab: activeTabProp,
+  activeTab,
   onActiveTabChange,
   onArtistPress,
   onArtistLongPress,
@@ -112,35 +110,6 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   onSeeMoreTracks,
 }) => {
   const { t } = useTranslation()
-  const [internalActiveTab, setInternalActiveTab] = useState<SearchTab>("All")
-  const activeTab = activeTabProp ?? internalActiveTab
-
-  function getSearchTabLabel(tab: SearchTab) {
-    switch (tab) {
-      case "All":
-        return t("search.tabs.all")
-      case "Track":
-        return t("search.tabs.track")
-      case "Album":
-        return t("search.tabs.album")
-      case "Artist":
-        return t("search.tabs.artist")
-      case "Playlist":
-        return t("search.tabs.playlist")
-    }
-  }
-
-  const setActiveTab = useCallback(
-    (tab: SearchTab) => {
-      if (onActiveTabChange) {
-        onActiveTabChange(tab)
-        return
-      }
-
-      setInternalActiveTab(tab)
-    },
-    [onActiveTabChange]
-  )
 
   const showArtists = activeTab === "All" || activeTab === "Artist"
   const showAlbums = activeTab === "All" || activeTab === "Album"
@@ -269,29 +238,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
   return (
     <View className="flex-1">
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
-        contentInsetAdjustmentBehavior="never"
-        automaticallyAdjustContentInsets={false}
-        keyboardDismissMode="on-drag"
-        onScrollBeginDrag={() => Keyboard.dismiss()}
-        className="pt-3 pb-4"
-        style={{ flexGrow: 0 }}
-      >
-        {SEARCH_TABS.map((tab) => (
-          <Chip
-            key={tab}
-            onPress={() => setActiveTab(tab)}
-            variant={activeTab === tab ? "primary" : "soft"}
-            color={activeTab === tab ? "accent" : "default"}
-            size="lg"
-          >
-            <Chip.Label className="font-medium">{getSearchTabLabel(tab)}</Chip.Label>
-          </Chip>
-        ))}
-      </ScrollView>
+      <SearchResultsTabBar
+        activeTab={activeTab ?? "All"}
+        onActiveTabChange={onActiveTabChange ?? (() => {})}
+      />
       <LegendList
         data={listData}
         renderItem={renderListItem}

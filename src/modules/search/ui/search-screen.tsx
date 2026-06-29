@@ -19,13 +19,13 @@ import { useTranslation } from "react-i18next"
 
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { RecentSearches, type RecentSearchItem } from "@/components/blocks/recent-searches"
-import {
-  type SearchAlbumResult,
-  type SearchArtistResult,
-  type SearchPlaylistResult,
-  SearchResults,
-  type SearchTab,
+import type {
+  SearchAlbumResult,
+  SearchArtistResult,
+  SearchPlaylistResult,
 } from "@/components/blocks/search-results"
+import { SearchResults } from "@/components/blocks/search-results"
+import type { SearchTab } from "@/components/blocks/search-results-tab-bar"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import LocalArrowLeft02Icon from "@/components/icons/local/arrow-left-02"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
