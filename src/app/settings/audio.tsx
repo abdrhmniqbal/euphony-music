@@ -11,37 +11,13 @@ import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
+import { SettingsHighlight, SettingsScrollView, SettingsSwitchRow } from "@/components/blocks/settings"
 import { setAudioPlaybackConfig, type AudioPlaybackConfig } from "@/modules/settings/audio-playback"
 import { setCrossfadeConfig } from "@/modules/settings/audio-crossfade"
 import { useSettingsStore } from "@/modules/settings/store"
 
 function getSliderNumericValue(value: number | number[]): number {
   return Array.isArray(value) ? (value[0] ?? 0) : value
-}
-
-function AudioSwitchRow({
-  title,
-  description,
-  isSelected,
-  onSelectedChange,
-}: {
-  title: string
-  description: string
-  isSelected: boolean
-  onSelectedChange: (isSelected: boolean) => void
-}) {
-  return (
-    <ListGroup.Item>
-      <ListGroup.ItemContent>
-        <ListGroup.ItemTitle>{title}</ListGroup.ItemTitle>
-        <ListGroup.ItemDescription>{description}</ListGroup.ItemDescription>
-      </ListGroup.ItemContent>
-      <ListGroup.ItemSuffix>
-        <Switch isSelected={isSelected} onSelectedChange={onSelectedChange} />
-      </ListGroup.ItemSuffix>
-    </ListGroup.Item>
-  )
 }
 
 export default function AudioSettingsScreen() {
@@ -77,7 +53,7 @@ export default function AudioSettingsScreen() {
         </Text>
         <ListGroup>
           <SettingsHighlight id="fadePlayPauseStop">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.fadePlayPauseStop")}
               description={t("settings.audio.fadePlayPauseStopDescription")}
               isSelected={audioPlaybackConfig.fadePlayPauseStop}
@@ -88,7 +64,7 @@ export default function AudioSettingsScreen() {
           </SettingsHighlight>
           <Separator className="mx-4" />
           <SettingsHighlight id="fadeOnSeek">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.fadeOnSeek")}
               description={t("settings.audio.fadeOnSeekDescription")}
               isSelected={audioPlaybackConfig.fadeOnSeek}
@@ -104,7 +80,7 @@ export default function AudioSettingsScreen() {
         </Text>
         <ListGroup>
           <SettingsHighlight id="resumeAfterCall">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.resumeAfterCall")}
               description={t("settings.audio.resumeAfterCallDescription")}
               isSelected={audioPlaybackConfig.resumeAfterCall}
@@ -115,7 +91,7 @@ export default function AudioSettingsScreen() {
           </SettingsHighlight>
           <Separator className="mx-4" />
           <SettingsHighlight id="resumeOnStart">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.resumeOnStart")}
               description={t("settings.audio.resumeOnStartDescription")}
               isSelected={audioPlaybackConfig.resumeOnStart}
@@ -126,7 +102,7 @@ export default function AudioSettingsScreen() {
           </SettingsHighlight>
           <Separator className="mx-4" />
           <SettingsHighlight id="resumeOnReopen">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.resumeOnReopen")}
               description={t("settings.audio.resumeOnReopenDescription")}
               isSelected={audioPlaybackConfig.resumeOnReopen}
@@ -137,7 +113,7 @@ export default function AudioSettingsScreen() {
           </SettingsHighlight>
           <Separator className="mx-4" />
           <SettingsHighlight id="resumeOnFocusGain">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.resumeOnFocusGain")}
               description={t("settings.audio.resumeOnFocusGainDescription")}
               isSelected={audioPlaybackConfig.resumeOnFocusGain}
@@ -155,7 +131,7 @@ export default function AudioSettingsScreen() {
         </Text>
         <ListGroup>
           <SettingsHighlight id="shortAudioFocusChange">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.shortAudioFocusChange")}
               description={t("settings.audio.shortAudioFocusChangeDescription")}
               isSelected={audioPlaybackConfig.shortAudioFocusChange}
@@ -166,7 +142,7 @@ export default function AudioSettingsScreen() {
           </SettingsHighlight>
           <Separator className="mx-4" />
           <SettingsHighlight id="pauseInCall">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.pauseInCall")}
               description={t("settings.audio.pauseInCallDescription")}
               isSelected={audioPlaybackConfig.pauseInCall}
@@ -177,7 +153,7 @@ export default function AudioSettingsScreen() {
           </SettingsHighlight>
           <Separator className="mx-4" />
           <SettingsHighlight id="duckVolume">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.duckVolume")}
               description={t("settings.audio.duckVolumeDescription")}
               isSelected={audioPlaybackConfig.duckVolume}
@@ -186,7 +162,7 @@ export default function AudioSettingsScreen() {
           </SettingsHighlight>
           <Separator className="mx-4" />
           <SettingsHighlight id="permanentAudioFocusChange">
-            <AudioSwitchRow
+            <SettingsSwitchRow
               title={t("settings.audio.permanentAudioFocusChange")}
               description={t("settings.audio.permanentAudioFocusChangeDescription")}
               isSelected={audioPlaybackConfig.permanentAudioFocusChange}
