@@ -7,7 +7,7 @@
  */
 
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { Button, Dialog, ListGroup, Separator, Slider, Switch } from "heroui-native"
+import { Button, Dialog, ListGroup, Slider, Switch } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -20,7 +20,7 @@ import type { IndexerScanConfig } from "@/modules/settings/types"
 import { getTrackDurationFilterLabel } from "@/modules/settings/track-duration-filter"
 import { useSettingsStore } from "@/modules/settings/store"
 import { showAppToast } from "@/modules/ui/toast"
-import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
+import { SettingsHighlight, SettingsListGroup, SettingsScrollView } from "@/components/blocks/settings"
 
 function getSliderNumericValue(value: number | number[]): number {
   return Array.isArray(value) ? (value[0] ?? 0) : value
@@ -92,7 +92,7 @@ export default function LibrarySettingsScreen() {
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.library.sections.content", "Content & Filters")}
           </Text>
-          <ListGroup>
+          <SettingsListGroup>
             <ListGroup.Item onPress={() => router.push("/settings/folder-filters")}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>
@@ -104,7 +104,6 @@ export default function LibrarySettingsScreen() {
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
-            <Separator className="mx-4" />
             <ListGroup.Item onPress={() => router.push("/settings/track-duration-filter")}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>
@@ -116,7 +115,6 @@ export default function LibrarySettingsScreen() {
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
-            <Separator className="mx-4" />
             <SettingsHighlight id="countAsPlayed">
               <ListGroup.Item>
                 <ListGroup.ItemContent>
@@ -151,14 +149,14 @@ export default function LibrarySettingsScreen() {
                 </ListGroup.ItemContent>
               </ListGroup.Item>
             </SettingsHighlight>
-          </ListGroup>
+          </SettingsListGroup>
         </View>
 
         <View className="gap-2">
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.library.sections.interface", "Library Interface")}
           </Text>
-          <ListGroup>
+          <SettingsListGroup>
             <ListGroup.Item onPress={() => router.push("/settings/split-multiple-values")}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>
@@ -170,7 +168,6 @@ export default function LibrarySettingsScreen() {
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
-            <Separator className="mx-4" />
             <ListGroup.Item onPress={() => router.push("/settings/library-tabs")}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>{t("settings.routes.libraryTabs.title")}</ListGroup.ItemTitle>
@@ -180,14 +177,14 @@ export default function LibrarySettingsScreen() {
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
-          </ListGroup>
+          </SettingsListGroup>
         </View>
 
         <View className="gap-2">
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.library.sections.indexing", "Indexing & Scanning")}
           </Text>
-          <ListGroup>
+          <SettingsListGroup>
             <SettingsHighlight id="autoScan">
               <ListGroup.Item>
                 <ListGroup.ItemContent>
@@ -206,7 +203,6 @@ export default function LibrarySettingsScreen() {
                 </ListGroup.ItemSuffix>
               </ListGroup.Item>
             </SettingsHighlight>
-            <Separator className="mx-4" />
             <SettingsHighlight id="initialScan">
               <ListGroup.Item>
                 <ListGroup.ItemContent>
@@ -225,7 +221,6 @@ export default function LibrarySettingsScreen() {
                 </ListGroup.ItemSuffix>
               </ListGroup.Item>
             </SettingsHighlight>
-            <Separator className="mx-4" />
             <SettingsHighlight id="rescanImmediately">
               <ListGroup.Item>
                 <ListGroup.ItemContent>
@@ -246,7 +241,6 @@ export default function LibrarySettingsScreen() {
                 </ListGroup.ItemSuffix>
               </ListGroup.Item>
             </SettingsHighlight>
-            <Separator className="mx-4" />
             <SettingsHighlight id="reindex">
               <ListGroup.Item onPress={() => setShowReindexDialog(true)} disabled={isIndexing}>
                 <ListGroup.ItemContent>
@@ -259,7 +253,7 @@ export default function LibrarySettingsScreen() {
                 </ListGroup.ItemContent>
               </ListGroup.Item>
             </SettingsHighlight>
-          </ListGroup>
+          </SettingsListGroup>
         </View>
       </SettingsScrollView>
 

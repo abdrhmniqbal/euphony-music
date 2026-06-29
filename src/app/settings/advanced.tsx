@@ -8,11 +8,11 @@
 
 import * as Application from "expo-application"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { Button, Dialog, ListGroup, Separator } from "heroui-native"
+import { Button, Dialog, ListGroup } from "heroui-native"
 import { useState } from "react"
 import { Linking, Platform, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
-import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
+import { SettingsHighlight, SettingsListGroup, SettingsScrollView } from "@/components/blocks/settings"
 import { queryClient } from "@/lib/tanstack-query"
 
 import {
@@ -192,7 +192,7 @@ export default function AdvancedSettingsScreen() {
         <Text className="px-1 text-xs font-semibold uppercase text-muted">
           {t("settings.advanced.sections.logs")}
         </Text>
-        <ListGroup>
+        <SettingsListGroup>
           <SettingsHighlight id="logLevel">
             <ListGroup.Item onPress={() => router.push("/settings/log-level")}>
               <ListGroup.ItemContent>
@@ -206,7 +206,6 @@ export default function AdvancedSettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
           </SettingsHighlight>
-          <Separator className="mx-4" />
           <SettingsHighlight id="shareCrashLogs">
             <ListGroup.Item
               onPress={() => {
@@ -222,12 +221,12 @@ export default function AdvancedSettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
           </SettingsHighlight>
-        </ListGroup>
+        </SettingsListGroup>
 
         <Text className="px-1 text-xs font-semibold uppercase text-muted">
           {t("settings.advanced.sections.history")}
         </Text>
-        <ListGroup>
+        <SettingsListGroup>
           <SettingsHighlight id="resetHistory">
             <ListGroup.Item
               onPress={() => setIsResetHistoryDialogOpen(true)}
@@ -243,7 +242,6 @@ export default function AdvancedSettingsScreen() {
               </ListGroup.ItemContent>
             </ListGroup.Item>
           </SettingsHighlight>
-          <Separator className="mx-4" />
           <SettingsHighlight id="resetSearchHistory">
             <ListGroup.Item
               onPress={() => setIsResetSearchHistoryDialogOpen(true)}
@@ -259,7 +257,6 @@ export default function AdvancedSettingsScreen() {
               </ListGroup.ItemContent>
             </ListGroup.Item>
           </SettingsHighlight>
-          <Separator className="mx-4" />
           <SettingsHighlight id="forceUpdateMixes">
             <ListGroup.Item
               onPress={() => setIsForceUpdateMixesDialogOpen(true)}
@@ -278,12 +275,12 @@ export default function AdvancedSettingsScreen() {
               </ListGroup.ItemContent>
             </ListGroup.Item>
           </SettingsHighlight>
-        </ListGroup>
+        </SettingsListGroup>
 
         <Text className="px-1 text-xs font-semibold uppercase text-muted">
           {t("settings.advanced.sections.background")}
         </Text>
-        <ListGroup>
+        <SettingsListGroup>
           <SettingsHighlight id="batteryOptimization">
             <ListGroup.Item
               onPress={() => {
@@ -303,7 +300,6 @@ export default function AdvancedSettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
           </SettingsHighlight>
-          <Separator className="mx-4" />
           <SettingsHighlight id="dontKillMyApp">
             <ListGroup.Item
               onPress={() => {
@@ -319,12 +315,12 @@ export default function AdvancedSettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
           </SettingsHighlight>
-        </ListGroup>
+        </SettingsListGroup>
 
         <Text className="px-1 text-xs font-semibold uppercase text-muted">
           {t("settings.advanced.sections.onboarding", "Onboarding")}
         </Text>
-        <ListGroup>
+        <SettingsListGroup>
           <SettingsHighlight id="restartOnboarding">
             <ListGroup.Item onPress={restartOnboarding}>
               <ListGroup.ItemContent>
@@ -341,7 +337,7 @@ export default function AdvancedSettingsScreen() {
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
           </SettingsHighlight>
-        </ListGroup>
+        </SettingsListGroup>
       </SettingsScrollView>
 
       <Dialog isOpen={isResetHistoryDialogOpen} onOpenChange={setIsResetHistoryDialogOpen}>

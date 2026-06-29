@@ -1,11 +1,11 @@
 import * as DocumentPicker from "expo-document-picker"
 import { Directory } from "expo-file-system"
 import * as Sharing from "expo-sharing"
-import { Button, Dialog, ListGroup, Separator } from "heroui-native"
+import { Button, Dialog, ListGroup } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
 import { Text, View } from "react-native"
-import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
+import { SettingsHighlight, SettingsListGroup, SettingsScrollView } from "@/components/blocks/settings"
 import { useTranslation } from "react-i18next"
 
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
@@ -107,7 +107,7 @@ export default function BackupSettingsScreen() {
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.backup.sections.storage", "Storage Location")}
           </Text>
-          <ListGroup>
+          <SettingsListGroup>
             <SettingsHighlight id="folder">
               <ListGroup.Item onPress={handleTargetFolderPick}>
                 <ListGroup.ItemContent>
@@ -117,14 +117,14 @@ export default function BackupSettingsScreen() {
                 <ListGroup.ItemSuffix />
               </ListGroup.Item>
             </SettingsHighlight>
-          </ListGroup>
+          </SettingsListGroup>
         </View>
 
         <View className="gap-2">
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.backup.sections.manual", "Manual Backup")}
           </Text>
-          <ListGroup>
+          <SettingsListGroup>
             <SettingsHighlight id="manual">
               <ListGroup.Item onPress={() => setIsBackupDialogOpen(true)}>
                 <ListGroup.ItemContent>
@@ -136,7 +136,6 @@ export default function BackupSettingsScreen() {
                 <ListGroup.ItemSuffix />
               </ListGroup.Item>
             </SettingsHighlight>
-            <Separator className="mx-4" />
             <SettingsHighlight id="restore">
               <ListGroup.Item onPress={() => setIsRestoreDialogOpen(true)}>
                 <ListGroup.ItemContent>
@@ -148,14 +147,14 @@ export default function BackupSettingsScreen() {
                 <ListGroup.ItemSuffix />
               </ListGroup.Item>
             </SettingsHighlight>
-          </ListGroup>
+          </SettingsListGroup>
         </View>
 
         <View className="gap-2">
           <Text className="px-1 text-xs font-semibold uppercase text-muted">
             {t("settings.backup.sections.automatic", "Automatic Backup")}
           </Text>
-          <ListGroup>
+          <SettingsListGroup>
             <SettingsHighlight id="autoBackup">
               <ListGroup.Item onPress={() => router.push("/settings/auto-backup")}>
                 <ListGroup.ItemContent>
@@ -169,7 +168,7 @@ export default function BackupSettingsScreen() {
                 <ListGroup.ItemSuffix />
               </ListGroup.Item>
             </SettingsHighlight>
-          </ListGroup>
+          </SettingsListGroup>
         </View>
       </SettingsScrollView>
 
