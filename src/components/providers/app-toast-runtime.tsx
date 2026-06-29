@@ -7,12 +7,12 @@ export function AppToastRuntime() {
 
   useEffect(() => {
     setAppToastAdapter({
-      show: ({ title, description, variant = "accent" }) => {
+      show: ({ title, description, variant = "default" }) => {
         toast.show({
           duration: 2000,
           component: (props) => (
             <Toast {...props} variant={variant} placement="bottom">
-              <Toast.Title className="text-sm font-semibold">{title}</Toast.Title>
+              <Toast.Title className="text-sm font-semibold text-foreground">{title}</Toast.Title>
               {description ? (
                 <Toast.Description className="text-xs text-muted">{description}</Toast.Description>
               ) : null}
