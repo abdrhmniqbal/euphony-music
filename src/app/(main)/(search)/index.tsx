@@ -10,7 +10,7 @@ import type { Track } from "@/modules/player/store"
 import type { DBTrack } from "@/types/database"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 
-import { Input, PressableFeedback, Card } from "heroui-native"
+import { Input, PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
@@ -26,7 +26,7 @@ import { CollectionActionSheet } from "@/components/blocks/sheets/collection-act
 import { TrackActionSheet } from "@/components/blocks/sheets/track-action-sheet"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
-import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
+import { MixCard } from "@/components/blocks/mix-card"
 import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useTracks } from "@/modules/tracks/queries"
@@ -35,10 +35,10 @@ import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { transformDBTrackToTrack } from "@/utils/transformers"
-import { createTrackListQueueContext } from "@/stores/playback/types"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
 
 const RECENTLY_ADDED_LIMIT = 8
+
 
 export default function SearchScreen() {
   const theme = useThemeColors()
@@ -187,207 +187,22 @@ export default function SearchScreen() {
         </View>
 
         <View className="mb-6 px-4 flex-row gap-3">
-          <PressableFeedback
+          <MixCard
+            title={t("home.topTracks.dailyMix", "Daily Mix")}
+            images={dailyMixImages}
+            color={dailyMixColor}
+            pattern={dailyMixPattern}
             onPress={() => router.push("/(main)/(search)/mix/daily" as any)}
             onLongPress={() => handleMixLongPress("daily")}
-            className="flex-1 active:opacity-80"
-          >
-            <Card className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0">
-              <View className="absolute inset-0 bg-surface-secondary">
-                <PlaylistArtwork images={dailyMixImages} />
-              </View>
-
-              <View
-                className="absolute bottom-0 inset-x-0 overflow-hidden py-4 px-5 justify-center items-start"
-                style={{ backgroundColor: dailyMixColor }}
-              >
-                <View pointerEvents="none" className="absolute inset-0">
-                  {dailyMixPattern === "circles" && (
-                    <>
-                      <View className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/10" />
-                      <View className="absolute right-4 bottom-[-10] h-16 w-16 rounded-full bg-white/8" />
-                    </>
-                  )}
-                  {dailyMixPattern === "waves" && (
-                    <>
-                      <View className="absolute bottom-[-20] -left-12 h-40 w-40 rounded-full border-20 border-white/10" />
-                      <View className="absolute top-[-20] right-[-20] h-28 w-28 rounded-full border-12 border-white/10" />
-                    </>
-                  )}
-                  {dailyMixPattern === "grid" && (
-                    <View className="absolute inset-0 flex-row flex-wrap gap-2 p-1.5">
-                      {Array.from({ length: 12 }).map((_, index) => (
-                        <View
-                          key={`daily-grid-${index}`}
-                          className="h-6 w-6 rounded-sm bg-white/5"
-                        />
-                      ))}
-                    </View>
-                  )}
-                  {dailyMixPattern === "diamonds" && (
-                    <>
-                      <View className="absolute top-4 right-[-10] h-16 w-16 rotate-45 bg-white/10" />
-                      <View className="absolute bottom-0 left-[-20] h-24 w-24 rotate-45 bg-white/5" />
-                    </>
-                  )}
-                  {dailyMixPattern === "triangles" && (
-                    <>
-                      <View className="absolute top-0 right-0 h-0 w-0 border-t-40 border-l-40 border-t-white/10 border-l-transparent" />
-                      <View className="absolute bottom-[-10] left-4 h-0 w-0 border-r-60 border-b-60 border-r-transparent border-b-white/8" />
-                    </>
-                  )}
-                  {dailyMixPattern === "rings" && (
-                    <>
-                      <View className="absolute -top-2 -right-2 h-16 w-16 rounded-full border-4 border-white/15" />
-                      <View className="absolute -top-6 -right-6 h-24 w-24 rounded-full border-4 border-white/8" />
-                    </>
-                  )}
-                  {dailyMixPattern === "pills" && (
-                    <>
-                      <View className="absolute top-2 right-0 h-8 w-20 rotate-[-15deg] rounded-full bg-white/10" />
-                      <View className="absolute bottom-4 -left-4 h-10 w-24 rotate-25 rounded-full bg-white/8" />
-                    </>
-                  )}
-                  {dailyMixPattern === "stripes" && (
-                    <>
-                      <View className="absolute top-0 -left-6 h-28 w-3 rotate-12 bg-white/8" />
-                      <View className="absolute top-0 left-6 h-28 w-3 rotate-12 bg-white/10" />
-                      <View className="absolute top-0 left-18 h-28 w-3 rotate-12 bg-white/8" />
-                      <View className="absolute top-0 left-30 h-28 w-3 rotate-12 bg-white/10" />
-                    </>
-                  )}
-                  {dailyMixPattern === "stars" && (
-                    <>
-                      <View className="absolute top-4 right-6 h-12 w-3 rounded-full bg-white/10" />
-                      <View className="absolute top-8 right-1.5 h-3 w-12 rounded-full bg-white/10" />
-                      <View className="absolute bottom-3 left-7 h-8 w-2 rounded-full bg-white/8" />
-                      <View className="absolute bottom-6 left-4 h-2 w-8 rounded-full bg-white/8" />
-                    </>
-                  )}
-                  {dailyMixPattern === "zigzag" && (
-                    <>
-                      <View className="absolute top-6 right-[-8] h-2 w-14 rotate-45 bg-white/10" />
-                      <View className="absolute top-12 right-2 h-2 w-14 -rotate-45 bg-white/8" />
-                      <View className="absolute top-18 right-[-8] h-2 w-14 rotate-45 bg-white/8" />
-                      <View className="absolute bottom-6 left-[-8] h-2 w-12 -rotate-45 bg-white/8" />
-                    </>
-                  )}
-                  {dailyMixPattern === "crosses" && (
-                    <>
-                      <View className="absolute top-4 right-5 h-10 w-2 rounded-full bg-white/10" />
-                      <View className="absolute top-8 right-1 h-2 w-10 rounded-full bg-white/10" />
-                      <View className="absolute bottom-4 left-5 h-8 w-2 rounded-full bg-white/8" />
-                      <View className="absolute bottom-7 left-2 h-2 w-8 rounded-full bg-white/8" />
-                    </>
-                  )}
-                </View>
-                <Text className="text-[17px] leading-tight font-black text-white" numberOfLines={1}>
-                  {t("home.topTracks.dailyMix", "Daily Mix")}
-                </Text>
-              </View>
-            </Card>
-          </PressableFeedback>
-
-          <PressableFeedback
+          />
+          <MixCard
+            title={t("home.topTracks.forYouMix", "For You Mix")}
+            images={forYouMixImages}
+            color={forYouMixColor}
+            pattern={forYouMixPattern}
             onPress={() => router.push("/(main)/(search)/mix/foryou" as any)}
             onLongPress={() => handleMixLongPress("foryou")}
-            className="flex-1 active:opacity-80"
-          >
-            <Card className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0">
-              <View className="absolute inset-0 bg-surface-secondary">
-                <PlaylistArtwork images={forYouMixImages} />
-              </View>
-
-              <View
-                className="absolute bottom-0 inset-x-0 overflow-hidden py-4 px-5 justify-center items-start"
-                style={{ backgroundColor: forYouMixColor }}
-              >
-                <View pointerEvents="none" className="absolute inset-0">
-                  {forYouMixPattern === "circles" && (
-                    <>
-                      <View className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/10" />
-                      <View className="absolute right-4 bottom-[-10] h-16 w-16 rounded-full bg-white/8" />
-                    </>
-                  )}
-                  {forYouMixPattern === "waves" && (
-                    <>
-                      <View className="absolute bottom-[-20] -left-12 h-40 w-40 rounded-full border-20 border-white/10" />
-                      <View className="absolute top-[-20] right-[-20] h-28 w-28 rounded-full border-12 border-white/10" />
-                    </>
-                  )}
-                  {forYouMixPattern === "grid" && (
-                    <View className="absolute inset-0 flex-row flex-wrap gap-2 p-1.5">
-                      {Array.from({ length: 12 }).map((_, index) => (
-                        <View
-                          key={`foryou-grid-${index}`}
-                          className="h-6 w-6 rounded-sm bg-white/5"
-                        />
-                      ))}
-                    </View>
-                  )}
-                  {forYouMixPattern === "diamonds" && (
-                    <>
-                      <View className="absolute top-4 right-[-10] h-16 w-16 rotate-45 bg-white/10" />
-                      <View className="absolute bottom-0 left-[-20] h-24 w-24 rotate-45 bg-white/5" />
-                    </>
-                  )}
-                  {forYouMixPattern === "triangles" && (
-                    <>
-                      <View className="absolute top-0 right-0 h-0 w-0 border-t-40 border-l-40 border-t-white/10 border-l-transparent" />
-                      <View className="absolute bottom-[-10] left-4 h-0 w-0 border-r-60 border-b-60 border-r-transparent border-b-white/8" />
-                    </>
-                  )}
-                  {forYouMixPattern === "rings" && (
-                    <>
-                      <View className="absolute -top-2 -right-2 h-16 w-16 rounded-full border-4 border-white/15" />
-                      <View className="absolute -top-6 -right-6 h-24 w-24 rounded-full border-4 border-white/8" />
-                    </>
-                  )}
-                  {forYouMixPattern === "pills" && (
-                    <>
-                      <View className="absolute top-2 right-0 h-8 w-20 rotate-[-15deg] rounded-full bg-white/10" />
-                      <View className="absolute bottom-4 -left-4 h-10 w-24 rotate-25 rounded-full bg-white/8" />
-                    </>
-                  )}
-                  {forYouMixPattern === "stripes" && (
-                    <>
-                      <View className="absolute top-0 -left-6 h-28 w-3 rotate-12 bg-white/8" />
-                      <View className="absolute top-0 left-6 h-28 w-3 rotate-12 bg-white/10" />
-                      <View className="absolute top-0 left-18 h-28 w-3 rotate-12 bg-white/8" />
-                      <View className="absolute top-0 left-30 h-28 w-3 rotate-12 bg-white/10" />
-                    </>
-                  )}
-                  {forYouMixPattern === "stars" && (
-                    <>
-                      <View className="absolute top-4 right-6 h-12 w-3 rounded-full bg-white/10" />
-                      <View className="absolute top-8 right-1.5 h-3 w-12 rounded-full bg-white/10" />
-                      <View className="absolute bottom-3 left-7 h-8 w-2 rounded-full bg-white/8" />
-                      <View className="absolute bottom-6 left-4 h-2 w-8 rounded-full bg-white/8" />
-                    </>
-                  )}
-                  {forYouMixPattern === "zigzag" && (
-                    <>
-                      <View className="absolute top-6 right-[-8] h-2 w-14 rotate-45 bg-white/10" />
-                      <View className="absolute top-12 right-2 h-2 w-14 -rotate-45 bg-white/8" />
-                      <View className="absolute top-18 right-[-8] h-2 w-14 rotate-45 bg-white/8" />
-                      <View className="absolute bottom-6 left-[-8] h-2 w-12 -rotate-45 bg-white/8" />
-                    </>
-                  )}
-                  {forYouMixPattern === "crosses" && (
-                    <>
-                      <View className="absolute top-4 right-5 h-10 w-2 rounded-full bg-white/10" />
-                      <View className="absolute top-8 right-1 h-2 w-10 rounded-full bg-white/10" />
-                      <View className="absolute bottom-4 left-5 h-8 w-2 rounded-full bg-white/8" />
-                      <View className="absolute bottom-7 left-2 h-2 w-8 rounded-full bg-white/8" />
-                    </>
-                  )}
-                </View>
-                <Text className="text-[17px] leading-tight font-black text-white" numberOfLines={1}>
-                  {t("home.topTracks.forYouMix", "For You Mix")}
-                </Text>
-              </View>
-            </Card>
-          </PressableFeedback>
+          />
         </View>
 
         <ContentSection
@@ -414,8 +229,6 @@ export default function SearchScreen() {
         track={selectedTrack}
         isOpen={isTrackSheetOpen}
         onClose={() => setIsTrackSheetOpen(false)}
-        tracks={recentlyAddedTracks}
-        queueContext={createTrackListQueueContext(t("search.recentlyAdded"))}
       />
       <CollectionActionSheet
         visible={showMixActionSheet}
