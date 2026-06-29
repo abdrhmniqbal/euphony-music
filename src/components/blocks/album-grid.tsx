@@ -17,6 +17,7 @@ import {
   LEGEND_LIST_GRID_CONFIG,
   LEGEND_LIST_GRID_HORIZONTAL_CONFIG,
 } from "@/components/blocks/legend-list-config"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -89,8 +90,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const [selectedAlbum, setSelectedAlbum] = React.useState<Album | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const { selected: selectedAlbum, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Album>()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const { width: windowWidth } = useWindowDimensions()
   const itemWidth = (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
@@ -101,15 +101,6 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
   ])
   const handlePress = (album: Album) => {
     onAlbumPress?.(album)
-  }
-
-  const handleLongPress = (album: Album) => {
-    setSelectedAlbum(album)
-    setIsSheetOpen(true)
-  }
-
-  const closeSheet = () => {
-    setIsSheetOpen(false)
   }
 
   const sheet = (

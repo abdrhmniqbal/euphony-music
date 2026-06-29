@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { LEGEND_LIST_GRID_CONFIG } from "@/components/blocks/legend-list-config"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -69,8 +70,7 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const [selectedArtist, setSelectedArtist] = React.useState<Artist | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const { selected: selectedArtist, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Artist>()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const { width: windowWidth } = useWindowDimensions()
   const itemWidth = (windowWidth - HORIZONTAL_PADDING - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
@@ -81,15 +81,6 @@ export const ArtistGrid: React.FC<ArtistGridProps> = ({
   ])
   const handlePress = (artist: Artist) => {
     onArtistPress?.(artist)
-  }
-
-  const handleLongPress = (artist: Artist) => {
-    setSelectedArtist(artist)
-    setIsSheetOpen(true)
-  }
-
-  const closeSheet = () => {
-    setIsSheetOpen(false)
   }
 
   const formatTrackCount = (count: number) => t("library.count.track", { count })

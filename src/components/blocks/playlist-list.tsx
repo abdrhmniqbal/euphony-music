@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalAdd01Icon from "@/components/icons/local/add-01"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
@@ -62,8 +63,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const [selectedPlaylist, setSelectedPlaylist] = React.useState<Playlist | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const { selected: selectedPlaylist, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Playlist>()
   const autoHideScrollProps = useAutoHideHeaderScroll()
   const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
 
@@ -79,15 +79,6 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   }, [onCreatePlaylist])
 
   const formatTrackCount = useCallback((count: number) => t("library.count.track", { count }), [t])
-
-  const handleLongPress = useCallback((playlist: Playlist) => {
-    setSelectedPlaylist(playlist)
-    setIsSheetOpen(true)
-  }, [])
-
-  const closeSheet = useCallback(() => {
-    setIsSheetOpen(false)
-  }, [])
 
   const renderCreateButton = useCallback(
     () => (

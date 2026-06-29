@@ -26,6 +26,7 @@ import {
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
@@ -247,8 +248,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   const toggleFavoriteMutation = useToggleFavorite()
   const router = useRouter()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const [selectedFavorite, setSelectedFavorite] = React.useState<FavoriteEntry | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const { selected: selectedFavorite, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<FavoriteEntry>()
   const visibleFavoriteTypes = FAVORITE_TYPE_FILTERS.filter((type) => availableTypes.includes(type))
   const orderedFavoriteTypes = [
     ...selectedTypes.filter((type) => visibleFavoriteTypes.includes(type)),
@@ -319,11 +319,6 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
     },
     [onTrackPress, router, t, tracks]
   )
-
-  const handleLongPress = useCallback((favorite: FavoriteEntry) => {
-    setSelectedFavorite(favorite)
-    setIsSheetOpen(true)
-  }, [])
 
   const handleRemoveFavorite = useCallback(
     (favorite: FavoriteEntry) => {
@@ -426,7 +421,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
         visible={isSheetOpen && Boolean(selectedCollectionFavorite)}
         onOpenChange={(open) => {
           if (!open) {
-            setIsSheetOpen(false)
+            closeSheet()
           }
         }}
         type={selectedCollectionFavorite?.type ?? "album"}
@@ -439,7 +434,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
       <TrackActionSheet
         track={mappedTrack}
         isOpen={isSheetOpen && isTrackType}
-        onClose={() => setIsSheetOpen(false)}
+        onClose={closeSheet}
         tracks={tracks}
         queueContext={createFavoritesQueueContext(t("library.favorites"))}
       />

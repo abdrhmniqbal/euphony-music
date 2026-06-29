@@ -10,6 +10,7 @@ import { playTrack } from "@/modules/player/service"
 import { chunkArray } from "@/utils/array"
 
 import { MediaCarousel } from "./media-carousel"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { TrackActionSheet } from "./track-action-sheet"
 
 interface EmptyStateConfig {
@@ -74,8 +75,7 @@ export function RankedTrackCarousel({
   className,
 }: RankedTrackCarouselProps) {
   const currentTrackId = useCurrentTrackId()
-  const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const { selected: selectedTrack, setSelected, isOpen: isSheetOpen, closeSheet } = useActionSheet<Track>()
 
   const chunks = React.useMemo(() => chunkArray(data, chunkSize), [data, chunkSize])
 
@@ -97,10 +97,9 @@ export function RankedTrackCarousel({
         onItemLongPress(track)
         return
       }
-      setSelectedTrack(track)
-      setIsSheetOpen(true)
+      setSelected(track)
     },
-    [onItemLongPress]
+    [onItemLongPress, setSelected]
   )
 
   return (
@@ -126,8 +125,8 @@ export function RankedTrackCarousel({
         track={selectedTrack}
         isOpen={isSheetOpen}
         onClose={() => {
-          setIsSheetOpen(false)
-          setSelectedTrack(null)
+          closeSheet()
+          setSelected(null)
         }}
         tracks={data}
         queueContext={queueContext ?? null}

@@ -15,6 +15,7 @@ import {
 import { useTranslation } from "react-i18next"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
@@ -81,8 +82,7 @@ export const FolderList: React.FC<FolderListProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const [selectedFolder, setSelectedFolder] = React.useState<Folder | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const { selected: selectedFolder, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Folder>()
   const autoHideScrollProps = useAutoHideHeaderScroll()
   const listContentContainerStyle = StyleSheet.flatten([
     { gap: 8, paddingBottom: 16 },
@@ -91,15 +91,6 @@ export const FolderList: React.FC<FolderListProps> = ({
 
   const handlePress = (folder: Folder) => {
     onFolderPress?.(folder)
-  }
-
-  const handleFolderLongPress = (folder: Folder) => {
-    setSelectedFolder(folder)
-    setIsSheetOpen(true)
-  }
-
-  const closeFolderSheet = () => {
-    setIsSheetOpen(false)
   }
 
   const handleTrackPress = (track: Track) => {
@@ -112,7 +103,7 @@ export const FolderList: React.FC<FolderListProps> = ({
     <Item
       key={item.id}
       onPress={() => handlePress(item)}
-      onLongPress={() => handleFolderLongPress(item)}
+      onLongPress={() => handleLongPress(item)}
     >
       <ItemImage
         icon={
@@ -255,7 +246,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         visible={isSheetOpen && Boolean(selectedFolder)}
         onOpenChange={(open) => {
           if (!open) {
-            closeFolderSheet()
+            closeSheet()
           }
         }}
         type="folder"

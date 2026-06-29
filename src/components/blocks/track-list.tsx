@@ -9,7 +9,7 @@
 import type { PlayerQueueContext, Track } from "@/modules/player/types"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import * as React from "react"
-import { useCallback, useState } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -23,6 +23,7 @@ import {
 } from "react-native"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
+import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { MemoizedTrackListItem } from "@/components/patterns/track-list-item"
@@ -82,9 +83,12 @@ export const TrackList: React.FC<TrackListProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const { selected: selectedTrack, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Track>()
   const activeTrackId = currentTrackId ?? useCurrentTrackId() ?? undefined
+
+  const handleSheetClose = useCallback(() => {
+    closeSheet()
+  }, [closeSheet])
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey, activeTrackId)
   const isCompactNumberedList = hideCover && showNumbers
   const estimatedItemSize = isCompactNumberedList ? 56 : 84
@@ -105,11 +109,6 @@ export const TrackList: React.FC<TrackListProps> = ({
     [data, onTrackPress, queueContext]
   )
 
-  const showActionMenu = useCallback((track: Track) => {
-    setSelectedTrack(track)
-    setIsSheetOpen(true)
-  }, [])
-
   const renderTrackItem = useCallback(
     ({ item, index }: LegendListRenderItemProps<Track>) => (
       <MemoizedTrackListItem
@@ -122,7 +121,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         hideArtist={hideArtist}
         getNumber={getNumber}
         onTrackPress={handleTrackPress}
-        onTrackLongPress={showActionMenu}
+        onTrackLongPress={handleLongPress}
         renderItemPrefix={renderItemPrefix}
       />
     ),
@@ -133,15 +132,11 @@ export const TrackList: React.FC<TrackListProps> = ({
       hideArtist,
       hideCover,
       renderItemPrefix,
-      showActionMenu,
+      handleLongPress,
       showNumbers,
       theme.muted,
     ]
   )
-  const handleSheetClose = useCallback(() => {
-    setIsSheetOpen(false)
-  }, [])
-
   return (
     <View style={{ flex: 1 }}>
       <LegendList
