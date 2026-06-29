@@ -195,45 +195,55 @@ interface SleepTimerSectionProps {
   isOpen: boolean
   onOpenChange: (value: boolean) => void
   labels: Record<string, string>
-  customTimeDescription: string
-  customTimeDate: Date
-  showCustomTimePicker: boolean
-  timerMinutes: number
-  playCount: number
-  endOfCurrentTrack: boolean
-  lockedMode: "minutes" | "playCount" | "trackEnd" | "clock" | null
-  setSleepTimerDraft: React.Dispatch<React.SetStateAction<SleepTimerDraft>>
-  handleOpenCustomTimePicker: () => void
-  handleCustomTimePickerChange: (event: DateTimePickerEvent, selectedDate?: Date) => void
-  clearSleepTimer: () => void
-  setSleepTimerMinutes: (value: number) => void
-  setSleepTimerPlayCount: (value: number) => void
-  setSleepTimerTrackEnd: () => void
+  draftState: {
+    timerMinutes: number
+    playCount: number
+    endOfCurrentTrack: boolean
+    showCustomTimePicker: boolean
+    customTimeDescription: string
+    customTimeDate: Date
+    lockedMode: "minutes" | "playCount" | "trackEnd" | "clock" | null
+  }
+  callbacks: {
+    onUpdateDraft: React.Dispatch<React.SetStateAction<SleepTimerDraft>>
+    onOpenCustomTimePicker: () => void
+    onCustomTimePickerChange: (event: DateTimePickerEvent, selectedDate?: Date) => void
+    onClearTimer: () => void
+    onCommitTimerMinutes: (value: number) => void
+    onCommitPlayCount: (value: number) => void
+    onCommitTrackEnd: () => void
+  }
 }
 
 export function SleepTimerSection({
   isOpen,
   onOpenChange,
   labels,
-  customTimeDescription,
-  customTimeDate,
-  showCustomTimePicker,
-  timerMinutes,
-  playCount,
-  endOfCurrentTrack,
-  lockedMode,
-  setSleepTimerDraft,
-  handleOpenCustomTimePicker,
-  handleCustomTimePickerChange,
-  clearSleepTimer,
-  setSleepTimerMinutes,
-  setSleepTimerPlayCount,
-  setSleepTimerTrackEnd,
+  draftState,
+  callbacks,
 }: SleepTimerSectionProps) {
+  const {
+    timerMinutes,
+    playCount,
+    endOfCurrentTrack,
+    showCustomTimePicker,
+    customTimeDescription,
+    customTimeDate,
+    lockedMode,
+  } = draftState
+  const {
+    onUpdateDraft,
+    onOpenCustomTimePicker,
+    onCustomTimePickerChange,
+    onClearTimer,
+    onCommitTimerMinutes,
+    onCommitPlayCount,
+    onCommitTrackEnd,
+  } = callbacks
   const renderSleepTimerFooter = (props: BottomSheetFooterProps) => (
     <SleepTimerFooter
       {...props}
-      clearSleepTimer={clearSleepTimer}
+      clearSleepTimer={onClearTimer}
       onClose={() => onOpenChange(false)}
       label={labels.cancelTimer}
     />
@@ -280,22 +290,14 @@ export function SleepTimerSection({
                   step={1}
                   value={timerMinutes}
                   onChange={(value) => {
-                    setSleepTimerDraft((draft) => ({
+                    onUpdateDraft((draft) => ({
                       ...draft,
                       timerMinutes: getSliderNumericValue(value),
                     }))
                   }}
                   onChangeEnd={(value) => {
                     const nextMinutes = getSliderNumericValue(value)
-                    setSleepTimerDraft((draft) => ({
-                      ...draft,
-                      timerMinutes: nextMinutes,
-                      playCount: 0,
-                      endOfCurrentTrack: false,
-                      customTimeEnabled: false,
-                      showCustomTimePicker: false,
-                    }))
-                    setSleepTimerMinutes(nextMinutes)
+                    onCommitTimerMinutes(nextMinutes)
                   }}
                 >
                   <Slider.Track className="h-2 rounded-full bg-border">
@@ -328,22 +330,14 @@ export function SleepTimerSection({
                   step={1}
                   value={playCount}
                   onChange={(value) => {
-                    setSleepTimerDraft((draft) => ({
+                    onUpdateDraft((draft) => ({
                       ...draft,
                       playCount: getSliderNumericValue(value),
                     }))
                   }}
                   onChangeEnd={(value) => {
                     const nextPlayCount = getSliderNumericValue(value)
-                    setSleepTimerDraft((draft) => ({
-                      ...draft,
-                      timerMinutes: 0,
-                      playCount: nextPlayCount,
-                      endOfCurrentTrack: false,
-                      customTimeEnabled: false,
-                      showCustomTimePicker: false,
-                    }))
-                    setSleepTimerPlayCount(nextPlayCount)
+                    onCommitPlayCount(nextPlayCount)
                   }}
                 >
                   <Slider.Track className="h-2 rounded-full bg-border">
@@ -363,20 +357,12 @@ export function SleepTimerSection({
                   isSelected={endOfCurrentTrack}
                   onSelectedChange={(isSelected) => {
                     if (!isSelected) {
-                      setSleepTimerDraft((draft) => ({ ...draft, endOfCurrentTrack: false }))
-                      clearSleepTimer()
+                      onUpdateDraft((draft) => ({ ...draft, endOfCurrentTrack: false }))
+                      onClearTimer()
                       return
                     }
 
-                    setSleepTimerDraft((draft) => ({
-                      ...draft,
-                      timerMinutes: 0,
-                      playCount: 0,
-                      endOfCurrentTrack: true,
-                      customTimeEnabled: false,
-                      showCustomTimePicker: false,
-                    }))
-                    setSleepTimerTrackEnd()
+                    onCommitTrackEnd()
                   }}
                 />
               }
@@ -386,7 +372,7 @@ export function SleepTimerSection({
               title={labels.customTime}
               description={customTimeDescription}
               disabled={lockedMode !== null && lockedMode !== "clock"}
-              onPress={handleOpenCustomTimePicker}
+              onPress={onOpenCustomTimePicker}
               suffix={<LocalChevronRightIcon fill="none" width={18} height={18} color="white" />}
             >
               {showCustomTimePicker ? (
@@ -396,7 +382,7 @@ export function SleepTimerSection({
                     mode="time"
                     is24Hour
                     display={Platform.OS === "ios" ? "spinner" : "default"}
-                    onChange={handleCustomTimePickerChange}
+                    onChange={onCustomTimePickerChange}
                   />
                 </View>
               ) : null}

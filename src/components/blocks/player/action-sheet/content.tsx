@@ -6,45 +6,22 @@
  * Side Effects: Navigates to artist/album routes, opens playlist picker workflows, preloads queue tracks into playlist creation, and updates player sleep timer state.
  */
 
-import type { SleepTimerMode, Track } from "@/modules/player/types"
-import {
-  BottomSheetFooter,
-  BottomSheetScrollView,
-  type BottomSheetFooterProps,
-} from "@gorhom/bottom-sheet"
-import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker"
+import type { Track } from "@/modules/player/types"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { BottomSheet, Button, PressableFeedback, Slider, Switch } from "heroui-native"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { useQueries } from "@tanstack/react-query"
 import { useMemo, useState } from "react"
-import { Platform, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import { PlayerActionMenu } from "./menu"
-import {
-  SleepTimerSection,
-  type SleepTimerDraft,
-  createSleepTimerDraft,
-  buildDismissedCustomTimeDraft,
-  getLockedMode,
-  getSleepTimerSummary,
-  formatClockValue,
-} from "./sleep-timer-section"
+import { SleepTimerSection } from "./sleep-timer-section"
+import { useSleepTimerDraft } from "./use-sleep-timer-draft"
 import { ArtistPickerSheet } from "@/components/blocks/artist-picker-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
-import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { getArtistByName } from "@/modules/library/repository"
-import { usePlayerQueue, useSleepTimerState } from "@/modules/player/selectors"
-import {
-  clearSleepTimer,
-  setSleepTimerClock,
-  setSleepTimerMinutes,
-  setSleepTimerPlayCount,
-  setSleepTimerTrackEnd,
-} from "@/modules/player/sleep-timer"
+import { usePlayerQueue } from "@/modules/player/selectors"
 import { usePlaylistPickerSelection } from "@/modules/playlist/use-picker-selection"
 import { showAppToast } from "@/modules/ui/toast"
 import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
@@ -73,27 +50,11 @@ export function PlayerActionSheet({
   const { t } = useTranslation()
   const router = useRouter()
   const queue = usePlayerQueue()
-  const sleepTimer = useSleepTimerState()
+  const sleepTimerDraft = useSleepTimerDraft(t)
   const canUseLibraryActions = Boolean(track && track.isExternal !== true)
   const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = useState(false)
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const [isSleepTimerOpen, setIsSleepTimerOpen] = useState(false)
-  const [sleepTimerDraft, setSleepTimerDraft] = useState(() => createSleepTimerDraft(sleepTimer))
-  const {
-    timerMinutes,
-    playCount,
-    endOfCurrentTrack,
-    customTimeEnabled,
-    customHour,
-    customMinute,
-    showCustomTimePicker,
-  } = sleepTimerDraft
-
-  const customTimeDate = useMemo(() => {
-    const date = new Date()
-    date.setHours(customHour, customMinute, 0, 0)
-    return date
-  }, [customHour, customMinute])
 
   const normalizedArtistNames = useMemo(
     () =>
@@ -163,39 +124,6 @@ export function PlayerActionSheet({
     [artistNames, artistPickerSource, t]
   )
 
-  const sleepTimerSummary = useMemo(
-    () =>
-      getSleepTimerSummary(
-        t,
-        sleepTimer.mode,
-        sleepTimer.minutes,
-        sleepTimer.playCount,
-        sleepTimer.clockHour,
-        sleepTimer.clockMinute
-      ),
-    [
-      sleepTimer.clockHour,
-      sleepTimer.clockMinute,
-      sleepTimer.minutes,
-      sleepTimer.mode,
-      sleepTimer.playCount,
-      t,
-    ]
-  )
-
-  const lockedMode = getLockedMode({
-    timerMinutes,
-    playCount,
-    endOfCurrentTrack,
-    customTimeEnabled,
-  })
-  const customTimeDescription = customTimeEnabled
-    ? t("player.sleepTimer.customTimeDescriptionUntil", {
-        value: formatClockValue(customHour, customMinute),
-        defaultValue: `Stop playback at ${formatClockValue(customHour, customMinute)}.`,
-      })
-    : t("player.sleepTimer.customTimeDescription")
-
   const showPlaylistToast = (title: string, description?: string) => {
     showAppToast(title, description)
   }
@@ -206,48 +134,8 @@ export function PlayerActionSheet({
   }
 
   const handleOpenSleepTimerSheet = () => {
-    setSleepTimerDraft(createSleepTimerDraft(sleepTimer))
     onOpenChange(false)
     setIsSleepTimerOpen(true)
-  }
-
-  const handleOpenCustomTimePicker = () => {
-    setSleepTimerDraft((draft) => ({
-      ...draft,
-      timerMinutes: 0,
-      playCount: 0,
-      endOfCurrentTrack: false,
-      customTimeEnabled: true,
-      showCustomTimePicker: true,
-    }))
-  }
-
-  const handleCustomTimePickerChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    if (Platform.OS === "android") {
-      setSleepTimerDraft((draft) => ({
-        ...draft,
-        showCustomTimePicker: false,
-      }))
-    }
-
-    if (event.type === "dismissed" || !selectedDate) {
-      setSleepTimerDraft((draft) => buildDismissedCustomTimeDraft(sleepTimer, draft))
-      return
-    }
-
-    const nextHour = selectedDate.getHours()
-    const nextMinute = selectedDate.getMinutes()
-
-    setSleepTimerDraft((draft) => ({
-      ...draft,
-      timerMinutes: 0,
-      playCount: 0,
-      endOfCurrentTrack: false,
-      customTimeEnabled: true,
-      customHour: nextHour,
-      customMinute: nextMinute,
-    }))
-    setSleepTimerClock(nextHour, nextMinute)
   }
 
   const handleOpenArtist = (artistName: string) => {
@@ -341,7 +229,7 @@ export function PlayerActionSheet({
     <>
       <ActionSheet.Root isOpen={visible} onOpenChange={onOpenChange}>
         <PlayerActionMenu
-          sleepTimerSummary={sleepTimerSummary}
+          sleepTimerSummary={sleepTimerDraft.summary}
           labels={{
             sleepTimer: t("player.sleepTimer.title"),
             goToArtist: t("player.menu.goToArtist"),
@@ -376,20 +264,24 @@ export function PlayerActionSheet({
           cancelTimer: t("player.sleepTimer.cancelTimer"),
           off: t("player.sleepTimer.off"),
         }}
-        customTimeDescription={customTimeDescription}
-        customTimeDate={customTimeDate}
-        showCustomTimePicker={showCustomTimePicker}
-        timerMinutes={timerMinutes}
-        playCount={playCount}
-        endOfCurrentTrack={endOfCurrentTrack}
-        lockedMode={lockedMode}
-        setSleepTimerDraft={setSleepTimerDraft}
-        handleOpenCustomTimePicker={handleOpenCustomTimePicker}
-        handleCustomTimePickerChange={handleCustomTimePickerChange}
-        clearSleepTimer={clearSleepTimer}
-        setSleepTimerMinutes={setSleepTimerMinutes}
-        setSleepTimerPlayCount={setSleepTimerPlayCount}
-        setSleepTimerTrackEnd={setSleepTimerTrackEnd}
+        draftState={{
+          timerMinutes: sleepTimerDraft.timerMinutes,
+          playCount: sleepTimerDraft.playCount,
+          endOfCurrentTrack: sleepTimerDraft.endOfCurrentTrack,
+          showCustomTimePicker: sleepTimerDraft.showCustomTimePicker,
+          customTimeDescription: sleepTimerDraft.customTimeDescription,
+          customTimeDate: sleepTimerDraft.customTimeDate,
+          lockedMode: sleepTimerDraft.lockedMode,
+        }}
+        callbacks={{
+          onUpdateDraft: sleepTimerDraft.setDraft,
+          onOpenCustomTimePicker: sleepTimerDraft.handleOpenCustomTimePicker,
+          onCustomTimePickerChange: sleepTimerDraft.handleCustomTimePickerChange,
+          onClearTimer: sleepTimerDraft.clearTimer,
+          onCommitTimerMinutes: sleepTimerDraft.commitTimerMinutes,
+          onCommitPlayCount: sleepTimerDraft.commitPlayCount,
+          onCommitTrackEnd: sleepTimerDraft.commitTrackEnd,
+        }}
       />
 
       <PlaylistPickerSheet
