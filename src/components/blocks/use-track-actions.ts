@@ -20,7 +20,7 @@ import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { showAppToast } from "@/modules/ui/toast"
 import type { Track } from "@/modules/player/types"
-import type { ValueNavigationSheetItem } from "@/components/blocks/value-navigation-sheet"
+import type { ValueNavigationSheetItem } from "@/components/blocks/sheets/value-navigation-sheet"
 
 interface UseTrackActionsOptions {
   track: Track | null

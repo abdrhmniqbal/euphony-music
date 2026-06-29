@@ -13,7 +13,7 @@ import { useMemo, useState, useSyncExternalStore } from "react"
 import {
   ValueNavigationSheet,
   type ValueNavigationSheetItem,
-} from "@/components/blocks/value-navigation-sheet"
+} from "@/components/blocks/sheets/value-navigation-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { FullPlayerContent } from "@/components/blocks/player/full-player-content"
 import { PlayerActionSheet } from "@/components/blocks/player/action-sheet"

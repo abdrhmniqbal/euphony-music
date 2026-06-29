@@ -7,7 +7,7 @@ import Animated from "react-native-reanimated"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { MenuRow } from "@/components/ui/menu-row"
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"

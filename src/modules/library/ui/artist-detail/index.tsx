@@ -39,9 +39,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 import { type Album, AlbumGrid } from "@/components/blocks/album-grid"
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
-import { SortSheet } from "@/components/blocks/sort-sheet"
+import { SortSheet } from "@/components/blocks/sheets/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"

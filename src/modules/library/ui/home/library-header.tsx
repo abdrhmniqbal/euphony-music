@@ -1,5 +1,5 @@
 import { Text, View } from "react-native"
-import { SortSheet } from "@/components/blocks/sort-sheet"
+import { SortSheet } from "@/components/blocks/sheets/sort-sheet"
 import { useTranslation } from "react-i18next"
 import type { LibrarySortOption, LibraryTab } from "./use-library-home-state"
 

@@ -1,51 +1,19 @@
 import type { SheetSearchInputProps } from "./types"
-import { useBottomSheetInternal } from "@gorhom/bottom-sheet"
 import { Input, PressableFeedback, TextField } from "heroui-native"
 import * as React from "react"
-import { useCallback, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
-import { type BlurEvent, findNodeHandle, type FocusEvent, TextInput, View } from "react-native"
+import { View } from "react-native"
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import LocalSearch01Icon from "@/components/icons/local/search-01"
 
 import { useThemeColors } from "@/modules/ui/theme"
+import { useBottomSheetSearchInput } from "@/components/blocks/use-bottom-sheet-search-input"
 
 export function SheetSearchInput({ inputKey, searchQuery, setSearchQuery }: SheetSearchInputProps) {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const { animatedKeyboardState, textInputNodesRef } = useBottomSheetInternal()
-  const inputRef = useRef<TextInput>(null)
-
-  const handleOnFocus = useCallback(
-    (e: FocusEvent) => {
-      animatedKeyboardState.set((state) => ({
-        ...state,
-        target: e.nativeEvent.target,
-      }))
-    },
-    [animatedKeyboardState]
-  )
-
-  const handleOnBlur = useCallback(
-    (e: BlurEvent) => {
-      const keyboardState = animatedKeyboardState.get()
-      const currentFocusedInput = findNodeHandle(
-        TextInput.State.currentlyFocusedInput() as TextInput | null
-      )
-      const shouldRemoveCurrentTarget = keyboardState.target === e.nativeEvent.target
-      const shouldIgnoreBlurEvent =
-        currentFocusedInput && textInputNodesRef.current.has(currentFocusedInput)
-
-      if (shouldRemoveCurrentTarget && !shouldIgnoreBlurEvent) {
-        animatedKeyboardState.set((state) => ({
-          ...state,
-          target: undefined,
-        }))
-      }
-    },
-    [animatedKeyboardState, textInputNodesRef]
-  )
+  const { inputRef, handleOnFocus, handleOnBlur } = useBottomSheetSearchInput()
 
   return (
     <TextField className="absolute top-0 right-0 left-0 px-5 pt-2">

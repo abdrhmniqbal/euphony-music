@@ -8,7 +8,7 @@ import {
 } from "react-native"
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
 import { GridList } from "@/components/blocks/grid-list"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import {

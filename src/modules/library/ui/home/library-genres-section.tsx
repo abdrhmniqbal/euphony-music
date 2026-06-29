@@ -1,7 +1,7 @@
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
 import { EmptyState } from "@/components/ui/empty-state"
 import { GenreCard } from "@/components/patterns/genre-card"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"

@@ -23,8 +23,8 @@ import {
   type ViewStyle,
 } from "react-native"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
-import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
+import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
+import { TrackActionSheet } from "@/components/blocks/sheets/track-action-sheet"
 import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { MemoizedFavoriteRow } from "@/components/blocks/favorites-row"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"

@@ -27,9 +27,8 @@ import { useThemeColors } from "@/modules/ui/theme"
 import { showAppToast } from "@/modules/ui/toast"
 import { MenuRow } from "@/components/ui/menu-row"
 import { ActionSheet } from "@/components/ui/action-sheet"
-import LocalNextIcon from "../icons/local/next"
-import LocalPlaylist02Icon from "../icons/local/playlist-02"
-import LocalAddCircleIcon from "../icons/local/add-circle"
+import LocalNextIcon from "../../icons/local/next"
+import LocalAddCircleIcon from "../../icons/local/add-circle"
 
 interface CollectionActionSheetProps {
   visible: boolean

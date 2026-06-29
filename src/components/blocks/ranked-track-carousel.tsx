@@ -11,7 +11,7 @@ import { chunkArray } from "@/utils/array"
 
 import { MediaCarousel } from "./media-carousel"
 import { useActionSheet } from "@/components/blocks/use-action-sheet"
-import { TrackActionSheet } from "./track-action-sheet"
+import { TrackActionSheet } from "./sheets/track-action-sheet"
 
 interface EmptyStateConfig {
   icon: ReactNode

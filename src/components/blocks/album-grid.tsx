@@ -11,7 +11,7 @@ import {
 } from "react-native"
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
 import {
   LEGEND_LIST_GRID_HORIZONTAL_CONFIG,
 } from "@/components/blocks/legend-list-config"

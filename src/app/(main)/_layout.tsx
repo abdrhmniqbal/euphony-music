@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next"
 import Animated, { useDerivedValue, useAnimatedStyle, withTiming } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import { MiniPlayer } from "@/components/blocks/mini-player"
+import { MiniPlayer } from "@/components/blocks/player/mini-player"
 import LocalHome09Icon from "@/components/icons/local/home-09"
 import LocalHome09SolidIcon from "@/components/icons/local/home-09-solid"
 import LocalLibraryIcon from "@/components/icons/local/library"

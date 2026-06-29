@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useUniwind, ScopedTheme } from "uniwind"
 
 import { RootProviders } from "@/components/providers/root-providers"
-import { AppUpdateSheet } from "@/components/blocks/app-update-sheet"
+import { AppUpdateSheet } from "@/components/blocks/sheets/app-update-sheet"
 import { AppToastRuntime } from "@/components/providers/app-toast-runtime"
 import { getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/constants/layout"
 import { Stack } from "@/layouts/stack"

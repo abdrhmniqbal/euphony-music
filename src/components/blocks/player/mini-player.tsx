@@ -22,8 +22,8 @@ import {
   formatArtistsForDisplay,
   splitArtistsValue,
 } from "@/modules/settings/split-multiple-values"
-import LocalMusicNote04SolidIcon from "../icons/local/music-note-04-solid"
-import LocalPlaylist03Icon from "../icons/local/playlist-03"
+import LocalMusicNote04SolidIcon from "../../icons/local/music-note-04-solid"
+import LocalPlaylist03Icon from "../../icons/local/playlist-03"
 
 const BoundaryPressableFeedback = Transition.createBoundaryComponent(PressableFeedback)
 

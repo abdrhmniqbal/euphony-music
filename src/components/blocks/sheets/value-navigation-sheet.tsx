@@ -41,7 +41,7 @@ export function ValueNavigationSheet({
       <BottomSheet.Portal>
         <BottomSheet.Overlay />
         <BottomSheet.Content backgroundClassName="bg-surface" className="gap-1 pb-4">
-          <Text className="px-1 pb-2 text-base font-semibold text-foreground">{title}</Text>
+          <BottomSheet.Title className="mb-2 text-xl">{title}</BottomSheet.Title>
           {sheetItems.map((item) => (
             <PressableFeedback
               key={item.value}

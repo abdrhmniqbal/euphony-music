@@ -79,7 +79,7 @@ export function AppUpdateSheet() {
           footerComponent={renderFooter}
           contentContainerClassName="h-full px-0"
           handleComponent={() => null}
-          backgroundClassName="bg-background"
+          backgroundClassName="bg-surface"
         >
           <View className="flex-row items-center justify-between gap-4 px-4 pb-3">
             <BottomSheet.Title className="flex-1 text-xl font-bold">

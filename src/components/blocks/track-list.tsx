@@ -22,7 +22,7 @@ import {
   type ViewStyle,
 } from "react-native"
 import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
-import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
+import { TrackActionSheet } from "@/components/blocks/sheets/track-action-sheet"
 import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
