@@ -203,7 +203,8 @@
       "name": "$t(term.nameLabel)",
       "type": "Type",
       "numberOfTracks": "Number of Tracks",
-      "numberOfFiles": "Number of Files"
+      "numberOfFiles": "Number of Files",
+      "customOrder": "Custom Order"
     },
     "recommendedAlbums": "Recommended Albums",
     "playlistNotFound": "Playlist not found",

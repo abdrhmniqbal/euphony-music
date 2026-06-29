@@ -56,13 +56,14 @@ import LocalEdit02Icon from "@/components/icons/local/edit-02"
 import LocalDelete02Icon from "@/components/icons/local/delete-02"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
-type PlaylistTrackSortField = TrackSortField | "playlistAddedAt"
+type PlaylistTrackSortField = TrackSortField | "playlistAddedAt" | "playlistOrder"
 type PlaylistTrackSortOrder = "asc" | "desc"
 
 const PLAYLIST_TRACK_SORT_OPTIONS: {
   label: string
   field: PlaylistTrackSortField
 }[] = [
+  { label: "library.sortOption.customOrder", field: "playlistOrder" },
   { label: "library.sortOption.addedToPlaylist", field: "playlistAddedAt" },
   ...TRACK_SORT_OPTIONS,
 ]
@@ -93,6 +94,14 @@ function sortPlaylistTracks(
     return [...tracks].sort((left, right) => comparePlaylistAddedAt(left, right, order))
   }
 
+  if (field === "playlistOrder") {
+    return [...tracks].sort((left, right) =>
+      order === "asc"
+        ? left.playlistPosition - right.playlistPosition
+        : right.playlistPosition - left.playlistPosition
+    )
+  }
+
   return sortTracks(tracks, { field, order }) as PlaylistDetailTrack[]
 }
 
@@ -116,8 +125,8 @@ export default function PlaylistDetailsScreen() {
   const [showActionSheet, setShowActionSheet] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showSortSheet, setShowSortSheet] = useState(false)
-  const [sortField, setSortField] = useState<PlaylistTrackSortField>("playlistAddedAt")
-  const [sortOrder, setSortOrder] = useState<PlaylistTrackSortOrder>("desc")
+  const [sortField, setSortField] = useState<PlaylistTrackSortField>("playlistOrder")
+  const [sortOrder, setSortOrder] = useState<PlaylistTrackSortOrder>("asc")
   const { data: playlist, isLoading } = usePlaylist(playlistId)
   const { data: isFavoriteData = false } = useIsFavorite("playlist", playlistId)
   const toggleFavoriteMutation = useToggleFavorite()
@@ -184,8 +193,10 @@ export default function PlaylistDetailsScreen() {
   }
 
   function handleSortSelect(field: PlaylistTrackSortField, order?: PlaylistTrackSortOrder) {
-    const nextOrder =
-      field === "playlistAddedAt" && field !== sortField ? "desc" : (order ?? sortOrder)
+    const isNewField = field !== sortField
+    const defaultOrder: PlaylistTrackSortOrder =
+      field === "playlistOrder" ? "asc" : field === "playlistAddedAt" ? "desc" : (order ?? "asc")
+    const nextOrder = isNewField ? defaultOrder : (order ?? sortOrder)
 
     setSortField(field)
     setSortOrder(nextOrder)
