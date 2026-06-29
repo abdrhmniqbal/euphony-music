@@ -23,7 +23,6 @@ import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { PlaylistList } from "@/components/blocks/playlist-list"
 import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TracksTab } from "@/components/blocks/tracks-tab"
-import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -49,17 +48,6 @@ export default function LibraryScreen() {
     setTabTransitionDirection(direction)
     state.setActiveTab(nextTab)
   }
-
-  const [actionSheetConfig, setActionSheetConfig] = React.useState<{
-    visible: boolean
-    type: "album" | "artist" | "genre" | "playlist"
-    id: string
-    name: string
-    subtitle?: string
-    image?: string
-    trackCount?: number
-    hideFavoriteAction?: boolean
-  } | null>(null)
 
   const autoHideScrollProps = useAutoHideHeaderScroll()
 
@@ -93,17 +81,6 @@ export default function LibraryScreen() {
           <AlbumsTab
             sortConfig={state.sortConfig}
             onAlbumPress={state.openAlbum}
-            onAlbumLongPress={(album) => {
-              setActionSheetConfig({
-                visible: true,
-                type: "album",
-                id: album.id,
-                name: album.title,
-                subtitle: album.artist,
-                image: album.image,
-                trackCount: album.trackCount,
-              })
-            }}
             contentBottomPadding={state.libraryListBottomPadding}
             refreshControl={refreshControl}
             {...autoHideScrollProps}
@@ -114,19 +91,6 @@ export default function LibraryScreen() {
           <ArtistsTab
             sortConfig={state.sortConfig}
             onArtistPress={state.openArtist}
-            onArtistLongPress={(artist) => {
-              setActionSheetConfig({
-                visible: true,
-                type: "artist",
-                id: artist.id,
-                name: artist.name,
-                subtitle: t("library.count.track", {
-                  count: artist.trackCount,
-                }),
-                image: artist.image,
-                trackCount: artist.trackCount,
-              })
-            }}
             contentBottomPadding={state.libraryListBottomPadding}
             refreshControl={refreshControl}
             {...autoHideScrollProps}
@@ -143,18 +107,6 @@ export default function LibraryScreen() {
             genresEmptyTitle={t("library.empty.genresFoundTitle")}
             genresEmptyMessage={t("home.empty.recentlyPlayedMessage")}
             onGenrePress={state.openGenre}
-            onGenreLongPress={(genreName) => {
-              const genreObj = state.sortedGenres.find((g) => g.title === genreName)
-              setActionSheetConfig({
-                visible: true,
-                type: "genre",
-                id: genreName,
-                name: genreName,
-                subtitle: t("library.genre"),
-                trackCount: genreObj?.trackCount || 0,
-                hideFavoriteAction: true,
-              })
-            }}
           />
         )
       case "Playlists":
@@ -163,19 +115,6 @@ export default function LibraryScreen() {
             data={state.playlists}
             onCreatePlaylist={state.openPlaylistForm}
             onPlaylistPress={state.openPlaylist}
-            onPlaylistLongPress={(playlist) => {
-              setActionSheetConfig({
-                visible: true,
-                type: "playlist",
-                id: playlist.id,
-                name: playlist.title,
-                subtitle: t("library.count.track", {
-                  count: playlist.trackCount,
-                }),
-                image: playlist.image,
-                trackCount: playlist.trackCount,
-              })
-            }}
             contentContainerStyle={listContentContainerStyle}
             resetScrollKey={state.listResetScrollKey}
             refreshControl={refreshControl}
@@ -281,26 +220,6 @@ export default function LibraryScreen() {
 
         <SortSheet.Content options={state.currentSortOptions} />
       </SortSheet>
-
-      {actionSheetConfig && (
-        <CollectionActionSheet
-          visible={actionSheetConfig.visible}
-          onOpenChange={(visible) => {
-            if (!visible) {
-              setActionSheetConfig(null)
-              return
-            }
-            setActionSheetConfig((prev) => (prev ? { ...prev, visible } : prev))
-          }}
-          type={actionSheetConfig.type}
-          id={actionSheetConfig.id}
-          name={actionSheetConfig.name}
-          subtitle={actionSheetConfig.subtitle}
-          image={actionSheetConfig.image}
-          trackCount={actionSheetConfig.trackCount}
-          hideFavoriteAction={actionSheetConfig.hideFavoriteAction}
-        />
-      )}
     </>
   )
 }
