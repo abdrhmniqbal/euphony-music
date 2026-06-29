@@ -75,7 +75,7 @@ export function RankedTrackCarousel({
   className,
 }: RankedTrackCarouselProps) {
   const currentTrackId = useCurrentTrackId()
-  const { selected: selectedTrack, setSelected, isOpen: isSheetOpen, closeSheet } = useActionSheet<Track>()
+  const { selected: selectedTrack, isOpen: isSheetOpen, handleLongPress: selectAndOpenSheet, closeSheet } = useActionSheet<Track>()
 
   const chunks = React.useMemo(() => chunkArray(data, chunkSize), [data, chunkSize])
 
@@ -97,9 +97,9 @@ export function RankedTrackCarousel({
         onItemLongPress(track)
         return
       }
-      setSelected(track)
+      selectAndOpenSheet(track)
     },
-    [onItemLongPress, setSelected]
+    [onItemLongPress, selectAndOpenSheet]
   )
 
   return (
@@ -126,7 +126,6 @@ export function RankedTrackCarousel({
         isOpen={isSheetOpen}
         onClose={() => {
           closeSheet()
-          setSelected(null)
         }}
         tracks={data}
         queueContext={queueContext ?? null}
