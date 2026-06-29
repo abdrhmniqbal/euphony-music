@@ -19,7 +19,6 @@ import { CollectionActionSheet } from "@/components/blocks/collection-action-she
 import { ContentSection } from "@/components/blocks/content-section"
 import { MediaCarousel } from "@/components/blocks/media-carousel"
 import { RankedTrackCarousel } from "@/components/blocks/ranked-track-carousel"
-import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
@@ -31,7 +30,6 @@ import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
-import type { Track } from "@/modules/player/store"
 import { useGenreDetails } from "@/modules/search/queries"
 import { getPreviewAlbums } from "@/modules/search/utils"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
@@ -64,8 +62,6 @@ export default function GenreDetailsScreen() {
   const [showActionSheet, setShowActionSheet] = useState(false)
   const [selectedAlbum, setSelectedAlbum] = useState<GenreAlbumInfo | null>(null)
   const [showAlbumSheet, setShowAlbumSheet] = useState(false)
-  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
-  const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const { name } = useLocalSearchParams<{ name: string }>()
   const router = useRouter()
   const theme = useThemeColors()
@@ -104,11 +100,6 @@ export default function GenreDetailsScreen() {
   const openAlbumSheet = (album: GenreAlbumInfo) => {
     setSelectedAlbum(album)
     setShowAlbumSheet(true)
-  }
-
-  const openTrackSheet = (track: Track) => {
-    setSelectedTrack(track)
-    setIsTrackSheetOpen(true)
   }
 
   function renderAlbumItem(album: GenreAlbumInfo) {
@@ -205,7 +196,7 @@ export default function GenreDetailsScreen() {
                     title: genreName,
                   })
                 }
-                onItemLongPress={openTrackSheet}
+                queueContext={createPlaybackQueueContext("genre", genreName)}
               />
             )}
           />
@@ -259,13 +250,6 @@ export default function GenreDetailsScreen() {
         subtitle={selectedAlbum?.artist}
         image={selectedAlbum?.image}
         trackCount={selectedAlbum?.trackCount ?? 0}
-      />
-      <TrackActionSheet
-        track={selectedTrack}
-        isOpen={isTrackSheetOpen}
-        onClose={() => setIsTrackSheetOpen(false)}
-        tracks={topTracks}
-        queueContext={createPlaybackQueueContext("genre", genreName)}
       />
     </View>
   )

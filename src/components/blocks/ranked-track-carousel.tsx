@@ -10,6 +10,7 @@ import { playTrack } from "@/modules/player/service"
 import { chunkArray } from "@/utils/array"
 
 import { MediaCarousel } from "./media-carousel"
+import { TrackActionSheet } from "./track-action-sheet"
 
 interface EmptyStateConfig {
   icon: ReactNode
@@ -73,6 +74,9 @@ export function RankedTrackCarousel({
   className,
 }: RankedTrackCarouselProps) {
   const currentTrackId = useCurrentTrackId()
+  const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+
   const chunks = React.useMemo(() => chunkArray(data, chunkSize), [data, chunkSize])
 
   const handlePress = React.useCallback(
@@ -89,28 +93,45 @@ export function RankedTrackCarousel({
 
   const handleLongPress = React.useCallback(
     (track: Track) => {
-      onItemLongPress?.(track)
+      if (onItemLongPress) {
+        onItemLongPress(track)
+        return
+      }
+      setSelectedTrack(track)
+      setIsSheetOpen(true)
     },
     [onItemLongPress]
   )
 
   return (
-    <MediaCarousel
-      data={chunks}
-      keyExtractor={(_, index) => `chunk-${index}`}
-      emptyState={emptyState}
-      gap={24}
-      className={className}
-      renderItem={(chunk, chunkIndex) => (
-        <MemoizedRankedTrackChunk
-          chunk={chunk}
-          chunkIndex={chunkIndex}
-          chunkSize={chunkSize}
-          currentTrackId={currentTrackId}
-          onTrackPress={handlePress}
-          onTrackLongPress={handleLongPress}
-        />
-      )}
-    />
+    <>
+      <MediaCarousel
+        data={chunks}
+        keyExtractor={(_, index) => `chunk-${index}`}
+        emptyState={emptyState}
+        gap={24}
+        className={className}
+        renderItem={(chunk, chunkIndex) => (
+          <MemoizedRankedTrackChunk
+            chunk={chunk}
+            chunkIndex={chunkIndex}
+            chunkSize={chunkSize}
+            currentTrackId={currentTrackId}
+            onTrackPress={handlePress}
+            onTrackLongPress={handleLongPress}
+          />
+        )}
+      />
+      <TrackActionSheet
+        track={selectedTrack}
+        isOpen={isSheetOpen}
+        onClose={() => {
+          setIsSheetOpen(false)
+          setSelectedTrack(null)
+        }}
+        tracks={data}
+        queueContext={queueContext ?? null}
+      />
+    </>
   )
 }

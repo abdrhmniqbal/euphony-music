@@ -160,7 +160,7 @@ export default function HomeScreen() {
                   title: t("home.topTracks"),
                 })
               }
-              onItemLongPress={(track) => openTrackSheet(track, topTracks, t("home.topTracks"))}
+              queueContext={createTrackListQueueContext(t("home.topTracks"))}
             />
           )}
         />
