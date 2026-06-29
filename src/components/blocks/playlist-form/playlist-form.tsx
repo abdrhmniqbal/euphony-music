@@ -81,49 +81,55 @@ function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSele
 }
 
 export function PlaylistForm({
-  name,
-  description,
+  form,
   selectedTracksList,
-  setName,
-  setDescription,
   toggleTrack,
   reorderSelectedTracks,
   openTrackSheet,
 }: PlaylistFormProps) {
   const theme = useThemeColors()
   const { t } = useTranslation()
+
   const header = (
     <View className="gap-4 pb-3">
-      <View className="gap-2">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-sm font-medium text-foreground">{t("playlist.name")}</Text>
-          <Text className="text-xs text-muted">
-            {name.length}/{MAX_PLAYLIST_NAME_LENGTH}
-          </Text>
-        </View>
-        <Input
-          placeholder={t("playlist.namePlaceholder")}
-          value={name}
-          onChangeText={setName}
-          maxLength={MAX_PLAYLIST_NAME_LENGTH}
-        />
-      </View>
+      <form.Field name="name">
+        {(field) => (
+          <View className="gap-2">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-foreground">{t("playlist.name")}</Text>
+              <Text className="text-xs text-muted">
+                {field.state.value.length}/{MAX_PLAYLIST_NAME_LENGTH}
+              </Text>
+            </View>
+            <Input
+              placeholder={t("playlist.namePlaceholder")}
+              value={field.state.value}
+              onChangeText={(val) => field.handleChange(val)}
+              maxLength={MAX_PLAYLIST_NAME_LENGTH}
+            />
+          </View>
+        )}
+      </form.Field>
 
-      <View className="gap-2">
-        <View className="flex-row items-center justify-between">
-          <Text className="text-sm font-medium text-foreground">{t("playlist.description")}</Text>
-          <Text className="text-xs text-muted">
-            {description.length}/{MAX_PLAYLIST_DESCRIPTION_LENGTH}
-          </Text>
-        </View>
-        <TextArea
-          placeholder={t("playlist.descriptionPlaceholder")}
-          value={description}
-          onChangeText={setDescription}
-          maxLength={MAX_PLAYLIST_DESCRIPTION_LENGTH}
-          className="min-h-20"
-        />
-      </View>
+      <form.Field name="description">
+        {(field) => (
+          <View className="gap-2">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-sm font-medium text-foreground">{t("playlist.description")}</Text>
+              <Text className="text-xs text-muted">
+                {field.state.value.length}/{MAX_PLAYLIST_DESCRIPTION_LENGTH}
+              </Text>
+            </View>
+            <TextArea
+              placeholder={t("playlist.descriptionPlaceholder")}
+              value={field.state.value}
+              onChangeText={(val) => field.handleChange(val)}
+              maxLength={MAX_PLAYLIST_DESCRIPTION_LENGTH}
+              className="min-h-20"
+            />
+          </View>
+        )}
+      </form.Field>
 
       <View className="flex-row items-center justify-between">
         <Text className="text-lg font-bold text-foreground">

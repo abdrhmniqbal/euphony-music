@@ -1,20 +1,20 @@
-import type { Track } from "@/modules/player/types"
-import { useDebouncedValue } from "@tanstack/react-pacer"
+import { useForm } from "@tanstack/react-form"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import * as React from "react"
 
+import type { Track } from "@/modules/player/types"
 import { queryClient } from "@/lib/tanstack-query"
 import { i18n } from "@/modules/localization/i18n"
 import { logError } from "@/modules/logging/service"
 import { showAppToast } from "@/modules/ui/toast"
 import { getAllTracks } from "@/modules/player/repository"
 
-import { buildSelectedTracksList, buildTrackPickerResults, reorderTrackIds } from "./form"
+import { buildSelectedTracksList, reorderTrackIds } from "./form"
 import { invalidatePlaylistQueries } from "./keys"
 import { createPlaylist, updatePlaylist } from "./repository"
-import { clampPlaylistDescription, clampPlaylistName, toggleTrackSelection } from "./utils"
+import { clampPlaylistDescription, clampPlaylistName } from "./utils"
+import { useTrackPickerDraft } from "./use-track-picker-draft"
 
-const SEARCH_DEBOUNCE_MS = 140
 const LIBRARY_TRACKS_QUERY_KEY = ["library", "tracks"] as const
 
 interface PlaylistFormPayload {
@@ -41,21 +41,9 @@ export function usePlaylistFormEditor({
   isEditMode,
   onSaved,
 }: UsePlaylistFormEditorOptions) {
-  const [name, setName] = React.useState(() => clampPlaylistName(initialName))
-  const [description, setDescription] = React.useState(() =>
-    clampPlaylistDescription(initialDescription)
-  )
   const [selectedTrackIds, setSelectedTrackIds] = React.useState<string[]>(
     () => initialSelectedTrackIds
   )
-  const [draftSelectedTracks, setDraftSelectedTracks] = React.useState(
-    () => new Set(initialSelectedTrackIds)
-  )
-  const [isTrackSheetOpen, setIsTrackSheetOpen] = React.useState(false)
-  // Bumped to remount <Input key={searchInputKey}>, clearing internal state
-  // (react-native TextInput doesn't expose a reliable imperative reset)
-  const [searchInputKey, setSearchInputKey] = React.useState(0)
-  const [searchQuery, setSearchQuery] = React.useState("")
 
   const savePlaylistMutation = useMutation(
     {
@@ -90,45 +78,63 @@ export function usePlaylistFormEditor({
     queryClient
   )
 
+  const form = useForm({
+    defaultValues: {
+      name: clampPlaylistName(initialName),
+      description: clampPlaylistDescription(initialDescription),
+    },
+    validators: {
+      onChange: ({ value }) => {
+        if (!value.name.trim()) {
+          return { name: "Required" }
+        }
+        return
+      },
+    },
+    onSubmit: async ({ value }) => {
+      const name = value.name.trim()
+      if (!name || savePlaylistMutation.isPending) {
+        return
+      }
+
+      try {
+        await savePlaylistMutation.mutateAsync({
+          id: isEditMode ? playlistId : undefined,
+          name,
+          description: value.description.trim().length > 0 ? value.description.trim() : undefined,
+          trackIds: selectedTrackIds,
+        })
+        onSaved()
+      } catch (error) {
+        logError("Playlist form save failed", error, {
+          playlistId: playlistId ?? null,
+          isEditMode,
+        })
+      }
+    },
+  })
+
   const { data: allTracks = [] } = useQuery<Track[]>(
     {
       queryKey: LIBRARY_TRACKS_QUERY_KEY,
       queryFn: getAllTracks,
-      enabled: isTrackSheetOpen || isEditMode || selectedTrackIds.length > 0,
+      enabled: true,
       staleTime: 5 * 60 * 1000,
       placeholderData: (previousData) => previousData,
     },
     queryClient
   )
 
-  const [debouncedSearchQuery] = useDebouncedValue(searchQuery, {
-    wait: SEARCH_DEBOUNCE_MS,
+  const picker = useTrackPickerDraft({
+    allTracks,
+    selectedTrackIds,
+    setSelectedTrackIds,
   })
-  const normalizedQuery = debouncedSearchQuery.trim().toLowerCase()
-
-  const filteredTracks = React.useMemo(
-    () =>
-      buildTrackPickerResults({
-        allTracks,
-        selectedTrackIds,
-        draftSelectedTracks,
-        normalizedQuery,
-      }),
-    [allTracks, draftSelectedTracks, normalizedQuery, selectedTrackIds]
-  )
 
   const selectedTracksList = React.useMemo(
     () => buildSelectedTracksList(allTracks, selectedTrackIds),
     [allTracks, selectedTrackIds]
   )
-
-  const updateName = React.useCallback((value: string) => {
-    setName(clampPlaylistName(value))
-  }, [])
-
-  const updateDescription = React.useCallback((value: string) => {
-    setDescription(clampPlaylistDescription(value))
-  }, [])
 
   const toggleSelectedTrack = React.useCallback((trackId: string) => {
     setSelectedTrackIds((prev) => {
@@ -140,90 +146,15 @@ export function usePlaylistFormEditor({
     })
   }, [])
 
-  const toggleDraftTrack = React.useCallback((trackId: string) => {
-    setDraftSelectedTracks((prev) => toggleTrackSelection(prev, trackId))
-  }, [])
-
-  const openTrackSheet = React.useCallback(() => {
-    setDraftSelectedTracks(new Set(selectedTrackIds))
-    setIsTrackSheetOpen(true)
-  }, [selectedTrackIds])
-
-  const handleTrackSheetClose = React.useCallback(() => {
-    setIsTrackSheetOpen(false)
-    setSearchQuery("")
-    setSearchInputKey((prev) => prev + 1) // force <Input> remount to clear internal state
-    setDraftSelectedTracks(new Set(selectedTrackIds))
-  }, [selectedTrackIds])
-
-  const applyTrackSheetSelection = React.useCallback(() => {
-    setSelectedTrackIds((prev) => {
-      const previousSet = new Set(prev)
-      const preservedOrder = prev.filter((id) => draftSelectedTracks.has(id))
-      const appended = allTracks
-        .map((track) => track.id)
-        .filter((id) => draftSelectedTracks.has(id) && !previousSet.has(id))
-
-      return [...preservedOrder, ...appended]
-    })
-    setIsTrackSheetOpen(false)
-    setSearchQuery("")
-    setSearchInputKey((prev) => prev + 1) // force <Input> remount
-  }, [allTracks, draftSelectedTracks])
-
-  const clearDraftTrackSelection = React.useCallback(() => {
-    setDraftSelectedTracks(new Set())
-  }, [])
-
   const reorderSelectedTracks = React.useCallback((from: number, to: number) => {
     setSelectedTrackIds((prev) => reorderTrackIds(prev, from, to))
   }, [])
 
-  const save = React.useCallback(async () => {
-    if (!name.trim() || savePlaylistMutation.isPending) {
-      return
-    }
-
-    try {
-      await savePlaylistMutation.mutateAsync({
-        id: isEditMode ? playlistId : undefined,
-        name,
-        description: description.trim().length > 0 ? description : undefined,
-        trackIds: selectedTrackIds,
-      })
-      onSaved()
-    } catch (error) {
-      logError("Playlist form save failed", error, {
-        playlistId: playlistId ?? null,
-        isEditMode,
-      })
-    }
-  }, [description, isEditMode, name, onSaved, playlistId, savePlaylistMutation, selectedTrackIds])
-
-  const isSaving = savePlaylistMutation.isPending
-  const canSave = name.trim().length > 0 && !isSaving
-
   return {
-    name,
-    description,
+    form,
     selectedTracksList,
-    isTrackSheetOpen,
-    searchInputKey,
-    searchQuery,
-    filteredTracks,
-    draftSelectedTracks,
-    isSaving,
-    canSave,
-    setSearchQuery,
-    updateName,
-    updateDescription,
     toggleSelectedTrack,
     reorderSelectedTracks,
-    openTrackSheet,
-    handleTrackSheetClose,
-    toggleDraftTrack,
-    applyTrackSheetSelection,
-    clearDraftTrackSelection,
-    save,
+    ...picker,
   }
 }

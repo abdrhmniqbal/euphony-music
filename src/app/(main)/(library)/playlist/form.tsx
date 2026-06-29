@@ -47,27 +47,21 @@ function PlaylistFormEditor({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const {
-    name,
-    description,
+    form,
     selectedTracksList,
+    toggleSelectedTrack: toggleTrack,
+    reorderSelectedTracks,
     isTrackSheetOpen,
     searchInputKey,
     searchQuery,
+    setSearchQuery,
     filteredTracks,
     draftSelectedTracks,
-    isSaving,
-    canSave,
-    setSearchQuery,
-    updateName,
-    updateDescription,
-    toggleSelectedTrack,
-    reorderSelectedTracks,
     openTrackSheet,
     handleTrackSheetClose,
     toggleDraftTrack,
     applyTrackSheetSelection,
     clearDraftTrackSelection,
-    save,
   } = usePlaylistFormEditor({
     playlistId,
     initialName,
@@ -78,57 +72,66 @@ function PlaylistFormEditor({
   })
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: isEditMode ? t("playlist.editPlaylist") : t("playlist.createPlaylist"),
-          headerLeft: () => <BackButton className="-ml-2" onPress={onCancel} />,
-          headerRight: () => (
-            <Button
-              onPress={save}
-              variant="ghost"
-              className="-mr-2"
-              isIconOnly
-              isDisabled={!canSave || isSaving}
-            >
-              <LocalTick02Icon
-                fill="none"
-                width={24}
-                height={24}
-                color={canSave || isSaving ? theme.accent : theme.muted}
-              />
-            </Button>
-          ),
-        }}
-      />
+    <form.Subscribe selector={(state) => ({
+      isSubmitting: state.isSubmitting,
+      isValid: state.isValid,
+    })}
+    >
+      {({ isSubmitting, isValid }) => {
+        const canSave = isValid && !isSubmitting
 
-      <PlaylistForm
-        name={name}
-        description={description}
-        selectedTracksList={selectedTracksList}
-        setName={updateName}
-        setDescription={updateDescription}
-        toggleTrack={toggleSelectedTrack}
-        reorderSelectedTracks={reorderSelectedTracks}
-        openTrackSheet={openTrackSheet}
-      />
+        return (
+          <>
+            <Stack.Screen
+              options={{
+                title: isEditMode ? t("playlist.editPlaylist") : t("playlist.createPlaylist"),
+                headerLeft: () => <BackButton className="-ml-2" onPress={onCancel} />,
+                headerRight: () => (
+                  <Button
+                    onPress={() => form.handleSubmit()}
+                    variant="ghost"
+                    className="-mr-2"
+                    isIconOnly
+                    isDisabled={!canSave}
+                  >
+                    <LocalTick02Icon
+                      fill="none"
+                      width={24}
+                      height={24}
+                      color={canSave ? theme.accent : theme.muted}
+                    />
+                  </Button>
+                ),
+              }}
+            />
 
-      <BottomSheet isOpen={isTrackSheetOpen} onOpenChange={(open) => { if (!open) handleTrackSheetClose() }}>
-        <BottomSheet.Portal>
-          <BottomSheet.Overlay />
-          <TrackPickerSheetContent
-            inputKey={searchInputKey}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            filteredTracks={filteredTracks}
-            selectedTracks={draftSelectedTracks}
-            onToggleTrack={toggleDraftTrack}
-            onApply={applyTrackSheetSelection}
-            onClearSelection={clearDraftTrackSelection}
-          />
-        </BottomSheet.Portal>
-      </BottomSheet>
-    </>
+            <PlaylistForm
+              form={form}
+              selectedTracksList={selectedTracksList}
+              toggleTrack={toggleTrack}
+              reorderSelectedTracks={reorderSelectedTracks}
+              openTrackSheet={openTrackSheet}
+            />
+
+            <BottomSheet isOpen={isTrackSheetOpen} onOpenChange={(open) => { if (!open) handleTrackSheetClose() }}>
+              <BottomSheet.Portal>
+                <BottomSheet.Overlay />
+                <TrackPickerSheetContent
+                  inputKey={searchInputKey}
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  filteredTracks={filteredTracks}
+                  selectedTracks={draftSelectedTracks}
+                  onToggleTrack={toggleDraftTrack}
+                  onApply={applyTrackSheetSelection}
+                  onClearSelection={clearDraftTrackSelection}
+                />
+              </BottomSheet.Portal>
+            </BottomSheet>
+          </>
+        )
+      }}
+    </form.Subscribe>
   )
 }
 

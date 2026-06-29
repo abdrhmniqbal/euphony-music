@@ -1,3 +1,5 @@
+import type { ReactFormExtendedApi } from "@tanstack/react-form"
+
 import type { Track } from "@/modules/player/types"
 
 export interface PlaylistTrackRowProps {
@@ -23,12 +25,17 @@ export interface TrackPickerSheetContentProps {
   onClearSelection: () => void
 }
 
-export interface PlaylistFormProps {
+type PlaylistFormData = {
   name: string
   description: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type PlaylistFormApi = ReactFormExtendedApi<PlaylistFormData, any, any, any, any, any, any, any, any, any, any, any>
+
+export interface PlaylistFormProps {
+  form: PlaylistFormApi
   selectedTracksList: Track[]
-  setName: (value: string) => void
-  setDescription: (value: string) => void
   toggleTrack: (trackId: string) => void
   reorderSelectedTracks: (from: number, to: number) => void
   openTrackSheet: () => void
