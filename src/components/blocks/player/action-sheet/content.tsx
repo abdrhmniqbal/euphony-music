@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next"
 import { PlayerActionMenu } from "./menu"
 import { SleepTimerSection } from "./sleep-timer-section"
 import { useSleepTimerDraft } from "./use-sleep-timer-draft"
-import { ArtistPickerSheet } from "@/components/blocks/artist-picker-sheet"
+import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
@@ -295,7 +295,7 @@ export function PlayerActionSheet({
         }}
       />
 
-      <ArtistPickerSheet
+      <ValueNavigationSheet
         isOpen={isArtistSelectionOpen}
         onOpenChange={setIsArtistSelectionOpen}
         title={t("player.selectArtistTitle")}

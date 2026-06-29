@@ -7,7 +7,7 @@
  */
 
 import type { TFunction } from "i18next"
-import type { ArtistPickerSheetItem } from "@/components/blocks/artist-picker-sheet"
+import type { ValueNavigationSheetItem } from "@/components/blocks/value-navigation-sheet"
 import type { Track } from "@/modules/player/store"
 import {
   formatQualityLabel,
@@ -75,7 +75,7 @@ export function buildArtistSelectionItems({
     },
     names: string[],
     formatCount: (count: number) => string
-  ) => ArtistPickerSheetItem[]
+  ) => ValueNavigationSheetItem[]
   trackCountLabel: (count: number) => string
 }) {
   const richArtistItems = buildArtistPickerItems(

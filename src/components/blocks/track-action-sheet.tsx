@@ -17,9 +17,9 @@ import { useTranslation } from "react-i18next"
 import { DeleteTrackDialog } from "@/components/blocks/delete-track-dialog"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
 import {
-  ArtistPickerSheet,
-  type ArtistPickerSheetItem,
-} from "@/components/blocks/artist-picker-sheet"
+  ValueNavigationSheet,
+  type ValueNavigationSheetItem,
+} from "@/components/blocks/value-navigation-sheet"
 import { MenuRow } from "@/components/ui/menu-row"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
@@ -89,7 +89,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const { data: fullTrackData } = useTrack(track?.id ?? "")
   const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
 
-  const [artistSelectionItems, setArtistSelectionItems] = useState<ArtistPickerSheetItem[]>([])
+  const [artistSelectionItems, setArtistSelectionItems] = useState<ValueNavigationSheetItem[]>([])
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const [isMetadataSheetOpen, setIsMetadataSheetOpen] = useState(false)
 
@@ -432,7 +432,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
         }}
       />
 
-      <ArtistPickerSheet
+      <ValueNavigationSheet
         isOpen={isArtistSelectionOpen}
         title={t("track.metadata.artist")}
         items={artistSelectionItems}

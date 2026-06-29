@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { ArtistPickerSheetItem } from "@/components/blocks/artist-picker-sheet"
+import type { ValueNavigationSheetItem } from "@/components/blocks/value-navigation-sheet"
 
 interface PickerArtistSource {
   name?: string | null
@@ -21,7 +21,7 @@ interface PickerSource {
   featuredArtists?: Array<{ artist?: PickerArtistSource | null }>
 }
 
-function dedupeArtistPickerItems(items: ArtistPickerSheetItem[]) {
+function dedupeArtistPickerItems(items: ValueNavigationSheetItem[]) {
   const seen = new Set<string>()
 
   return items.filter((item) => {
@@ -40,7 +40,7 @@ export function buildArtistPickerItems(
   fallbackNames: string[],
   translateTrackCount: (count: number) => string
 ) {
-  const items: ArtistPickerSheetItem[] = []
+  const items: ValueNavigationSheetItem[] = []
 
   if (source.artist?.name?.trim()) {
     items.push({

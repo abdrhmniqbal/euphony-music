@@ -11,9 +11,9 @@ import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-
 import { useMemo, useState, useSyncExternalStore } from "react"
 
 import {
-  ArtistPickerSheet,
-  type ArtistPickerSheetItem,
-} from "@/components/blocks/artist-picker-sheet"
+  ValueNavigationSheet,
+  type ValueNavigationSheetItem,
+} from "@/components/blocks/value-navigation-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { FullPlayerContent } from "@/components/blocks/player/full-player-content"
 import { PlayerActionSheet } from "@/components/blocks/player/action-sheet"
@@ -97,7 +97,7 @@ export default function PlayerRoute() {
     splitMultipleValueConfig,
   ])
 
-  const artistPickerItems = useMemo<ArtistPickerSheetItem[]>(
+  const artistPickerItems = useMemo<ValueNavigationSheetItem[]>(
     () =>
       buildArtistPickerItems(
         {
@@ -183,7 +183,7 @@ export default function PlayerRoute() {
         onNavigate={handleNavigateAway}
       />
 
-      <ArtistPickerSheet
+      <ValueNavigationSheet
         isOpen={currentTrack.isExternal ? false : isArtistSelectionOpen}
         onOpenChange={setIsArtistSelectionOpen}
         title={t("player.selectArtistTitle")}

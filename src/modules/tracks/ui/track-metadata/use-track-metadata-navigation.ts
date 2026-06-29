@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import type { ArtistPickerSheetItem } from "@/components/blocks/artist-picker-sheet"
+import type { ValueNavigationSheetItem } from "@/components/blocks/value-navigation-sheet"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { buildArtistSelectionItems, dedupeValues, type FullTrackData } from "./metadata-derivation"
 
@@ -22,12 +22,12 @@ export function useTrackMetadataNavigation({
     },
     names: string[],
     formatCount: (count: number) => string
-  ) => ArtistPickerSheetItem[]
+  ) => ValueNavigationSheetItem[]
   trackCountLabel: (count: number) => string
   onSheetClose: () => void
 }) {
   const router = useRouter()
-  const [artistSelectionItems, setArtistSelectionItems] = useState<ArtistPickerSheetItem[]>([])
+  const [artistSelectionItems, setArtistSelectionItems] = useState<ValueNavigationSheetItem[]>([])
   const [genreSelectionValues, setGenreSelectionValues] = useState<string[]>([])
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const [isGenreSelectionOpen, setIsGenreSelectionOpen] = useState(false)

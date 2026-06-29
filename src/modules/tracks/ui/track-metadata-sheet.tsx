@@ -8,7 +8,7 @@ import { Image } from "expo-image"
 import { useThemeColors } from "@/modules/ui/theme"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { ICON_SIZES } from "@/constants/icon-sizes"
-import { ArtistPickerSheet } from "@/components/blocks/artist-picker-sheet"
+import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
 import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { useTrack } from "@/modules/tracks/queries"
@@ -152,7 +152,7 @@ export const TrackMetadataSheet: React.FC<TrackMetadataSheetProps> = ({
         </BottomSheet.Portal>
       </BottomSheet>
 
-      <ArtistPickerSheet
+      <ValueNavigationSheet
         isOpen={isArtistSelectionOpen}
         title={t("track.metadata.artist")}
         items={artistSelectionItems}

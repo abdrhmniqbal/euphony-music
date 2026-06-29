@@ -11,7 +11,7 @@ import { BottomSheet, PressableFeedback } from "heroui-native"
 import { Text } from "react-native"
 import { View } from "react-native"
 
-interface ValueNavigationSheetItem {
+export interface ValueNavigationSheetItem {
   value: string
   subtitle?: string
   image?: string
@@ -20,7 +20,7 @@ interface ValueNavigationSheetItem {
 interface ValueNavigationSheetProps {
   isOpen: boolean
   title: string
-  values: string[]
+  values?: string[]
   items?: ValueNavigationSheetItem[]
   onOpenChange: (open: boolean) => void
   onSelectValue: (value: string) => void
@@ -34,7 +34,7 @@ export function ValueNavigationSheet({
   onOpenChange,
   onSelectValue,
 }: ValueNavigationSheetProps) {
-  const sheetItems: ValueNavigationSheetItem[] = items ?? values.map((value) => ({ value }))
+  const sheetItems: ValueNavigationSheetItem[] = items ?? values?.map((value) => ({ value })) ?? []
 
   return (
     <BottomSheet isOpen={isOpen} onOpenChange={onOpenChange}>
