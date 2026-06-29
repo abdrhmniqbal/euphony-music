@@ -6,7 +6,6 @@
  * Side Effects: Starts indexing on refresh, updates scroll state, and starts playback from full section queues.
  */
 
-import type { Track } from "@/modules/player/types"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import * as React from "react"
 
@@ -29,7 +28,7 @@ import { useCurrentTrackId } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
-import { createTrackListQueueContext, type PlaybackQueueContext } from "@/stores/playback/types"
+import { createTrackListQueueContext } from "@/stores/playback/types"
 
 const CHUNK_SIZE = 5
 const RECENTLY_PLAYED_PREVIEW_LIMIT = 8
@@ -43,11 +42,7 @@ export default function HomeScreen() {
   const { t } = useTranslation()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const currentTrackId = useCurrentTrackId()
-  const [selectedPlaybackAction, setSelectedPlaybackAction] = React.useState<{
-    track: Track
-    tracks: Track[]
-    queueContext: PlaybackQueueContext
-  } | null>(null)
+  const [selectedTrack, setSelectedTrack] = React.useState<Track | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = React.useState(false)
   const {
     data: recentlyPlayedTracksData,
@@ -79,12 +74,8 @@ export default function HomeScreen() {
     await Promise.all([refetchRecentlyPlayedTracks(), refetchTopTracks()])
   }
 
-  const openTrackSheet = React.useCallback((track: Track, tracks: Track[], title: string) => {
-    setSelectedPlaybackAction({
-      track,
-      tracks,
-      queueContext: createTrackListQueueContext(title),
-    })
+  const openTrackSheet = React.useCallback((track: Track, _tracks: Track[], _title: string) => {
+    setSelectedTrack(track)
     setIsTrackSheetOpen(true)
   }, [])
 
@@ -166,14 +157,12 @@ export default function HomeScreen() {
         />
       </View>
       <TrackActionSheet
-        track={selectedPlaybackAction?.track ?? null}
+        track={selectedTrack}
         isOpen={isTrackSheetOpen}
         onClose={() => {
           setIsTrackSheetOpen(false)
-          setSelectedPlaybackAction(null)
+          setSelectedTrack(null)
         }}
-        tracks={selectedPlaybackAction?.tracks ?? []}
-        queueContext={selectedPlaybackAction?.queueContext ?? null}
       />
     </ScrollView>
   )
