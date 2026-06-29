@@ -13,7 +13,7 @@ export function useDailyMix() {
     {
       queryKey: mixKeys.daily(),
       queryFn: getDailyMix,
-      staleTime: 24 * 60 * 60 * 1000, // 24 hours
+      staleTime: 0, // DB manages freshness via generatedAt/expiresAt
     },
     queryClient
   )
@@ -24,7 +24,7 @@ export function useForYouMix() {
     {
       queryKey: mixKeys.forYou(),
       queryFn: getForYouMix,
-      staleTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+      staleTime: 0, // DB manages freshness via generatedAt/expiresAt
     },
     queryClient
   )

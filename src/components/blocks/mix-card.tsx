@@ -100,7 +100,7 @@ export interface MixCardProps {
 
 export function MixCard({ title, images, color, pattern, onPress, onLongPress }: MixCardProps) {
   return (
-    <PressableFeedback onPress={onPress} onLongPress={onLongPress} className="flex-1 active:opacity-80">
+    <PressableFeedback onPress={onPress} onLongPress={onLongPress} className="flex-1">
       <Card className="relative aspect-square overflow-hidden rounded-[28px] border-none p-0">
         <View className="absolute inset-0 bg-surface-secondary">
           <PlaylistArtwork images={images} />

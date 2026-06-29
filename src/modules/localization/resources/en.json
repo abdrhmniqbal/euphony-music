@@ -170,7 +170,8 @@
     "empty": {
       "recentlyAddedTitle": "No recently added",
       "recentlyAddedMessage": "New tracks added to your library will appear here."
-    }
+    },
+    "updated": "Updated"
   },
   "library": {
     "tracks": "$t(term.tracksLabel)",

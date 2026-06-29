@@ -47,6 +47,7 @@ export default function MixDetailsScreen() {
 
   const tracks = isDaily ? (dailyMix?.tracks ?? []) : (forYouMix?.tracks ?? [])
   const isLoading = isDaily ? isDailyLoading : isForYouLoading
+  const mixData = isDaily ? dailyMix : forYouMix
 
   const title = isDaily
     ? t("home.topTracks.dailyMix", "Daily Mix")
@@ -154,6 +155,18 @@ export default function MixDetailsScreen() {
                   </Text>
                   <Text className="mt-1 text-base text-muted" numberOfLines={2}>
                     {description}
+                  </Text>
+                  <Text className="mt-1 text-xs text-muted/60">
+                    {mixData?.generatedAt
+                      ? t("search.updated") +
+                        " " +
+                        new Intl.DateTimeFormat(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).format(mixData.generatedAt)
+                      : ""}
                   </Text>
                   <Text className="mt-2 text-sm text-muted">{metaText}</Text>
                 </View>
