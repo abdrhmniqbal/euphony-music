@@ -8,9 +8,8 @@
 
 import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
-import { Image } from "expo-image"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { Chip, PressableFeedback } from "heroui-native"
+import { Chip } from "heroui-native"
 import type { TFunction } from "i18next"
 import * as React from "react"
 import { useCallback } from "react"
@@ -27,24 +26,10 @@ import { LEGEND_LIST_ROW_CONFIG } from "@/components/blocks/legend-list-config"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { useActionSheet } from "@/components/blocks/use-action-sheet"
+import { MemoizedFavoriteRow } from "@/components/blocks/favorites-row"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
-import LocalUserSolidIcon from "@/components/icons/local/user-solid"
-import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
-import {
-  PlaylistArtwork,
-  resolvePlaylistArtworkImages,
-} from "@/components/patterns/playlist-artwork"
 import { EmptyState } from "@/components/ui/empty-state"
-import {
-  MediaItem as Item,
-  MediaItemAction as ItemAction,
-  MediaItemContent as ItemContent,
-  MediaItemDescription as ItemDescription,
-  MediaItemImage as ItemImage,
-  MediaItemTitle as ItemTitle,
-} from "@/components/ui/media-item"
 import { ICON_SIZES } from "@/constants/icon-sizes"
 import {
   resolveAlbumTransitionId,
@@ -79,142 +64,7 @@ interface FavoritesListProps {
   onTrackPress?: (trackId: string) => void
 }
 
-interface FavoriteRowProps {
-  favorite: FavoriteEntry
-  onPress: (favorite: FavoriteEntry) => void
-  onLongPress: (favorite: FavoriteEntry) => void
-  onRemove: (favorite: FavoriteEntry) => void
-}
 
-const FavoriteItemImage: React.FC<{ favorite: FavoriteEntry }> = ({ favorite }) => {
-  const theme = useThemeColors()
-
-  switch (favorite.type) {
-    case "artist":
-      return (
-        <ItemImage className="overflow-hidden rounded-full">
-          {favorite.image ? (
-            <Image
-              source={{ uri: favorite.image }}
-              style={{ width: "100%", height: "100%" }}
-              contentFit="cover"
-            />
-          ) : (
-            <View className="h-full w-full items-center justify-center rounded-full bg-surface">
-              <LocalUserSolidIcon
-                fill="none"
-                width={ICON_SIZES.listFallback}
-                height={ICON_SIZES.listFallback}
-                color={theme.muted}
-              />
-            </View>
-          )}
-        </ItemImage>
-      )
-
-    case "playlist":
-      return (
-        <ItemImage className="items-center justify-center overflow-hidden bg-default">
-          <PlaylistArtwork images={resolvePlaylistArtworkImages(favorite.images, favorite.image)} />
-        </ItemImage>
-      )
-
-    case "album":
-      return (
-        <ItemImage
-          icon={
-            <LocalVynil02SolidIcon
-              fill="none"
-              width={ICON_SIZES.listFallback}
-              height={ICON_SIZES.listFallback}
-              color={theme.muted}
-            />
-          }
-          image={favorite.image}
-          className="rounded-lg"
-        />
-      )
-
-    case "track":
-    default:
-      return (
-        <ItemImage
-          icon={
-            <LocalMusicNote04SolidIcon
-              fill="none"
-              width={ICON_SIZES.listFallback}
-              height={ICON_SIZES.listFallback}
-              color={theme.muted}
-            />
-          }
-          image={favorite.image}
-        />
-      )
-  }
-}
-
-const TypeBadge: React.FC<{ type: FavoriteType }> = ({ type }) => {
-  const { t } = useTranslation()
-  const label = (() => {
-    switch (type) {
-      case "track":
-        return t("library.favoriteType.track")
-      case "artist":
-        return t("library.favoriteType.artist")
-      case "album":
-        return t("library.favoriteType.album")
-      case "playlist":
-        return t("library.favoriteType.playlist")
-      default:
-        return type
-    }
-  })()
-
-  return (
-    <Chip size="sm" variant="secondary" color="default" className="mr-2">
-      <Chip.Label>{label}</Chip.Label>
-    </Chip>
-  )
-}
-
-function FavoriteRow({ favorite, onPress, onLongPress, onRemove }: FavoriteRowProps) {
-  const theme = useThemeColors()
-  const handlePress = useCallback(() => {
-    onPress(favorite)
-  }, [favorite, onPress])
-
-  const handleLongPress = useCallback(() => {
-    onLongPress(favorite)
-  }, [favorite, onLongPress])
-
-  const handleRemove = useCallback(
-    (event: { stopPropagation: () => void }) => {
-      event.stopPropagation()
-      onRemove(favorite)
-    },
-    [favorite, onRemove]
-  )
-
-  return (
-    <Item onPress={handlePress} onLongPress={handleLongPress}>
-      <FavoriteItemImage favorite={favorite} />
-      <ItemContent>
-        <ItemTitle>{favorite.name}</ItemTitle>
-        <View className="flex-row items-center">
-          <TypeBadge type={favorite.type} />
-          <ItemDescription>{favorite.subtitle || ""}</ItemDescription>
-        </View>
-      </ItemContent>
-      <ItemAction>
-        <PressableFeedback onPress={handleRemove} className="p-2 active:opacity-50">
-          <LocalFavouriteSolidIcon fill="none" width={22} height={22} color={theme.danger} />
-        </PressableFeedback>
-      </ItemAction>
-    </Item>
-  )
-}
-
-const MemoizedFavoriteRow = React.memo(FavoriteRow)
 
 const FAVORITE_TYPE_FILTERS: FavoriteType[] = ["track", "album", "artist", "playlist"]
 
