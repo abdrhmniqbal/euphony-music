@@ -17,7 +17,6 @@ import { useTranslation } from "react-i18next"
 import { Text } from "react-native"
 import Transition from "react-native-screen-transitions"
 
-import LocalCheckmarkCircleSolidIcon from "@/components/icons/local/checkmark-circle-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
@@ -27,7 +26,6 @@ import {
 } from "@/components/patterns/playlist-artwork"
 import {
   MediaItem as Item,
-  MediaItemAction as ItemAction,
   MediaItemContent as ItemContent,
   MediaItemDescription as ItemDescription,
   MediaItemImage as ItemImage,
@@ -49,27 +47,11 @@ export type SearchResultEntityItem =
 
 interface SearchResultRowProps {
   item: SearchResultEntityItem
-  onArtistPress?: (artist: SearchArtistResult) => void
-  onArtistLongPress?: (artist: SearchArtistResult) => void
-  onAlbumPress?: (album: SearchAlbumResult) => void
-  onAlbumLongPress?: (album: SearchAlbumResult) => void
-  onPlaylistPress?: (playlist: SearchPlaylistResult) => void
-  onPlaylistLongPress?: (playlist: SearchPlaylistResult) => void
-  onTrackPress?: (track: Track) => void
-  onTrackLongPress?: (track: Track) => void
+  onPress?: (item: SearchResultEntityItem) => void
+  onLongPress?: (item: SearchResultEntityItem) => void
 }
 
-function SearchResultRow({
-  item,
-  onArtistPress,
-  onArtistLongPress,
-  onAlbumPress,
-  onAlbumLongPress,
-  onPlaylistPress,
-  onPlaylistLongPress,
-  onTrackPress,
-  onTrackLongPress,
-}: SearchResultRowProps) {
+function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
   const theme = useThemeColors()
   const { t } = useTranslation()
 
@@ -82,8 +64,8 @@ function SearchResultRow({
           id: item.artist.id,
           name: item.artist.name,
         })}
-        onPress={() => onArtistPress?.(item.artist)}
-        onLongPress={() => onArtistLongPress?.(item.artist)}
+        onPress={() => onPress?.(item)}
+        onLongPress={() => onLongPress?.(item)}
       >
         <Transition.Boundary.Target>
           <ItemImage
@@ -114,8 +96,8 @@ function SearchResultRow({
           id: item.album.id,
           title: item.album.title,
         })}
-        onPress={() => onAlbumPress?.(item.album)}
-        onLongPress={() => onAlbumLongPress?.(item.album)}
+        onPress={() => onPress?.(item)}
+        onLongPress={() => onLongPress?.(item)}
       >
         <Transition.Boundary.Target>
           <ItemImage
@@ -146,8 +128,8 @@ function SearchResultRow({
           id: item.playlist.id,
           title: item.playlist.title,
         })}
-        onPress={() => onPlaylistPress?.(item.playlist)}
-        onLongPress={() => onPlaylistLongPress?.(item.playlist)}
+        onPress={() => onPress?.(item)}
+        onLongPress={() => onLongPress?.(item)}
       >
         <Transition.Boundary.Target>
           <ItemImage className="items-center justify-center overflow-hidden bg-default">
@@ -170,10 +152,8 @@ function SearchResultRow({
 
   return (
     <Item
-      onPress={() => {
-        onTrackPress?.(item.track)
-      }}
-      onLongPress={() => onTrackLongPress?.(item.track)}
+      onPress={() => onPress?.(item)}
+      onLongPress={() => onLongPress?.(item)}
     >
       <ItemImage
         icon={

@@ -22,50 +22,41 @@ export function resolvePlaylistArtworkImages(images?: string[], image?: string) 
   return image ? [image] : undefined
 }
 
-function normalizeImages(images?: string[]): string[] {
+function prepareGridImages(images?: string[]): string[] {
   if (!images?.length) {
     return []
   }
 
-  const uniqueImages: string[] = []
+  const deduped: string[] = []
 
   for (const image of images) {
-    if (!image || uniqueImages.includes(image)) {
+    if (!image || deduped.includes(image)) {
       continue
     }
 
-    uniqueImages.push(image)
+    deduped.push(image)
 
-    if (uniqueImages.length >= 4) {
+    if (deduped.length >= 4) {
       break
     }
   }
 
-  return uniqueImages
-}
-
-function buildGridImages(images: string[]): string[] {
-  if (images.length === 0) {
-    return []
+  if (deduped.length === 4) {
+    return deduped
   }
 
-  if (images.length >= 4) {
-    return images.slice(0, 4)
-  }
-
-  const gridImages: string[] = []
+  const filled: string[] = []
 
   for (let i = 0; i < 4; i += 1) {
-    gridImages.push(images[i % images.length])
+    filled.push(deduped[i % deduped.length])
   }
 
-  return gridImages
+  return filled
 }
 
 export function PlaylistArtwork({ images, className, fallback }: PlaylistArtworkProps) {
   const theme = useThemeColors()
-  const gridImages = buildGridImages(normalizeImages(images))
-  const imageKeyCounter = new Map<string, number>()
+  const gridImages = prepareGridImages(images)
 
   if (gridImages.length === 0) {
     return (
@@ -84,18 +75,14 @@ export function PlaylistArtwork({ images, className, fallback }: PlaylistArtwork
 
   return (
     <View className={cn("h-full w-full flex-row flex-wrap overflow-hidden", className)}>
-      {gridImages.map((image) => {
-        const nextCount = (imageKeyCounter.get(image) || 0) + 1
-        imageKeyCounter.set(image, nextCount)
-        return (
-          <Image
-            key={`${image}-${nextCount}`}
-            source={{ uri: image }}
-            style={{ width: "50%", height: "50%" }}
-            contentFit="cover"
-          />
-        )
-      })}
+      {gridImages.map((image, index) => (
+        <Image
+          key={index}
+          source={{ uri: image }}
+          style={{ width: "50%", height: "50%" }}
+          contentFit="cover"
+        />
+      ))}
     </View>
   )
 }

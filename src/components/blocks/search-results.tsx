@@ -190,6 +190,46 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     tracks,
   ])
 
+  const handleResultPress = useCallback(
+    (item: SearchResultsListItem) => {
+      switch (item.type) {
+        case "artist":
+          onArtistPress?.(item.artist)
+          break
+        case "album":
+          onAlbumPress?.(item.album)
+          break
+        case "playlist":
+          onPlaylistPress?.(item.playlist)
+          break
+        case "track":
+          onTrackPress?.(item.track)
+          break
+      }
+    },
+    [onAlbumPress, onArtistPress, onPlaylistPress, onTrackPress]
+  )
+
+  const handleResultLongPress = useCallback(
+    (item: SearchResultsListItem) => {
+      switch (item.type) {
+        case "artist":
+          onArtistLongPress?.(item.artist)
+          break
+        case "album":
+          onAlbumLongPress?.(item.album)
+          break
+        case "playlist":
+          onPlaylistLongPress?.(item.playlist)
+          break
+        case "track":
+          onTrackLongPress?.(item.track)
+          break
+      }
+    },
+    [onAlbumLongPress, onArtistLongPress, onPlaylistLongPress, onTrackLongPress]
+  )
+
   const renderListItem = useCallback(
     ({ item }: LegendListRenderItemProps<SearchResultsListItem>) => {
       switch (item.type) {
@@ -208,32 +248,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
           )
         default:
           return (
-            <MemoizedSearchResultRow
-              item={item}
-              onArtistPress={onArtistPress}
-              onArtistLongPress={onArtistLongPress}
-              onAlbumPress={onAlbumPress}
-              onAlbumLongPress={onAlbumLongPress}
-              onPlaylistPress={onPlaylistPress}
-              onPlaylistLongPress={onPlaylistLongPress}
-              onTrackPress={onTrackPress}
-              onTrackLongPress={onTrackLongPress}
-            />
+            <MemoizedSearchResultRow item={item} onPress={handleResultPress} onLongPress={handleResultLongPress} />
           )
       }
     },
-    [
-      onAlbumPress,
-      onAlbumLongPress,
-      onArtistPress,
-      onArtistLongPress,
-      onPlaylistPress,
-      onPlaylistLongPress,
-      onSeeMoreTracks,
-      onTrackPress,
-      onTrackLongPress,
-      t,
-    ]
+    [handleResultPress, handleResultLongPress, onSeeMoreTracks, t]
   )
 
   return (
