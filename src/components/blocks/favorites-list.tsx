@@ -17,8 +17,6 @@ import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
   type RefreshControlProps,
   type StyleProp,
   StyleSheet,
@@ -66,6 +64,8 @@ function isCollectionFavoriteEntry(
   return favorite?.type === "artist" || favorite?.type === "album" || favorite?.type === "playlist"
 }
 
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
+
 interface FavoritesListProps {
   data: FavoriteEntry[]
   availableTypes?: FavoriteType[]
@@ -76,10 +76,6 @@ interface FavoritesListProps {
   selectedTypes?: FavoriteType[]
   onSelectedTypesChange?: (types: FavoriteType[]) => void
   onTrackPress?: (trackId: string) => void
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onMomentumScrollEnd?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 }
 
 interface FavoriteRowProps {
@@ -244,10 +240,6 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   selectedTypes = [],
   onSelectedTypesChange,
   onTrackPress,
-  onScroll,
-  onScrollBeginDrag,
-  onScrollEndDrag,
-  onMomentumScrollEnd,
 }) => {
   const theme = useThemeColors()
   const tracks = usePlayerTracks()
@@ -263,6 +255,8 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
     ...visibleFavoriteTypes.filter((type) => !selectedTypes.includes(type)),
   ]
   const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
+
+  const autoHideScrollProps = useAutoHideHeaderScroll()
 
   const toggleTypeFilter = useCallback(
     (type: FavoriteType) => {
@@ -408,10 +402,7 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
         getItemType={(item) => item.type}
         scrollEnabled={scrollEnabled}
         contentContainerStyle={listContentContainerStyle}
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onMomentumScrollEnd={onMomentumScrollEnd}
+        {...autoHideScrollProps}
         scrollEventThrottle={16}
         refreshControl={refreshControl || undefined}
         ListEmptyComponent={

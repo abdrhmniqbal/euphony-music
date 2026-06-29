@@ -1,4 +1,4 @@
-import type { NativeScrollEvent, NativeSyntheticEvent, RefreshControlProps } from "react-native"
+import type { RefreshControlProps } from "react-native"
 import type { SortConfig } from "@/modules/library/sort-types"
 
 import type { Track } from "@/modules/player/store"
@@ -13,15 +13,13 @@ import { useTracks } from "@/modules/tracks/queries"
 import { useThemeColors } from "@/modules/ui/theme"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
+
 interface TracksTabProps {
   onTrackPress?: (track: Track, queue: Track[]) => void
   sortConfig?: SortConfig
   contentBottomPadding?: number
   refreshControl?: React.ReactElement<RefreshControlProps> | null
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onMomentumScrollEnd?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 }
 
 export const TracksTab: React.FC<TracksTabProps> = ({
@@ -29,10 +27,6 @@ export const TracksTab: React.FC<TracksTabProps> = ({
   sortConfig,
   contentBottomPadding = 0,
   refreshControl,
-  onScroll,
-  onScrollBeginDrag,
-  onScrollEndDrag,
-  onMomentumScrollEnd,
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
@@ -56,6 +50,8 @@ export const TracksTab: React.FC<TracksTabProps> = ({
     [tracks, effectiveSortConfig]
   )
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   const handleTrackPress = React.useCallback(
     (track: Track) => {
       onTrackPress?.(track, sortedTracks)
@@ -78,10 +74,7 @@ export const TracksTab: React.FC<TracksTabProps> = ({
         contentContainerStyle={{ paddingBottom: contentBottomPadding }}
         resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
         refreshControl={refreshControl}
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onMomentumScrollEnd={onMomentumScrollEnd}
+        {...autoHideScrollProps}
       />
     </LibraryTabState>
   )

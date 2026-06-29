@@ -4,8 +4,6 @@ import { Button, PressableFeedback } from "heroui-native"
 import * as React from "react"
 
 import {
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
   type RefreshControlProps,
   ScrollView,
   type StyleProp,
@@ -37,6 +35,8 @@ import { mergeText } from "@/utils/merge-text"
 
 import LocalMusicNote04SolidIcon from "../icons/local/music-note-04-solid"
 
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
+
 export interface Folder {
   id: string
   name: string
@@ -60,10 +60,6 @@ interface FolderListProps {
   contentContainerStyle?: StyleProp<ViewStyle>
   resetScrollKey?: string
   refreshControl?: React.ReactElement<RefreshControlProps> | null
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onMomentumScrollEnd?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 }
 
 type FolderListItem =
@@ -81,16 +77,13 @@ export const FolderList: React.FC<FolderListProps> = ({
   contentContainerStyle,
   resetScrollKey,
   refreshControl,
-  onScroll,
-  onScrollBeginDrag,
-  onScrollEndDrag,
-  onMomentumScrollEnd,
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const [selectedFolder, setSelectedFolder] = React.useState<Folder | null>(null)
   const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const autoHideScrollProps = useAutoHideHeaderScroll()
   const listContentContainerStyle = StyleSheet.flatten([
     { gap: 8, paddingBottom: 16 },
     contentContainerStyle,
@@ -203,10 +196,7 @@ export const FolderList: React.FC<FolderListProps> = ({
           item.type === "folder" ? renderFolderItem(item.folder) : renderTrackItem(item.track)
         }
         contentContainerStyle={listContentContainerStyle}
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onMomentumScrollEnd={onMomentumScrollEnd}
+        {...autoHideScrollProps}
         scrollEventThrottle={16}
         refreshControl={refreshControl || undefined}
         {...LEGEND_LIST_ROW_CONFIG}

@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { NativeScrollEvent, NativeSyntheticEvent, RefreshControlProps } from "react-native"
+import type { RefreshControlProps } from "react-native"
 import type { SortConfig } from "@/modules/library/sort-types"
 
 import * as React from "react"
@@ -17,6 +17,8 @@ import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import { sortArtists } from "@/modules/library/sort-utils"
 import { useArtists } from "@/modules/library/queries"
 import { useThemeColors } from "@/modules/ui/theme"
+
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 
 type ArtistOrderByField = Parameters<typeof useArtists>[0]
 type ArtistOrder = Parameters<typeof useArtists>[1]
@@ -38,10 +40,6 @@ interface ArtistsTabProps {
   sortConfig?: SortConfig
   contentBottomPadding?: number
   refreshControl?: React.ReactElement<RefreshControlProps> | null
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onMomentumScrollEnd?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 }
 
 export const ArtistsTab: React.FC<ArtistsTabProps> = ({
@@ -50,10 +48,6 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
   sortConfig,
   contentBottomPadding = 0,
   refreshControl,
-  onScroll,
-  onScrollBeginDrag,
-  onScrollEndDrag,
-  onMomentumScrollEnd,
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
@@ -86,6 +80,8 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
     [artists, effectiveSortConfig]
   )
 
+  const autoHideScrollProps = useAutoHideHeaderScroll()
+
   const handleArtistPress = React.useCallback(
     (artist: Artist) => {
       onArtistPress?.(artist)
@@ -107,10 +103,7 @@ export const ArtistsTab: React.FC<ArtistsTabProps> = ({
         contentContainerStyle={{ paddingBottom: contentBottomPadding }}
         resetScrollKey={`${effectiveSortConfig.field}-${effectiveSortConfig.order}`}
         refreshControl={refreshControl}
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onMomentumScrollEnd={onMomentumScrollEnd}
+        {...autoHideScrollProps}
       />
     </LibraryTabState>
   )

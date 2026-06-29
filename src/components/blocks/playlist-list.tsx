@@ -1,15 +1,7 @@
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useMemo } from "react"
-import {
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
-  type RefreshControlProps,
-  type StyleProp,
-  StyleSheet,
-  View,
-  type ViewStyle,
-} from "react-native"
+import { type StyleProp, StyleSheet, View, type ViewStyle } from "react-native"
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
@@ -44,6 +36,8 @@ export interface Playlist {
 
 type PlaylistListRow = { id: string; rowType: "create" } | (Playlist & { rowType: "playlist" })
 
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
+
 interface PlaylistListProps {
   data: Playlist[]
   onPlaylistPress?: (playlist: Playlist) => void
@@ -53,10 +47,6 @@ interface PlaylistListProps {
   contentContainerStyle?: StyleProp<ViewStyle>
   resetScrollKey?: string
   refreshControl?: React.ReactElement<RefreshControlProps> | null
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
-  onMomentumScrollEnd?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 }
 
 export const PlaylistList: React.FC<PlaylistListProps> = ({
@@ -68,16 +58,13 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   contentContainerStyle,
   resetScrollKey,
   refreshControl,
-  onScroll,
-  onScrollBeginDrag,
-  onScrollEndDrag,
-  onMomentumScrollEnd,
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const [selectedPlaylist, setSelectedPlaylist] = React.useState<Playlist | null>(null)
   const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+  const autoHideScrollProps = useAutoHideHeaderScroll()
   const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
 
   const handlePress = useCallback(
@@ -185,10 +172,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         getItemType={(item) => item.rowType}
         scrollEnabled={scrollEnabled}
         contentContainerStyle={listContentContainerStyle}
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        onMomentumScrollEnd={onMomentumScrollEnd}
+        {...autoHideScrollProps}
         scrollEventThrottle={16}
         refreshControl={refreshControl || undefined}
         {...LEGEND_LIST_ROW_CONFIG}

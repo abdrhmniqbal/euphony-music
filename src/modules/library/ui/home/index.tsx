@@ -7,7 +7,7 @@
  */
 
 import * as React from "react"
-import { type NativeScrollEvent, type NativeSyntheticEvent, View } from "react-native"
+import { View } from "react-native"
 import Animated, {
   FadeInLeft,
   FadeInRight,
@@ -25,7 +25,7 @@ import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TracksTab } from "@/components/blocks/tracks-tab"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import { useThemeColors } from "@/modules/ui/theme"
 
 import { useLibraryHomeState } from "./use-library-home-state"
@@ -61,16 +61,7 @@ export default function LibraryScreen() {
     hideFavoriteAction?: boolean
   } | null>(null)
 
-  const handleListScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    handleScroll(event.nativeEvent.contentOffset.y)
-  }
-
-  const sharedListEvents = {
-    onScroll: handleListScroll,
-    onScrollBeginDrag: handleScrollStart,
-    onScrollEndDrag: handleScrollStop,
-    onMomentumScrollEnd: handleScrollStop,
-  } as const
+  const autoHideScrollProps = useAutoHideHeaderScroll()
 
   const listContentContainerStyle = {
     paddingBottom: state.libraryListBottomPadding,
@@ -94,7 +85,7 @@ export default function LibraryScreen() {
             onTrackPress={state.playSingleTrack}
             contentBottomPadding={state.libraryListBottomPadding}
             refreshControl={refreshControl}
-            {...sharedListEvents}
+            {...autoHideScrollProps}
           />
         )
       case "Albums":
@@ -115,7 +106,7 @@ export default function LibraryScreen() {
             }}
             contentBottomPadding={state.libraryListBottomPadding}
             refreshControl={refreshControl}
-            {...sharedListEvents}
+            {...autoHideScrollProps}
           />
         )
       case "Artists":
@@ -138,7 +129,7 @@ export default function LibraryScreen() {
             }}
             contentBottomPadding={state.libraryListBottomPadding}
             refreshControl={refreshControl}
-            {...sharedListEvents}
+            {...autoHideScrollProps}
           />
         )
       case "Genres":
@@ -147,7 +138,7 @@ export default function LibraryScreen() {
             genres={state.sortedGenres}
             listContentContainerStyle={listContentContainerStyle}
             refreshControl={refreshControl}
-            sharedListEvents={sharedListEvents}
+            sharedListEvents={autoHideScrollProps}
             mutedColor={theme.muted}
             genresEmptyTitle={t("library.empty.genresFoundTitle")}
             genresEmptyMessage={t("home.empty.recentlyPlayedMessage")}
@@ -188,7 +179,7 @@ export default function LibraryScreen() {
             contentContainerStyle={listContentContainerStyle}
             resetScrollKey={state.listResetScrollKey}
             refreshControl={refreshControl}
-            {...sharedListEvents}
+            {...autoHideScrollProps}
           />
         )
       case "Folders":
@@ -208,7 +199,7 @@ export default function LibraryScreen() {
             contentContainerStyle={listContentContainerStyle}
             resetScrollKey={state.listResetScrollKey}
             refreshControl={refreshControl}
-            {...sharedListEvents}
+            {...autoHideScrollProps}
           />
         )
       case "Favorites":
@@ -224,7 +215,7 @@ export default function LibraryScreen() {
             contentContainerStyle={listContentContainerStyle}
             resetScrollKey={state.listResetScrollKey}
             refreshControl={refreshControl}
-            {...sharedListEvents}
+            {...autoHideScrollProps}
           />
         )
       default:
