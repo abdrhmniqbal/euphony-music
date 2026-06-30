@@ -2,6 +2,34 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.0.0] - 2026-06-30
+
+### ✨ Added
+
+- 15 new themes: Default, Nord, Dracula, Catppuccin, Tokyo, Gruvbox, Everforest, Rose Pine,
+  Solarized, Ayu, Monochrome, Aquamarine, Crimson Pulse, Banana Breeze, Candy Pop. (@abdrhmniqbal)
+- Theme search filter on settings screen. (@abdrhmniqbal)
+- Opus file artwork extraction support. (@abdrhmniqbal)
+- Mic-01 and Playlist-03 icons. (@abdrhmniqbal)
+
+### ⚙️ Changed
+
+- Top-tracks time picker changed from BottomSheet to inline Tabs. (@abdrhmniqbal)
+- Top-tracks chart now uses unified data source across all time ranges. (@abdrhmniqbal)
+- Pull-to-refresh removed from top-tracks (uses scroll-driven refresh only). (@abdrhmniqbal)
+- Native header text size increased app-wide. (@abdrhmniqbal)
+- Tabs styling updated to match app color conventions. (@abdrhmniqbal)
+- Lyrics zoom level now persists between sessions. (@abdrhmniqbal)
+- Library tabs now require explicit long-press drag to reorder, preventing accidental reordering. (@abdrhmniqbal)
+
+### 🧩 Fixed
+
+- Playlist form scrolling blocked when touch starts on track list area. (@abdrhmniqbal)
+- Mix artwork missing on action sheet. (@abdrhmniqbal)
+- Mix visuals no longer overlap with reserved genre colors. (@abdrhmniqbal)
+- Sleep timer not applying selected duration correctly. (@abdrhmniqbal)
+- Settings search missing some entries. (@abdrhmniqbal)
+
 ## [v1.0.0-rc.2] - 2026-06-29
 
 ### ✨ Added
