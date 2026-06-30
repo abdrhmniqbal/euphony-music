@@ -149,7 +149,8 @@ export async function extractMetadata(
   splitConfig: SplitMultipleValueConfig
 ): Promise<ExtractedMetadata> {
   const metadata = await getMetadata(uri, metadataFields).catch(() => null)
-  const artwork = await getArtwork(uri).catch(() => null)
+
+  const artwork = (await getArtwork(uri).catch(() => null)) || undefined
 
   let lyrics: string | undefined = undefined
   const sidecarCandidates = getSidecarCandidates(uri)

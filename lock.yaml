@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@missingcore/react-native-metadata-retriever@3.2.1':
+    hash: ff051932e6f212d2db4c9fc9ddf5b4e9dfc1c5cd48a642a48445c9f88007abf2
+    path: patches/@missingcore__react-native-metadata-retriever@3.2.1.patch
+
 importers:
 
   .:
@@ -24,8 +29,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.85.3(@types/react@19.2.17)(react@19.2.3))
       '@missingcore/react-native-metadata-retriever':
-        specifier: ^3.2.0
-        version: 3.2.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.85.3(@types/react@19.2.17)(react@19.2.3))
+        specifier: ^3.2.1
+        version: 3.2.1(patch_hash=ff051932e6f212d2db4c9fc9ddf5b4e9dfc1c5cd48a642a48445c9f88007abf2)(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.85.3(@types/react@19.2.17)(react@19.2.3))
       '@paralleldrive/cuid2':
         specifier: ^3.3.0
         version: 3.3.0
@@ -1469,8 +1474,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  '@missingcore/react-native-metadata-retriever@3.2.0':
-    resolution: {integrity: sha512-tau597K71lWzZg0Vsm+Ouy4bku6OolX+E7CdLVGS9MYaDv57xkdICPc3Vr1GZyhIya0DbgMOqvqvusr4zBhrHQ==}
+  '@missingcore/react-native-metadata-retriever@3.2.1':
+    resolution: {integrity: sha512-5XZfwW6zkP7ebx9yvYH4Fa3e+vYtdD9HQmgNUDbbCJk8hGQfBQbjKEOuK5uZJfYcIK37Uzt+97Xtv1cCjfy+2A==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -7047,7 +7052,7 @@ snapshots:
       react: 19.2.3
       react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(react@19.2.3)
 
-  '@missingcore/react-native-metadata-retriever@3.2.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.85.3(@types/react@19.2.17)(react@19.2.3))':
+  '@missingcore/react-native-metadata-retriever@3.2.1(patch_hash=ff051932e6f212d2db4c9fc9ddf5b4e9dfc1c5cd48a642a48445c9f88007abf2)(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.85.3(@types/react@19.2.17)(react@19.2.3))':
     dependencies:
       react: 19.2.3
       react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(react@19.2.3)
