@@ -62,7 +62,10 @@ export default function LastFmSettingsScreen() {
   async function handleConnect() {
     const trimmedUsername = username.trim()
     if (!trimmedUsername || !password) {
-      showAppToast(t("settings.lastfm.missingDetails"), t("settings.lastfm.missingDetailsDescription"))
+      showAppToast(
+        t("settings.lastfm.missingDetails"),
+        t("settings.lastfm.missingDetailsDescription")
+      )
       return
     }
 
@@ -76,7 +79,10 @@ export default function LastFmSettingsScreen() {
       setUsername("")
       setPassword("")
       setIsAuthSheetOpen(false)
-      showAppToast(t("settings.lastfm.connectedToast"), t("settings.lastfm.connectedToastDescription"))
+      showAppToast(
+        t("settings.lastfm.connectedToast"),
+        t("settings.lastfm.connectedToastDescription")
+      )
     } catch (error) {
       showAppToast(
         t("settings.lastfm.connectionFailed"),
@@ -167,7 +173,9 @@ export default function LastFmSettingsScreen() {
                 <ListGroup.Item>
                   <ListGroup.ItemContent>
                     <View className="mb-1 flex-row items-center justify-between">
-                      <ListGroup.ItemTitle>{t("settings.lastfm.scrobblePoint")}</ListGroup.ItemTitle>
+                      <ListGroup.ItemTitle>
+                        {t("settings.lastfm.scrobblePoint")}
+                      </ListGroup.ItemTitle>
                       <Text className="text-sm font-medium text-foreground">
                         {delayPercentValue}%
                       </Text>
@@ -198,7 +206,9 @@ export default function LastFmSettingsScreen() {
                 <ListGroup.Item>
                   <ListGroup.ItemContent>
                     <View className="mb-1 flex-row items-center justify-between">
-                      <ListGroup.ItemTitle>{t("settings.lastfm.minimumTrackDuration")}</ListGroup.ItemTitle>
+                      <ListGroup.ItemTitle>
+                        {t("settings.lastfm.minimumTrackDuration")}
+                      </ListGroup.ItemTitle>
                       <Text className="text-sm font-medium text-foreground">
                         {durationSecondsValue}s
                       </Text>
@@ -258,7 +268,9 @@ export default function LastFmSettingsScreen() {
             {state.isConnected ? (
               <View className="gap-6 px-4">
                 <View className="gap-1">
-                  <Text className="text-lg font-semibold text-foreground">{t("settings.lastfm.profileTitle")}</Text>
+                  <Text className="text-lg font-semibold text-foreground">
+                    {t("settings.lastfm.profileTitle")}
+                  </Text>
                   <Text className="text-sm text-muted">{t("settings.lastfm.readyToScrobble")}</Text>
                 </View>
                 <View className="gap-1">
@@ -278,7 +290,9 @@ export default function LastFmSettingsScreen() {
             ) : (
               <View className="gap-6 px-4">
                 <View className="gap-2">
-                  <Text className="text-sm font-medium text-foreground">{t("settings.lastfm.username")}</Text>
+                  <Text className="text-sm font-medium text-foreground">
+                    {t("settings.lastfm.username")}
+                  </Text>
                   <BottomSheetInput
                     value={username}
                     onChangeText={setUsername}
@@ -290,7 +304,9 @@ export default function LastFmSettingsScreen() {
                   />
                 </View>
                 <View className="gap-2">
-                  <Text className="text-sm font-medium text-foreground">{t("settings.lastfm.password")}</Text>
+                  <Text className="text-sm font-medium text-foreground">
+                    {t("settings.lastfm.password")}
+                  </Text>
                   <BottomSheetInput
                     value={password}
                     onChangeText={setPassword}

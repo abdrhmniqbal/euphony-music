@@ -190,7 +190,11 @@ export default function ThemeSettingsScreen() {
   }, [normalizedQuery, t])
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+    <ScrollView
+      className="flex-1 bg-background"
+      contentContainerStyle={{ paddingBottom: 40 }}
+      keyboardShouldPersistTaps="handled"
+    >
       <View className="gap-5 px-4 py-4">
         <View className="relative">
           <View

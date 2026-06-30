@@ -1,12 +1,42 @@
 export const DEFAULT_APP_THEME_ID = "default"
 
-export type AppThemeId = "default" | "nord" | "dracula" | "catppuccin" | "tokyo" | "gruvbox" | "everforest" | "rose-pine" | "solarized" | "ayu" | "monochrome" | "aquamarine" | "crimson-pulse" | "banana-breeze" | "candy-pop"
+export type AppThemeId =
+  | "default"
+  | "nord"
+  | "dracula"
+  | "catppuccin"
+  | "tokyo"
+  | "gruvbox"
+  | "everforest"
+  | "rose-pine"
+  | "solarized"
+  | "ayu"
+  | "monochrome"
+  | "aquamarine"
+  | "crimson-pulse"
+  | "banana-breeze"
+  | "candy-pop"
 
 export interface AppThemeDefinition {
   id: AppThemeId
   labelKey: string
   descriptionKey: string
-  rootClassName: "theme-default" | "theme-nord" | "theme-dracula" | "theme-catppuccin" | "theme-tokyo" | "theme-gruvbox" | "theme-everforest" | "theme-rose-pine" | "theme-solarized" | "theme-ayu" | "theme-monochrome" | "theme-aquamarine" | "theme-crimson-pulse" | "theme-banana-breeze" | "theme-candy-pop"
+  rootClassName:
+    | "theme-default"
+    | "theme-nord"
+    | "theme-dracula"
+    | "theme-catppuccin"
+    | "theme-tokyo"
+    | "theme-gruvbox"
+    | "theme-everforest"
+    | "theme-rose-pine"
+    | "theme-solarized"
+    | "theme-ayu"
+    | "theme-monochrome"
+    | "theme-aquamarine"
+    | "theme-crimson-pulse"
+    | "theme-banana-breeze"
+    | "theme-candy-pop"
 }
 
 export const APP_THEMES: AppThemeDefinition[] = [

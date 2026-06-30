@@ -38,7 +38,8 @@ export const useUIStore = create<UIState>()(
         playerLyricsFontScale: state.playerLyricsFontScale,
       }),
     }
-  ))
+  )
+)
 
 function getPlayerExpandedViewState() {
   return useUIStore.getState().playerExpandedView

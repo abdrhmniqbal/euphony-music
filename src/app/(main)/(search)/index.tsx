@@ -89,13 +89,10 @@ export default function SearchScreen() {
     router.push("/(main)/(search)/search")
   }
 
-  const handleMixLongPress = useCallback(
-    (mixId: string) => {
-      setActiveMixType(mixId as "daily" | "foryou")
-      setShowMixActionSheet(true)
-    },
-    []
-  )
+  const handleMixLongPress = useCallback((mixId: string) => {
+    setActiveMixType(mixId as "daily" | "foryou")
+    setShowMixActionSheet(true)
+  }, [])
 
   const handleCloseMixSheet = useCallback(() => {
     setShowMixActionSheet(false)
@@ -107,7 +104,8 @@ export default function SearchScreen() {
 
   const activeMixId = activeMixType ?? ""
   const isActiveDaily = activeMixType === "daily"
-  const activeMixTracks = activeMixType === "daily" ? dailyMixTracks : activeMixType === "foryou" ? forYouMixTracks : []
+  const activeMixTracks =
+    activeMixType === "daily" ? dailyMixTracks : activeMixType === "foryou" ? forYouMixTracks : []
   const activeMixTitle = isActiveDaily
     ? t("home.topTracks.dailyMix", "Daily Mix")
     : t("home.topTracks.forYouMix", "For You Mix")
@@ -142,9 +140,7 @@ export default function SearchScreen() {
   const forYouMixPattern = forYouMix?.shape ?? "circles"
 
   const activeMixImages =
-    activeMixType && activeMixTracks.length > 0
-      ? collectTrackImages(activeMixTracks)
-      : []
+    activeMixType && activeMixTracks.length > 0 ? collectTrackImages(activeMixTracks) : []
 
   const autoHideScrollProps = useAutoHideHeaderScroll()
 

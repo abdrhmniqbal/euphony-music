@@ -154,17 +154,14 @@ export default function MixDetailsScreen() {
                     {description}
                   </Text>
                   <Text className="mt-2 text-sm text-muted">
-                    {mixData?.generatedAt
-                      &&
-                        new Intl.DateTimeFormat(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }).format(mixData.generatedAt)
-                        + " • "
-                      }
-                      {formatDuration(totalDuration)}
+                    {mixData?.generatedAt &&
+                      new Intl.DateTimeFormat(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }).format(mixData.generatedAt) + " • "}
+                    {formatDuration(totalDuration)}
                   </Text>
                 </View>
               </View>

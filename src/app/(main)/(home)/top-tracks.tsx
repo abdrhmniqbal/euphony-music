@@ -145,10 +145,7 @@ export default function TopTracksScreen() {
             }}
             {...autoHideScrollProps}
             refreshControl={
-              <ThemedRefreshControl
-                refreshing={isIndexing || isLoading}
-                onRefresh={refresh}
-              />
+              <ThemedRefreshControl refreshing={isIndexing || isLoading} onRefresh={refresh} />
             }
             listHeader={
               <Animated.View key={`actions-${period}`} entering={screenEnterTransition()}>

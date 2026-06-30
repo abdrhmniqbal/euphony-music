@@ -29,19 +29,9 @@ export const PlayerFooter: React.FC = () => {
         className={cn(playerExpandedView !== "lyrics" && "opacity-60")}
       >
         {playerExpandedView === "lyrics" ? (
-          <LocalMic01SolidIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.accent}
-          />
+          <LocalMic01SolidIcon fill="none" width={24} height={24} color={theme.accent} />
         ) : (
-          <LocalMic01Icon
-            fill="none"
-            width={24}
-            height={24}
-            color="white"
-          />
+          <LocalMic01Icon fill="none" width={24} height={24} color="white" />
         )}
       </PressableFeedback>
       <PressableFeedback
@@ -49,20 +39,10 @@ export const PlayerFooter: React.FC = () => {
         className={cn(playerExpandedView !== "queue" && "opacity-60")}
       >
         {playerExpandedView === "queue" ? (
-          <LocalPlaylist03SolidIcon
-            fill="none"
-            width={24}
-            height={24}
-            color={theme.accent}
-          />
+          <LocalPlaylist03SolidIcon fill="none" width={24} height={24} color={theme.accent} />
         ) : (
-        <LocalPlaylist03Icon
-          fill="none"
-          width={24}
-          height={24}
-          color="white"
-        />
-      )}
+          <LocalPlaylist03Icon fill="none" width={24} height={24} color="white" />
+        )}
       </PressableFeedback>
     </View>
   )

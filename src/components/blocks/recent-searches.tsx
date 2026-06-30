@@ -142,11 +142,11 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
       <View className="mb-6 flex-row items-center justify-between">
         <Text className="text-lg font-bold text-foreground">{t("search.recentSearches")}</Text>
         <Button variant="ghost" onPress={onClear}>
-                  <View className="flex-row items-center gap-2">
-                    <LocalCancel01Icon fill="none" width={18} height={18} color={theme.foreground} />
-                    <Text className="font-semibold text-foreground">{t("common.clearAll")}</Text>
-                  </View>
-                </Button>
+          <View className="flex-row items-center gap-2">
+            <LocalCancel01Icon fill="none" width={18} height={18} color={theme.foreground} />
+            <Text className="font-semibold text-foreground">{t("common.clearAll")}</Text>
+          </View>
+        </Button>
       </View>
       <View className="gap-2">
         {searches.map((item) => (
