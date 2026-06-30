@@ -23,6 +23,7 @@ import { playTrack } from "@/modules/player/service"
 import { useDailyMix, useForYouMix } from "@/modules/mixes/queries"
 import { formatDuration } from "@/modules/playlist/utils"
 import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
+import { collectTrackImages } from "@/modules/visuals/shared"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 import type { Track } from "@/modules/player/types"
@@ -56,12 +57,8 @@ export default function MixDetailsScreen() {
     ? t("home.topTracks.dailyMixDesc", "Fresh from your recent listening")
     : t("home.topTracks.forYouMixDesc", "Built from your longer-term taste")
   const totalDuration = tracks.reduce((sum, track) => sum + (track.duration || 0), 0)
-  const metaText = `${t("library.count.track", { count: tracks.length })} • ${formatDuration(totalDuration)}`
 
-  const images = useMemo(() => {
-    return tracks.map((t) => t.image).filter(Boolean) as string[]
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tracks])
+  const images = useMemo(() => collectTrackImages(tracks), [tracks])
 
   function handleBack() {
     router.back()
@@ -156,19 +153,19 @@ export default function MixDetailsScreen() {
                   <Text className="mt-1 text-base text-muted" numberOfLines={2}>
                     {description}
                   </Text>
-                  <Text className="mt-1 text-xs text-muted/60">
+                  <Text className="mt-2 text-sm text-muted">
                     {mixData?.generatedAt
-                      ? t("search.updated") +
-                        " " +
+                      &&
                         new Intl.DateTimeFormat(undefined, {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
                         }).format(mixData.generatedAt)
-                      : ""}
+                        + " • "
+                      }
+                      {formatDuration(totalDuration)}
                   </Text>
-                  <Text className="mt-2 text-sm text-muted">{metaText}</Text>
                 </View>
               </View>
             </View>
@@ -212,6 +209,7 @@ export default function MixDetailsScreen() {
         id={mixId}
         name={title}
         subtitle={description}
+        image={images[0]}
         images={images}
         trackCount={tracks.length}
         hideFavoriteAction

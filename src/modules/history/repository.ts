@@ -73,34 +73,10 @@ export async function getTopTracksByPeriod(
   limit: number = 25
 ): Promise<Track[]> {
   try {
+    let timeThreshold: number | null
     if (period === "all") {
-      const topTracks = await db.query.tracks.findMany({
-        where: eq(tracks.isDeleted, 0),
-        orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
-        with: {
-          artist: true,
-          featuredArtists: {
-            with: {
-              artist: true,
-            },
-          },
-          album: true,
-          genres: {
-            with: {
-              genre: true,
-            },
-          },
-        },
-        limit,
-      })
-
-      return topTracks
-        .filter((track) => track.playCount && track.playCount > 0)
-        .map((track) => transformDBTrackToTrack(track as DBTrack))
-    }
-
-    let timeThreshold: number
-    if (period === "day") {
+      timeThreshold = null
+    } else if (period === "day") {
       timeThreshold = getStartOfLocalDay()
     } else if (period === "week") {
       timeThreshold = getStartOfLocalWeek()
@@ -109,7 +85,7 @@ export async function getTopTracksByPeriod(
     }
 
     const history = await db.query.playHistory.findMany({
-      where: sql`${playHistory.playedAt} >= ${timeThreshold}`,
+      where: timeThreshold !== null ? sql`${playHistory.playedAt} >= ${timeThreshold}` : undefined,
       with: {
         track: {
           with: {

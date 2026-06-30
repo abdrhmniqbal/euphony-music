@@ -82,7 +82,12 @@ export const FolderList: React.FC<FolderListProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const { selected: selectedFolder, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Folder>()
+  const {
+    selected: selectedFolder,
+    isOpen: isSheetOpen,
+    handleLongPress,
+    closeSheet,
+  } = useActionSheet<Folder>()
   const autoHideScrollProps = useAutoHideHeaderScroll()
   const listContentContainerStyle = StyleSheet.flatten([
     { gap: 8, paddingBottom: 16 },
@@ -122,9 +127,7 @@ export const FolderList: React.FC<FolderListProps> = ({
         />
         <ItemContent>
           <ItemTitle>{item.name}</ItemTitle>
-          <ItemDescription>
-            {t("library.count.item", { count: item.fileCount })}
-          </ItemDescription>
+          <ItemDescription>{t("library.count.item", { count: item.fileCount })}</ItemDescription>
         </ItemContent>
         <ItemAction>
           <LocalChevronRightIcon fill="none" width={24} height={24} color={theme.muted} />
@@ -268,7 +271,9 @@ export const FolderList: React.FC<FolderListProps> = ({
         type="folder"
         id={selectedFolder?.path ?? selectedFolder?.id ?? ""}
         name={selectedFolder?.name ?? ""}
-        subtitle={selectedFolder ? t("library.count.item", { count: selectedFolder.fileCount }) : undefined}
+        subtitle={
+          selectedFolder ? t("library.count.item", { count: selectedFolder.fileCount }) : undefined
+        }
         trackCount={selectedFolder?.fileCount ?? 0}
         hideFavoriteAction
       />

@@ -4,7 +4,6 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "eas-build-pre-install": "npm install -g --ignore-scripts=false @nubjs/nub && corepack enable && corepack prepare yarn@4.13.0 --activate",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -15,7 +14,6 @@
     "lint:fix": "oxlint . --fix",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
-    "audit:filenames": "node scripts/check-filenames-kebab-case.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "oxlint . && vitest run"
@@ -104,6 +102,7 @@
       "onFail": "warn"
     }
   },
+  "packageManager": "nub@0.1.11",
   "allowBuilds": {
     "@missingcore/react-native-metadata-retriever": true,
     "esbuild": true,
@@ -119,13 +118,12 @@
       }
     }
   },
+  "patchedDependencies": {
+    "@missingcore/react-native-metadata-retriever@3.2.1": "patches/@missingcore__react-native-metadata-retriever@3.2.1.patch"
+  },
   "trustedDependencies": [
     "@missingcore/react-native-metadata-retriever",
     "esbuild",
     "react-native-audio-browser"
-  ],
-  "packageManager": "nub@0.1.11",
-  "patchedDependencies": {
-    "@missingcore/react-native-metadata-retriever@3.2.1": "patches/@missingcore__react-native-metadata-retriever@3.2.1.patch"
-  }
+  ]
 }

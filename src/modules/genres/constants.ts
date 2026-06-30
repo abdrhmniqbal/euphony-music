@@ -1,31 +1,10 @@
-export type GenreShape =
-  | "circles"
-  | "waves"
-  | "grid"
-  | "diamonds"
-  | "triangles"
-  | "rings"
-  | "pills"
-  | "stripes"
-  | "stars"
-  | "zigzag"
-  | "crosses"
+import { COLORS, SHAPES, COLOR_COUNT, type Shape } from "@/modules/visuals/shared"
 
-export const GENRE_COLORS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] as const
+export type GenreShape = Shape
 
-export const GENRE_SHAPES: readonly GenreShape[] = [
-  "circles",
-  "waves",
-  "diamonds",
-  "triangles",
-  "rings",
-  "grid",
-  "pills",
-  "stripes",
-  "stars",
-  "zigzag",
-  "crosses",
-] as const
+export const GENRE_COLORS = COLORS
+
+export const GENRE_SHAPES: readonly GenreShape[] = SHAPES
 
 export const ID3V1_GENRES: Record<string, string> = {
   "0": "Blues",
@@ -146,5 +125,5 @@ export function getGenreRainbowColor(name: string): string {
 
 export function getGenreShape(name: string): GenreShape {
   const hash = hashGenreName(name)
-  return GENRE_SHAPES[Math.floor(hash / GENRE_COLORS.length) % GENRE_SHAPES.length]
+  return GENRE_SHAPES[Math.floor(hash / COLOR_COUNT) % GENRE_SHAPES.length]
 }

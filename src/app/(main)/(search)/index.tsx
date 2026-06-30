@@ -34,11 +34,11 @@ import { useDailyMix, useForYouMix } from "@/modules/mixes/queries"
 import { setPlaylistFormDraft } from "@/modules/playlist/form-draft-store"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
+import { collectTrackImages } from "@/modules/visuals/shared"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
 
 const RECENTLY_ADDED_LIMIT = 8
-
 
 export default function SearchScreen() {
   const theme = useThemeColors()
@@ -48,13 +48,7 @@ export default function SearchScreen() {
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const [showMixActionSheet, setShowMixActionSheet] = useState(false)
-  const [activeMix, setActiveMix] = useState<{
-    id: string
-    title: string
-    description: string
-    images: string[]
-    tracks: Track[]
-  } | null>(null)
+  const [activeMixType, setActiveMixType] = useState<"daily" | "foryou" | null>(null)
 
   const { data: dailyMix } = useDailyMix()
   const { data: forYouMix } = useForYouMix()
@@ -97,50 +91,42 @@ export default function SearchScreen() {
 
   const handleMixLongPress = useCallback(
     (mixId: string) => {
-      const isDaily = mixId === "daily"
-      const mixTracks = isDaily ? dailyMixTracks : forYouMixTracks
-      const mixImages = isDaily ? dailyMixImages : forYouMixImages
-
-      setActiveMix({
-        id: mixId,
-        title: isDaily
-          ? t("home.topTracks.dailyMix", "Daily Mix")
-          : t("home.topTracks.forYouMix", "For You Mix"),
-        description: isDaily
-          ? t("home.topTracks.dailyMixDesc", "Fresh from your recent listening")
-          : t("home.topTracks.forYouMixDesc", "Built from your longer-term taste"),
-        images: mixImages,
-        tracks: mixTracks,
-      })
+      setActiveMixType(mixId as "daily" | "foryou")
       setShowMixActionSheet(true)
     },
-    [dailyMixTracks, dailyMixImages, forYouMixTracks, forYouMixImages, t]
+    []
   )
 
   const handleCloseMixSheet = useCallback(() => {
     setShowMixActionSheet(false)
-    // Defer cleanup so in-flight callbacks still have activeMix
-    setTimeout(() => setActiveMix(null), 350)
+    setTimeout(() => setActiveMixType(null), 350)
   }, [])
-
-  const handleSaveMixToPlaylist = useCallback(() => {
-    if (!activeMix) return
-    setShowMixActionSheet(false)
-    const trackIds = activeMix.tracks.map((t) => t.id)
-    setPlaylistFormDraft(trackIds, null)
-    router.push("/playlist/form")
-  }, [activeMix, router])
 
   const dailyMixTracks = useMemo(() => dailyMix?.tracks ?? [], [dailyMix])
   const forYouMixTracks = useMemo(() => forYouMix?.tracks ?? [], [forYouMix])
 
-  const dailyMixImages = useMemo(() => {
-    return dailyMixTracks.map((t) => t.image).filter(Boolean) as string[]
-  }, [dailyMixTracks])
+  const activeMixId = activeMixType ?? ""
+  const isActiveDaily = activeMixType === "daily"
+  const activeMixTracks = activeMixType === "daily" ? dailyMixTracks : activeMixType === "foryou" ? forYouMixTracks : []
+  const activeMixTitle = isActiveDaily
+    ? t("home.topTracks.dailyMix", "Daily Mix")
+    : t("home.topTracks.forYouMix", "For You Mix")
+  const activeMixDesc = isActiveDaily
+    ? t("home.topTracks.dailyMixDesc", "Fresh from your recent listening")
+    : t("home.topTracks.forYouMixDesc", "Built from your longer-term taste")
 
-  const forYouMixImages = useMemo(() => {
-    return forYouMixTracks.map((t) => t.image).filter(Boolean) as string[]
-  }, [forYouMixTracks])
+  const handleSaveMixToPlaylist = useCallback(() => {
+    if (!activeMixType) return
+    setShowMixActionSheet(false)
+    const tracks = activeMixType === "daily" ? dailyMixTracks : forYouMixTracks
+    const trackIds = tracks.map((t) => t.id)
+    setPlaylistFormDraft(trackIds, null)
+    router.push("/playlist/form")
+  }, [activeMixType, dailyMixTracks, forYouMixTracks, router])
+
+  const dailyMixImages = useMemo(() => collectTrackImages(dailyMixTracks), [dailyMixTracks])
+
+  const forYouMixImages = useMemo(() => collectTrackImages(forYouMixTracks), [forYouMixTracks])
 
   const dailyMixColor = useMemo(() => {
     if (!theme.rainbow || theme.rainbow.length === 0) return "#3b82f6"
@@ -154,6 +140,11 @@ export default function SearchScreen() {
 
   const dailyMixPattern = dailyMix?.shape ?? "circles"
   const forYouMixPattern = forYouMix?.shape ?? "circles"
+
+  const activeMixImages =
+    activeMixType && activeMixTracks.length > 0
+      ? collectTrackImages(activeMixTracks)
+      : []
 
   const autoHideScrollProps = useAutoHideHeaderScroll()
 
@@ -236,11 +227,12 @@ export default function SearchScreen() {
           if (!v) handleCloseMixSheet()
         }}
         type="mix"
-        id={activeMix?.id ?? ""}
-        name={activeMix?.title ?? ""}
-        subtitle={activeMix?.description ?? ""}
-        images={activeMix?.images}
-        trackCount={activeMix?.tracks.length ?? 0}
+        id={activeMixId}
+        name={activeMixTitle}
+        subtitle={activeMixDesc}
+        image={activeMixImages[0]}
+        images={activeMixImages}
+        trackCount={activeMixTracks.length}
         hideFavoriteAction
       >
         <MenuRow

@@ -1,9 +1,9 @@
 import type { PlaylistFormProps } from "./types"
 import type { Track } from "@/modules/player/types"
-import { Button, Input, ListGroup, PressableFeedback, Separator, TextArea } from "heroui-native"
+import { Button, Input, ListGroup, PressableFeedback, TextArea } from "heroui-native"
 
 import { Image } from "expo-image"
-import { ScrollView, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import ReorderableList, { useIsActive, useReorderableDrag } from "react-native-reorderable-list"
 import LocalAdd01Icon from "@/components/icons/local/add-01"
@@ -28,9 +28,8 @@ function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSele
   const { t } = useTranslation()
 
   return (
-    <>
-      {index > 0 ? <Separator className="mx-4" /> : null}
-      <ListGroup.Item
+      <View
+        className="flex-row items-center p-4 gap-3"
         style={{
           backgroundColor: isActive ? theme.border : "transparent",
           opacity: isActive ? 0.9 : 1,
@@ -45,27 +44,25 @@ function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSele
         >
           <LocalDragDropVerticalIcon fill="none" width={20} height={20} color={theme.muted} />
         </PressableFeedback>
-        <ListGroup.ItemPrefix>
-          <View className="size-14 overflow-hidden rounded-xl bg-surface">
-            {track.image ? (
-              <Image
-                source={{ uri: track.image }}
-                style={{ width: "100%", height: "100%" }}
-                contentFit="cover"
-              />
-            ) : (
-              <View className="flex-1 items-center justify-center">
-                <LocalMusicNote04SolidIcon fill="none" width={22} height={22} color={theme.muted} />
-              </View>
-            )}
-          </View>
-        </ListGroup.ItemPrefix>
-        <ListGroup.ItemContent>
+        <View className="size-14 overflow-hidden rounded-xl bg-surface">
+          {track.image ? (
+            <Image
+              source={{ uri: track.image }}
+              style={{ width: "100%", height: "100%" }}
+              contentFit="cover"
+            />
+          ) : (
+            <View className="flex-1 items-center justify-center">
+              <LocalMusicNote04SolidIcon fill="none" width={22} height={22} color={theme.muted} />
+            </View>
+          )}
+        </View>
+        <View className="flex-1">
           <ListGroup.ItemTitle>{track.title}</ListGroup.ItemTitle>
           <ListGroup.ItemDescription>
             {track.artist || t("library.unknownArtist")}
           </ListGroup.ItemDescription>
-        </ListGroup.ItemContent>
+        </View>
         <PressableFeedback
           onPress={(event) => {
             event.stopPropagation()
@@ -75,8 +72,7 @@ function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSele
         >
           <LocalCancel01Icon fill="none" width={20} height={20} color={theme.muted} />
         </PressableFeedback>
-      </ListGroup.Item>
-    </>
+      </View>
   )
 }
 
@@ -91,7 +87,7 @@ export function PlaylistForm({
   const { t } = useTranslation()
 
   const header = (
-    <View className="gap-4 pb-3">
+    <View className="gap-4 px-4 pt-4 pb-3">
       <form.Field name="name">
         {(field) => (
           <View className="gap-2">
@@ -115,7 +111,9 @@ export function PlaylistForm({
         {(field) => (
           <View className="gap-2">
             <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-foreground">{t("playlist.description")}</Text>
+              <Text className="text-sm font-medium text-foreground">
+                {t("playlist.description")}
+              </Text>
               <Text className="text-xs text-muted">
                 {field.state.value.length}/{MAX_PLAYLIST_DESCRIPTION_LENGTH}
               </Text>
@@ -148,37 +146,31 @@ export function PlaylistForm({
   )
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerClassName="px-4 pt-4 pb-56"
-      keyboardShouldPersistTaps="handled"
-    >
-      {header}
-      {selectedTracksList.length === 0 ? (
-        <EmptyState
-          icon={
-            <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+    <View className="flex-1 bg-background">
+      <ReorderableList
+          data={selectedTracksList}
+          onReorder={({ from, to }) => reorderSelectedTracks(from, to)}
+          renderItem={({ item, index }) => (
+            <ReorderableSelectedTrackRow track={item} index={index} onToggle={toggleTrack} />
+          )}
+          keyExtractor={(item) => item.id}
+          shouldUpdateActiveItem
+          scrollEnabled
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          ListHeaderComponent={header}
+          ListEmptyComponent={
+            <EmptyState
+              icon={
+                <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+              }
+              title={t("library.empty.tracksSelectedTitle")}
+              message={t("library.empty.selectedTracksMessage")}
+              className="py-8"
+            />
           }
-          title={t("library.empty.tracksSelectedTitle")}
-          message={t("library.empty.selectedTracksMessage")}
-          className="py-8"
+          contentContainerStyle={{ paddingBottom: 224 }}
         />
-      ) : (
-        <ListGroup>
-          <ReorderableList
-            data={selectedTracksList}
-            onReorder={({ from, to }) => reorderSelectedTracks(from, to)}
-            renderItem={({ item, index }) => (
-              <ReorderableSelectedTrackRow track={item} index={index} onToggle={toggleTrack} />
-            )}
-            keyExtractor={(item) => item.id}
-            shouldUpdateActiveItem
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          />
-        </ListGroup>
-      )}
-    </ScrollView>
+    </View>
   )
 }

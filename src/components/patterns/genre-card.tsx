@@ -110,9 +110,7 @@ export function GenreCard({
     return resolveRainbowColor(theme.rainbow, color)
   }, [color, theme.rainbow])
 
-  const normalizedTrackCount = Number.isFinite(trackCount)
-    ? Math.max(0, Math.trunc(trackCount))
-    : 0
+  const normalizedTrackCount = Number.isFinite(trackCount) ? Math.max(0, Math.trunc(trackCount)) : 0
   const trackCountLabel = t("library.count.track", {
     count: normalizedTrackCount,
   })

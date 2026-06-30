@@ -72,10 +72,11 @@ function PlaylistFormEditor({
   })
 
   return (
-    <form.Subscribe selector={(state) => ({
-      isSubmitting: state.isSubmitting,
-      isValid: state.isValid,
-    })}
+    <form.Subscribe
+      selector={(state) => ({
+        isSubmitting: state.isSubmitting,
+        isValid: state.isValid,
+      })}
     >
       {({ isSubmitting, isValid }) => {
         const canSave = isValid && !isSubmitting
@@ -113,7 +114,12 @@ function PlaylistFormEditor({
               openTrackSheet={openTrackSheet}
             />
 
-            <BottomSheet isOpen={isTrackSheetOpen} onOpenChange={(open) => { if (!open) handleTrackSheetClose() }}>
+            <BottomSheet
+              isOpen={isTrackSheetOpen}
+              onOpenChange={(open) => {
+                if (!open) handleTrackSheetClose()
+              }}
+            >
               <BottomSheet.Portal>
                 <BottomSheet.Overlay />
                 <TrackPickerSheetContent
@@ -171,7 +177,9 @@ export default function PlaylistFormScreen() {
 
   if (isEditMode && (isEditPlaylistLoading || !playlistToEdit)) {
     return (
-      <View className={isEditPlaylistLoading ? "flex-1 bg-background pt-4" : "flex-1 bg-background"}>
+      <View
+        className={isEditPlaylistLoading ? "flex-1 bg-background pt-4" : "flex-1 bg-background"}
+      >
         <Stack.Screen
           options={{
             title: t("playlist.editPlaylist"),

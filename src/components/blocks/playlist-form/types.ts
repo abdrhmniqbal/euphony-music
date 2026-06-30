@@ -31,7 +31,20 @@ type PlaylistFormData = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type PlaylistFormApi = ReactFormExtendedApi<PlaylistFormData, any, any, any, any, any, any, any, any, any, any, any>
+export type PlaylistFormApi = ReactFormExtendedApi<
+  PlaylistFormData,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any,
+  any
+>
 
 export interface PlaylistFormProps {
   form: PlaylistFormApi

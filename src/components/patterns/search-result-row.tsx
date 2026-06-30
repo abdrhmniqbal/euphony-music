@@ -151,10 +151,7 @@ function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
   }
 
   return (
-    <Item
-      onPress={() => onPress?.(item)}
-      onLongPress={() => onLongPress?.(item)}
-    >
+    <Item onPress={() => onPress?.(item)} onLongPress={() => onLongPress?.(item)}>
       <ItemImage
         icon={
           <LocalMusicNote04SolidIcon

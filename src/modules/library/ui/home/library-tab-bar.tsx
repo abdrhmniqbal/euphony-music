@@ -34,7 +34,7 @@ export function LibraryTabBar({
               {({ isSelected }) => (
                 <Tabs.Label
                   className={cn(
-                    "text-lg font-semibold",
+                    "text-xl font-semibold",
                     isSelected ? "text-foreground" : "text-muted"
                   )}
                 >

@@ -442,16 +442,20 @@
         "title": "Folder filters"
       },
       "trackDurationFilter": {
-        "title": "$t(term.trackDurationFilterLabel)"
+        "title": "$t(term.trackDurationFilterLabel)",
+        "description": "Filter tracks by minimum duration."
       },
       "logLevel": {
-        "title": "Log Level"
+        "title": "Log Level",
+        "description": "Set the app's logging verbosity."
       },
       "splitMultipleValues": {
-        "title": "$t(term.splitMultipleValuesLabel)"
+        "title": "$t(term.splitMultipleValuesLabel)",
+        "description": "Configure symbol-based splitting for artists and genres."
       },
       "artistSplitMode": {
-        "title": "$t(term.artistSplitModeLabel)"
+        "title": "$t(term.artistSplitModeLabel)",
+        "description": "Choose how artists with multiple names are displayed."
       },
       "onboarding": {
         "title": "Onboarding"
@@ -476,22 +480,69 @@
       "languageDescription": "Current language: {{language}}.",
       "systemSuffix": "(System)",
       "theme": {
+        "search": {
+          "placeholder": "Search themes"
+        },
         "options": {
           "default": {
             "title": "Default",
-            "description": "The standard minimalist Startune interface."
+            "description": "Clean blue palette with timeless simplicity."
           },
           "nord": {
             "title": "Nord",
-            "description": "An arctic, north-bluish color palette."
+            "description": "Cool arctic palette with blue-gray tones."
           },
           "dracula": {
             "title": "Dracula",
-            "description": "A dark theme for vampires."
+            "description": "Classic vampire palette with gothic elegance."
           },
           "catppuccin": {
             "title": "Catppuccin",
-            "description": "Catppuccin palette with Latte light mode and Mocha dark mode."
+            "description": "Pastel-inspired palette with cozy aesthetics."
+          },
+          "tokyo": {
+            "title": "Tokyo",
+            "description": "Midnight neon palette with vibrant city lights."
+          },
+          "gruvbox": {
+            "title": "Gruvbox",
+            "description": "Retro earthy palette with warm vintage tones."
+          },
+          "everforest": {
+            "title": "Everforest",
+            "description": "Natural forest palette with calming green hues."
+          },
+          "rose-pine": {
+            "title": "Rose Pine",
+            "description": "Muted pine palette with rosy lavender tones."
+          },
+          "solarized": {
+            "title": "Solarized",
+            "description": "Balanced desert palette with timeless precision."
+          },
+          "ayu": {
+            "title": "Ayu",
+            "description": "Warm olive palette with subtle golden accents."
+          },
+          "monochrome": {
+            "title": "Monochrome",
+            "description": "Neutral grayscale palette with timeless simplicity."
+          },
+          "aquamarine": {
+            "title": "Aquamarine",
+            "description": "Refreshing aquamarine palette with vibrant teal accents."
+          },
+          "crimson-pulse": {
+            "title": "Crimson Pulse",
+            "description": "Bold crimson palette with modern entertainment vibes."
+          },
+          "banana-breeze": {
+            "title": "Banana Breeze",
+            "description": "Sunny tropical palette with golden banana hues."
+          },
+          "candy-pop": {
+            "title": "Candy Pop",
+            "description": "Sweet candy palette with playful pastel delights."
           }
         }
       },
@@ -752,6 +803,40 @@
       "licenseText": "License Text",
       "openSourceLicensesEmpty": "No generated licenses yet. Run generate:licenses script.",
       "licenseTextUnavailable": "License text unavailable."
+    },
+    "lastfm": {
+      "scrobbleTracks": "Scrobble Tracks",
+      "scrobbleTracksDescription": "Automatically send listening history to Last.fm.",
+      "scrobblePoint": "Scrobble Point",
+      "scrobblePointDescription": "Tracks won't be scrobbled before a percentage of track elapses.",
+      "minimumTrackDuration": "Minimum Track Duration",
+      "minimumTrackDurationDescription": "Tracks shorter than this will not be scrobbled.",
+      "clearData": "Clear Last.fm Data",
+      "clearDataDescription": "Remove saved session and scrobble settings.",
+      "connected": "Connected.",
+      "notConnected": "Not connected.",
+      "connectedAs": "Connected as {{username}}",
+      "authUnavailable": "Last.fm auth unavailable.",
+      "missingDetails": "Missing Details",
+      "missingDetailsDescription": "Enter username and password.",
+      "connectedToast": "Connected",
+      "connectedToastDescription": "Successfully connected to Last.fm.",
+      "connectionFailed": "Connection Failed",
+      "connectionFailedDescription": "Could not connect to Last.fm.",
+      "disconnected": "Disconnected",
+      "disconnectedDescription": "Last.fm disconnected.",
+      "removed": "Removed",
+      "removedDescription": "Last.fm credentials removed.",
+      "profileTitle": "Last.fm profile",
+      "readyToScrobble": "Connected and ready to scrobble.",
+      "connectedAccount": "Connected account",
+      "unlink": "Unlink Last.fm",
+      "username": "Username",
+      "usernamePlaceholder": "Last.fm username",
+      "password": "Password",
+      "passwordPlaceholder": "Last.fm password",
+      "connect": "Connect",
+      "connecting": "Connecting..."
     },
     "backup": {
       "sections": {

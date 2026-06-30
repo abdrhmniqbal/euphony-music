@@ -83,7 +83,12 @@ export const TrackList: React.FC<TrackListProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const { selected: selectedTrack, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Track>()
+  const {
+    selected: selectedTrack,
+    isOpen: isSheetOpen,
+    handleLongPress,
+    closeSheet,
+  } = useActionSheet<Track>()
   const activeTrackId = currentTrackId ?? useCurrentTrackId() ?? undefined
 
   const handleSheetClose = useCallback(() => {

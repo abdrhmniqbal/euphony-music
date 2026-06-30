@@ -22,7 +22,7 @@
     "editor.defaultFormatter": "oxc.oxfmt"
   },
   "[json]": {
-    "editor.defaultFormatter": "oxc.oxfmt"
+    "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[jsonc]": {
     "editor.defaultFormatter": "oxc.oxfmt"

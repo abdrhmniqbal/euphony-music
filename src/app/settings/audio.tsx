@@ -11,7 +11,12 @@ import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import { SettingsHighlight, SettingsListGroup, SettingsScrollView, SettingsSwitchRow } from "@/components/blocks/settings"
+import {
+  SettingsHighlight,
+  SettingsListGroup,
+  SettingsScrollView,
+  SettingsSwitchRow,
+} from "@/components/blocks/settings"
 import { setAudioPlaybackConfig, type AudioPlaybackConfig } from "@/modules/settings/audio-playback"
 import { setCrossfadeConfig } from "@/modules/settings/audio-crossfade"
 import { useSettingsStore } from "@/modules/settings/store"

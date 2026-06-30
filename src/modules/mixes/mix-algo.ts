@@ -1,28 +1,16 @@
 /**
  * Purpose: Pure mix generation primitives — deterministic shuffle, time-based seeds, visual selection, and track profiling/scoring.
  * Caller: Mixes repository (generateMix, getDailyMix, getForYouMix, toPersistedMix).
- * Dependencies: Player domain types (type-only).
+ * Dependencies: Player domain types (type-only), visuals/shared.
  * Main Functions: shuffle(), getDaySeed(), getWeekSeed(), getMixVisual(), buildProfile(), scoreTrack()
  * Side Effects: None.
  */
 
 import type { Track } from "@/modules/player/types"
+import { pickVisual, SHAPES, type Shape, type VisualIdentity } from "@/modules/visuals/shared"
 
-export const MIX_SHAPES = [
-  "circles",
-  "waves",
-  "grid",
-  "diamonds",
-  "triangles",
-  "rings",
-  "pills",
-  "stripes",
-  "stars",
-  "zigzag",
-  "crosses",
-] as const
-
-export type MixShape = (typeof MIX_SHAPES)[number]
+export type MixShape = Shape
+export { SHAPES as MIX_SHAPES, pickVisual as getMixVisual } from "@/modules/visuals/shared"
 
 type MixProfile = {
   artistNames: string[]
@@ -66,24 +54,8 @@ export function getStartOfNextLocalWeek(now = new Date()) {
   return startOfDay.getTime()
 }
 
-export function getMixVisual(seed: number, reserved?: { colorIndex: number; shape: MixShape }) {
-  const baseColorIndex = Math.abs(seed) % 10
-  const baseShapeIndex = Math.abs(seed) % MIX_SHAPES.length
-  const candidates = Array.from({ length: MIX_SHAPES.length }, (_, offset) => ({
-    colorIndex: (baseColorIndex + offset) % 10,
-    shape: MIX_SHAPES[(baseShapeIndex + offset) % MIX_SHAPES.length],
-  }))
-
-  return (
-    candidates.find((candidate) => {
-      if (!reserved) return true
-      return candidate.colorIndex !== reserved.colorIndex || candidate.shape !== reserved.shape
-    }) ?? { colorIndex: baseColorIndex, shape: MIX_SHAPES[baseShapeIndex] }
-  )
-}
-
 export function toMixShape(shape: string): MixShape {
-  return MIX_SHAPES.includes(shape as MixShape) ? (shape as MixShape) : "circles"
+  return SHAPES.includes(shape as MixShape) ? (shape as MixShape) : "circles"
 }
 
 export function buildProfile(sourceTracks: Track[]): MixProfile {

@@ -78,7 +78,14 @@ export function useSleepTimerDraft(
         sleepTimer.clockHour,
         sleepTimer.clockMinute
       ),
-    [sleepTimer.clockHour, sleepTimer.clockMinute, sleepTimer.minutes, sleepTimer.mode, sleepTimer.playCount, t]
+    [
+      sleepTimer.clockHour,
+      sleepTimer.clockMinute,
+      sleepTimer.minutes,
+      sleepTimer.mode,
+      sleepTimer.playCount,
+      t,
+    ]
   )
 
   const customTimeDescription = customTimeEnabled
@@ -99,10 +106,7 @@ export function useSleepTimerDraft(
     }))
   }
 
-  const handleCustomTimePickerChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
+  const handleCustomTimePickerChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (Platform.OS === "android") {
       setDraft((prev) => ({
         ...prev,

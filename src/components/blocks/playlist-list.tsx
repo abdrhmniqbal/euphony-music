@@ -63,7 +63,12 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   const theme = useThemeColors()
   const { t } = useTranslation()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const { selected: selectedPlaylist, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Playlist>()
+  const {
+    selected: selectedPlaylist,
+    isOpen: isSheetOpen,
+    handleLongPress,
+    closeSheet,
+  } = useActionSheet<Playlist>()
   const autoHideScrollProps = useAutoHideHeaderScroll()
   const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
 
@@ -178,7 +183,11 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         type="playlist"
         id={selectedPlaylist?.id ?? ""}
         name={selectedPlaylist?.title ?? ""}
-        subtitle={selectedPlaylist ? t("library.count.track", { count: selectedPlaylist.trackCount }) : undefined}
+        subtitle={
+          selectedPlaylist
+            ? t("library.count.track", { count: selectedPlaylist.trackCount })
+            : undefined
+        }
         image={selectedPlaylist?.image}
         images={selectedPlaylist?.images}
         trackCount={selectedPlaylist?.trackCount ?? 0}

@@ -6,13 +6,15 @@
  * Side Effects: Persists selected app theme foundation for future themed variants.
  */
 
-import { ListGroup, Separator } from "heroui-native"
+import { ListGroup, Separator, Input, PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useUniwind } from "uniwind"
 
 import LocalTick02Icon from "@/components/icons/local/tick-02"
+import LocalSearch01Icon from "@/components/icons/local/search-01"
+import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import { setThemeConfig } from "@/modules/settings/theme"
 import { useSettingsStore } from "@/modules/settings/store"
 import { APP_THEMES, type AppThemeDefinition } from "@/modules/ui/theme-registry"
@@ -175,11 +177,50 @@ export default function ThemeSettingsScreen() {
   const { t } = useTranslation()
   const selectedThemeId = useSettingsStore((state) => state.themeConfig.themeId)
 
+  const [query, setQuery] = React.useState("")
+  const normalizedQuery = query.toLowerCase().trim()
+
+  const filteredThemes = React.useMemo(() => {
+    if (!normalizedQuery) return APP_THEMES
+    return APP_THEMES.filter((appTheme) => {
+      const title = t(appTheme.labelKey).toLowerCase()
+      const description = t(appTheme.descriptionKey).toLowerCase()
+      return title.includes(normalizedQuery) || description.includes(normalizedQuery)
+    })
+  }, [normalizedQuery, t])
+
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
+    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <View className="gap-5 px-4 py-4">
+        <View className="relative">
+          <View
+            pointerEvents="none"
+            className="absolute inset-y-0 left-1 z-20 w-10 items-center justify-center"
+          >
+            <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
+          </View>
+          <Input
+            value={query}
+            onChangeText={setQuery}
+            placeholder={t("settings.appearance.theme.search.placeholder", "Search themes")}
+            placeholderTextColor={theme.muted}
+            returnKeyType="search"
+            autoCapitalize="none"
+            autoCorrect={false}
+            selectionColor={theme.accent}
+            className="pl-12 pr-10"
+          />
+          {query.length > 0 && (
+            <PressableFeedback
+              onPress={() => setQuery("")}
+              className="absolute inset-y-0 right-2.5 justify-center p-1"
+            >
+              <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={theme.muted} />
+            </PressableFeedback>
+          )}
+        </View>
         <ListGroup>
-          {APP_THEMES.map((appTheme, index) => (
+          {filteredThemes.map((appTheme, index) => (
             <React.Fragment key={appTheme.id}>
               {index > 0 && <Separator className="mx-4" />}
               <ListGroup.Item onPress={() => void setThemeConfig({ themeId: appTheme.id })}>

@@ -117,12 +117,9 @@ export function useTrackActions({
     onClose()
   }, [track, onClose])
 
-  const showPlaylistToast = useCallback(
-    (title: string, description?: string) => {
-      showAppToast(title, description)
-    },
-    []
-  )
+  const showPlaylistToast = useCallback((title: string, description?: string) => {
+    showAppToast(title, description)
+  }, [])
 
   const { isSelecting, handleSelectPlaylist } = usePlaylistPickerSelection({
     trackId: track?.id,

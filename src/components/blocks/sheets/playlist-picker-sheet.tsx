@@ -1,10 +1,7 @@
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { BottomSheet, Button, Checkbox, Input, PressableFeedback, TextField } from "heroui-native"
 import { useCallback, useState } from "react"
-import {
-  Text,
-  View,
-} from "react-native"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import { LEGEND_LIST_PICKER_CONFIG } from "@/components/blocks/legend-list-config"

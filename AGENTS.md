@@ -139,9 +139,11 @@ _Note: Editing (`codedb_edit`) is a fallback; continue using your primary native
 Three component categories under `src/components/`:
 
 ### `ui/` — Primitives
+
 Reusable, composable components with **minimal assumptions**. Each is a single-purpose building block.
 
 **Rules:**
+
 - No business logic, no queries, no mutations, no navigation.
 - No assumptions about parent layout (flex, padding, positioning).
 - Accept styling via `className` prop.
@@ -149,24 +151,30 @@ Reusable, composable components with **minimal assumptions**. Each is a single-p
 - Examples: `Button`, `EmptyState`, `Card`, `SectionHeader`, `ActionSheet.Root`, `MediaItem.Image`
 
 ### `blocks/` — Feature sections
+
 Combine multiple `ui/` components (or other `blocks/`) into a **production-ready feature section or page fragment**. These are the concrete wires between UI and data.
 
 **Rules:**
+
 - May use queries, hooks, navigation, stores, mutations.
 - Usually contains a complete interactive unit (a list with filters, a carousel with action sheet, a player).
 - Always renders action sheets, dialogs, or other overlays **unconditionally** (mounted at all times, visibility controlled via prop).
 - Examples: `AlbumsTab`, `ArtistGrid`, `MediaCarousel`, `TrackActionSheet`, `FavoritesList`, `RankedTrackCarousel`, `SearchResults`
 
 ### `patterns/` — UX/DX solutions
+
 Demonstrate **how** `ui/` and `blocks/` components should be combined to solve a recurring UX or DX problem. Not full page sections, not primitive atoms — they codify a design decision.
 
 **Rules:**
+
 - Always use `ui/` primitives internally. Never use `patterns/` inside `blocks/` (inverted dependency).
 - A pattern codifies a specific layout, interaction, or composition decision.
 - Examples: `TrackRow` (how tracks are laid out with MediaItem), `MusicCard` (how album/playlist cards look), `BackButton` (how back navigation works app-wide), `PlaylistArtwork` (how playlist art grid renders), `SearchResultRow` (how search results render per type)
 
 ### Dependency direction
+
 ```
 ui/ ← patterns/ ← blocks/ ← screens/routes
 ```
+
 `ui/` knows nothing about `patterns/` or `blocks/`. `patterns/` imports only from `ui/` and external libs. `blocks/` imports from `ui/`, `patterns/`, and domain modules.

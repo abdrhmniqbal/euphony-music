@@ -6,7 +6,9 @@
  * Side Effects: Updates in-memory UI state for the current app session only.
  */
 
+import AsyncStorage from "expo-sqlite/kv-store"
 import { create } from "zustand"
+import { createJSONStorage, persist } from "zustand/middleware"
 
 export type PlayerExpandedView = "artwork" | "lyrics" | "queue"
 export type PlayerLyricsFontScale = 1 | 1.2 | 1.4
@@ -19,13 +21,24 @@ interface UIState {
   playerLyricsFontScale: PlayerLyricsFontScale
 }
 
-export const useUIStore = create<UIState>(() => ({
-  barsVisible: true,
-  isPlayerExpanded: false,
-  playerExpandedView: "artwork",
-  playerLyricsKaraokeEnabled: false,
-  playerLyricsFontScale: 1,
-}))
+export const useUIStore = create<UIState>()(
+  persist(
+    () => ({
+      barsVisible: true,
+      isPlayerExpanded: false,
+      playerExpandedView: "artwork",
+      playerLyricsKaraokeEnabled: false,
+      playerLyricsFontScale: 1,
+    }),
+    {
+      name: "startune::ui-store",
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        playerLyricsKaraokeEnabled: state.playerLyricsKaraokeEnabled,
+        playerLyricsFontScale: state.playerLyricsFontScale,
+      }),
+    }
+  ))
 
 function getPlayerExpandedViewState() {
   return useUIStore.getState().playerExpandedView

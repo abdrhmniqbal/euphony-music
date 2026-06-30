@@ -7,15 +7,15 @@
  */
 
 import type { HistoryTopTracksPeriod as TopTracksPeriod } from "@/modules/history/types"
-import { BottomSheet, PressableFeedback } from "heroui-native"
+import { Tabs } from "heroui-native"
 import { useState } from "react"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { cn } from "tailwind-variants"
 
 import Animated from "react-native-reanimated"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
-import LocalArrowDown02Icon from "@/components/icons/local/arrow-down-02"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
@@ -34,11 +34,9 @@ export default function TopTracksScreen() {
   const theme = useThemeColors()
   const { t } = useTranslation()
   const [period, setPeriod] = useState<TopTracksPeriod>("all")
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const {
     data: currentTracksData,
     isLoading,
-    isFetching,
     refetch,
     dataUpdatedAt,
   } = useTopTracksByPeriod(period, TOP_TRACKS_LIMIT)
@@ -148,26 +146,41 @@ export default function TopTracksScreen() {
             {...autoHideScrollProps}
             refreshControl={
               <ThemedRefreshControl
-                refreshing={isIndexing || isLoading || isFetching}
+                refreshing={isIndexing || isLoading}
                 onRefresh={refresh}
               />
             }
             listHeader={
               <Animated.View key={`actions-${period}`} entering={screenEnterTransition()}>
-                <PressableFeedback
-                  onPress={() => setIsSheetOpen(true)}
-                  className="mb-4 mt-2 flex-row items-center gap-2 active:opacity-50"
+                <Tabs
+                  value={period}
+                  onValueChange={(value) => setPeriod(value as TopTracksPeriod)}
+                  className="mb-4"
                 >
-                  <Text className="text-3xl font-bold text-foreground">
-                    {getPeriodLabel(period)}
-                  </Text>
-                  <LocalArrowDown02Icon
-                    fill="none"
-                    width={20}
-                    height={20}
-                    color={theme.foreground}
-                  />
-                </PressableFeedback>
+                  <Tabs.List className="bg-surface">
+                    <Tabs.ScrollView
+                      scrollAlign="start"
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerClassName="gap-5"
+                    >
+                      <Tabs.Indicator className="bg-surface-tertiary" />
+                      {periodOptions.map((opt) => (
+                        <Tabs.Trigger key={opt} value={opt}>
+                          {({ isSelected }) => (
+                            <Tabs.Label
+                              className={cn(
+                                "text-xl font-bold px-4 py-2",
+                                isSelected ? "text-foreground" : "text-muted"
+                              )}
+                            >
+                              {getPeriodLabel(opt)}
+                            </Tabs.Label>
+                          )}
+                        </Tabs.Trigger>
+                      ))}
+                    </Tabs.ScrollView>
+                  </Tabs.List>
+                </Tabs>
 
                 <PlaybackActionsRow
                   onPlay={playAll}
@@ -178,7 +191,7 @@ export default function TopTracksScreen() {
                   <Animated.Text
                     key={`updated-${period}-${dataUpdatedAt}`}
                     entering={screenEnterTransition()}
-                    className="text-left text-xs text-muted"
+                    className="text-left text-xs text-muted my-2"
                   >
                     {lastUpdatedText}
                   </Animated.Text>
@@ -188,37 +201,6 @@ export default function TopTracksScreen() {
           />
         </Animated.View>
       )}
-
-      <BottomSheet isOpen={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <BottomSheet.Portal>
-          <BottomSheet.Overlay />
-          <BottomSheet.Content backgroundClassName="bg-surface" className="gap-1 pb-8">
-            <BottomSheet.Title className="mb-2 text-xl">
-              {t("home.topTracks.timespanTitle", "Timespan")}
-            </BottomSheet.Title>
-            {periodOptions.map((opt) => (
-              <PressableFeedback
-                key={opt}
-                className="h-14 flex-row items-center justify-between active:opacity-50"
-                onPress={() => {
-                  setPeriod(opt)
-                  setIsSheetOpen(false)
-                }}
-              >
-                <Text
-                  className={
-                    period === opt
-                      ? "text-base font-semibold text-accent"
-                      : "text-base font-medium text-foreground"
-                  }
-                >
-                  {getPeriodLabel(opt)}
-                </Text>
-              </PressableFeedback>
-            ))}
-          </BottomSheet.Content>
-        </BottomSheet.Portal>
-      </BottomSheet>
     </View>
   )
 }

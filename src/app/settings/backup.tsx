@@ -5,7 +5,11 @@ import { Button, Dialog, ListGroup } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
 import { Text, View } from "react-native"
-import { SettingsHighlight, SettingsListGroup, SettingsScrollView } from "@/components/blocks/settings"
+import {
+  SettingsHighlight,
+  SettingsListGroup,
+  SettingsScrollView,
+} from "@/components/blocks/settings"
 import { useTranslation } from "react-i18next"
 
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"

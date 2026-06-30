@@ -64,8 +64,6 @@ interface FavoritesListProps {
   onTrackPress?: (trackId: string) => void
 }
 
-
-
 const FAVORITE_TYPE_FILTERS: FavoriteType[] = ["track", "album", "artist", "playlist"]
 
 function getFavoriteTypeLabel(type: FavoriteType, t: TFunction) {
@@ -98,7 +96,12 @@ export const FavoritesList: React.FC<FavoritesListProps> = ({
   const toggleFavoriteMutation = useToggleFavorite()
   const router = useRouter()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
-  const { selected: selectedFavorite, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<FavoriteEntry>()
+  const {
+    selected: selectedFavorite,
+    isOpen: isSheetOpen,
+    handleLongPress,
+    closeSheet,
+  } = useActionSheet<FavoriteEntry>()
   const visibleFavoriteTypes = FAVORITE_TYPE_FILTERS.filter((type) => availableTypes.includes(type))
   const orderedFavoriteTypes = [
     ...selectedTypes.filter((type) => visibleFavoriteTypes.includes(type)),

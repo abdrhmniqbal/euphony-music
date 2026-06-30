@@ -23,7 +23,10 @@ interface GridListEmptyState {
 
 interface GridListProps<T> {
   data: T[]
-  renderItem: (item: T, helpers: { onLongPress: () => void; itemWidth: number; index: number; column: number }) => React.ReactNode
+  renderItem: (
+    item: T,
+    helpers: { onLongPress: () => void; itemWidth: number; index: number; column: number }
+  ) => React.ReactNode
   keyExtractor: (item: T) => string
   numColumns: number
   gap: number
@@ -70,11 +73,17 @@ export function GridList<T>({
   refreshControl,
   resetScrollKey,
 }: GridListProps<T>) {
-  const { selected, isOpen: isSheetOpen, handleLongPress: setSelected, closeSheet } = useActionSheet<T>()
+  const {
+    selected,
+    isOpen: isSheetOpen,
+    handleLongPress: setSelected,
+    closeSheet,
+  } = useActionSheet<T>()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
   const { width: windowWidth } = useWindowDimensions()
   const itemWidth = (windowWidth - horizontalPadding - gap * (numColumns - 1)) / numColumns
-  const estimatedSize = typeof estimatedItemHeight === "function" ? estimatedItemHeight(itemWidth) : estimatedItemHeight
+  const estimatedSize =
+    typeof estimatedItemHeight === "function" ? estimatedItemHeight(itemWidth) : estimatedItemHeight
   const gridContentContainerStyle = StyleSheet.flatten([
     { paddingBottom: 8 },
     contentContainerStyle,

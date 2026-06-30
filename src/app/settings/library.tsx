@@ -20,7 +20,11 @@ import type { IndexerScanConfig } from "@/modules/settings/types"
 import { getTrackDurationFilterLabel } from "@/modules/settings/track-duration-filter"
 import { useSettingsStore } from "@/modules/settings/store"
 import { showAppToast } from "@/modules/ui/toast"
-import { SettingsHighlight, SettingsListGroup, SettingsScrollView } from "@/components/blocks/settings"
+import {
+  SettingsHighlight,
+  SettingsListGroup,
+  SettingsScrollView,
+} from "@/components/blocks/settings"
 
 function getSliderNumericValue(value: number | number[]): number {
   return Array.isArray(value) ? (value[0] ?? 0) : value

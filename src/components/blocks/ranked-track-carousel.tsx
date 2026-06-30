@@ -75,7 +75,12 @@ export function RankedTrackCarousel({
   className,
 }: RankedTrackCarouselProps) {
   const currentTrackId = useCurrentTrackId()
-  const { selected: selectedTrack, isOpen: isSheetOpen, handleLongPress: selectAndOpenSheet, closeSheet } = useActionSheet<Track>()
+  const {
+    selected: selectedTrack,
+    isOpen: isSheetOpen,
+    handleLongPress: selectAndOpenSheet,
+    closeSheet,
+  } = useActionSheet<Track>()
 
   const chunks = React.useMemo(() => chunkArray(data, chunkSize), [data, chunkSize])
 

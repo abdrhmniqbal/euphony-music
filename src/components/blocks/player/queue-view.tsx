@@ -37,7 +37,13 @@ interface QueueItemProps {
   onRemove: (trackId: string) => void
 }
 
-export const QueueItem: React.FC<QueueItemProps> = ({ trackKey, track, index, onPress, onRemove }) => {
+export const QueueItem: React.FC<QueueItemProps> = ({
+  trackKey,
+  track,
+  index,
+  onPress,
+  onRemove,
+}) => {
   const trackId = extractTrackId(trackKey)
   const currentTrackState = usePlayerStore((state) => state.currentTrack)
   const currentIndex = usePlaybackStore((state) => state.queuePosition)

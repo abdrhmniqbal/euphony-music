@@ -12,9 +12,7 @@ import {
 import { useTranslation } from "react-i18next"
 import Transition from "react-native-screen-transitions"
 import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
-import {
-  LEGEND_LIST_GRID_HORIZONTAL_CONFIG,
-} from "@/components/blocks/legend-list-config"
+import { LEGEND_LIST_GRID_HORIZONTAL_CONFIG } from "@/components/blocks/legend-list-config"
 
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import { useActionSheet } from "@/components/blocks/use-action-sheet"
@@ -85,7 +83,12 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const { selected: selectedAlbum, isOpen: isSheetOpen, handleLongPress, closeSheet } = useActionSheet<Album>()
+  const {
+    selected: selectedAlbum,
+    isOpen: isSheetOpen,
+    handleLongPress,
+    closeSheet,
+  } = useActionSheet<Album>()
   const { listRef, listBehaviorProps } = useLegendListBehavior(resetScrollKey)
 
   const sheet = (
@@ -247,9 +250,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
             <ItemTitle className="text-sm normal-case" numberOfLines={1}>
               {item.title}
             </ItemTitle>
-            <ItemDescription numberOfLines={1}>
-              {getAlbumMetaText(item)}
-            </ItemDescription>
+            <ItemDescription numberOfLines={1}>{getAlbumMetaText(item)}</ItemDescription>
           </ItemContent>
         </Item>
       )}

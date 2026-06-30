@@ -44,5 +44,3 @@ export function SectionHeader({ title, className, onViewMore }: SectionHeaderPro
     </View>
   )
 }
-
-

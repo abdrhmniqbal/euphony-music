@@ -6,7 +6,7 @@
  * Side Effects: Clears and removes recent-search rows from the local recent-search list.
  */
 
-import { PressableFeedback } from "heroui-native"
+import { Button, PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { useCallback } from "react"
 import { Text, View } from "react-native"
@@ -141,9 +141,12 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
     <View className="px-4 py-4">
       <View className="mb-6 flex-row items-center justify-between">
         <Text className="text-lg font-bold text-foreground">{t("search.recentSearches")}</Text>
-        <PressableFeedback className="active:opacity-50" onPress={onClear}>
-          <Text className="text-muted">{t("common.clear")}</Text>
-        </PressableFeedback>
+        <Button variant="ghost" onPress={onClear}>
+                  <View className="flex-row items-center gap-2">
+                    <LocalCancel01Icon fill="none" width={18} height={18} color={theme.foreground} />
+                    <Text className="font-semibold text-foreground">{t("common.clearAll")}</Text>
+                  </View>
+                </Button>
       </View>
       <View className="gap-2">
         {searches.map((item) => (

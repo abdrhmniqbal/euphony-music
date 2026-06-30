@@ -47,8 +47,8 @@ export const QueueContextLabel: React.FC<QueueContextLabelProps> = ({ queueConte
   const repeatedLocalizedTitle = repeatedTitleKey ? t(repeatedTitleKey) : ""
   const shouldUseDefaultLabel = Boolean(
     normalizeQueueContextText(labelSuffix) === normalizeQueueContextText(queueContext.title) ||
-      normalizeQueueContextText(repeatedLocalizedTitle) ===
-        normalizeQueueContextText(queueContext.title)
+    normalizeQueueContextText(repeatedLocalizedTitle) ===
+      normalizeQueueContextText(queueContext.title)
   )
 
   return (

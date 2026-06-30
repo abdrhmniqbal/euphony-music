@@ -411,7 +411,10 @@ export default function ArtistDetailsScreen() {
               style={{ paddingTop: SCREEN_SECTION_TOP_SPACING }}
             >
               <View className="px-6">
-                <SectionHeader title={t("library.tracks")} onViewMore={() => navigateTo("tracks")} />
+                <SectionHeader
+                  title={t("library.tracks")}
+                  onViewMore={() => navigateTo("tracks")}
+                />
                 <PlaybackActionsRow
                   onPlay={playAllTracks}
                   onShuffle={shuffleTracks}
@@ -438,11 +441,7 @@ export default function ArtistDetailsScreen() {
                     title={t("library.albums")}
                     onViewMore={() => navigateTo("albums")}
                   />
-                  <AlbumGrid
-                    horizontal
-                    data={sortedAlbums}
-                    onAlbumPress={openAlbum}
-                  />
+                  <AlbumGrid horizontal data={sortedAlbums} onAlbumPress={openAlbum} />
                 </View>
               )}
 
@@ -452,11 +451,7 @@ export default function ArtistDetailsScreen() {
                     title={t("library.featuredOn")}
                     onViewMore={() => navigateTo("featuredOn")}
                   />
-                  <AlbumGrid
-                    horizontal
-                    data={sortedFeaturedOnAlbums}
-                    onAlbumPress={openAlbum}
-                  />
+                  <AlbumGrid horizontal data={sortedFeaturedOnAlbums} onAlbumPress={openAlbum} />
                 </View>
               )}
 

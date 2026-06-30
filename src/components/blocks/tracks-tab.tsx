@@ -70,10 +70,7 @@ export const TracksTab: React.FC<TracksTabProps> = ({
       refreshControl={refreshControl}
       autoHideScrollProps={autoHideScrollProps}
     >
-      <TrackList
-        data={sortedTracks}
-        onTrackPress={handleTrackPress}
-      />
+      <TrackList data={sortedTracks} onTrackPress={handleTrackPress} />
     </LibraryTab>
   )
 }

@@ -12,7 +12,11 @@ import { Button, Dialog, ListGroup } from "heroui-native"
 import { useState } from "react"
 import { Linking, Platform, View, Text } from "react-native"
 import { useTranslation } from "react-i18next"
-import { SettingsHighlight, SettingsListGroup, SettingsScrollView } from "@/components/blocks/settings"
+import {
+  SettingsHighlight,
+  SettingsListGroup,
+  SettingsScrollView,
+} from "@/components/blocks/settings"
 import { queryClient } from "@/lib/tanstack-query"
 
 import {

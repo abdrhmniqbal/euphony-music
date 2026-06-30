@@ -23,11 +23,7 @@ import { LEGEND_LIST_SECTION_CONFIG } from "@/components/blocks/legend-list-conf
 import { SearchResultsTabBar, type SearchTab } from "@/components/blocks/search-results-tab-bar"
 import { MemoizedSearchResultRow } from "@/components/patterns/search-result-row"
 
-export type {
-  SearchAlbumResult,
-  SearchArtistResult,
-  SearchPlaylistResult,
-}
+export type { SearchAlbumResult, SearchArtistResult, SearchPlaylistResult }
 
 interface SearchResultsProps {
   tracks: Track[]
@@ -248,7 +244,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
           )
         default:
           return (
-            <MemoizedSearchResultRow item={item} onPress={handleResultPress} onLongPress={handleResultLongPress} />
+            <MemoizedSearchResultRow
+              item={item}
+              onPress={handleResultPress}
+              onLongPress={handleResultLongPress}
+            />
           )
       }
     },
