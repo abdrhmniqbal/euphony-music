@@ -6,12 +6,11 @@ Offline-first local music player built with Expo + React Native.
 
 [![Release](https://img.shields.io/github/v/release/abdrhmniqbal/startune-music?label=latest)](https://github.com/abdrhmniqbal/startune-music/releases/latest)
 [![Pre-release](https://img.shields.io/github/v/release/abdrhmniqbal/startune-music?include_prereleases&label=pre-release)](https://github.com/abdrhmniqbal/startune-music/releases)
-[![Downloads](https://img.shields.io/github/downloads/abdrhmniqbal/startune-music/total)](https://github.com/abdrhmniqbal/startune-music/releases)
-[![Expo SDK](https://img.shields.io/badge/Expo-SDK%2056-000020?logo=expo)](https://docs.expo.dev)
+[![License](https://img.shields.io/github/license/abdrhmniqbal/startune-music)](LICENSE)
 
 ## Overview
 
-Startune Music is a local-library music player focused on offline playback, fast browsing, and modern mobile UX. It indexes audio already stored on the device, keeps the experience responsive during rescans, and supports rich playback flows without depending on a remote account or streaming backend.
+Startune Music plays audio files already on your device. No streaming, no accounts, no remote libraries.
 
 ## Features
 
@@ -23,9 +22,10 @@ Startune Music is a local-library music player focused on offline playback, fast
 - Playlist creation, editing, reordering, and playlist-aware track actions
 - Rich player surfaces: mini player, full player, queue view, and metadata sheet
 - Indexing with progress notifications, auto-scan, scoped folder filtering, and track-duration filters
-- Multiple color themes (Catppuccin, Dracula, Nord, Alucard) and extensive customization
+- 15 built-in color themes (Nord, Dracula, Catppuccin, Tokyo, Gruvbox, Everforest, Rose Pine, Solarized, Ayu, Monochrome, and more)
 - Backup and restore settings and preferences
 - Search with recent searches, recently added tracks, and direct navigation into media detail screens
+- Reorderable library tabs with visibility toggles
 
 ## Changelog
 
