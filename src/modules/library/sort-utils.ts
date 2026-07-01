@@ -182,6 +182,6 @@ export function sortGeneric<T extends object>(items: T[], config: SortConfig): T
   })
 }
 
-export function sortGenres<T extends ArtistSortable>(genres: T[], config: SortConfig): T[] {
+function sortGenres<T extends ArtistSortable>(genres: T[], config: SortConfig): T[] {
   return sortArtists(genres, config)
 }

@@ -95,7 +95,7 @@ export async function setTrackDurationFilterConfig(
   return next
 }
 
-export function getTrackDurationMinimumSeconds(config: TrackDurationFilterConfig): number {
+function getTrackDurationMinimumSeconds(config: TrackDurationFilterConfig): number {
   if (config.mode === "min30s") {
     return 30
   }

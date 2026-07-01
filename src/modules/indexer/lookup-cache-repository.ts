@@ -25,7 +25,7 @@ export interface GenreVisualLookup {
   shapeUsage: Map<GenreShape, number>
 }
 
-export function createEmptyGenreVisualLookup(): GenreVisualLookup {
+function createEmptyGenreVisualLookup(): GenreVisualLookup {
   const colorUsage = new Map<string, number>()
   const shapeUsage = new Map<GenreShape, number>()
 
@@ -45,7 +45,7 @@ export function createEmptyGenreVisualLookup(): GenreVisualLookup {
   }
 }
 
-export function registerGenreVisual(
+function registerGenreVisual(
   visualLookup: GenreVisualLookup,
   color: string,
   shape: GenreShape
@@ -55,7 +55,7 @@ export function registerGenreVisual(
   visualLookup.shapeUsage.set(shape, (visualLookup.shapeUsage.get(shape) ?? 0) + 1)
 }
 
-export function getAlbumLookupKey(artistId: string, title: string) {
+function getAlbumLookupKey(artistId: string, title: string) {
   return `${artistId}::${title}`
 }
 
@@ -235,7 +235,7 @@ export async function getOrCreateGenre(
   return id
 }
 
-export function selectGenreVisuals(
+function selectGenreVisuals(
   name: string,
   lookupCache?: IndexingLookupCache
 ): { color: string; shape: GenreShape } {

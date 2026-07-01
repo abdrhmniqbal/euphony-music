@@ -15,7 +15,7 @@ import { incrementTrackPlayCount, setTrackFavoriteStatus } from "./repository"
 
 type TrackDetail = Awaited<ReturnType<typeof getTrackById>>
 
-export function useToggleFavoriteTrack() {
+function useToggleFavoriteTrack() {
   return useMutation(
     {
       mutationFn: setTrackFavoriteStatus,
@@ -55,7 +55,7 @@ export function useToggleFavoriteTrack() {
   )
 }
 
-export function useIncrementTrackPlayCount() {
+function useIncrementTrackPlayCount() {
   return useMutation(
     {
       mutationFn: incrementTrackPlayCount,

@@ -55,7 +55,7 @@ function resolveWebColors(result: unknown, fallbackColors: ColorPalette): ColorP
   }
 }
 
-export async function getTrackColors(imageUri: string): Promise<ColorPalette> {
+async function getTrackColors(imageUri: string): Promise<ColorPalette> {
   const cachedColors = colorCache.get(imageUri)
   if (cachedColors) {
     return cachedColors
@@ -110,14 +110,14 @@ export async function updateColorsForImage(imageUri: string | undefined) {
   setIsLoadingColorsState(false)
 }
 
-export function getCachedColors(imageUri: string): ColorPalette | null {
+function getCachedColors(imageUri: string): ColorPalette | null {
   return colorCache.get(imageUri) || null
 }
 
-export function clearColorCache() {
+function clearColorCache() {
   colorCache.clear()
 }
 
-export function getColorCacheSize() {
+function getColorCacheSize() {
   return colorCache.size
 }

@@ -42,7 +42,7 @@ function getHeaderSafeSlideFromBottomOptions(): NativeStackNavigationOptions {
   }
 }
 
-export const HIDDEN_STACK_SCREEN_OPTIONS = {
+const HIDDEN_STACK_SCREEN_OPTIONS = {
   headerShown: false,
 } as const
 
@@ -58,7 +58,7 @@ function getTransitionId(params: TransitionParams) {
     : undefined
 }
 
-export function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
+function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
   if (!boundaryId || !isNavigationMaskAvailable) {
     return {
       ...HIDDEN_STACK_SCREEN_OPTIONS,
@@ -94,7 +94,7 @@ export function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
   }
 }
 
-export function getHiddenArtistZoomTransitionOptions(boundaryId?: string) {
+function getHiddenArtistZoomTransitionOptions(boundaryId?: string) {
   return getHiddenBoundaryZoomTransitionOptions(boundaryId)
 }
 
@@ -118,7 +118,7 @@ export function getHiddenPlayerScreenOptions(params: TransitionParams) {
   return getHiddenPlayerZoomTransitionOptions(getTransitionId(params))
 }
 
-export function getHiddenPlayerZoomTransitionOptions(boundaryId?: string) {
+function getHiddenPlayerZoomTransitionOptions(boundaryId?: string) {
   if (!boundaryId || !isNavigationMaskAvailable) {
     return {
       ...HIDDEN_STACK_SCREEN_OPTIONS,
@@ -203,7 +203,7 @@ export function getCenteredRootScreenOptions(options: {
   }
 }
 
-export function getBackButtonScreenOptions(title: string, headerLeft: () => ReactNode) {
+function getBackButtonScreenOptions(title: string, headerLeft: () => ReactNode) {
   return {
     title,
     headerBackButtonMenuEnabled: false,

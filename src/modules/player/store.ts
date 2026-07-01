@@ -80,7 +80,7 @@ export function getCurrentTrackState() {
   return usePlayerStore.getState().currentTrack
 }
 
-export function setCurrentTrackState(value: Track | null) {
+function setCurrentTrackState(value: Track | null) {
   usePlayerStore.setState({ currentTrack: value })
 }
 
@@ -88,7 +88,7 @@ export function getIsPlayingState() {
   return usePlayerStore.getState().isPlaying
 }
 
-export function setDurationState(value: number) {
+function setDurationState(value: number) {
   if (usePlayerStore.getState().duration === value) {
     return
   }

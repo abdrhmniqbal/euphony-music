@@ -37,7 +37,7 @@ export function parseVersion(value: string) {
   }
 }
 
-export function comparePrereleasePart(left: string, right: string) {
+function comparePrereleasePart(left: string, right: string) {
   const leftNumber = Number.parseInt(left, 10)
   const rightNumber = Number.parseInt(right, 10)
   const leftIsNumber = Number.isFinite(leftNumber) && `${leftNumber}` === left

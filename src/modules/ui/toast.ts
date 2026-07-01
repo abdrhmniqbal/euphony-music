@@ -18,6 +18,6 @@ export function showAppToast(title: string, description?: string) {
   appToastAdapter?.show({ title, description, variant: "accent" })
 }
 
-export function showAppToastOptions(options: AppToastOptions) {
+function showAppToastOptions(options: AppToastOptions) {
   appToastAdapter?.show(options)
 }

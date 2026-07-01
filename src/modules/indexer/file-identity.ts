@@ -27,7 +27,7 @@ function getFileInfo(uri: string): { size?: number; modificationTime?: number | 
   }
 }
 
-export function generateFileHash(uri: string, modTime: number): string {
+function generateFileHash(uri: string, modTime: number): string {
   const fingerprint = `${uri}|${modTime}`
   let hashA = 5381
   let hashB = 52711

@@ -259,7 +259,7 @@ export function logError(message: string, error?: unknown, context?: unknown): v
   enqueueFileLog("error", fullMessage, mergedContext)
 }
 
-export function logCritical(message: string, error?: unknown, context?: unknown): void {
+function logCritical(message: string, error?: unknown, context?: unknown): void {
   if (shouldEmitLog("critical")) {
     if (error === undefined && context === undefined) {
       originalConsole.error(message)

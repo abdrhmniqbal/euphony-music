@@ -252,7 +252,7 @@ export async function getTrack(id: string): Promise<Track> {
   return track
 }
 
-export async function getTracksByIds(ids: string[]): Promise<Track[]> {
+async function getTracksByIds(ids: string[]): Promise<Track[]> {
   const uniqueIds = Array.from(new Set(ids)).filter((id) => id.length > 0)
   if (uniqueIds.length === 0) {
     return []
@@ -304,7 +304,7 @@ export async function getSortedTracks<TOnlyIds extends boolean | undefined = fal
   return rows.map(toDataTrack) as TOnlyIds extends true ? Array<{ id: string }> : SortedTrack[]
 }
 
-export async function getTracks(conditions?: DrizzleFilter) {
+async function getTracks(conditions?: DrizzleFilter) {
   const rows = await db.query.tracks.findMany({
     where: and(eq(tracks.isDeleted, 0), ...(conditions ?? [])),
     with: {
@@ -319,11 +319,11 @@ export async function getTracks(conditions?: DrizzleFilter) {
   return rows.map(toDataTrack) satisfies BulkQueriedTrack[]
 }
 
-export async function updateTrack(id: string, values: Partial<typeof tracks.$inferInsert>) {
+async function updateTrack(id: string, values: Partial<typeof tracks.$inferInsert>) {
   return db.update(tracks).set(values).where(eq(tracks.id, id))
 }
 
-export function toggleTrackInPlaylist(entry: typeof playlistTracks.$inferInsert) {
+function toggleTrackInPlaylist(entry: typeof playlistTracks.$inferInsert) {
   return db.transaction(async (tx) => {
     const condition = and(
       eq(playlistTracks.playlistId, entry.playlistId),
@@ -339,7 +339,7 @@ export function toggleTrackInPlaylist(entry: typeof playlistTracks.$inferInsert)
   })
 }
 
-export function upsertTracks(entries: Array<typeof tracks.$inferInsert>) {
+function upsertTracks(entries: Array<typeof tracks.$inferInsert>) {
   return db
     .insert(tracks)
     .values(entries)
@@ -360,7 +360,7 @@ export function upsertTracks(entries: Array<typeof tracks.$inferInsert>) {
     })
 }
 
-export async function deleteTracks(
+async function deleteTracks(
   entries: Array<{ id: string; errorInfo?: { errorName: string; errorMessage: string } }>
 ) {
   return db.transaction(async (tx) => {

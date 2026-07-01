@@ -161,7 +161,7 @@ function parseAngleTimedLines(raw: string): TimedMarkupLine[] {
     .sort((a, b) => a.begin - b.begin)
 }
 
-export function isTimedMarkupLyrics(raw: string): boolean {
+function isTimedMarkupLyrics(raw: string): boolean {
   const trimmed = raw.trim()
   const lower = trimmed.toLowerCase()
   return (
@@ -174,7 +174,7 @@ export function isTimedMarkupLyrics(raw: string): boolean {
   )
 }
 
-export function isTTML(raw: string): boolean {
+function isTTML(raw: string): boolean {
   return isTimedMarkupLyrics(raw)
 }
 

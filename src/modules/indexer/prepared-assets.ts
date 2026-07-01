@@ -84,7 +84,7 @@ export async function prepareBatchAssets(
   }
 }
 
-export async function prepareAssetForIndexing(
+async function prepareAssetForIndexing(
   asset: MediaLibrary.Asset,
   signal?: AbortSignal,
   precomputedHashMap?: Map<string, string>,

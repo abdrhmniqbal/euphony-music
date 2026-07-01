@@ -36,7 +36,7 @@ export type Artist = {
   albumCount: number
 }
 
-export function fromJsonArrayString(value: string | null): string[] | null {
+function fromJsonArrayString(value: string | null): string[] | null {
   if (!value) {
     return null
   }
@@ -51,17 +51,17 @@ export function fromJsonArrayString(value: string | null): string[] | null {
   }
 }
 
-export function commonTracksOrIds<TTrack extends CommonTrack, TOnlyIds extends boolean | undefined>(
+function commonTracksOrIds<TTrack extends CommonTrack, TOnlyIds extends boolean | undefined>(
   results: Array<TOnlyIds extends true ? { id: string } : TTrack>,
   onlyIds?: TOnlyIds
 ) {
   return results as TOnlyIds extends true ? Array<{ id: string }> : TTrack[]
 }
 
-export function iAsc(value: Parameters<typeof asc>[0]) {
+function iAsc(value: Parameters<typeof asc>[0]) {
   return asc(sql`lower(${value})`)
 }
 
-export function iDesc(value: Parameters<typeof desc>[0]) {
+function iDesc(value: Parameters<typeof desc>[0]) {
   return desc(sql`lower(${value})`)
 }

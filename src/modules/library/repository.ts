@@ -469,7 +469,7 @@ export type AlbumDetail = {
   year: string | null
 }
 
-export async function getAlbum(id: string) {
+async function getAlbum(id: string) {
   const row = await db.query.albums.findFirst({ where: eq(albums.id, id), with: { artist: true } })
   if (!row) throw new Error("err.msg.noAlbums")
   return toDataAlbum(row)
@@ -481,7 +481,7 @@ export async function getAlbumDetails(id: string): Promise<AlbumDetail> {
   return { ...toDataAlbum(row), year: null }
 }
 
-export async function getAlbumsSummary() {
+async function getAlbumsSummary() {
   const rows = await db.query.albums.findMany({
     with: { artist: true },
     orderBy: asc(sql`lower(coalesce(${albums.title}, ''))`),
@@ -505,13 +505,13 @@ export async function getAlbumTracks<TOnlyIds extends boolean | undefined = fals
   return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
 }
 
-export async function getArtist(id: string) {
+async function getArtist(id: string) {
   const row = await db.query.artists.findFirst({ where: eq(artists.id, id) })
   if (!row) throw new Error("err.msg.noArtists")
   return toDataArtist(row)
 }
 
-export async function getArtistsSummary() {
+async function getArtistsSummary() {
   const rows = await db.query.artists.findMany({
     orderBy: asc(sql`lower(coalesce(${artists.name}, ''))`),
   })
@@ -544,7 +544,7 @@ export async function getSortedArtistTracks<TOnlyIds extends boolean | undefined
   return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
 }
 
-export async function getFoldersSummary() {
+async function getFoldersSummary() {
   const rows = await db
     .select({ uri: tracks.uri, count: sql<number>`count(*)` })
     .from(tracks)

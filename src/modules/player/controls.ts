@@ -135,7 +135,7 @@ export async function seekTo(seconds: number) {
   }
 }
 
-export async function setRepeatMode(mode: RepeatModeType) {
+async function setRepeatMode(mode: RepeatModeType) {
   try {
     logInfo("Updating repeat mode", { mode })
     await setRepeat(toPlaybackRepeatMode(mode))

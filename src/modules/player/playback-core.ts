@@ -23,7 +23,7 @@ export async function setupPlaybackCore() {
   )
 }
 
-export function isPlaybackCoreSetUp() {
+function isPlaybackCoreSetUp() {
   return true
 }
 

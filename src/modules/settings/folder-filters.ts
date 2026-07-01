@@ -127,7 +127,7 @@ export async function ensureFolderFilterConfigLoaded(): Promise<FolderFilterConf
   return result
 }
 
-export async function setFolderFilterMode(
+async function setFolderFilterMode(
   path: string,
   mode: FolderFilterMode | null
 ): Promise<FolderFilterConfig> {
@@ -154,7 +154,7 @@ export async function setFolderFilterMode(
   return next
 }
 
-export async function clearFolderFilters(): Promise<void> {
+async function clearFolderFilters(): Promise<void> {
   updateSettingsState({ folderFilterConfig: EMPTY_FILTER_CONFIG })
   await persistConfig(EMPTY_FILTER_CONFIG)
 }
@@ -165,7 +165,7 @@ export async function commitFolderFilterConfig(config: FolderFilterConfig): Prom
   await persistConfig(sanitized)
 }
 
-export async function setAllFolderFiltersMode(mode: FolderFilterMode): Promise<FolderFilterConfig> {
+async function setAllFolderFiltersMode(mode: FolderFilterMode): Promise<FolderFilterConfig> {
   await ensureFolderFilterConfigLoaded()
   const current = getSettingsState().folderFilterConfig
   const folders = Array.from(new Set([...current.whitelist, ...current.blacklist]))

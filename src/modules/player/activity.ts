@@ -44,7 +44,7 @@ export function handleTrackActivated(track: Track) {
   hasRecordedPendingTrack = false
 }
 
-export function handleTrackProgress(positionSeconds: number, durationSeconds: number) {
+function handleTrackProgress(positionSeconds: number, durationSeconds: number) {
   if (!pendingTrackId || hasRecordedPendingTrack) {
     return
   }

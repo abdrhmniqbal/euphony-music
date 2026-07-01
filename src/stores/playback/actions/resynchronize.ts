@@ -9,7 +9,7 @@ import { playbackStore } from "../store"
 import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
 import { logWarn } from "@/modules/logging/service"
 
-export async function onActiveTrack(args: { type: "album" | "track"; id: string }) {
+async function onActiveTrack(args: { type: "album" | "track"; id: string }) {
   const { activeTrack } = playbackStore.getState()
   if (!activeTrack) return
   if (args.type === "album" && activeTrack.albumId !== args.id) return
@@ -27,14 +27,14 @@ export async function onActiveTrack(args: { type: "album" | "track"; id: string 
   }
 }
 
-export async function onModifiedTracks(trackIds: string[]) {
+async function onModifiedTracks(trackIds: string[]) {
   const idSet = new Set(trackIds)
   const { activeTrack } = playbackStore.getState()
   if (!activeTrack || !idSet.has(activeTrack.id)) return
   await onActiveTrack({ type: "track", id: activeTrack.id })
 }
 
-export async function onRename({
+async function onRename({
   oldSource,
   newSource,
 }: {

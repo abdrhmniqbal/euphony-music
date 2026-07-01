@@ -45,7 +45,7 @@ function getPlayerExpandedViewState() {
   return useUIStore.getState().playerExpandedView
 }
 
-export function setBarsVisible(value: boolean) {
+function setBarsVisible(value: boolean) {
   useUIStore.setState({ barsVisible: value })
 }
 
@@ -61,14 +61,14 @@ export function setPlayerLyricsFontScale(value: PlayerLyricsFontScale) {
   useUIStore.setState({ playerLyricsFontScale: value })
 }
 
-export function openPlayer(view: PlayerExpandedView = "artwork") {
+function openPlayer(view: PlayerExpandedView = "artwork") {
   useUIStore.setState({
     isPlayerExpanded: true,
     playerExpandedView: view,
   })
 }
 
-export function closePlayer() {
+function closePlayer() {
   useUIStore.setState({
     isPlayerExpanded: false,
     playerExpandedView: "artwork",

@@ -21,7 +21,7 @@ export function useCurrentTrackId() {
   return usePlaybackStore((state) => state.activeTrack?.id)
 }
 
-export function useCurrentTrackKey() {
+function useCurrentTrackKey() {
   return usePlaybackStore((state) => state.activeKey)
 }
 

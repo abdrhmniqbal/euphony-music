@@ -8,7 +8,7 @@ import { getTopTracksByPeriod, getTrackHistory } from "./repository"
 import type { HistoryTopTracksPeriod } from "./types"
 import { dedupeTracksById } from "./utils"
 
-export function useTrackHistory() {
+function useTrackHistory() {
   return useQuery<Track[]>(
     {
       queryKey: historyKeys.tracks(),

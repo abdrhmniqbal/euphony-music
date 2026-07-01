@@ -42,7 +42,7 @@ function normalizeJsonLyrics(raw: string): string | null {
   }
 }
 
-export function normalizeLyricsText(raw: string | null | undefined) {
+function normalizeLyricsText(raw: string | null | undefined) {
   if (!raw) {
     return undefined
   }

@@ -58,7 +58,7 @@ async function fetchLastFmPageImage(artistName: string, artistUrl?: string) {
   }
 }
 
-export async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmArtistInfo> {
+async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmArtistInfo> {
   const storedKey = await SecureStore.getItemAsync("lastfm.apiKey")
   const apiKey = process.env.EXPO_PUBLIC_LASTFM_API_KEY?.trim() || storedKey?.trim()
 

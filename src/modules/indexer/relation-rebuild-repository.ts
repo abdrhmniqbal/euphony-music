@@ -25,7 +25,7 @@ export interface SplitRelationRebuildResult {
   tracksMissingRawGenre: number
 }
 
-export function dedupeNormalizedValues(values: string[]) {
+function dedupeNormalizedValues(values: string[]) {
   const seen = new Set<string>()
   const result: string[] = []
 

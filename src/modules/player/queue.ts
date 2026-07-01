@@ -18,7 +18,7 @@ export async function removeFromQueue(trackId: string) {
   await Queue.removeIds([trackId])
 }
 
-export async function clearQueue() {
+async function clearQueue() {
   Queue.clearToCurrent()
 }
 
@@ -30,7 +30,7 @@ export async function toggleShuffle() {
   await PlaybackSettings.toggleShuffle()
 }
 
-export async function removeAndPlayNext(trackId: string) {
+async function removeAndPlayNext(trackId: string) {
   await removeFromQueue(trackId)
   await PlaybackControls.next()
 }

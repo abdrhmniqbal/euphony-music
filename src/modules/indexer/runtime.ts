@@ -57,7 +57,7 @@ export function scheduleIndexerCompletePhaseReset(currentRunToken: number, callb
   }, 3000)
 }
 
-export function clearIndexerCompletePhaseTimeout() {
+function clearIndexerCompletePhaseTimeout() {
   if (!completePhaseTimeout) {
     return
   }

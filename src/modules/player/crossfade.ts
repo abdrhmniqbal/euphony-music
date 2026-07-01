@@ -143,7 +143,7 @@ export async function fadePlaybackVolumeOut(durationSeconds = SHORT_FADE_SECONDS
   }
 }
 
-export async function duckPlaybackVolume() {
+async function duckPlaybackVolume() {
   try {
     await startVolumeRamp(DUCKED_VOLUME, SHORT_FADE_SECONDS)
   } catch (error) {
@@ -227,6 +227,6 @@ export async function handleCrossfadePlaybackState(state: PlaybackState) {
   }
 }
 
-export async function handleCrossfadePlaybackStopped() {
+async function handleCrossfadePlaybackStopped() {
   await resetCrossfadeVolume()
 }

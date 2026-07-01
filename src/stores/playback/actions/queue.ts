@@ -108,7 +108,7 @@ export async function removeIds(ids: string[]) {
   })
 }
 
-export function removeKey(key: string) {
+function removeKey(key: string) {
   const { queue, activeKey, queuePosition, numQueuedNext } = playbackStore.getState()
 
   if (!activeKey || key === activeKey) return
@@ -133,7 +133,7 @@ export function removeKey(key: string) {
   })
 }
 
-export async function synchronize() {
+async function synchronize() {
   const { getTrack, shuffle, playingFrom, activeTrack } = playbackStore.getState()
 
   if (!playingFrom || !activeTrack) return

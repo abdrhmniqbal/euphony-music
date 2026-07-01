@@ -32,7 +32,7 @@ export async function loadCurrentTrack() {
   }
 }
 
-export async function syncPlaybackStateFromNative() {
+async function syncPlaybackStateFromNative() {
   try {
     const progress = AudioBrowser.getProgress()
     const isPlaying = AudioBrowser.getPlayingState().playing
@@ -69,7 +69,7 @@ export async function restoreCurrentTrackForStartup() {
   }
 }
 
-export async function preloadCurrentTrack() {
+async function preloadCurrentTrack() {
   if (await isAudioBrowserSetUp()) return
   console.log("[AudioBrowser] Queue is empty, preloading AudioBrowser Queue...")
   await loadCurrentTrack()
@@ -92,7 +92,7 @@ export async function pause(opts?: PlayPauseOptions) {
   if (!opts?.noRevalidation) revalidateWidgets({ exclude: ["ArtworkPlayer"] })
 }
 
-export async function stop() {
+async function stop() {
   playbackStore.setState({
     isPlaying: false,
     _hasRestoredPosition: false,
@@ -191,7 +191,7 @@ export async function playAtIndex(index: number) {
   await play()
 }
 
-export async function playFromList({
+async function playFromList({
   source,
   trackId,
 }: {
@@ -252,7 +252,7 @@ export async function playFromList({
   addPlayedMediaList(source)
 }
 
-export async function getNextTrack() {
+async function getNextTrack() {
   const { getTrack, reset, queue, queuePosition, numQueuedNext } = playbackStore.getState()
 
   const nextIndex = queuePosition === queue.length - 1 ? 0 : queuePosition + 1

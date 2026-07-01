@@ -12,7 +12,7 @@ export function formatAlbumDuration(totalSeconds: number): string {
   return `${minutes}m ${seconds}s`
 }
 
-export function sortTracksByDiscAndTrack(tracks: Track[]): Track[] {
+function sortTracksByDiscAndTrack(tracks: Track[]): Track[] {
   return [...tracks].sort((a, b) => {
     const discA = a.discNumber || 1
     const discB = b.discNumber || 1
@@ -34,7 +34,7 @@ export function sortTracksByDiscAndTrack(tracks: Track[]): Track[] {
   })
 }
 
-export function groupTracksByDisc(tracks: Track[]): Map<number, Track[]> {
+function groupTracksByDisc(tracks: Track[]): Map<number, Track[]> {
   const groups = new Map<number, Track[]>()
 
   for (const track of tracks) {

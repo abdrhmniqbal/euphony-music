@@ -36,7 +36,7 @@ export function getIndexerState() {
   return useIndexerStore.getState().indexerState
 }
 
-export function setIndexerState(value: IndexerState) {
+function setIndexerState(value: IndexerState) {
   useIndexerStore.setState({ indexerState: value })
 }
 

@@ -16,7 +16,7 @@ export function useGenres() {
   )
 }
 
-export function useGenre(id: string) {
+function useGenre(id: string) {
   return useQuery(
     {
       queryKey: genreKeys.detail(id),

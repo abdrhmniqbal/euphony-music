@@ -41,7 +41,7 @@ type ReorderPlaylistTracksVariables = {
 type AddTrackToPlaylistResult = Awaited<ReturnType<typeof addTrackToPlaylist>>
 type RemoveTrackFromPlaylistResult = Awaited<ReturnType<typeof removeTrackFromPlaylist>>
 
-export function useCreatePlaylist() {
+function useCreatePlaylist() {
   return useMutation<void, unknown, CreatePlaylistVariables>(
     {
       mutationFn: async ({ name, description, trackIds }: CreatePlaylistVariables) => {
@@ -71,7 +71,7 @@ export function useCreatePlaylist() {
   )
 }
 
-export function useUpdatePlaylist() {
+function useUpdatePlaylist() {
   return useMutation<void, unknown, UpdatePlaylistVariables>(
     {
       mutationFn: async ({ id, name, description }: UpdatePlaylistVariables) => {
@@ -130,7 +130,7 @@ export function useDeletePlaylist() {
   )
 }
 
-export function useAddTrackToPlaylist() {
+function useAddTrackToPlaylist() {
   return useMutation<AddTrackToPlaylistResult, unknown, PlaylistTrackVariables>(
     {
       mutationFn: async (variables: PlaylistTrackVariables) => {
@@ -178,7 +178,7 @@ export function useRemoveTrackFromPlaylist() {
   )
 }
 
-export function useReorderPlaylistTracks() {
+function useReorderPlaylistTracks() {
   return useMutation<void, unknown, ReorderPlaylistTracksVariables>(
     {
       mutationFn: async (variables: ReorderPlaylistTracksVariables) => {

@@ -15,7 +15,7 @@ import { invalidateTrackQueries } from "@/modules/tracks/keys"
 import { historyKeys } from "./keys"
 import { addTrackToHistory, incrementTrackPlayCount, resetListeningHistory } from "./repository"
 
-export function useAddToHistory() {
+function useAddToHistory() {
   return useMutation(
     {
       mutationFn: async (trackId: string) => {
@@ -30,7 +30,7 @@ export function useAddToHistory() {
   )
 }
 
-export function useIncrementPlayCount() {
+function useIncrementPlayCount() {
   const addToHistory = useAddToHistory()
 
   return useMutation(

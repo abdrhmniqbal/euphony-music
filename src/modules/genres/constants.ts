@@ -110,7 +110,7 @@ export function getGenreDbNames(name: string): string[] {
   return [resolved]
 }
 
-export function hashGenreName(value: string): number {
+function hashGenreName(value: string): number {
   let hash = 0
   for (let i = 0; i < value.length; i++) {
     hash = (hash * 31 + value.charCodeAt(i)) >>> 0

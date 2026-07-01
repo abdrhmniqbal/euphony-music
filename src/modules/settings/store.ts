@@ -121,7 +121,7 @@ export const useSettingsStore = create<SettingsState>(() => ({
   autoBackupConfig: DEFAULT_AUTO_BACKUP_CONFIG,
 }))
 
-export function getDefaultLanguageCode() {
+function getDefaultLanguageCode() {
   return DEFAULT_LANGUAGE_CODE
 }
 
@@ -177,6 +177,6 @@ export function getDefaultThemeConfig() {
   return DEFAULT_THEME_CONFIG
 }
 
-export function getDefaultAutoBackupConfig() {
+function getDefaultAutoBackupConfig() {
   return DEFAULT_AUTO_BACKUP_CONFIG
 }

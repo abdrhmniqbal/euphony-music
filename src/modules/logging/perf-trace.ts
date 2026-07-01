@@ -16,7 +16,7 @@ function shouldTracePerf() {
   return __DEV__ && isExtraLoggingEnabled()
 }
 
-export function startPerfTrace(name: string, context?: PerfTraceContext) {
+function startPerfTrace(name: string, context?: PerfTraceContext) {
   if (!shouldTracePerf()) {
     return () => {}
   }

@@ -37,7 +37,7 @@ export function stripMalformedUtf16LyricsPrefix(value: string) {
   return lines.join("\n")
 }
 
-export function findActiveIndexByTime<T>(lines: T[], time: number, getTime: (line: T) => number) {
+function findActiveIndexByTime<T>(lines: T[], time: number, getTime: (line: T) => number) {
   let low = 0
   let high = lines.length - 1
   let activeIndex = -1

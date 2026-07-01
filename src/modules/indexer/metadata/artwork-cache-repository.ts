@@ -145,7 +145,7 @@ export async function cleanupUnusedArtworkCache(): Promise<void> {
   } catch {}
 }
 
-export function normalizeArtworkData(data: string) {
+function normalizeArtworkData(data: string) {
   if (data.startsWith("data:")) {
     const separatorIndex = data.indexOf(",")
     if (separatorIndex < 0) {
@@ -162,7 +162,7 @@ export function normalizeArtworkData(data: string) {
   return base64Data ? { base64Data, mimeType: "image/jpeg" } : null
 }
 
-export function generateArtworkHash(data: string): string {
+function generateArtworkHash(data: string): string {
   let hashA = 5381
   let hashB = 52711
 

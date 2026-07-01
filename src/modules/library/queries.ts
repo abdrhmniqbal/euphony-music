@@ -50,7 +50,7 @@ export function useArtists(
   )
 }
 
-export function useArtist(id: string) {
+function useArtist(id: string) {
   return useQuery(
     {
       queryKey: libraryKeys.artist(id),
@@ -90,7 +90,7 @@ export function useAlbums(
   )
 }
 
-export function useAlbum(id: string) {
+function useAlbum(id: string) {
   return useQuery(
     {
       queryKey: libraryKeys.album(id),

@@ -12,7 +12,7 @@ export async function setRepeat(mode: RepeatMode) {
   AudioBrowser.setRepeatMode(mode === RepeatModes.REPEAT_ONE ? "track" : "off")
 }
 
-export async function cycleRepeat() {
+async function cycleRepeat() {
   const { repeat } = playbackStore.getState()
   let newMode: RepeatMode = RepeatModes.REPEAT
   if (repeat === RepeatModes.REPEAT) newMode = RepeatModes.REPEAT_ONE

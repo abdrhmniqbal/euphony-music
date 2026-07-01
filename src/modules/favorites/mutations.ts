@@ -56,7 +56,7 @@ function removeFavoriteEntry(type: FavoriteType, itemId: string) {
     })
 }
 
-export function useAddFavorite() {
+function useAddFavorite() {
   return useMutation(
     {
       mutationFn: async ({
@@ -116,7 +116,7 @@ export function useAddFavorite() {
   )
 }
 
-export function useRemoveFavorite() {
+function useRemoveFavorite() {
   return useMutation(
     {
       mutationFn: async ({ type, itemId }: { type: FavoriteType; itemId: string }) => {

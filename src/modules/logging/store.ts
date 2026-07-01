@@ -18,7 +18,7 @@ const LOG_CONFIG_FILE = createSettingsConfigFile("logging-config.json")
 let configLoadPromise: Promise<LoggingConfig> | null = null
 let hasLoadedConfig = false
 
-export function useLoggingStore<T>(selector: (state: { loggingConfig: LoggingConfig }) => T) {
+function useLoggingStore<T>(selector: (state: { loggingConfig: LoggingConfig }) => T) {
   return useSettingsStore((state) => selector({ loggingConfig: state.loggingConfig }))
 }
 
@@ -26,7 +26,7 @@ export function getLoggingConfigState() {
   return getSettingsState().loggingConfig
 }
 
-export function setLoggingConfigState(value: LoggingConfig) {
+function setLoggingConfigState(value: LoggingConfig) {
   updateSettingsState({ loggingConfig: value })
 }
 

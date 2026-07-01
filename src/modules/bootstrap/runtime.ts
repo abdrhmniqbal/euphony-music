@@ -50,7 +50,7 @@ export function ensureLoggingInitialized() {
   return loggingInitializationPromise
 }
 
-export async function completeBootstrap() {
+async function completeBootstrap() {
   if (databaseStatus !== "ready") {
     return
   }
@@ -112,7 +112,7 @@ export function handleBootstrapDatabaseError() {
   logWarn("Database failed before bootstrap completed")
 }
 
-export async function runAutoScan(options?: { bypassThrottle?: boolean }) {
+async function runAutoScan(options?: { bypassThrottle?: boolean }) {
   if (databaseStatus !== "ready" || !isBootstrapped) {
     return
   }

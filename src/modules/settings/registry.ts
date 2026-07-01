@@ -33,7 +33,7 @@ const SETTING_HYDRATION_REGISTRY: SettingHydrationDescriptor[] = [
   { key: "autoBackupConfig", ensureLoaded: ensureAutoBackupConfigLoaded },
 ]
 
-export function getRegisteredSettings() {
+function getRegisteredSettings() {
   return SETTING_HYDRATION_REGISTRY
 }
 

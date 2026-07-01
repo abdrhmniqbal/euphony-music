@@ -5,7 +5,7 @@ import { queryClient } from "@/lib/tanstack-query"
 import { playlistKeys } from "./keys"
 import { getPlaylistById, listPlaylists, listPlaylistsForTrack } from "./repository"
 
-export function usePlaylists() {
+function usePlaylists() {
   return usePlaylistsWithOptions(true)
 }
 

@@ -147,7 +147,7 @@ export async function getAllGenreVisuals(): Promise<GenreVisual[]> {
   }
 }
 
-export async function getTopTracksByGenre(genre: string, limit = 25): Promise<Track[]> {
+async function getTopTracksByGenre(genre: string, limit = 25): Promise<Track[]> {
   try {
     const dbNames = getGenreDbNames(genre)
 
@@ -310,7 +310,7 @@ export async function getAlbumsByGenre(genre: string): Promise<GenreAlbumInfo[]>
   }
 }
 
-export async function listGenres() {
+async function listGenres() {
   return db.query.genres.findMany({
     orderBy: (genres, { asc }) => [asc(sql`lower(coalesce(${genres.name}, ''))`)],
   })
@@ -334,13 +334,13 @@ export async function getGenreById(id: string) {
   })
 }
 
-export async function getGenre(id: string) {
+async function getGenre(id: string) {
   const row = await db.query.genres.findFirst({ where: eq(genres.id, id) })
   if (!row) throw new Error("err.msg.noGenres")
   return row
 }
 
-export async function getGenresSummary() {
+async function getGenresSummary() {
   return db.query.genres.findMany({ orderBy: asc(sql`lower(coalesce(${genres.name}, ''))`) })
 }
 

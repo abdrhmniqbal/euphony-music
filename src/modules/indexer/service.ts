@@ -147,7 +147,7 @@ export async function rebuildSplitRelationsForConfig(config: SplitMultipleValueC
   return result
 }
 
-export function stopIndexing() {
+function stopIndexing() {
   logWarn("Indexer stopped")
   stopIndexerRunRuntime()
   resetIndexerProgress()

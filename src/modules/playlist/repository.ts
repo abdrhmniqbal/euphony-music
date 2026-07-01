@@ -403,13 +403,13 @@ function toPlaylist(row: typeof playlists.$inferSelect): Playlist {
   }
 }
 
-export async function getPlaylist(id: string) {
+async function getPlaylist(id: string) {
   const row = await db.query.playlists.findFirst({ where: eq(playlists.id, id) })
   if (!row) throw new Error("err.msg.noPlaylists")
   return toPlaylist(row)
 }
 
-export async function getPlaylistsSummary() {
+async function getPlaylistsSummary() {
   const rows = await db.query.playlists.findMany({
     orderBy: asc(sql`lower(coalesce(${playlists.name}, ''))`),
   })

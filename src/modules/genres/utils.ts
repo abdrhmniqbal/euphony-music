@@ -88,11 +88,11 @@ function getPlacementScore(
   return score
 }
 
-export function getPreviewAlbums(albums: GenreAlbumInfo[], limit = 8): GenreAlbumInfo[] {
+function getPreviewAlbums(albums: GenreAlbumInfo[], limit = 8): GenreAlbumInfo[] {
   return [...albums].sort((a, b) => (b.year || 0) - (a.year || 0)).slice(0, limit)
 }
 
-export function mapAlbumsToGridData(albums: GenreAlbumInfo[]): Album[] {
+function mapAlbumsToGridData(albums: GenreAlbumInfo[]): Album[] {
   return [...albums]
     .sort((a, b) => (b.year || 0) - (a.year || 0))
     .map((album, index) => ({
