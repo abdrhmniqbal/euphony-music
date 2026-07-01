@@ -2,7 +2,7 @@
  * Purpose: Applies saved audio crossfade and short playback volume transition preferences to native playback volume.
  * Caller: Player event service progress, active-track, playback-state, queue-ended handlers, and player controls.
  * Dependencies: AudioBrowser native module, settings crossfade config loader, settings store, player queue state, logging service.
- * Main Functions: handleCrossfadeProgress(), handleCrossfadeTrackActivated(), handleCrossfadePlaybackState(), handleCrossfadePlaybackStopped(), resetCrossfadeVolume(), fadePlaybackVolumeIn(), fadePlaybackVolumeOut(), duckPlaybackVolume(), restorePlaybackVolume()
+ * Main Functions: handleCrossfadeProgress(), handleCrossfadeTrackActivated(), handleCrossfadePlaybackState(), resetCrossfadeVolume(), fadePlaybackVolumeIn(), fadePlaybackVolumeOut(), restorePlaybackVolume()
  * Side Effects: Reads local settings and updates native AudioBrowser volume.
  */
 
@@ -33,7 +33,6 @@ type PlaybackState =
   | "buffering"
 
 const RESET_VOLUME_STATES = new Set<PlaybackState>(["paused", "stopped", "ended", "none", "error"])
-const DUCKED_VOLUME = 0.25
 const SHORT_FADE_SECONDS = 0.2
 const FADE_STEP_MS = 50
 
@@ -143,14 +142,6 @@ export async function fadePlaybackVolumeOut(durationSeconds = SHORT_FADE_SECONDS
   }
 }
 
-async function duckPlaybackVolume() {
-  try {
-    await startVolumeRamp(DUCKED_VOLUME, SHORT_FADE_SECONDS)
-  } catch (error) {
-    logError("Failed to duck playback volume", error)
-  }
-}
-
 export async function restorePlaybackVolume() {
   try {
     await startVolumeRamp(FULL_VOLUME, SHORT_FADE_SECONDS)
@@ -227,6 +218,3 @@ export async function handleCrossfadePlaybackState(state: PlaybackState) {
   }
 }
 
-async function handleCrossfadePlaybackStopped() {
-  await resetCrossfadeVolume()
-}

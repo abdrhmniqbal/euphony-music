@@ -2,7 +2,7 @@
  * Purpose: Exposes React Query hooks for local library, artist, album, track, search, and recent-search data.
  * Caller: Library screens, artist and album detail routes, and search surfaces.
  * Dependencies: Local library repository functions and TanStack React Query.
- * Main Functions: useArtists(), useArtist(), useArtistByName(), useAlbums(), useAlbum(), useTracksByAlbumName(), useTracksByArtistName(), useSearch(), useRecentSearches()
+ * Main Functions: useArtists(), useArtistByName(), useAlbums(), useTracksByAlbumName(), useTracksByArtistName(), useSearch(), useRecentSearches()
  * Side Effects: Triggers cached SQLite reads through React Query.
  */
 
@@ -14,8 +14,6 @@ import { queryClient } from "@/lib/tanstack-query"
 
 import { libraryKeys } from "./keys"
 import {
-  getAlbumById,
-  getArtistById,
   getArtistByName,
   getTracksByAlbumName,
   getTracksByArtistName,
@@ -50,17 +48,6 @@ export function useArtists(
   )
 }
 
-function useArtist(id: string) {
-  return useQuery(
-    {
-      queryKey: libraryKeys.artist(id),
-      enabled: id.trim().length > 0,
-      queryFn: async () => await getArtistById(id),
-    },
-    queryClient
-  )
-}
-
 export function useArtistByName(name: string) {
   const normalizedName = normalizeLookup(name)
 
@@ -85,16 +72,6 @@ export function useAlbums(
       enabled: options.enabled ?? true,
       placeholderData: (previousData) => previousData,
       queryFn: async () => await listAlbums(orderByField, order),
-    },
-    queryClient
-  )
-}
-
-function useAlbum(id: string) {
-  return useQuery(
-    {
-      queryKey: libraryKeys.album(id),
-      queryFn: async () => await getAlbumById(id),
     },
     queryClient
   )

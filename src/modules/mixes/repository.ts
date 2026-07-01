@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2"
 import type { Track } from "@/modules/player/types"
-import { asc, desc, eq, inArray } from "drizzle-orm"
+import { asc, desc, eq } from "drizzle-orm"
 
 import { db } from "@/db/client"
 import { mixTracks, mixes, playHistory, tracks } from "@/db/schema"

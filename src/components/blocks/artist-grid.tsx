@@ -47,7 +47,7 @@ interface ArtistGridProps {
 export const ArtistGrid: React.FC<ArtistGridProps> = ({
   data,
   onArtistPress,
-  onArtistLongPress,
+  onArtistLongPress: _onArtistLongPress,
   scrollEnabled = true,
   contentContainerStyle,
   resetScrollKey,

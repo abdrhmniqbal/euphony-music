@@ -8,99 +8,16 @@ import { showAppToast } from "@/modules/ui/toast"
 
 import { invalidatePlaylistQueries } from "./keys"
 import {
-  addTrackToPlaylist,
-  createPlaylist,
   deletePlaylist,
   removeTrackFromPlaylist,
-  reorderPlaylistTracks,
-  updatePlaylistMetadata,
 } from "./repository"
-
-type CreatePlaylistVariables = {
-  name: string
-  description?: string
-  trackIds: string[]
-}
-
-type UpdatePlaylistVariables = {
-  id: string
-  name?: string
-  description?: string
-}
 
 type PlaylistTrackVariables = {
   playlistId: string
   trackId: string
 }
 
-type ReorderPlaylistTracksVariables = {
-  playlistId: string
-  trackIds: string[]
-}
-
-type AddTrackToPlaylistResult = Awaited<ReturnType<typeof addTrackToPlaylist>>
 type RemoveTrackFromPlaylistResult = Awaited<ReturnType<typeof removeTrackFromPlaylist>>
-
-function useCreatePlaylist() {
-  return useMutation<void, unknown, CreatePlaylistVariables>(
-    {
-      mutationFn: async ({ name, description, trackIds }: CreatePlaylistVariables) => {
-        logInfo("Creating playlist", {
-          name,
-          trackCount: trackIds.length,
-        })
-        await createPlaylist(name, description, trackIds)
-      },
-      onSuccess: async (_result, variables) => {
-        logInfo("Created playlist", {
-          name: variables.name,
-          trackCount: variables.trackIds.length,
-        })
-        showAppToast(i18n.t("common.feedback.playlistCreated"), variables.name)
-        await invalidatePlaylistQueries(queryClient)
-      },
-      onError: (error, variables) => {
-        logError("Failed to create playlist", error, {
-          name: variables.name,
-          trackCount: variables.trackIds.length,
-        })
-        showAppToast(i18n.t("common.feedback.failedToCreatePlaylist"), variables.name)
-      },
-    },
-    queryClient
-  )
-}
-
-function useUpdatePlaylist() {
-  return useMutation<void, unknown, UpdatePlaylistVariables>(
-    {
-      mutationFn: async ({ id, name, description }: UpdatePlaylistVariables) => {
-        logInfo("Updating playlist metadata", {
-          playlistId: id,
-          hasName: typeof name === "string",
-          hasDescription: typeof description === "string",
-        })
-        await updatePlaylistMetadata({ id, name, description })
-      },
-      onSuccess: async (_result, variables) => {
-        logInfo("Updated playlist metadata", {
-          playlistId: variables.id,
-        })
-        showAppToast(i18n.t("common.feedback.playlistUpdated"), variables.name)
-        await invalidatePlaylistQueries(queryClient, {
-          playlistId: variables.id,
-        })
-      },
-      onError: (error, variables) => {
-        logError("Failed to update playlist metadata", error, {
-          playlistId: variables.id,
-        })
-        showAppToast(i18n.t("common.feedback.failedToUpdatePlaylist"), variables.name)
-      },
-    },
-    queryClient
-  )
-}
 
 export function useDeletePlaylist() {
   return useMutation<void, unknown, string>(
@@ -124,30 +41,6 @@ export function useDeletePlaylist() {
           playlistId: deletedPlaylistId,
         })
         showAppToast(i18n.t("common.feedback.failedToDeletePlaylist"))
-      },
-    },
-    queryClient
-  )
-}
-
-function useAddTrackToPlaylist() {
-  return useMutation<AddTrackToPlaylistResult, unknown, PlaylistTrackVariables>(
-    {
-      mutationFn: async (variables: PlaylistTrackVariables) => {
-        logInfo("Adding track to playlist", variables)
-        return addTrackToPlaylist(variables)
-      },
-      onSuccess: async (_result, variables) => {
-        logInfo("Added track to playlist", variables)
-        showAppToast(i18n.t("common.feedback.addedToPlaylist"))
-        await invalidatePlaylistQueries(queryClient, {
-          playlistId: variables.playlistId,
-          trackId: variables.trackId,
-        })
-      },
-      onError: (error, variables) => {
-        logError("Failed to add track to playlist", error, variables)
-        showAppToast(i18n.t("common.feedback.failedToAddToPlaylist"))
       },
     },
     queryClient
@@ -178,34 +71,4 @@ export function useRemoveTrackFromPlaylist() {
   )
 }
 
-function useReorderPlaylistTracks() {
-  return useMutation<void, unknown, ReorderPlaylistTracksVariables>(
-    {
-      mutationFn: async (variables: ReorderPlaylistTracksVariables) => {
-        logInfo("Reordering playlist tracks", {
-          playlistId: variables.playlistId,
-          trackCount: variables.trackIds.length,
-        })
-        return reorderPlaylistTracks(variables)
-      },
-      onSuccess: async (_result, variables) => {
-        logInfo("Reordered playlist tracks", {
-          playlistId: variables.playlistId,
-          trackCount: variables.trackIds.length,
-        })
-        showAppToast(i18n.t("common.feedback.playlistReordered"))
-        await invalidatePlaylistQueries(queryClient, {
-          playlistId: variables.playlistId,
-        })
-      },
-      onError: (error, variables) => {
-        logError("Failed to reorder playlist tracks", error, {
-          playlistId: variables.playlistId,
-          trackCount: variables.trackIds.length,
-        })
-        showAppToast(i18n.t("common.feedback.failedToReorderPlaylist"))
-      },
-    },
-    queryClient
-  )
-}
+

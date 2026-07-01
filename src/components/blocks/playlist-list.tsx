@@ -53,7 +53,7 @@ interface PlaylistListProps {
 export const PlaylistList: React.FC<PlaylistListProps> = ({
   data,
   onPlaylistPress,
-  onPlaylistLongPress,
+  onPlaylistLongPress: _onPlaylistLongPress,
   onCreatePlaylist,
   scrollEnabled = true,
   contentContainerStyle,

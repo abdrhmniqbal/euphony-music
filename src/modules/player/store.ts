@@ -80,20 +80,8 @@ export function getCurrentTrackState() {
   return usePlayerStore.getState().currentTrack
 }
 
-function setCurrentTrackState(value: Track | null) {
-  usePlayerStore.setState({ currentTrack: value })
-}
-
 export function getIsPlayingState() {
   return usePlayerStore.getState().isPlaying
-}
-
-function setDurationState(value: number) {
-  if (usePlayerStore.getState().duration === value) {
-    return
-  }
-
-  usePlayerStore.setState({ duration: value })
 }
 
 export function setPlaybackRefreshVersionState(value: number) {

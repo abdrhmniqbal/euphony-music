@@ -111,25 +111,26 @@ export async function startIndexing(forceFullScan = false, showProgress = true) 
     })
   } catch (error) {
     if (isIndexerRunStale(controller, currentRunToken)) {
+      finishIndexerRunRuntime(controller)
       return
     }
 
     logError("Indexer run failed", error, { forceFullScan, showProgress })
     failIndexerProgress()
-  } finally {
-    finishIndexerRunRuntime(controller)
-
-    const nextQueuedRun = consumeQueuedIndexerRun(controller, currentRunToken)
-    if (!nextQueuedRun) {
-      return
-    }
-
-    logInfo("Starting queued indexer run", {
-      forceFullScan: nextQueuedRun.forceFullScan,
-      showProgress: nextQueuedRun.showProgress,
-    })
-    void startIndexing(nextQueuedRun.forceFullScan, nextQueuedRun.showProgress)
   }
+
+  finishIndexerRunRuntime(controller)
+
+  const nextQueuedRun = consumeQueuedIndexerRun(controller, currentRunToken)
+  if (!nextQueuedRun) {
+    return
+  }
+
+  logInfo("Starting queued indexer run", {
+    forceFullScan: nextQueuedRun.forceFullScan,
+    showProgress: nextQueuedRun.showProgress,
+  })
+  void startIndexing(nextQueuedRun.forceFullScan, nextQueuedRun.showProgress)
 }
 
 export async function forceReindexLibrary(showProgress = true) {

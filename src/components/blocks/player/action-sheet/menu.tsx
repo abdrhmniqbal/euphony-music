@@ -6,7 +6,6 @@ import LocalClockFadingIcon from "@/components/icons/local/clock-fading"
 import LocalUserIcon from "@/components/icons/local/user"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
 import LocalVynil02Icon from "@/components/icons/local/vynil-02"
-import LocalPlaylist03Icon from "@/components/icons/local/playlist-03"
 import LocalAddCircleIcon from "@/components/icons/local/add-circle"
 
 interface PlayerActionMenuProps {

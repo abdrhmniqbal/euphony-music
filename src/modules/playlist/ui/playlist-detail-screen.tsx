@@ -143,9 +143,6 @@ export default function PlaylistDetailsScreen() {
   const totalDuration = getPlaylistDuration(tracks)
   const playlistMetaText = formatDuration(totalDuration)
   const sortedTracks = sortPlaylistTracks(tracks, sortField, sortOrder)
-  const selectedSortOption = PLAYLIST_TRACK_SORT_OPTIONS.find(
-    (option) => option.field === sortField
-  )
   const sortLabel = resolveSortLabel(PLAYLIST_TRACK_SORT_OPTIONS, sortField, t)
 
   function handleBack() {

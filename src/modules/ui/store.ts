@@ -61,20 +61,6 @@ export function setPlayerLyricsFontScale(value: PlayerLyricsFontScale) {
   useUIStore.setState({ playerLyricsFontScale: value })
 }
 
-function openPlayer(view: PlayerExpandedView = "artwork") {
-  useUIStore.setState({
-    isPlayerExpanded: true,
-    playerExpandedView: view,
-  })
-}
-
-function closePlayer() {
-  useUIStore.setState({
-    isPlayerExpanded: false,
-    playerExpandedView: "artwork",
-  })
-}
-
 export function togglePlayerExpandedView(value: PlayerExpandedView) {
   const currentView = getPlayerExpandedViewState()
   useUIStore.setState({

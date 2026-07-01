@@ -7,7 +7,7 @@
 import * as Application from "expo-application"
 import { Button } from "heroui-native"
 import * as React from "react"
-import { ScrollView, Text, View } from "react-native"
+import { ScrollView, View } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
 import { Uniwind } from "uniwind"

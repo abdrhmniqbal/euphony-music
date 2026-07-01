@@ -8,6 +8,3 @@ export function endPlayerQueueReplacement() {
   playerQueueReplacementDepth = Math.max(0, playerQueueReplacementDepth - 1)
 }
 
-function isPlayerQueueReplacementInFlight() {
-  return playerQueueReplacementDepth > 0
-}

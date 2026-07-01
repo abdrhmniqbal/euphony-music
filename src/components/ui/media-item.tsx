@@ -73,7 +73,7 @@ function MediaItemRoot({
   variant = "list",
   boundaryId,
   children,
-  id,
+  _id,
   onLongPress,
   onPress,
   onPressIn,

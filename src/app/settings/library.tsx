@@ -37,26 +37,12 @@ export default function LibrarySettingsScreen() {
   const indexerScanConfig = useSettingsStore((state) => state.indexerScanConfig)
   const countAsPlayedConfig = useSettingsStore((state) => state.countAsPlayedConfig)
   const trackDurationFilterConfig = useSettingsStore((state) => state.trackDurationFilterConfig)
-  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
   const [showReindexDialog, setShowReindexDialog] = React.useState(false)
   const [countAsPlayedSliderValue, setCountAsPlayedSliderValue] = React.useState<number | null>(
     null
   )
   const resolvedCountAsPlayedPercent =
     countAsPlayedSliderValue ?? countAsPlayedConfig.minimumPlayedPercent
-
-  function getSplitMultipleValuesSummary() {
-    const modeLabel =
-      splitMultipleValueConfig.artistSplitMode === "original"
-        ? t("settings.library.artistSplitModeOriginal")
-        : t("settings.library.artistSplitModeSplit")
-
-    return t("settings.library.splitMultipleValuesSummary", {
-      mode: modeLabel,
-      artistSymbols: splitMultipleValueConfig.artistSplitSymbols.join(" "),
-      genreSymbols: splitMultipleValueConfig.genreSplitSymbols.join(" "),
-    })
-  }
 
   function handleReindexDialogOpenChange(isOpen: boolean) {
     setShowReindexDialog(isOpen)

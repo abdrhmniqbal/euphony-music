@@ -6,7 +6,7 @@ import type { Track } from "@/modules/tracks/types"
 import { i18n } from "@/modules/localization/i18n"
 import { preferenceStore } from "@/stores/preference/store"
 import { playbackStore } from "../store"
-import { extractTrackId, getTrackIdsList, getUpdatedLists } from "../utils"
+import { extractTrackId } from "../utils"
 
 import { clamp } from "@/utils/number"
 import { moveArray } from "@/utils/object"
@@ -106,57 +106,6 @@ export async function removeIds(ids: string[]) {
     queuePosition: newQueuePosition,
     numQueuedNext: 0,
   })
-}
-
-function removeKey(key: string) {
-  const { queue, activeKey, queuePosition, numQueuedNext } = playbackStore.getState()
-
-  if (!activeKey || key === activeKey) return
-
-  let newQueuePosition = queuePosition
-  let newNumQueuedNext = numQueuedNext
-
-  const updatedQueue = queue.filter((tKey, index) => {
-    const isRemoved = tKey === key
-    if (isRemoved) {
-      if (index < queuePosition) newQueuePosition -= 1
-      else if (index <= queuePosition + numQueuedNext) newNumQueuedNext -= 1
-    }
-    return !isRemoved
-  })
-
-  if (queue.length === updatedQueue.length) return
-  playbackStore.setState({
-    queue: updatedQueue,
-    queuePosition: newQueuePosition,
-    numQueuedNext: Math.max(0, newNumQueuedNext),
-  })
-}
-
-async function synchronize() {
-  const { getTrack, shuffle, playingFrom, activeTrack } = playbackStore.getState()
-
-  if (!playingFrom || !activeTrack) return
-  const updatedQueue = await getTrackIdsList(playingFrom)
-  if (updatedQueue.length === 0) return
-  const updatedListInfo = getUpdatedLists(updatedQueue, shuffle, activeTrack.id)
-
-  const newTrackId = updatedListInfo.queue[updatedListInfo.queuePosition]!
-  const isDiffTrack = activeTrack.id !== newTrackId
-  let newTrack = activeTrack
-  if (isDiffTrack) newTrack = (await getTrack(newTrackId))!
-
-  playbackStore.setState({
-    ...updatedListInfo,
-    activeKey: newTrackId,
-    activeTrack: newTrack,
-  })
-
-  if (isDiffTrack) {
-    const nativeTrack = await applyReplayGainToTrack(newTrack)
-    AudioBrowser.load(nativeTrack)
-    AudioBrowser.updateNowPlaying(nativeTrack)
-  }
 }
 
 function isWithin(min: number, value: number, max: number) {

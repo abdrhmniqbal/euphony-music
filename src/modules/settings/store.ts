@@ -121,10 +121,6 @@ export const useSettingsStore = create<SettingsState>(() => ({
   autoBackupConfig: DEFAULT_AUTO_BACKUP_CONFIG,
 }))
 
-function getDefaultLanguageCode() {
-  return DEFAULT_LANGUAGE_CODE
-}
-
 export function getDefaultIndexerScanConfig() {
   return DEFAULT_INDEXER_SCAN_CONFIG
 }
@@ -177,6 +173,4 @@ export function getDefaultThemeConfig() {
   return DEFAULT_THEME_CONFIG
 }
 
-function getDefaultAutoBackupConfig() {
-  return DEFAULT_AUTO_BACKUP_CONFIG
-}
+

@@ -6,9 +6,8 @@
  * Side Effects: None; builds navigation option objects only.
  */
 
-import { cn } from "heroui-native"
 import type { ReactNode } from "react"
-import { Platform, StyleProp, UIManager, ViewStyle } from "react-native"
+import { Platform, UIManager } from "react-native"
 import Transition from "react-native-screen-transitions"
 import type { NativeStackNavigationOptions } from "react-native-screen-transitions/native-stack"
 

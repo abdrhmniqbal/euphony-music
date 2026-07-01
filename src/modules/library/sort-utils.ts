@@ -2,7 +2,7 @@
  * Purpose: Sorts library entities by shared sort config fields.
  * Caller: Library screens, tab lists, and query-driven sort flows.
  * Dependencies: Sort config types, track model.
- * Main Functions: sortTracks(), sortAlbums(), sortArtists(), sortGeneric(), sortGenres().
+ * Main Functions: sortTracks(), sortAlbums(), sortArtists(), sortGeneric().
  * Side Effects: None.
  */
 
@@ -182,6 +182,3 @@ export function sortGeneric<T extends object>(items: T[], config: SortConfig): T
   })
 }
 
-function sortGenres<T extends ArtistSortable>(genres: T[], config: SortConfig): T[] {
-  return sortArtists(genres, config)
-}

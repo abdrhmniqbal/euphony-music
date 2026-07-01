@@ -1,5 +1,4 @@
-import type { Album } from "@/components/blocks/album-grid"
-import type { GenreAlbumInfo, GenreCategory, GenreVisual } from "@/modules/genres/types"
+import type { GenreCategory, GenreVisual } from "@/modules/genres/types"
 
 export function mapGenresToCategories(genres: GenreVisual[]): GenreCategory[] {
   const mapped = genres
@@ -88,21 +87,3 @@ function getPlacementScore(
   return score
 }
 
-function getPreviewAlbums(albums: GenreAlbumInfo[], limit = 8): GenreAlbumInfo[] {
-  return [...albums].sort((a, b) => (b.year || 0) - (a.year || 0)).slice(0, limit)
-}
-
-function mapAlbumsToGridData(albums: GenreAlbumInfo[]): Album[] {
-  return [...albums]
-    .sort((a, b) => (b.year || 0) - (a.year || 0))
-    .map((album, index) => ({
-      id: `${album.name}-${index}`,
-      title: album.name,
-      artist: album.artist || "Unknown Artist",
-      albumArtist: album.artist,
-      image: album.image,
-      trackCount: album.trackCount,
-      year: album.year || 0,
-      dateAdded: 0,
-    }))
-}

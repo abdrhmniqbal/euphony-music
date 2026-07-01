@@ -180,7 +180,7 @@ export function extractId3Lyrics(bytes: Uint8Array) {
       bytes[offset + 1] || 0,
       bytes[offset + 2] || 0,
       bytes[offset + 3] || 0
-    ).replace(/\0/g, "")
+    ).replaceAll("\0", "")
 
     if (!frameId) {
       break

@@ -1,10 +1,7 @@
-import type { Track } from "@/modules/player/types"
-
-import { asc, desc, eq, inArray, sql } from "drizzle-orm"
+import { asc, eq, inArray, sql } from "drizzle-orm"
 
 import { db } from "@/db/client"
 import { genres, trackGenres, tracks } from "@/db/schema"
-import { transformDBTrackToTrack } from "@/utils/transformers"
 
 import { getGenreDbNames, getGenreRainbowColor, getGenreShape, resolveGenreName } from "./constants"
 import type { GenreAlbumInfo, GenreVisual } from "./types"
@@ -147,58 +144,6 @@ export async function getAllGenreVisuals(): Promise<GenreVisual[]> {
   }
 }
 
-async function getTopTracksByGenre(genre: string, limit = 25): Promise<Track[]> {
-  try {
-    const dbNames = getGenreDbNames(genre)
-
-    const matchingGenres = await db.query.genres.findMany({
-      where: (g, { inArray }) => inArray(g.name, dbNames),
-      columns: { id: true },
-    })
-
-    if (matchingGenres.length === 0) {
-      return []
-    }
-
-    const genreIds = matchingGenres.map((matchingGenre) => matchingGenre.id)
-
-    const loadedTracks = await db.query.tracks.findMany({
-      where: (track, { and, eq }) =>
-        and(
-          eq(track.isDeleted, 0),
-          sql`${track.id} IN (SELECT track_id FROM track_genres WHERE genre_id IN (${sql.join(
-            genreIds.map((id) => sql`${id}`),
-            sql`, `
-          )}))`
-        ),
-      with: {
-        artist: true,
-        featuredArtists: {
-          with: {
-            artist: true,
-          },
-        },
-        album: true,
-        genres: {
-          with: {
-            genre: true,
-          },
-        },
-      },
-      orderBy: [
-        desc(tracks.playCount),
-        desc(tracks.lastPlayedAt),
-        asc(sql`lower(coalesce(${tracks.title}, ''))`),
-      ],
-      limit,
-    })
-
-    return loadedTracks.map(transformDBTrackToTrack)
-  } catch {
-    return []
-  }
-}
-
 export async function getAllTracksByGenre(genre: string): Promise<Track[]> {
   try {
     const dbNames = getGenreDbNames(genre)
@@ -310,12 +255,6 @@ export async function getAlbumsByGenre(genre: string): Promise<GenreAlbumInfo[]>
   }
 }
 
-async function listGenres() {
-  return db.query.genres.findMany({
-    orderBy: (genres, { asc }) => [asc(sql`lower(coalesce(${genres.name}, ''))`)],
-  })
-}
-
 export async function getGenreById(id: string) {
   return db.query.genres.findFirst({
     where: eq(genres.id, id),
@@ -332,16 +271,6 @@ export async function getGenreById(id: string) {
       },
     },
   })
-}
-
-async function getGenre(id: string) {
-  const row = await db.query.genres.findFirst({ where: eq(genres.id, id) })
-  if (!row) throw new Error("err.msg.noGenres")
-  return row
-}
-
-async function getGenresSummary() {
-  return db.query.genres.findMany({ orderBy: asc(sql`lower(coalesce(${genres.name}, ''))`) })
 }
 
 export async function getSortedGenreTracks<TOnlyIds extends boolean | undefined = false>(

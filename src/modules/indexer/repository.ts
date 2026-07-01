@@ -7,16 +7,12 @@
  */
 
 import type { IndexerScanProgress } from "./types"
-import { and, eq, inArray, sql } from "drizzle-orm"
 
 import * as MediaLibrary from "expo-media-library/legacy"
 import { db } from "@/db/client"
 import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts-repository"
-import { albums, artists, genres, trackArtists, trackGenres, tracks } from "@/db/schema"
-import { GENRE_COLORS, GENRE_SHAPES, type GenreShape } from "@/modules/genres/constants"
 import { waitForIndexerResume } from "@/modules/indexer/runtime"
 
-import { logError } from "@/modules/logging/service"
 import {
   ensureFolderFilterConfigLoaded,
   isAssetAllowedByFolderFilters,
@@ -25,21 +21,14 @@ import {
   ensureTrackDurationFilterConfigLoaded,
   isAssetAllowedByTrackDuration,
 } from "@/modules/settings/track-duration-filter"
-import { removeTracksFromFavoritesAndPlaylists } from "@/modules/tracks/track-cleanup-repository"
 import {
   ensureSplitMultipleValueConfigLoaded,
-  splitArtistsValue,
-  splitGenresValue,
-  type SplitMultipleValueConfig,
 } from "@/modules/settings/split-multiple-values"
-import { cleanupUnusedArtworkCache, extractMetadata, saveArtworkToCache } from "./metadata"
-import { generateAssetHash, generateSortName, hashString } from "./file-identity"
-import { generateId } from "@/utils/common"
-import { normalizeMetadata, normalizeText } from "./normalization"
+import { cleanupUnusedArtworkCache } from "./metadata"
+import { generateAssetHash } from "./file-identity"
 import { saveIndexerRunSnapshot } from "./run-snapshot"
 import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
-import { wait, yieldToEventLoop } from "./batch-utils"
-import { chunkArray } from "@/utils/array"
+import { yieldToEventLoop } from "./batch-utils"
 import { refreshLastFmArtistMetadataForIndexedArtists } from "@/modules/library/lastfm"
 import {
   processDeletedTracksInScopes,
@@ -47,27 +36,15 @@ import {
 } from "./deleted-tracks-repository"
 export {
   rebuildSplitMetadataRelations,
-  type SplitRelationRebuildResult,
 } from "./relation-rebuild-repository"
 import { processBatch } from "./batch-processor"
-import {
-  type IndexingLookupCache,
-  type GenreVisualLookup,
-  preloadIndexingLookupCache,
-  getOrCreateArtist,
-  getOrCreateAlbum,
-  getOrCreateGenre,
-} from "./lookup-cache-repository"
+import { preloadIndexingLookupCache } from "./lookup-cache-repository"
 
 export { getLastIndexerRunSnapshot } from "./run-snapshot"
 
 const BATCH_SIZE = 24
 
-interface BatchProcessingResult {
-  preparedCount: number
-  committedCount: number
-  failedCount: number
-}
+
 
 interface IncrementalCommitResult {
   committedAssets: number

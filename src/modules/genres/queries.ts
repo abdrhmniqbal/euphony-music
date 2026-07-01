@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { queryClient } from "@/lib/tanstack-query"
 
 import { genreKeys } from "./keys"
-import { getAllGenreVisuals, getGenreById } from "./repository"
+import { getAllGenreVisuals } from "./repository"
 
 export function useGenres() {
   return useQuery(
@@ -16,12 +16,3 @@ export function useGenres() {
   )
 }
 
-function useGenre(id: string) {
-  return useQuery(
-    {
-      queryKey: genreKeys.detail(id),
-      queryFn: async () => await getGenreById(id),
-    },
-    queryClient
-  )
-}

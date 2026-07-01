@@ -11,7 +11,6 @@ import { CollectionActionSheet } from "@/components/blocks/sheets/collection-act
 import { TrackList } from "@/components/blocks/track-list"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
-import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { Button } from "heroui-native"
@@ -46,7 +45,10 @@ export default function MixDetailsScreen() {
   const { data: dailyMix, isLoading: isDailyLoading } = useDailyMix()
   const { data: forYouMix, isLoading: isForYouLoading } = useForYouMix()
 
-  const tracks = isDaily ? (dailyMix?.tracks ?? []) : (forYouMix?.tracks ?? [])
+  const tracks = useMemo(
+    () => (isDaily ? (dailyMix?.tracks ?? []) : (forYouMix?.tracks ?? [])),
+    [isDaily, dailyMix?.tracks, forYouMix?.tracks]
+  )
   const isLoading = isDaily ? isDailyLoading : isForYouLoading
   const mixData = isDaily ? dailyMix : forYouMix
 

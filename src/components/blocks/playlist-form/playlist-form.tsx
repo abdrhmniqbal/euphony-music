@@ -21,7 +21,7 @@ interface ReorderableSelectedTrackRowProps {
   onToggle: (trackId: string) => void
 }
 
-function ReorderableSelectedTrackRow({ track, index, onToggle }: ReorderableSelectedTrackRowProps) {
+function ReorderableSelectedTrackRow({ track, index: _index, onToggle }: ReorderableSelectedTrackRowProps) {
   const drag = useReorderableDrag()
   const isActive = useIsActive()
   const theme = useThemeColors()

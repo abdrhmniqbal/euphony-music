@@ -12,7 +12,6 @@ import { and, asc, desc, eq, gt, inArray, like, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import {
   albums,
-  appSettings,
   artists,
   playlists,
   playlistTracks,
@@ -27,7 +26,7 @@ import {
 } from "@/db/track-relations"
 import { collectPlaylistImages } from "@/modules/playlist/repository"
 import { getDominantAlbumArtworkMap, selectDominantArtwork } from "./artwork"
-import { toDataAlbum, toDataArtist } from "./mappers"
+import { toDataAlbum } from "./mappers"
 
 import type { SearchResults } from "./types"
 
@@ -373,7 +372,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
       }),
     ])
 
-    const matchedArtistIds = Array.from(new Set([...artistResults.map((artist) => artist.id)]))
+    const matchedArtistIds = Array.from(new Set(artistResults.map((artist) => artist.id)))
     const matchedAlbumIds = albumResults.map((album) => album.id)
 
     const relationTrackFilter =
@@ -469,24 +468,10 @@ export type AlbumDetail = {
   year: string | null
 }
 
-async function getAlbum(id: string) {
-  const row = await db.query.albums.findFirst({ where: eq(albums.id, id), with: { artist: true } })
-  if (!row) throw new Error("err.msg.noAlbums")
-  return toDataAlbum(row)
-}
-
 export async function getAlbumDetails(id: string): Promise<AlbumDetail> {
   const row = await db.query.albums.findFirst({ where: eq(albums.id, id), with: { artist: true } })
   if (!row) throw new Error("err.msg.noAlbums")
   return { ...toDataAlbum(row), year: null }
-}
-
-async function getAlbumsSummary() {
-  const rows = await db.query.albums.findMany({
-    with: { artist: true },
-    orderBy: asc(sql`lower(coalesce(${albums.title}, ''))`),
-  })
-  return rows.map(toDataAlbum)
 }
 
 export async function getAlbumTracks<TOnlyIds extends boolean | undefined = false>(
@@ -503,19 +488,6 @@ export async function getAlbumTracks<TOnlyIds extends boolean | undefined = fals
       : typeof rows
   }
   return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
-}
-
-async function getArtist(id: string) {
-  const row = await db.query.artists.findFirst({ where: eq(artists.id, id) })
-  if (!row) throw new Error("err.msg.noArtists")
-  return toDataArtist(row)
-}
-
-async function getArtistsSummary() {
-  const rows = await db.query.artists.findMany({
-    orderBy: asc(sql`lower(coalesce(${artists.name}, ''))`),
-  })
-  return rows.map(toDataArtist)
 }
 
 export async function getSortedArtistTracks<TOnlyIds extends boolean | undefined = false>(
@@ -542,19 +514,6 @@ export async function getSortedArtistTracks<TOnlyIds extends boolean | undefined
     with: { artist: true, album: { with: { artist: true } } },
   })
   return rows as TOnlyIds extends true ? Array<{ id: string }> : typeof rows
-}
-
-async function getFoldersSummary() {
-  const rows = await db
-    .select({ uri: tracks.uri, count: sql<number>`count(*)` })
-    .from(tracks)
-    .groupBy(sql`rtrim(${tracks.uri}, replace(${tracks.uri}, '/', ''))`)
-    .orderBy(asc(tracks.uri))
-
-  return rows.map((row) => ({
-    path: row.uri.split("/").slice(0, -1).join("/"),
-    trackCount: row.count,
-  }))
 }
 
 export async function getSortedFolderTracks<TOnlyIds extends boolean | undefined = false>(

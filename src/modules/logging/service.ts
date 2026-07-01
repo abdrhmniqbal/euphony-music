@@ -2,7 +2,7 @@
  * Purpose: Centralizes runtime logging, crash-log persistence, console bridging, and crash-log sharing.
  * Caller: bootstrap runtime, app services, repositories, device/player/indexer modules, advanced settings.
  * Dependencies: Expo FileSystem File/Paths, React Native Share API, logging settings store.
- * Main Functions: initializeLogging(), logInfo(), logWarn(), logError(), logCritical(), shareCrashLogs(), isExtraLoggingEnabled()
+ * Main Functions: initializeLogging(), logInfo(), logWarn(), logError(), shareCrashLogs(), isExtraLoggingEnabled()
  * Side Effects: Overrides console methods, installs the global JS error handler, writes crash logs, opens the native share sheet.
  */
 
@@ -257,22 +257,6 @@ export function logError(message: string, error?: unknown, context?: unknown): v
   const mergedContext =
     context === undefined ? error : { error: stringifyLogPayload(error), context }
   enqueueFileLog("error", fullMessage, mergedContext)
-}
-
-function logCritical(message: string, error?: unknown, context?: unknown): void {
-  if (shouldEmitLog("critical")) {
-    if (error === undefined && context === undefined) {
-      originalConsole.error(message)
-    } else if (context === undefined) {
-      originalConsole.error(message, error)
-    } else {
-      originalConsole.error(message, error, context)
-    }
-  }
-  const fullMessage = normalizeErrorMessage(message, error)
-  const mergedContext =
-    context === undefined ? error : { error: stringifyLogPayload(error), context }
-  enqueueFileLog("critical", fullMessage, mergedContext)
 }
 
 export async function shareCrashLogs(): Promise<{

@@ -1,16 +1,8 @@
 import AudioBrowser from "react-native-audio-browser"
 
-import { addPlayedMediaList } from "@/modules/history/repository"
 import { RepeatModes } from "../constants"
-import { createPlaybackQueueContext, type PlayFromSource } from "../types"
-import {
-  arePlaybackSourceEqual,
-  extractTrackId,
-  getSourceName,
-  getTrackIdsList,
-  getUpdatedLists,
-} from "../utils"
-import { flushPlaybackStoreSnapshot, playbackStore, setPlaybackLastPosition } from "../store"
+import { extractTrackId } from "../utils"
+import { playbackStore, setPlaybackLastPosition } from "../store"
 
 import { isAudioBrowserSetUp } from "@/lib/react-native-audio-browser"
 import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
@@ -29,21 +21,6 @@ export async function loadCurrentTrack() {
     if (_restoredTrackKey !== undefined && extractTrackId(_restoredTrackKey) === activeTrack.id) {
       await seekTo(lastPosition ?? 0)
     }
-  }
-}
-
-async function syncPlaybackStateFromNative() {
-  try {
-    const progress = AudioBrowser.getProgress()
-    const isPlaying = AudioBrowser.getPlayingState().playing
-    playbackStore.setState({
-      isPlaying,
-      lastPosition: Math.max(0, progress.position ?? playbackStore.getState().lastPosition),
-    })
-    await flushPlaybackStoreSnapshot()
-    return true
-  } catch {
-    return false
   }
 }
 
@@ -189,67 +166,6 @@ export async function playAtIndex(index: number) {
 
   await loadCurrentTrack()
   await play()
-}
-
-async function playFromList({
-  source,
-  trackId,
-}: {
-  source: PlayFromSource
-  trackId?: string
-}) {
-  const { getTrack, shuffle, playingFrom, queue, activeTrack } = playbackStore.getState()
-
-  const isSameSource = arePlaybackSourceEqual(playingFrom, source)
-  let isDiffTrack = activeTrack === undefined || activeTrack.id !== trackId
-
-  if (isSameSource) {
-    handleSameSource: {
-      if (!!trackId && isDiffTrack) {
-        const listIndex = queue.findIndex((id) => extractTrackId(id) === trackId)
-        if (listIndex === -1) break handleSameSource
-        playbackStore.setState({
-          lastPosition: 0,
-          activeKey: queue[listIndex],
-          activeTrack: (await getTrack(trackId))!,
-          queuePosition: listIndex,
-          numQueuedNext: 0,
-        })
-        await loadCurrentTrack()
-      }
-      return await play()
-    }
-  }
-
-  const newPlayingList = await getTrackIdsList(source)
-  if (newPlayingList.length === 0) return
-  const newListInfo = getUpdatedLists(newPlayingList, shuffle, trackId ?? activeTrack?.id)
-
-  const newTrackId = newListInfo.queue[newListInfo.queuePosition]!
-  isDiffTrack = activeTrack?.id !== newTrackId
-  let newTrack = activeTrack
-  if (isDiffTrack) newTrack = await getTrack(newTrackId)
-
-  const sourceName = await getSourceName(source)
-  playbackStore.setState({
-    isPlaying: true,
-    ...(isDiffTrack ? { lastPosition: 0 } : {}),
-    ...newListInfo,
-    playingFrom: source,
-    playingFromName: sourceName,
-    queueContext: createPlaybackQueueContext(source.type, sourceName),
-    activeKey: newTrackId,
-    activeTrack: newTrack,
-  })
-
-  if (isDiffTrack || !(await isAudioBrowserSetUp())) await loadCurrentTrack()
-
-  if (newTrack) {
-    AudioBrowser.updateNowPlaying(await applyReplayGainToTrack(newTrack))
-  }
-  await AudioBrowser.play()
-
-  addPlayedMediaList(source)
 }
 
 async function getNextTrack() {

@@ -6,20 +6,15 @@
  * Side Effects: Initializes logging/bootstrap workflow, updates in-memory readiness state, may start media indexing.
  */
 
-import { bootstrapApp, canStartIndexingNow } from "@/modules/bootstrap/utils"
-import { startIndexing } from "@/modules/indexer/service"
-import { isIndexerRunActive } from "@/modules/indexer/runtime"
+import { bootstrapApp } from "@/modules/bootstrap/utils"
 import { initializeLogging, logError, logInfo, logWarn } from "@/modules/logging/service"
 
 type DatabaseStatus = "pending" | "ready" | "error"
-
-const MIN_AUTO_SCAN_INTERVAL_MS = 5000
 
 let loggingInitializationPromise: Promise<void> | null = null
 let bootstrapPromise: Promise<void> | null = null
 let databaseStatus: DatabaseStatus = "pending"
 let isBootstrapped = false
-let lastAutoScanAt = 0
 let bootstrapWaiters: Array<{
   resolve: () => void
   reject: (error: Error) => void
@@ -112,33 +107,4 @@ export function handleBootstrapDatabaseError() {
   logWarn("Database failed before bootstrap completed")
 }
 
-async function runAutoScan(options?: { bypassThrottle?: boolean }) {
-  if (databaseStatus !== "ready" || !isBootstrapped) {
-    return
-  }
 
-  if (isIndexerRunActive()) {
-    logInfo("Auto scan skipped because indexer is already active")
-    return
-  }
-
-  const bypassThrottle = options?.bypassThrottle === true
-  const now = Date.now()
-  if (!bypassThrottle && now - lastAutoScanAt < MIN_AUTO_SCAN_INTERVAL_MS) {
-    return
-  }
-
-  try {
-    const canScan = await canStartIndexingNow()
-    if (!canScan) {
-      logInfo("Auto scan skipped because scan conditions are not met", { bypassThrottle })
-      return
-    }
-
-    lastAutoScanAt = now
-    logInfo("Auto scan triggered", { bypassThrottle })
-    await startIndexing(false, false)
-  } catch (error) {
-    logError("Auto scan failed", error, { bypassThrottle })
-  }
-}

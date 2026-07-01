@@ -8,17 +8,6 @@ import { getTopTracksByPeriod, getTrackHistory } from "./repository"
 import type { HistoryTopTracksPeriod } from "./types"
 import { dedupeTracksById } from "./utils"
 
-function useTrackHistory() {
-  return useQuery<Track[]>(
-    {
-      queryKey: historyKeys.tracks(),
-      queryFn: getTrackHistory,
-      placeholderData: (previousData) => previousData,
-    },
-    queryClient
-  )
-}
-
 export function useRecentlyPlayedTracks(limit = 8) {
   return useQuery<Track[]>(
     {

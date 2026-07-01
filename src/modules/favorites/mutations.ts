@@ -1,8 +1,8 @@
 /**
- * Purpose: Provides optimistic favorite add, remove, and toggle mutations.
+ * Purpose: Provides optimistic favorite toggle mutation.
  * Caller: favorite buttons, favorites list rows, player info, action sheets, and media detail screens.
  * Dependencies: TanStack Query cache, favorite repository, favorite query keys, logging service.
- * Main Functions: useAddFavorite(), useRemoveFavorite(), useToggleFavorite()
+ * Main Functions: useToggleFavorite()
  * Side Effects: Writes favorite flags through repository, updates favorites cache optimistically, invalidates favorite/library queries.
  */
 
@@ -54,99 +54,6 @@ function removeFavoriteEntry(type: FavoriteType, itemId: string) {
         currentEntries.filter((item) => !(item.type === type && item.id === itemId))
       )
     })
-}
-
-function useAddFavorite() {
-  return useMutation(
-    {
-      mutationFn: async ({
-        type,
-        itemId,
-        name,
-        subtitle,
-        image,
-      }: {
-        type: FavoriteType
-        itemId: string
-        name: string
-        subtitle?: string
-        image?: string
-      }) => {
-        logInfo("Adding favorite", { type, itemId })
-        const now = Date.now()
-        await addFavorite({
-          id: itemId,
-          type,
-          name,
-          subtitle,
-          image,
-          dateAdded: now,
-        })
-
-        return { type, itemId, favoritedAt: now }
-      },
-      onMutate: async (variables) => {
-        await queryClient.cancelQueries({ queryKey: [FAVORITES_KEY] })
-        upsertFavoriteEntry({
-          id: variables.itemId,
-          type: variables.type,
-          name: variables.name,
-          subtitle: variables.subtitle,
-          image: variables.image,
-          dateAdded: Date.now(),
-        })
-      },
-      onSuccess: async (_result, variables) => {
-        logInfo("Added favorite", {
-          type: variables.type,
-          itemId: variables.itemId,
-        })
-        showAppToast(i18n.t("common.feedback.addedToFavorites"), variables.name)
-        await invalidateFavoriteQueries(queryClient)
-      },
-      onError: (error, variables) => {
-        logError("Failed to add favorite", error, {
-          type: variables.type,
-          itemId: variables.itemId,
-        })
-        showAppToast(i18n.t("common.feedback.failedToUpdateFavorite"), variables.name)
-      },
-    },
-    queryClient
-  )
-}
-
-function useRemoveFavorite() {
-  return useMutation(
-    {
-      mutationFn: async ({ type, itemId }: { type: FavoriteType; itemId: string }) => {
-        logInfo("Removing favorite", { type, itemId })
-        await removeFavorite(itemId, type)
-
-        return { type, itemId }
-      },
-      onMutate: async (variables) => {
-        await queryClient.cancelQueries({ queryKey: [FAVORITES_KEY] })
-        removeFavoriteEntry(variables.type, variables.itemId)
-      },
-      onSuccess: async (_result, variables) => {
-        logInfo("Removed favorite", {
-          type: variables.type,
-          itemId: variables.itemId,
-        })
-        showAppToast(i18n.t("common.feedback.removedFromFavorites"))
-        await invalidateFavoriteQueries(queryClient)
-      },
-      onError: (error, variables) => {
-        logError("Failed to remove favorite", error, {
-          type: variables.type,
-          itemId: variables.itemId,
-        })
-        showAppToast(i18n.t("common.feedback.failedToUpdateFavorite"))
-      },
-    },
-    queryClient
-  )
 }
 
 export function useToggleFavorite() {

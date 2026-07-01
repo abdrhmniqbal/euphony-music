@@ -7,18 +7,18 @@
  */
 
 import { createId } from "@paralleldrive/cuid2"
-import { and, asc, desc, eq, inArray, like, or, sql } from "drizzle-orm"
+import { and, asc, desc, eq, like, or, sql } from "drizzle-orm"
 
 import { db } from "@/db/client"
-import { playHistory, playlistTracks, trackArtists, trackGenres, tracks } from "@/db/schema"
+import { playHistory, trackArtists, tracks } from "@/db/schema"
 import { getSettingsState } from "@/modules/settings/store"
 import {
   formatArtistsForDisplay,
   splitArtistsValue,
 } from "@/modules/settings/split-multiple-values"
 
-import type { DrizzleFilter, TracksSortOptions } from "@/modules/library/data-types"
-import type { BulkQueriedTrack, SortedTrack, Track, TrackFilter } from "./types"
+import type { TracksSortOptions } from "@/modules/library/data-types"
+import type { SortedTrack, Track, TrackFilter } from "./types"
 
 export async function listTracks(filters?: TrackFilter) {
   const sortField = filters?.sortBy || "title"
@@ -187,8 +187,6 @@ export async function incrementTrackPlayCount(trackId: string) {
   return trackId
 }
 
-const trackRelationTables = [trackArtists, trackGenres, playlistTracks, playHistory] as const
-
 type TrackRow = typeof tracks.$inferSelect & {
   artist?: { name: string } | null
   album?: { title: string; artist?: { name: string } | null } | null
@@ -252,25 +250,6 @@ export async function getTrack(id: string): Promise<Track> {
   return track
 }
 
-async function getTracksByIds(ids: string[]): Promise<Track[]> {
-  const uniqueIds = Array.from(new Set(ids)).filter((id) => id.length > 0)
-  if (uniqueIds.length === 0) {
-    return []
-  }
-
-  const rows = await db.query.tracks.findMany({
-    where: and(inArray(tracks.id, uniqueIds), eq(tracks.isDeleted, 0)),
-    with: {
-      artist: true,
-      album: { with: { artist: true } },
-      featuredArtists: { with: { artist: true } },
-      genres: { with: { genre: true } },
-    },
-  })
-
-  return rows.map(toDataTrack)
-}
-
 export async function getSortedTracks<TOnlyIds extends boolean | undefined = false>(
   onlyIds?: TOnlyIds,
   sortOptions?: TracksSortOptions
@@ -302,74 +281,6 @@ export async function getSortedTracks<TOnlyIds extends boolean | undefined = fal
   }
 
   return rows.map(toDataTrack) as TOnlyIds extends true ? Array<{ id: string }> : SortedTrack[]
-}
-
-async function getTracks(conditions?: DrizzleFilter) {
-  const rows = await db.query.tracks.findMany({
-    where: and(eq(tracks.isDeleted, 0), ...(conditions ?? [])),
-    with: {
-      artist: true,
-      album: { with: { artist: true } },
-      featuredArtists: { with: { artist: true } },
-      genres: { with: { genre: true } },
-    },
-    orderBy: asc(sql`lower(coalesce(${tracks.title}, ''))`),
-  })
-
-  return rows.map(toDataTrack) satisfies BulkQueriedTrack[]
-}
-
-async function updateTrack(id: string, values: Partial<typeof tracks.$inferInsert>) {
-  return db.update(tracks).set(values).where(eq(tracks.id, id))
-}
-
-function toggleTrackInPlaylist(entry: typeof playlistTracks.$inferInsert) {
-  return db.transaction(async (tx) => {
-    const condition = and(
-      eq(playlistTracks.playlistId, entry.playlistId),
-      eq(playlistTracks.trackId, entry.trackId)
-    )
-
-    if (await tx.query.playlistTracks.findFirst({ where: condition })) {
-      await tx.delete(playlistTracks).where(condition)
-      return
-    }
-
-    await tx.insert(playlistTracks).values(entry)
-  })
-}
-
-function upsertTracks(entries: Array<typeof tracks.$inferInsert>) {
-  return db
-    .insert(tracks)
-    .values(entries)
-    .onConflictDoUpdate({
-      target: tracks.id,
-      set: {
-        title: sql`excluded.title`,
-        artistId: sql`excluded.artist_id`,
-        albumId: sql`excluded.album_id`,
-        duration: sql`excluded.duration`,
-        uri: sql`excluded.uri`,
-        filename: sql`excluded.filename`,
-        dateAdded: sql`excluded.date_added`,
-        scanTime: sql`excluded.scan_time`,
-        artwork: sql`excluded.artwork`,
-        updatedAt: Date.now(),
-      },
-    })
-}
-
-async function deleteTracks(
-  entries: Array<{ id: string; errorInfo?: { errorName: string; errorMessage: string } }>
-) {
-  return db.transaction(async (tx) => {
-    const removedIds = entries.map(({ id }) => id)
-    await Promise.all(
-      trackRelationTables.map((table) => tx.delete(table).where(inArray(table.trackId, removedIds)))
-    )
-    await tx.delete(tracks).where(inArray(tracks.id, removedIds))
-  })
 }
 
 export async function addPlayedTrack(trackUri: string) {

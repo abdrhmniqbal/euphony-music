@@ -8,7 +8,6 @@ import {
   getDefaultLoggingConfig,
   getSettingsState,
   updateSettingsState,
-  useSettingsStore,
 } from "@/modules/settings/store"
 
 export type { AppLogLevel, LoggingConfig }
@@ -17,10 +16,6 @@ const LOG_CONFIG_FILE = createSettingsConfigFile("logging-config.json")
 
 let configLoadPromise: Promise<LoggingConfig> | null = null
 let hasLoadedConfig = false
-
-function useLoggingStore<T>(selector: (state: { loggingConfig: LoggingConfig }) => T) {
-  return useSettingsStore((state) => selector({ loggingConfig: state.loggingConfig }))
-}
 
 export function getLoggingConfigState() {
   return getSettingsState().loggingConfig

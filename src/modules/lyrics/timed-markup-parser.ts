@@ -174,10 +174,6 @@ function isTimedMarkupLyrics(raw: string): boolean {
   )
 }
 
-function isTTML(raw: string): boolean {
-  return isTimedMarkupLyrics(raw)
-}
-
 export function parseTimedMarkupLines(raw: string | null | undefined): TimedMarkupLine[] {
   if (!raw) {
     return []

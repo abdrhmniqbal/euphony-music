@@ -6,7 +6,7 @@
  * Side Effects: Clears and removes recent-search rows from the local recent-search list.
  */
 
-import { Button, PressableFeedback } from "heroui-native"
+import { Button } from "heroui-native"
 import * as React from "react"
 import { useCallback } from "react"
 import { Text, View } from "react-native"

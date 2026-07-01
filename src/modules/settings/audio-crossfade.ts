@@ -91,6 +91,4 @@ export async function setCrossfadeConfig(
   return next
 }
 
-function getCrossfadeDurationLabel(config: CrossfadeConfig): string {
-  return config.isEnabled ? `${config.durationSeconds}s` : "Off"
-}
+

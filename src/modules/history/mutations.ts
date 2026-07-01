@@ -8,48 +8,11 @@
 
 import { useMutation } from "@tanstack/react-query"
 
-import { invalidateQueryKeys } from "@/lib/query-invalidation"
 import { queryClient } from "@/lib/tanstack-query"
 import { invalidateTrackQueries } from "@/modules/tracks/keys"
 
 import { historyKeys } from "./keys"
-import { addTrackToHistory, incrementTrackPlayCount, resetListeningHistory } from "./repository"
-
-function useAddToHistory() {
-  return useMutation(
-    {
-      mutationFn: async (trackId: string) => {
-        await addTrackToHistory(trackId)
-        return trackId
-      },
-      onSuccess: async () => {
-        await invalidateQueryKeys(queryClient, [historyKeys.tracks()])
-      },
-    },
-    queryClient
-  )
-}
-
-function useIncrementPlayCount() {
-  const addToHistory = useAddToHistory()
-
-  return useMutation(
-    {
-      mutationFn: async (trackId: string) => {
-        await incrementTrackPlayCount(trackId)
-        await addToHistory.mutateAsync(trackId)
-        return trackId
-      },
-      onSuccess: async () => {
-        await Promise.all([
-          invalidateTrackQueries(queryClient),
-          invalidateQueryKeys(queryClient, [historyKeys.tracks()]),
-        ])
-      },
-    },
-    queryClient
-  )
-}
+import { resetListeningHistory } from "./repository"
 
 export function useResetListeningHistory() {
   return useMutation(

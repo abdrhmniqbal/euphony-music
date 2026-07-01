@@ -7,7 +7,7 @@
  */
 
 import type { Track } from "@/modules/player/types"
-import { pickVisual, SHAPES, type Shape, type VisualIdentity } from "@/modules/visuals/shared"
+import { SHAPES, type Shape } from "@/modules/visuals/shared"
 
 export type MixShape = Shape
 export { SHAPES as MIX_SHAPES, pickVisual as getMixVisual } from "@/modules/visuals/shared"

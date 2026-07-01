@@ -232,7 +232,7 @@ function parseMetadataYear(value: unknown): number | undefined {
     return normalizeMetadataYear(Number.parseInt(fourDigitMatch[1], 10))
   }
 
-  const parts = text.split(/[\/\-\.]/)
+  const parts = text.split(/[-/.]/)
   if (parts.length >= 2) {
     const lastPart = parts[parts.length - 1].trim()
     const numeric = Number.parseInt(lastPart, 10)

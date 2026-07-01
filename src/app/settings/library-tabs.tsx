@@ -76,7 +76,7 @@ export default function LibraryTabsSettingsScreen() {
   const libraryTabsConfig = useSettingsStore(
     (state) => state.libraryTabsConfig
   ) as unknown as LibraryTabsConfig
-  const theme = useThemeColors()
+  const _theme = useThemeColors()
 
   const handleReorder = useCallback(
     ({ from, to }: { from: number; to: number }) => {

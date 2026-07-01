@@ -1,1 +1,2 @@
-// Empty — add mocks here manually when needed
+// Test setup — add mocks here manually when needed
+export {}

@@ -110,14 +110,3 @@ export async function updateColorsForImage(imageUri: string | undefined) {
   setIsLoadingColorsState(false)
 }
 
-function getCachedColors(imageUri: string): ColorPalette | null {
-  return colorCache.get(imageUri) || null
-}
-
-function clearColorCache() {
-  colorCache.clear()
-}
-
-function getColorCacheSize() {
-  return colorCache.size
-}

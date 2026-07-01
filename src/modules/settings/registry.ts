@@ -33,10 +33,6 @@ const SETTING_HYDRATION_REGISTRY: SettingHydrationDescriptor[] = [
   { key: "autoBackupConfig", ensureLoaded: ensureAutoBackupConfigLoaded },
 ]
 
-function getRegisteredSettings() {
-  return SETTING_HYDRATION_REGISTRY
-}
-
 export async function preloadRegisteredSettings() {
   await Promise.all(SETTING_HYDRATION_REGISTRY.map((descriptor) => descriptor.ensureLoaded()))
 }

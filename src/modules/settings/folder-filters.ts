@@ -6,7 +6,6 @@ import {
 } from "@/modules/settings/repository"
 import {
   getDefaultFolderFilterConfig,
-  getSettingsState,
   updateSettingsState,
 } from "@/modules/settings/store"
 
@@ -127,57 +126,10 @@ export async function ensureFolderFilterConfigLoaded(): Promise<FolderFilterConf
   return result
 }
 
-async function setFolderFilterMode(
-  path: string,
-  mode: FolderFilterMode | null
-): Promise<FolderFilterConfig> {
-  const normalizedPath = normalizePath(path)
-  if (!normalizedPath) {
-    return getSettingsState().folderFilterConfig
-  }
-
-  await ensureFolderFilterConfigLoaded()
-  const current = getSettingsState().folderFilterConfig
-
-  const whitelist = current.whitelist.filter((item) => item !== normalizedPath)
-  const blacklist = current.blacklist.filter((item) => item !== normalizedPath)
-
-  if (mode === "whitelist") {
-    whitelist.push(normalizedPath)
-  } else if (mode === "blacklist") {
-    blacklist.push(normalizedPath)
-  }
-
-  const next = sanitizeConfig({ whitelist, blacklist })
-  updateSettingsState({ folderFilterConfig: next })
-  await persistConfig(next)
-  return next
-}
-
-async function clearFolderFilters(): Promise<void> {
-  updateSettingsState({ folderFilterConfig: EMPTY_FILTER_CONFIG })
-  await persistConfig(EMPTY_FILTER_CONFIG)
-}
-
 export async function commitFolderFilterConfig(config: FolderFilterConfig): Promise<void> {
   const sanitized = sanitizeConfig(config)
   updateSettingsState({ folderFilterConfig: sanitized })
   await persistConfig(sanitized)
-}
-
-async function setAllFolderFiltersMode(mode: FolderFilterMode): Promise<FolderFilterConfig> {
-  await ensureFolderFilterConfigLoaded()
-  const current = getSettingsState().folderFilterConfig
-  const folders = Array.from(new Set([...current.whitelist, ...current.blacklist]))
-
-  const next =
-    mode === "whitelist"
-      ? sanitizeConfig({ whitelist: folders, blacklist: [] })
-      : sanitizeConfig({ whitelist: [], blacklist: folders })
-
-  updateSettingsState({ folderFilterConfig: next })
-  await persistConfig(next)
-  return next
 }
 
 function isSameOrChildPath(path: string, parentPath: string): boolean {

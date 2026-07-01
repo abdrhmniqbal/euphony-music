@@ -16,7 +16,7 @@ import { handleTrackActivated } from "@/modules/player/activity"
 import { resetCrossfadeVolume } from "@/modules/player/crossfade"
 import { playFromTracks, setupPlaybackCore } from "@/modules/player/playback-core"
 import { beginPlayerQueueReplacement, endPlayerQueueReplacement } from "@/modules/player/runtime"
-import { allTracksShareValue, buildPlaybackQueue, inferQueueContext } from "./queue-context"
+import { buildPlaybackQueue, inferQueueContext } from "./queue-context"
 import {
   EXTERNAL_TRACK_ID_PREFIX,
   type PlayerQueueContext,

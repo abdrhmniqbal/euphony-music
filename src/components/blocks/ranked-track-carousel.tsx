@@ -1,4 +1,3 @@
-import type { ReactNode } from "react"
 import type { PlayerQueueContext, Track } from "@/modules/player/types"
 import * as React from "react"
 

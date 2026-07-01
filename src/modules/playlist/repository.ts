@@ -385,37 +385,6 @@ export async function reorderPlaylistTracks({
   })
 }
 
-export type Playlist = {
-  id: string
-  name: string
-  artwork: string | null
-  isFavorite: boolean
-  trackCount: number
-}
-
-function toPlaylist(row: typeof playlists.$inferSelect): Playlist {
-  return {
-    id: row.id,
-    name: row.name,
-    artwork: row.artwork ?? null,
-    isFavorite: row.isFavorite === 1,
-    trackCount: row.trackCount ?? 0,
-  }
-}
-
-async function getPlaylist(id: string) {
-  const row = await db.query.playlists.findFirst({ where: eq(playlists.id, id) })
-  if (!row) throw new Error("err.msg.noPlaylists")
-  return toPlaylist(row)
-}
-
-async function getPlaylistsSummary() {
-  const rows = await db.query.playlists.findMany({
-    orderBy: asc(sql`lower(coalesce(${playlists.name}, ''))`),
-  })
-  return rows.map(toPlaylist)
-}
-
 export async function getPlaylistTracks<TOnlyIds extends boolean | undefined = false>(
   id: string,
   onlyIds?: TOnlyIds

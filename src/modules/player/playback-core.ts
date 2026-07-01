@@ -23,10 +23,6 @@ export async function setupPlaybackCore() {
   )
 }
 
-function isPlaybackCoreSetUp() {
-  return true
-}
-
 export async function playFromTracks(options: {
   track: Track
   tracks: Track[]

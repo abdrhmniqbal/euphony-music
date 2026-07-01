@@ -5,8 +5,6 @@
  */
 
 import { Directory, File } from "expo-file-system"
-import { showAppToast } from "@/modules/ui/toast"
-import { i18n } from "@/modules/localization/i18n"
 import { getSettingsState, updateSettingsState } from "@/modules/settings/store"
 import {
   createSettingsConfigFile,
