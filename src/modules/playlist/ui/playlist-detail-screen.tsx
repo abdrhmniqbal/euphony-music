@@ -51,7 +51,8 @@ import {
   getPlaylistDuration,
 } from "@/modules/playlist/utils"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { handleScroll } from "@/modules/ui/store"
+import { usePlaybackActions, useDetailScrollHandlers, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
 import LocalEdit02Icon from "@/components/icons/local/edit-02"
 import LocalDelete02Icon from "@/components/icons/local/delete-02"
 
@@ -145,7 +146,7 @@ export default function PlaylistDetailsScreen() {
   const selectedSortOption = PLAYLIST_TRACK_SORT_OPTIONS.find(
     (option) => option.field === sortField
   )
-  const sortLabel = selectedSortOption ? t(selectedSortOption.label) : t("library.sort")
+  const sortLabel = resolveSortLabel(PLAYLIST_TRACK_SORT_OPTIONS, sortField, t)
 
   function handleBack() {
     router.back()
@@ -169,28 +170,11 @@ export default function PlaylistDetailsScreen() {
     }
   }
 
-  function playAll() {
-    if (tracks.length === 0) {
-      return
-    }
-
-    playTrack(sortedTracks[0], sortedTracks, {
-      type: "playlist",
-      title: playlist?.name || t("library.playlists"),
-    })
-  }
-
-  function shuffle() {
-    if (tracks.length === 0) {
-      return
-    }
-
-    const randomIndex = Math.floor(Math.random() * sortedTracks.length)
-    playTrack(sortedTracks[randomIndex], sortedTracks, {
-      type: "playlist",
-      title: playlist?.name || t("library.playlists"),
-    })
-  }
+  const { playAll, shuffle } = usePlaybackActions(
+    sortedTracks,
+    { type: "playlist", title: playlist?.name || t("library.playlists") }
+  )
+  const scrollHandlers = useDetailScrollHandlers()
 
   function handleSortSelect(field: PlaylistTrackSortField, order?: PlaylistTrackSortOrder) {
     const isNewField = field !== sortField
@@ -310,9 +294,7 @@ export default function PlaylistDetailsScreen() {
               setShowHeaderTitle(nextShowHeaderTitle)
             }
           }}
-          onScrollBeginDrag={handleScrollStart}
-          onMomentumScrollEnd={handleScrollStop}
-          onScrollEndDrag={handleScrollStop}
+          {...scrollHandlers}
           listHeader={
             <>
               <View

@@ -72,10 +72,11 @@ import {
 } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { handleScroll } from "@/modules/ui/store"
 import { getSafeRouteName } from "@/modules/navigation/route-params"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
+import { usePlaybackActions, useDetailScrollHandlers, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
 import { cn } from "@/utils/common"
 
 const SCROLL_SYNC_DELTA = 12
@@ -84,9 +85,6 @@ function setAnimatedValue<T>(target: { value: T }, nextValue: T) {
   target.value = nextValue
 }
 
-function getRandomTrackIndex(trackCount: number) {
-  return Math.floor(Math.random() * trackCount)
-}
 function trackMatchesArtistName(
   track: Track,
   normalizedArtistName: string,
@@ -308,28 +306,11 @@ export default function ArtistDetailsScreen() {
     })
   }
 
-  function playAllTracks() {
-    if (sortedArtistTracks.length === 0) {
-      return
-    }
-
-    playTrack(sortedArtistTracks[0], sortedArtistTracks, {
-      type: "artist",
-      title: artistName,
-    })
-  }
-
-  function shuffleTracks() {
-    if (sortedArtistTracks.length === 0) {
-      return
-    }
-
-    const randomIndex = getRandomTrackIndex(sortedArtistTracks.length)
-    playTrack(sortedArtistTracks[randomIndex], sortedArtistTracks, {
-      type: "artist",
-      title: artistName,
-    })
-  }
+  const { playAll: playAllTracks, shuffle: shuffleTracks } = usePlaybackActions(
+    sortedArtistTracks,
+    { type: "artist", title: artistName }
+  )
+  const scrollHandlers = useDetailScrollHandlers()
 
   function openAlbum(album: Album) {
     router.push({
@@ -346,8 +327,7 @@ export default function ArtistDetailsScreen() {
 
   function getSortLabel() {
     const options = activeView === "tracks" ? TRACK_SORT_OPTIONS : ALBUM_SORT_OPTIONS
-    const selectedOption = options.find((option) => option.field === sortConfig.field)
-    return selectedOption ? t(selectedOption.label) : t("library.sort")
+    return resolveSortLabel(options, sortConfig.field, t)
   }
 
   const renderHeroSection = () => (
@@ -397,9 +377,7 @@ export default function ArtistDetailsScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 200 }}
             onScroll={onScreenScroll}
-            onScrollBeginDrag={handleScrollStart}
-            onMomentumScrollEnd={handleScrollStop}
-            onScrollEndDrag={handleScrollStop}
+            {...scrollHandlers}
             scrollEventThrottle={16}
           >
             {renderHeroSection()}
@@ -473,9 +451,7 @@ export default function ArtistDetailsScreen() {
               paddingHorizontal: 24,
             }}
             onScroll={onScreenScroll}
-            onScrollBeginDrag={handleScrollStart}
-            onMomentumScrollEnd={handleScrollStop}
-            onScrollEndDrag={handleScrollStop}
+            {...scrollHandlers}
             listHeader={
               <>
                 <View style={{ marginHorizontal: -24 }}>{renderHeroSection()}</View>
@@ -524,9 +500,7 @@ export default function ArtistDetailsScreen() {
               paddingHorizontal: 16,
             }}
             onScroll={onScreenScroll}
-            onScrollBeginDrag={handleScrollStart}
-            onMomentumScrollEnd={handleScrollStop}
-            onScrollEndDrag={handleScrollStop}
+            {...scrollHandlers}
             listHeader={
               <>
                 <View style={{ marginHorizontal: -16 }}>{renderHeroSection()}</View>

@@ -37,14 +37,11 @@ import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime
 import { usePlayerTracks } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll, handleScrollStart, handleScrollStop } from "@/modules/ui/store"
+import { handleScroll } from "@/modules/ui/store"
+import { usePlaybackActions, useDetailScrollHandlers, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
 import { mergeText } from "@/utils/merge-text"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
-
-function getRandomIndex(max: number) {
-  return Math.floor(Math.random() * max)
-}
 
 export default function AlbumDetailsScreen() {
   const { t } = useTranslation()
@@ -149,27 +146,14 @@ export default function AlbumDetailsScreen() {
     })
   }
 
-  function playAllTracks() {
-    if (sortedTracks.length > 0) {
-      playTrack(sortedTracks[0], sortedTracks, {
-        type: "album",
-        title: activeAlbumInfo.title,
-      })
-    }
-  }
-
-  function shuffleTracks() {
-    if (sortedTracks.length > 0) {
-      playTrack(sortedTracks[getRandomIndex(sortedTracks.length)], sortedTracks, {
-        type: "album",
-        title: activeAlbumInfo.title,
-      })
-    }
-  }
+  const { playAll: playAllTracks, shuffle: shuffleTracks } = usePlaybackActions(
+    sortedTracks,
+    { type: "album", title: activeAlbumInfo.title }
+  )
+  const scrollHandlers = useDetailScrollHandlers()
 
   function getSortLabel() {
-    const option = ALBUM_TRACK_SORT_OPTIONS.find((item) => item.field === sortConfig.field)
-    return option ? t(option.label) : t("library.sort")
+    return resolveSortLabel(ALBUM_TRACK_SORT_OPTIONS, sortConfig.field, t)
   }
 
   return (
@@ -275,9 +259,7 @@ export default function AlbumDetailsScreen() {
               setShowHeaderTitle(nextShowHeaderTitle)
             }
           }}
-          onScrollBeginDrag={handleScrollStart}
-          onMomentumScrollEnd={handleScrollStop}
-          onScrollEndDrag={handleScrollStop}
+          {...scrollHandlers}
           listHeader={
             <>
               <View
