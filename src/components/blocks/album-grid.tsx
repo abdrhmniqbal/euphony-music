@@ -43,7 +43,6 @@ export interface Album {
 interface AlbumGridProps {
   data: Album[]
   onAlbumPress?: (album: Album) => void
-  onAlbumLongPress?: (album: Album) => void
   horizontal?: boolean
   containerClassName?: string
   scrollEnabled?: boolean
@@ -65,7 +64,6 @@ const HORIZONTAL_ROW_HEIGHT = 208
 export const AlbumGrid: React.FC<AlbumGridProps> = ({
   data,
   onAlbumPress,
-  onAlbumLongPress,
   horizontal,
   containerClassName = "",
   scrollEnabled = true,

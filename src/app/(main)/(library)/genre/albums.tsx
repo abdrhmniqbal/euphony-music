@@ -15,7 +15,6 @@ import { useTranslation } from "react-i18next"
 
 import Animated from "react-native-reanimated"
 import { type Album, AlbumGrid } from "@/components/blocks/album-grid"
-import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
 import { SortSheet } from "@/components/blocks/sheets/sort-sheet"
 import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -41,8 +40,7 @@ export default function GenreAlbumsScreen() {
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const theme = useThemeColors()
   const [sortModalVisible, setSortModalVisible] = useState(false)
-  const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
-  const [isAlbumSheetOpen, setIsAlbumSheetOpen] = useState(false)
+
   const [sortConfig, setSortConfig] = useState<{
     field: AlbumSortField
     order: SortOrder
@@ -147,10 +145,6 @@ export default function GenreAlbumsScreen() {
           <AlbumGrid
             data={sortedAlbumData}
             onAlbumPress={handleAlbumPress}
-            onAlbumLongPress={(album) => {
-              setSelectedAlbum(album)
-              setIsAlbumSheetOpen(true)
-            }}
             resetScrollKey={`${genreName}-${sortConfig.field}-${sortConfig.order}`}
             contentContainerStyle={{
               paddingHorizontal: 16,
@@ -182,23 +176,7 @@ export default function GenreAlbumsScreen() {
 
         <SortSheet.Content options={ALBUM_SORT_OPTIONS} />
       </View>
-      <CollectionActionSheet
-        visible={isAlbumSheetOpen && Boolean(selectedAlbum)}
-        onOpenChange={(visible) => {
-          if (!visible) {
-            setIsAlbumSheetOpen(false)
-            setSelectedAlbum(null)
-            return
-          }
-          setIsAlbumSheetOpen(visible)
-        }}
-        type="album"
-        id={selectedAlbum?.id ?? ""}
-        name={selectedAlbum?.title ?? ""}
-        subtitle={selectedAlbum?.artist}
-        image={selectedAlbum?.image}
-        trackCount={selectedAlbum?.trackCount ?? 0}
-      />
+
     </SortSheet>
   )
 }
