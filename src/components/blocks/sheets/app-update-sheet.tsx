@@ -13,12 +13,13 @@ import {
 } from "@gorhom/bottom-sheet"
 import { BottomSheet, Button } from "heroui-native"
 import * as React from "react"
-import { Linking, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import { ReleaseNotesMarkdown } from "@/components/blocks/release-notes-markdown"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { closeAppUpdatePrompt, useAppUpdatePromptStore } from "@/modules/updates/app-update-store"
+import { downloadAndInstall } from "@/modules/app-updater"
 
 export function AppUpdateSheet() {
   const { t } = useTranslation()
@@ -26,10 +27,10 @@ export function AppUpdateSheet() {
   const updateInfo = useAppUpdatePromptStore((state) => state.updateInfo)
   const snapPoints = React.useMemo(() => ["48%", "88%"], [])
 
-  const handleDownload = React.useCallback(async () => {
+  const handleDownload = React.useCallback(() => {
     if (!updateInfo?.downloadUrl) return
     closeAppUpdatePrompt()
-    await Linking.openURL(updateInfo.downloadUrl)
+    downloadAndInstall(updateInfo.downloadUrl)
   }, [updateInfo?.downloadUrl])
 
   const handleDontRemind = React.useCallback(async () => {
