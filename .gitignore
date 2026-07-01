@@ -40,7 +40,7 @@ codedb.snapshot
 app-example
 .tmp/
 
-plans
-
-PROBLEMS_FIX_PLAN.md
+REFACTOR_PLAN.md
 SYSTEM_MAP.md
+SYSTEM_MAP_MODULES.md
+knip.txt

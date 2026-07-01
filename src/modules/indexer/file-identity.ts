@@ -53,12 +53,6 @@ export function generateSortName(name: string): string {
   return name
 }
 
-import { createId } from "@paralleldrive/cuid2"
-
-export function generateId(): string {
-  return createId()
-}
-
 export function hashString(value: string): number {
   let hash = 0
   for (let i = 0; i < value.length; i++) {

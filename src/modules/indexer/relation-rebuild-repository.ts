@@ -2,7 +2,8 @@ import { eq } from "drizzle-orm"
 import { db } from "@/db/client"
 import { trackArtists, trackGenres, tracks } from "@/db/schema"
 import { normalizeText } from "./normalization"
-import { chunkArray, yieldToEventLoop } from "./batch-utils"
+import { yieldToEventLoop } from "./batch-utils"
+import { chunkArray } from "@/utils/array"
 import { runWithScopeCommit, COMMIT_SCOPE_SIZE } from "./scope-commit"
 import {
   preloadIndexingLookupCache,

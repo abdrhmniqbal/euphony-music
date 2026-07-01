@@ -33,11 +33,13 @@ import {
   type SplitMultipleValueConfig,
 } from "@/modules/settings/split-multiple-values"
 import { cleanupUnusedArtworkCache, extractMetadata, saveArtworkToCache } from "./metadata"
-import { generateAssetHash, generateId, generateSortName, hashString } from "./file-identity"
+import { generateAssetHash, generateSortName, hashString } from "./file-identity"
+import { generateId } from "@/utils/common"
 import { normalizeMetadata, normalizeText } from "./normalization"
 import { saveIndexerRunSnapshot } from "./run-snapshot"
 import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
-import { chunkArray, wait, yieldToEventLoop } from "./batch-utils"
+import { wait, yieldToEventLoop } from "./batch-utils"
+import { chunkArray } from "@/utils/array"
 import { refreshLastFmArtistMetadataForIndexedArtists } from "@/modules/library/lastfm"
 import {
   processDeletedTracksInScopes,

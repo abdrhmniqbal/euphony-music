@@ -13,11 +13,7 @@ import { cn } from "tailwind-variants"
 
 import { EmptyState } from "@/components/ui/empty-state"
 
-interface EmptyStateConfig {
-  icon: ReactNode
-  title: string
-  message: string
-}
+import type { EmptyStateConfig } from "@/components/ui/empty-state"
 
 interface MediaCarouselProps<T> {
   data: T[]

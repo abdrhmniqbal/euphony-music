@@ -13,11 +13,7 @@ import { MediaCarousel } from "./media-carousel"
 import { useActionSheet } from "@/components/blocks/use-action-sheet"
 import { TrackActionSheet } from "./sheets/track-action-sheet"
 
-interface EmptyStateConfig {
-  icon: ReactNode
-  title: string
-  message: string
-}
+import type { EmptyStateConfig } from "@/components/ui/empty-state"
 
 interface RankedTrackCarouselProps {
   data: Track[]

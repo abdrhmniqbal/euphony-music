@@ -15,11 +15,8 @@ import { LEGEND_LIST_GRID_CONFIG } from "@/components/blocks/legend-list-config"
 import { useLegendListBehavior } from "@/components/blocks/use-legend-list-behavior"
 import { EmptyState } from "@/components/ui/empty-state"
 
-interface GridListEmptyState {
-  icon: React.ReactNode
-  title: string
-  message: string
-}
+import type { EmptyStateConfig } from "@/components/ui/empty-state"
+type GridListEmptyState = EmptyStateConfig
 
 interface GridListProps<T> {
   data: T[]

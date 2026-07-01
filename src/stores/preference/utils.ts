@@ -9,10 +9,7 @@
 import { I18nManager } from "react-native"
 
 import { i18n } from "@/modules/localization/i18n"
-
-function clamp(min: number, value: number, max: number) {
-  return Math.min(max, Math.max(min, value))
-}
+import { clamp } from "@/utils/number"
 
 export async function resolveLanguageConfigs(language: string, forceLTR: boolean) {
   await i18n.changeLanguage(language)

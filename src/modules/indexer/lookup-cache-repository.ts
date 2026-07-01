@@ -8,7 +8,8 @@ import {
   getGenreShape,
   type GenreShape,
 } from "@/modules/genres/constants"
-import { generateId, generateSortName } from "./file-identity"
+import { generateSortName } from "./file-identity"
+import { generateId } from "@/utils/common"
 
 export interface IndexingLookupCache {
   artistIdsByName: Map<string, string>

@@ -14,11 +14,7 @@ import { SCREEN_SECTION_GAP } from "@/constants/layout"
 import { EmptyState } from "@/components/ui/empty-state"
 import { SectionHeader } from "@/components/ui/section-header"
 
-interface EmptyStateConfig {
-  icon: ReactNode
-  title: string
-  message: string
-}
+import type { EmptyStateConfig } from "@/components/ui/empty-state"
 
 interface ContentSectionProps<T> {
   title: string
