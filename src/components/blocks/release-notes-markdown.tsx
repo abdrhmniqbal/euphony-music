@@ -11,15 +11,34 @@ import { EnrichedMarkdownText } from "react-native-enriched-markdown"
 
 import { useThemeColors } from "@/modules/ui/theme"
 
-export function ReleaseNotesMarkdown({ markdown }: { markdown: string }) {
+export function ReleaseNotesMarkdown({ markdown, selectable = true }: { markdown: string; selectable?: boolean }) {
   const theme = useThemeColors()
+
+  const processedMarkdown = markdown.replace(
+    /(https?:\/\/[^\s)]+)/g,
+    (url) => {
+      try {
+        const parsed = new URL(url)
+        const path = parsed.pathname + parsed.search + parsed.hash
+        // GitHub compare: show v1.0.0-rc.2...v1.0.0
+        const compareMatch = path.match(/^\/[^/]+\/[^/]+\/compare\/(.+\.\.\..+)$/)
+        if (compareMatch?.[1]) return `[${compareMatch[1]}](${url})`
+        // Other GitHub links: show owner/repo or path
+        const segments = parsed.pathname.split('/').filter(Boolean)
+        if (segments.length > 2) return `[${segments.slice(0, 2).join('/')}\u2026](${url})`
+        return `[${parsed.host}${path}](${url})`
+      } catch {
+        return url
+      }
+    }
+  )
 
   return (
     <View>
       <EnrichedMarkdownText
-        markdown={markdown}
+        markdown={processedMarkdown}
         flavor="github"
-        selectable
+        selectable={selectable}
         allowTrailingMargin={false}
         onLinkPress={(event) => {
           void Linking.openURL(event.url)

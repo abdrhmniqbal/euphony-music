@@ -44,14 +44,9 @@ export function AppUpdateSheet() {
           <Button variant="primary" onPress={() => void handleDownload()}>
             <Button.Label>{t("updates.downloadAndInstall")}</Button.Label>
           </Button>
-          <View className="flex-row gap-2">
-            <Button variant="secondary" className="flex-1" onPress={() => void handleDontRemind()}>
-              <Button.Label>{t("updates.dontRemind")}</Button.Label>
-            </Button>
-            <Button variant="ghost" className="flex-1" onPress={closeAppUpdatePrompt}>
-              <Button.Label>{t("updates.later")}</Button.Label>
-            </Button>
-          </View>
+          <Button variant="ghost" onPress={() => void handleDontRemind()}>
+            <Button.Label>{t("updates.dontRemind")}</Button.Label>
+          </Button>
         </View>
       </BottomSheetFooter>
     ),
@@ -73,7 +68,6 @@ export function AppUpdateSheet() {
           enableDynamicSizing={false}
           footerComponent={renderFooter}
           contentContainerClassName="h-full px-0"
-          handleComponent={() => null}
           backgroundClassName="bg-surface"
         >
           <View className="px-4 pb-3">
@@ -103,6 +97,7 @@ export function AppUpdateSheet() {
             <View className="mt-2">
               <ReleaseNotesMarkdown
                 markdown={updateInfo?.body?.trim() || t("updates.noReleaseNotes")}
+                selectable={false}
               />
             </View>
           </BottomSheetScrollView>
