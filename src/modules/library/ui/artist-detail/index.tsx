@@ -8,16 +8,14 @@
 
 import type { SortField } from "@/modules/library/sort-types"
 import type { Track } from "@/modules/player/store"
-import { Image } from "expo-image"
-import { LinearGradient } from "expo-linear-gradient"
 import { ArtistDetailHeader } from "./artist-detail-header"
 import { ArtistHeroSection } from "./artist-hero-section"
 import { ArtistInfoSection } from "./artist-info-section"
-import { useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { Button, PressableFeedback } from "heroui-native"
+import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
+import { useArtistDetailData } from "./use-artist-detail-data"
 
 import {
   type NativeScrollEvent,
@@ -29,7 +27,6 @@ import {
 } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
-import Transition from "react-native-screen-transitions"
 import Animated, {
   Extrapolation,
   interpolate,
@@ -44,71 +41,27 @@ import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { SortSheet } from "@/components/blocks/sheets/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
-import LocalFavouriteIcon from "@/components/icons/local/favourite"
-import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import { Stack } from "@/layouts/stack"
-import { BackButton } from "@/components/patterns/back-button"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { SectionHeader } from "@/components/ui/section-header"
 import { screenEnterTransition, screenExitTransition } from "@/constants/animations"
 import { SCREEN_SECTION_HEADING_GAP, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
-import {
-  resolveAlbumTransitionId,
-  resolveArtistTransitionId,
-} from "@/modules/artists/artist-transition"
-import { buildArtistAlbums } from "@/modules/artists/utils"
+import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { useToggleFavorite } from "@/modules/favorites/mutations"
 import { useIsFavorite } from "@/modules/favorites/queries"
 import { ALBUM_SORT_OPTIONS, TRACK_SORT_OPTIONS } from "@/modules/library/sort-constants"
-import { setSortConfig, useLibrarySortStore } from "@/modules/library/sort-store"
-import { sortAlbums, sortTracks } from "@/modules/library/sort-utils"
-import { useArtistByName, useTracksByArtistName } from "@/modules/library/queries"
-import { useCurrentTrack, usePlayerTracks } from "@/modules/player/selectors"
-import {
-  type SplitMultipleValueConfig,
-  splitArtistsValue,
-} from "@/modules/settings/split-multiple-values"
-import { useSettingsStore } from "@/modules/settings/store"
+import { setSortConfig } from "@/modules/library/sort-store"
+import { useCurrentTrack } from "@/modules/player/selectors"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll } from "@/modules/ui/store"
-import { getSafeRouteName } from "@/modules/navigation/route-params"
-import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
 import { usePlaybackActions, useDetailScrollHandlers, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
-import { cn } from "@/utils/common"
 
 const SCROLL_SYNC_DELTA = 12
 
 function setAnimatedValue<T>(target: { value: T }, nextValue: T) {
   target.value = nextValue
-}
-
-function trackMatchesArtistName(
-  track: Track,
-  normalizedArtistName: string,
-  splitMultipleValueConfig: SplitMultipleValueConfig
-) {
-  const candidateValues = [track.artist, track.albumArtist]
-
-  return candidateValues.some((value) =>
-    splitArtistsValue(value, splitMultipleValueConfig).some(
-      (artist) => artist.trim().toLowerCase() === normalizedArtistName
-    )
-  )
-}
-
-function mergeArtistTracks(primary: Track[], fallback: Track[]) {
-  const tracksById = new Map(primary.map((track) => [track.id, track]))
-
-  for (const track of fallback) {
-    if (!tracksById.has(track.id)) {
-      tracksById.set(track.id, track)
-    }
-  }
-
-  return Array.from(tracksById.values())
 }
 
 export default function ArtistDetailsScreen() {
@@ -117,10 +70,6 @@ export default function ArtistDetailsScreen() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const { width: screenWidth } = useWindowDimensions()
-  const { name, transitionId } = useLocalSearchParams<{
-    name: string
-    transitionId?: string
-  }>()
   const toggleFavoriteMutation = useToggleFavorite()
   const headerCollapseThreshold = screenWidth - 120
   const lastSyncedScrollYRef = React.useRef(0)
@@ -133,105 +82,27 @@ export default function ArtistDetailsScreen() {
   const [showActionSheet, setShowActionSheet] = useState(false)
   const scrollY = useSharedValue(0)
   const currentTrack = useCurrentTrack()
-  const allTracks = usePlayerTracks()
-  const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
-  const allSortConfigs = useLibrarySortStore((state) => state.sortConfig)
-  const parsedArtistRouteName = React.useMemo(() => getSafeRouteName(name), [name])
-  const artistName = parsedArtistRouteName.value.trim() || t("library.unknownArtist")
 
-  scheduleRouteWarning({
-    key: "artist-details:missing-name",
-    message: "Artist details route missing name param",
-    metadata: { route: "/artist/[name]" },
-    enabled: !parsedArtistRouteName.value.trim(),
-  })
-  scheduleRouteWarning({
-    key: `artist-details:decode-failed:${parsedArtistRouteName.raw}`,
-    message: "Artist details route name decode failed",
-    metadata: {
-      route: "/artist/[name]",
-      rawName: parsedArtistRouteName.raw,
-    },
-    enabled: parsedArtistRouteName.decodeFailed,
-  })
-
-  const normalizedArtistName = artistName.toLowerCase()
   const {
-    data: artistTracksFromQuery = [],
-    isLoading: isArtistTracksLoading,
-    isFetching: isArtistTracksFetching,
-  } = useTracksByArtistName(artistName)
-  const fallbackArtistTracks = allTracks.filter((track) =>
-    trackMatchesArtistName(track, normalizedArtistName, splitMultipleValueConfig)
-  )
-  const artistTracks = mergeArtistTracks(artistTracksFromQuery, fallbackArtistTracks)
-  const { data: artistRecord } = useArtistByName(artistName)
-  const artistId = artistRecord?.id
-  const artistImage = artistRecord?.artwork || undefined
-  const artistTransitionId = resolveArtistTransitionId({
-    transitionId,
-    id: artistId,
-    name: artistName,
-  })
+    artistName,
+    artistId,
+    artistImage,
+    artistBio,
+    artistTransitionId,
+    artistTracks,
+    sortedArtistTracks,
+    popularTracks,
+    sortedAlbums,
+    sortedFeaturedOnAlbums,
+    hasAlbumSections,
+    isLoading,
+    sortConfig,
+    currentTab,
+  } = useArtistDetailData(activeView)
   const { data: isArtistFavorite = false } = useIsFavorite("artist", artistId || "")
-  const isLoading = (isArtistTracksLoading || isArtistTracksFetching) && artistTracks.length === 0
-  const albumArtistTracks = artistTracks.filter((track) => {
-    const primaryArtist = track.albumArtist || track.artist
-    return trackMatchesArtistName(
-      { ...track, artist: primaryArtist, albumArtist: primaryArtist },
-      normalizedArtistName,
-      splitMultipleValueConfig
-    )
-  })
-  const featuredOnTracks = artistTracks.filter((track) => {
-    const primaryArtist = track.albumArtist || track.artist
-    return !trackMatchesArtistName(
-      { ...track, artist: primaryArtist, albumArtist: primaryArtist },
-      normalizedArtistName,
-      splitMultipleValueConfig
-    )
-  })
-  const albums = buildArtistAlbums(albumArtistTracks)
-  const featuredOnAlbums = buildArtistAlbums(featuredOnTracks)
-  const sortedArtistTracks = sortTracks(artistTracks, allSortConfigs.ArtistTracks)
-  const popularTracks = sortedArtistTracks.slice(0, 5)
-  const sortedAlbums = sortAlbums(
-    buildAlbumGridItems(albums, t("library.unknownArtist")),
-    allSortConfigs.ArtistAlbums
-  )
-  const sortedFeaturedOnAlbums = sortAlbums(
-    buildAlbumGridItems(featuredOnAlbums, t("library.unknownArtist")),
-    allSortConfigs.ArtistAlbums
-  )
   const displayedAlbums = activeView === "featuredOn" ? sortedFeaturedOnAlbums : sortedAlbums
   const displayedAlbumTitle =
     activeView === "featuredOn" ? t("library.featuredOn") : t("library.albums")
-  const hasAlbumSections = sortedAlbums.length > 0 || sortedFeaturedOnAlbums.length > 0
-  const currentTab =
-    activeView === "tracks"
-      ? "ArtistTracks"
-      : activeView === "albums" || activeView === "featuredOn"
-        ? "ArtistAlbums"
-        : "ArtistTracks"
-  const sortConfig = allSortConfigs[currentTab]
-
-  function buildAlbumGridItems(
-    artistAlbums: ReturnType<typeof buildArtistAlbums>,
-    unknownArtist: string
-  ): Album[] {
-    return artistAlbums.map(
-      (album): Album => ({
-        id: album.title,
-        title: album.title,
-        artist: album.albumArtist || album.artist || unknownArtist,
-        albumArtist: album.albumArtist,
-        image: album.image,
-        trackCount: album.trackCount,
-        year: album.year || 0,
-        dateAdded: 0,
-      })
-    )
-  }
 
   const smoothScrollY = useDerivedValue(() => withTiming(scrollY.value, { duration: 90 }))
 
@@ -433,10 +304,10 @@ export default function ArtistDetailsScreen() {
                 </View>
               )}
 
-              {artistRecord?.bio && (
+              {artistBio && (
                 <ArtistInfoSection
                   title={t("library.artistInfo", "About")}
-                  bio={artistRecord.bio}
+                  bio={artistBio}
                 />
               )}
             </Animated.View>
