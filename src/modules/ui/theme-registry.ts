@@ -21,22 +21,7 @@ export interface AppThemeDefinition {
   id: AppThemeId
   labelKey: string
   descriptionKey: string
-  rootClassName:
-    | "theme-default"
-    | "theme-nord"
-    | "theme-dracula"
-    | "theme-catppuccin"
-    | "theme-tokyo"
-    | "theme-gruvbox"
-    | "theme-everforest"
-    | "theme-rose-pine"
-    | "theme-solarized"
-    | "theme-ayu"
-    | "theme-monochrome"
-    | "theme-aquamarine"
-    | "theme-crimson-pulse"
-    | "theme-banana-breeze"
-    | "theme-candy-pop"
+  rootClassName: `theme-${AppThemeId}`
 }
 
 export const APP_THEMES: AppThemeDefinition[] = [
