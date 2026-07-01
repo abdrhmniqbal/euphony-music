@@ -119,7 +119,8 @@
     }
   },
   "patchedDependencies": {
-    "@missingcore/react-native-metadata-retriever@3.2.1": "patches/@missingcore__react-native-metadata-retriever@3.2.1.patch"
+    "@missingcore/react-native-metadata-retriever@3.2.1": "patches/@missingcore__react-native-metadata-retriever@3.2.1.patch",
+    "react-native-image-colors@2.6.0": "patches/react-native-image-colors@2.6.0.patch"
   },
   "trustedDependencies": [
     "@missingcore/react-native-metadata-retriever",

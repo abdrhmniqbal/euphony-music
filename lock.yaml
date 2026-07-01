@@ -8,6 +8,9 @@ patchedDependencies:
   '@missingcore/react-native-metadata-retriever@3.2.1':
     hash: ff051932e6f212d2db4c9fc9ddf5b4e9dfc1c5cd48a642a48445c9f88007abf2
     path: patches/@missingcore__react-native-metadata-retriever@3.2.1.patch
+  react-native-image-colors@2.6.0:
+    hash: 40faf831e2cb748fc350a010701f5a57b434c7425bcebbfd75ccc5a393b28541
+    path: patches/react-native-image-colors@2.6.0.patch
 
 importers:
 
@@ -150,7 +153,7 @@ importers:
         version: 4.9.1(@babel/core@7.29.7)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))
       react-native-image-colors:
         specifier: ^2.5.1
-        version: 2.6.0(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3)
+        version: 2.6.0(patch_hash=40faf831e2cb748fc350a010701f5a57b434c7425bcebbfd75ccc5a393b28541)(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3)
       react-native-nitro-modules:
         specifier: 0.35.9
         version: 0.35.9(@babel/core@7.29.7)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))
@@ -10654,7 +10657,7 @@ snapshots:
       react: 19.2.3
       react-native: 0.86.0(@babel/core@7.29.7)(@types/react@19.2.17)(react@19.2.3)
 
-  react-native-image-colors@2.6.0(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3):
+  react-native-image-colors@2.6.0(patch_hash=40faf831e2cb748fc350a010701f5a57b434c7425bcebbfd75ccc5a393b28541)(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3):
     dependencies:
       expo: 57.0.1(@babel/core@7.29.7)(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3)
       node-vibrant: 4.0.4
