@@ -132,7 +132,7 @@ export const AlbumGrid: React.FC<AlbumGridProps> = ({
               <Item
                 variant="grid"
                 boundaryId={resolveAlbumTransitionId({ id: item.id, title: item.title })}
-                onPress={() => handlePress(item)}
+                onPress={() => onAlbumPress?.(item)}
                 onLongPress={() => handleLongPress(item)}
               >
                 <Transition.Boundary.Target>
