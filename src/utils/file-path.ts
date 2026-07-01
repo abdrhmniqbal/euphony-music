@@ -6,8 +6,8 @@
  * Side Effects: Copies unresolved shared content URIs into the app cache for native playback access.
  */
 
+import { Directory, File, Paths } from "expo-file-system"
 import { getActualPath } from "@missingcore/react-native-actual-path"
-import * as FileSystem from "expo-file-system/legacy"
 
 import { logWarn } from "@/modules/logging/service"
 
@@ -17,32 +17,20 @@ export { getContainingFolderUri } from "./file-path-helpers"
 const EXTERNAL_AUDIO_CACHE_FOLDER = "external-audio"
 
 async function copyContentUriToCache(uri: string): Promise<string | null> {
-  if (!FileSystem.cacheDirectory) {
-    return null
-  }
-
-  const cacheDirectory = `${FileSystem.cacheDirectory}${EXTERNAL_AUDIO_CACHE_FOLDER}/`
-  const cacheUri = `${cacheDirectory}${hashUri(uri)}${getExtension(uri)}`
+  const cacheDir = new Directory(Paths.cache, EXTERNAL_AUDIO_CACHE_FOLDER)
+  const cacheFile = new File(cacheDir, `${hashUri(uri)}${getExtension(uri)}`)
 
   try {
-    const existingDirectory = await FileSystem.getInfoAsync(cacheDirectory)
-    if (!existingDirectory.exists) {
-      await FileSystem.makeDirectoryAsync(cacheDirectory, {
-        intermediates: true,
-      })
+    if (!cacheDir.exists) {
+      cacheDir.create({ intermediates: true })
     }
 
-    const existingFile = await FileSystem.getInfoAsync(cacheUri)
-    if (existingFile.exists) {
-      await FileSystem.deleteAsync(cacheUri, { idempotent: true })
+    if (cacheFile.exists) {
+      cacheFile.delete()
     }
 
-    await FileSystem.copyAsync({
-      from: uri,
-      to: cacheUri,
-    })
-
-    return cacheUri
+    await new File(uri).copy(cacheFile)
+    return cacheFile.uri
   } catch (error) {
     logWarn("Failed to copy content URI into playback cache", {
       uri,
