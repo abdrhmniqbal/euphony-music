@@ -1,5 +1,5 @@
 /**
- * Purpose: Presents shared app update details in a bottom sheet.
+ * Purpose: Presents app update details in a bottom sheet.
  * Caller: Root app layout.
  * Dependencies: App update prompt store, app update settings, HeroUI Native bottom sheet/buttons.
  * Main Functions: AppUpdateSheet()
@@ -27,10 +27,7 @@ export function AppUpdateSheet() {
   const snapPoints = React.useMemo(() => ["48%", "88%"], [])
 
   const handleDownload = React.useCallback(async () => {
-    if (!updateInfo?.downloadUrl) {
-      return
-    }
-
+    if (!updateInfo?.downloadUrl) return
     closeAppUpdatePrompt()
     await Linking.openURL(updateInfo.downloadUrl)
   }, [updateInfo?.downloadUrl])
@@ -43,7 +40,7 @@ export function AppUpdateSheet() {
   const renderFooter = React.useCallback(
     (props: BottomSheetFooterProps) => (
       <BottomSheetFooter {...props}>
-        <View className="gap-2 bg-background px-4 pb-safe-offset-3 pt-2">
+        <View className="gap-2 bg-surface px-4 pb-safe-offset-3 pt-2">
           <Button variant="primary" onPress={() => void handleDownload()}>
             <Button.Label>{t("updates.downloadAndInstall")}</Button.Label>
           </Button>
@@ -65,9 +62,7 @@ export function AppUpdateSheet() {
     <BottomSheet
       isOpen={isOpen}
       onOpenChange={(open) => {
-        if (!open) {
-          closeAppUpdatePrompt()
-        }
+        if (!open) closeAppUpdatePrompt()
       }}
     >
       <BottomSheet.Portal>
@@ -81,31 +76,28 @@ export function AppUpdateSheet() {
           handleComponent={() => null}
           backgroundClassName="bg-surface"
         >
-          <View className="flex-row items-center justify-between gap-4 px-4 pb-3">
-            <BottomSheet.Title className="flex-1 text-xl font-bold">
+          <View className="px-4 pb-3">
+            <BottomSheet.Title className="text-xl font-bold">
               {t("updates.sheetTitle")}
             </BottomSheet.Title>
-            <BottomSheet.Close />
           </View>
 
           <BottomSheetScrollView
             contentContainerClassName="px-4 pb-safe-offset-28"
             showsVerticalScrollIndicator={false}
           >
-            <Text className="text-base font-semibold text-foreground">
+            <Text selectable={false} className="text-base font-semibold text-foreground">
               {t("updates.versionChange", {
                 currentVersion: updateInfo?.currentVersion || t("common.unknown"),
                 newVersion: updateInfo?.newVersion || t("common.unknown"),
               })}
             </Text>
-
             {updateInfo?.prerelease ? (
-              <Text className="mt-2 text-xs font-semibold text-accent">
+              <Text selectable={false} className="mt-2 text-xs font-semibold text-accent">
                 {t("updates.previewRelease")}
               </Text>
             ) : null}
-
-            <Text className="mt-5 text-sm font-semibold text-foreground">
+            <Text selectable={false} className="mt-5 text-sm font-semibold text-foreground">
               {t("updates.whatsNew")}
             </Text>
             <View className="mt-2">
