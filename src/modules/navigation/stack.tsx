@@ -23,6 +23,23 @@ type ScreenStyleInterpolatorArgs = Parameters<
 const isNavigationMaskAvailable =
   Platform.OS === "web" || Boolean(UIManager.getViewManagerConfig?.("RNCMaskedView"))
 
+const ZOOM_TRANSITION_SPEC = {
+  open: {
+    stiffness: 1000,
+    damping: 500,
+    mass: 3,
+    overshootClamping: false,
+    restSpeedThreshold: 0.002,
+  },
+  close: {
+    stiffness: 1000,
+    damping: 500,
+    mass: 3,
+    overshootClamping: false,
+    restSpeedThreshold: 0.002,
+  },
+}
+
 function getHeaderSafeSlideRightOptions(): NativeStackNavigationOptions {
   return {
     animation: "slide_from_right",
@@ -66,6 +83,7 @@ function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
       },
       ...Transition.Presets.ZoomIn(),
       gestureEnabled: false,
+      transitionSpec: ZOOM_TRANSITION_SPEC,
     }
   }
 
@@ -86,10 +104,7 @@ function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
         scaleMode: "uniform",
       }).navigation.zoom()
     },
-    transitionSpec: {
-      open: Transition.Specs.DefaultSpec,
-      close: Transition.Specs.DefaultSpec,
-    },
+    transitionSpec: ZOOM_TRANSITION_SPEC,
   }
 }
 
@@ -126,6 +141,7 @@ function getHiddenPlayerZoomTransitionOptions(boundaryId?: string) {
       },
       ...Transition.Presets.ZoomIn(),
       gestureEnabled: false,
+      transitionSpec: ZOOM_TRANSITION_SPEC,
     }
   }
 
@@ -146,10 +162,7 @@ function getHiddenPlayerZoomTransitionOptions(boundaryId?: string) {
         scaleMode: "uniform",
       }).navigation.zoom()
     },
-    transitionSpec: {
-      open: Transition.Specs.DefaultSpec,
-      close: Transition.Specs.DefaultSpec,
-    },
+    transitionSpec: ZOOM_TRANSITION_SPEC,
   }
 }
 
