@@ -76,7 +76,7 @@ What it does:
 1. Triggers on tag push: `v*.*.*` and `v*.*.*-rc.*`
 2. Supports manual dispatch with `tag` input
 3. Resolves version from tag
-4. Updates `app.json` and `android/app/build.gradle`
+4. Updates `package.json` (version) and `android/app/build.gradle` (versionCode + versionName)
 5. Builds universal APK + ABI-specific APKs (`armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`)
 6. Uploads all APKs as workflow artifact
 7. Creates draft GitHub Release with all APKs attached
