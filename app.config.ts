@@ -5,10 +5,12 @@ import type { ExpoConfig } from "expo/config"
 
 const { version: pkgVersion } = require("./package.json")
 
-const IS_DEV = process.env.EAS_BUILD_PROFILE === "development"
+const APP_VARIANT = process.env.APP_VARIANT ?? "production"
+
+const IS_DEV = APP_VARIANT === "dev"
 
 export default (): ExpoConfig => ({
-  name: "Startune Music",
+  name: IS_DEV ? "Startune Music Dev" : "Startune Music",
   slug: "startune-music",
   scheme: "startune-music",
   version: pkgVersion,
@@ -35,7 +37,7 @@ export default (): ExpoConfig => ({
     },
   },
   android: {
-    package: "com.startune.music",
+    package: IS_DEV ? "com.startune.music.dev" : "com.startune.music",
     adaptiveIcon: {
       foregroundImage: "./src/assets/icon.png",
       backgroundColor: "#000000",
