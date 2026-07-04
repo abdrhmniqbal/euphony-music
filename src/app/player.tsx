@@ -6,9 +6,10 @@
  * Side Effects: Navigates to artist route, toggles player sheets, and schedules player route intents.
  */
 
+import * as Linking from "expo-linking"
 import { Redirect, useLocalSearchParams } from "expo-router"
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
-import { useMemo, useState, useSyncExternalStore } from "react"
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react"
 
 import {
   ValueNavigationSheet,
@@ -24,6 +25,10 @@ import {
   subscribePlayerIntentRuntime,
 } from "@/modules/player/intent-runtime"
 import { useTrack } from "@/modules/tracks/queries"
+import {
+  isLikelyExternalFileIntent,
+  normalizeExternalIntentUri,
+} from "@/modules/player/external-track-utils"
 import { splitArtistsValue } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
 import { type PlayerExpandedView, setPlayerExpandedView, useUIStore } from "@/modules/ui/store"
@@ -67,6 +72,27 @@ export default function PlayerRoute() {
       router.replace(route)
     },
   })
+
+  // Catch external intents via Linking when route params don't update
+  // (e.g. already on /player and new intent arrives on same route)
+  useEffect(() => {
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      if (isLikelyExternalFileIntent(url)) {
+        const parsedUri = normalizeExternalIntentUri(url)
+        if (parsedUri) {
+          schedulePlayerIntentRuntimeSync({
+            initialView: null,
+            externalUri: parsedUri,
+            replaceRoute: (route) => {
+              router.replace(route)
+            },
+          })
+        }
+      }
+    })
+
+    return () => subscription.remove()
+  }, [router])
 
   const artistNames = useMemo(() => {
     const relationNames = [

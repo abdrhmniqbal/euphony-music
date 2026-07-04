@@ -30,6 +30,36 @@ export function normalizeExternalIntentUri(uri: string) {
   return decodedUri
 }
 
+const PATH_PREFIXES = [
+  "content://",
+  "content:/",
+  "file://",
+  "file:/",
+]
+
+const PATH_FRAGMENTS = [
+  "com.mixplorer",
+  "com.android.providers.media.documents",
+  "content%3a%2f",
+  "/storage/",
+  ".mp3",
+  ".flac",
+  ".opus",
+  ".m4a",
+  ".wav",
+]
+
+export function isLikelyExternalFileIntent(path: string) {
+  const normalizedPath = decodeUriRecursively(path).toLowerCase()
+  const pathWithoutLeadingSlashes = normalizedPath.replace(/^\/+/, "")
+
+  return (
+    PATH_PREFIXES.some((prefix) => pathWithoutLeadingSlashes.startsWith(prefix)) ||
+    PATH_PREFIXES.some((prefix) => normalizedPath.startsWith(prefix)) ||
+    PATH_FRAGMENTS.some((fragment) => normalizedPath.includes(fragment))
+  )
+}
+
 export function normalizeUriForComparison(uri: string) {
   const decodedUri = decodeUriRecursively(uri).trim()
   const withoutQuery = decodedUri.split(/[?#]/)[0] ?? decodedUri
