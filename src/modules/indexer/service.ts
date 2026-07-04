@@ -7,6 +7,7 @@
  */
 
 import { refreshIndexedMediaState } from "@/modules/indexer/refresh"
+import { refreshLastFmArtistMetadataForIndexedArtists } from "@/modules/library/lastfm"
 import { rebuildSplitMetadataRelations, scanMediaLibrary } from "@/modules/indexer/repository"
 import {
   consumeQueuedIndexerRun,
@@ -108,6 +109,16 @@ export async function startIndexing(forceFullScan = false, showProgress = true) 
 
     scheduleIndexerCompletePhaseReset(currentRunToken, () => {
       hideIndexerProgress({ keepNotification: showProgress })
+    })
+
+    // Run Last.fm metadata refresh in background after indexing completes
+    void measurePerfTrace("indexer.refreshLastFmArtistMetadata", async () => {
+      try {
+        await refreshLastFmArtistMetadataForIndexedArtists(forceFullScan)
+        await refreshIndexedMediaState()
+      } catch (error) {
+        logError("Background Last.fm metadata refresh failed", error)
+      }
     })
   } catch (error) {
     if (isIndexerRunStale(controller, currentRunToken)) {

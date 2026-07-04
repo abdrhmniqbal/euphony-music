@@ -1,8 +1,10 @@
+import { AsyncRateLimiter } from "@tanstack/pacer/async-rate-limiter"
 import * as SecureStore from "expo-secure-store"
 import { and, gt, isNull, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { artists } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
+import { saveArtworkToCache } from "@/modules/indexer/metadata/artwork-cache-repository"
 
 export interface LastFmArtistInfo {
   bio?: string
@@ -166,13 +168,37 @@ async function fetchLastFmArtistInfo(artistName: string): Promise<LastFmArtistIn
   }
 }
 
+async function rateLimitedFetch(
+  rateLimiter: AsyncRateLimiter<(...args: string[]) => Promise<LastFmArtistInfo>>,
+  artistName: string,
+  signal?: AbortSignal
+): Promise<LastFmArtistInfo | undefined> {
+  while (!signal?.aborted) {
+    const result = await rateLimiter.maybeExecute(artistName)
+    if (result !== undefined) return result
+
+    const waitMs = rateLimiter.getMsUntilNextWindow()
+    if (waitMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, Math.min(waitMs, 200)))
+    }
+  }
+  return undefined
+}
+
 export async function refreshLastFmArtistMetadataForIndexedArtists(
   forceRefresh = false,
   signal?: AbortSignal
 ) {
   const whereClause = forceRefresh
     ? gt(artists.trackCount, 0)
-    : and(gt(artists.trackCount, 0), or(isNull(artists.artwork), isNull(artists.bio)))
+    : and(
+        gt(artists.trackCount, 0),
+        or(
+          isNull(artists.artwork),
+          sql`artists.artwork NOT LIKE 'http%'`,
+          isNull(artists.bio)
+        )
+      )
 
   const rows = await db.query.artists.findMany({
     where: whereClause,
@@ -185,17 +211,36 @@ export async function refreshLastFmArtistMetadataForIndexedArtists(
     orderBy: sql`lower(coalesce(${artists.name}, ''))`,
   })
 
+  const rateLimiter = new AsyncRateLimiter(
+    async (name: string) => fetchLastFmArtistInfo(name),
+    {
+      limit: 2,
+      window: 1000,
+      windowType: "sliding",
+    }
+  )
+
   for (const artist of rows) {
     if (signal?.aborted) return
 
-    const info = await fetchLastFmArtistInfo(artist.name)
-    if (!info.bio && !info.image) continue
+    const info = await rateLimitedFetch(rateLimiter, artist.name, signal)
+    if (!info?.bio && !info?.image) continue
+
+    let cachedImage = info.image
+    if (cachedImage && (cachedImage.startsWith("http://") || cachedImage.startsWith("https://"))) {
+      try {
+        const localPath = await saveArtworkToCache(cachedImage)
+        if (localPath) cachedImage = localPath
+      } catch (err) {
+        logError("Failed to cache artist image", err instanceof Error ? err : new Error(String(err)))
+      }
+    }
 
     await db
       .update(artists)
       .set({
         bio: info.bio || artist.bio || null,
-        artwork: info.image || artist.artwork || null,
+        artwork: cachedImage || (artist.artwork?.startsWith("http") ? null : artist.artwork) || null,
         updatedAt: Date.now(),
       })
       .where(sql`${artists.id} = ${artist.id}`)

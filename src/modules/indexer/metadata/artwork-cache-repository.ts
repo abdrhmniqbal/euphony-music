@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm"
 import { Directory, File, Paths } from "expo-file-system"
+import * as FileSystem from "expo-file-system"
 import { db } from "@/db/client"
 import { artworkCache } from "@/db/schema"
 
@@ -7,7 +8,8 @@ export const ARTWORK_DIR_NAME = "artwork"
 export const ARTWORK_FILE_EXTENSION = "jpg"
 
 export async function saveArtworkToCache(
-  artworkData: string | undefined
+  artworkData: string | undefined,
+  sourceUrl?: string
 ): Promise<string | undefined> {
   if (!artworkData) return undefined
 
@@ -16,11 +18,55 @@ export async function saveArtworkToCache(
       return artworkData
     }
 
+    if (artworkData.startsWith("http://") || artworkData.startsWith("https://")) {
+      const hash = sourceUrl ? generateArtworkHash(sourceUrl) : generateArtworkHash(artworkData)
+      const existing = await db.query.artworkCache.findFirst({
+        where: eq(artworkCache.hash, hash),
+      })
+
+      if (existing) {
+        const existingFile = new File(existing.path)
+        if (existingFile.exists) {
+          return existing.path
+        }
+      }
+
+      const cacheDir = new Directory(Paths.cache, ARTWORK_DIR_NAME)
+      if (!cacheDir.exists) {
+        cacheDir.create({ intermediates: true, idempotent: true })
+      }
+
+      const artworkFileUri = `${cacheDir.uri}${hash}.${ARTWORK_FILE_EXTENSION}`
+      const downloadResult = await FileSystem.downloadAsync(artworkData, artworkFileUri)
+      
+      const mimeType = downloadResult.headers?.["content-type"] || "image/jpeg"
+
+      await db
+        .insert(artworkCache)
+        .values({
+          hash,
+          path: downloadResult.uri,
+          mimeType,
+          source: "remote",
+          createdAt: Date.now(),
+        })
+        .onConflictDoUpdate({
+          target: artworkCache.hash,
+          set: {
+            path: downloadResult.uri,
+            mimeType,
+            source: "remote",
+          },
+        })
+
+      return downloadResult.uri
+    }
+
     const normalizedArtwork = normalizeArtworkData(artworkData)
     if (!normalizedArtwork) return undefined
 
     const { base64Data, mimeType } = normalizedArtwork
-    const hash = generateArtworkHash(base64Data)
+    const hash = sourceUrl ? generateArtworkHash(sourceUrl) : generateArtworkHash(base64Data)
 
     const existing = await db.query.artworkCache.findFirst({
       where: eq(artworkCache.hash, hash),
@@ -53,7 +99,7 @@ export async function saveArtworkToCache(
         hash,
         path: artworkFile.uri,
         mimeType,
-        source: "embedded",
+        source: sourceUrl ? "remote" : "embedded",
         createdAt: Date.now(),
       })
       .onConflictDoUpdate({
@@ -61,7 +107,7 @@ export async function saveArtworkToCache(
         set: {
           path: artworkFile.uri,
           mimeType,
-          source: "embedded",
+          source: sourceUrl ? "remote" : "embedded",
         },
       })
 
@@ -104,7 +150,7 @@ export async function cleanupUnusedArtworkCache(): Promise<void> {
   const referencedArtworkPaths = new Set(
     [...trackRows, ...albumRows, ...artistRows, ...playlistRows]
       .map((row) => row.artwork)
-      .filter((path): path is string => Boolean(path))
+      .filter((path): path is string => Boolean(path) && !path.startsWith("http"))
   )
 
   for (const cached of cachedArtwork) {

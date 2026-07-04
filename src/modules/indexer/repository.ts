@@ -29,7 +29,6 @@ import { generateAssetHash } from "./file-identity"
 import { saveIndexerRunSnapshot } from "./run-snapshot"
 import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
 import { yieldToEventLoop } from "./batch-utils"
-import { refreshLastFmArtistMetadataForIndexedArtists } from "@/modules/library/lastfm"
 import {
   processDeletedTracksInScopes,
   hardDeleteSoftDeletedTracksInScopes,
@@ -211,9 +210,6 @@ export async function scanMediaLibrary(
   await updateAlbumCounts()
   if (signal?.aborted) return
   await updateGenreCounts()
-  if (signal?.aborted) return
-
-  await refreshLastFmArtistMetadataForIndexedArtists(forceFullScan, signal)
   if (signal?.aborted) return
 
   onProgress?.({
