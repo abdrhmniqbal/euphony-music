@@ -133,7 +133,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
     <Animated.View
       entering={SlideInDown.duration(300)}
       exiting={SlideOutDown.duration(300)}
-      className="absolute right-0 left-0 h-16"
+      className="absolute right-0 left-0 h-17"
       style={{
         bottom: bottomOffset,
       }}
