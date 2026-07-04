@@ -67,6 +67,9 @@ importers:
       expo-application:
         specifier: ~57.0.0
         version: 57.0.0(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3)
+      expo-build-properties:
+        specifier: ~57.0.0
+        version: 57.0.1(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3)
       expo-crypto:
         specifier: ~57.0.0
         version: 57.0.0(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3)
@@ -3446,6 +3449,11 @@ packages:
   expo-atlas@0.4.3:
     resolution: {integrity: sha512-nN2bouxFvMsqZqLl0ka+eI9Ofida0PcuoE4v+7fHlgyp95X2cCL8Acf0nRKXmmIBEYazdw0d7BAOZfC0b41oxA==}
     hasBin: true
+    peerDependencies:
+      expo: '*'
+
+  expo-build-properties@57.0.1:
+    resolution: {integrity: sha512-k56DxZJEa1emeOYZ94PTZ/Yry5j639NwNzNmTX1R2wX7t7vZL5XUkbZ7IYIsQitEEu3acHYaVG07wXMbRMtRPg==}
     peerDependencies:
       expo: '*'
 
@@ -9115,6 +9123,13 @@ snapshots:
       stream-json: 1.9.1
     transitivePeerDependencies:
       - supports-color
+
+  expo-build-properties@57.0.1(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3):
+    dependencies:
+      '@expo/schema-utils': 57.0.0
+      expo: 57.0.1(@babel/core@7.29.7)(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3))(react-native-worklets@0.10.0(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react@19.2.3)(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(typescript@6.0.3)
+      resolve-from: 5.0.0
+      semver: 7.8.4
 
   expo-constants@57.0.2(@babel/core@7.29.7)(expo@57.0.1(@expo/dom-webview@57.0.0)(@expo/metro-runtime@57.0.2)(react@19.2.3)(react-dom@19.2.3(react@19.2.3))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)))(react-native@0.86.0(@types/react@19.2.17)(react@19.2.3)):
     dependencies:

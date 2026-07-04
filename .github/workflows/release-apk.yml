@@ -124,12 +124,11 @@ jobs:
           const versionName = process.env.APP_VERSION_NAME
           const versionCode = process.env.APP_VERSION_CODE
 
-          // Update Expo app version in app.json
-          const appJsonPath = 'app.json'
-          const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'))
-          appJson.expo = appJson.expo || {}
-          appJson.expo.version = versionName
-          fs.writeFileSync(appJsonPath, `${JSON.stringify(appJson, null, 2)}\n`)
+          // Update package.json version (app.config.ts reads from here)
+          const pkgPath = 'package.json'
+          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+          pkg.version = versionName
+          fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)
 
           // Update native Android version fields
           const gradlePath = 'android/app/build.gradle'
