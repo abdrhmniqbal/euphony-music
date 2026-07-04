@@ -2,6 +2,31 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.0.1] - 2026-07-04
+
+### ✨ Added
+
+- Native APK download & install with notification progress for in-app updates. (@abdrhmniqbal)
+- Battery Optimization as Expo native module (auto-linked, no manual registration). (@abdrhmniqbal)
+- Static theme colors auto-generated from CSS as single source of truth. (@abdrhmniqbal)
+- Auto-link raw URLs in release notes with shortened display text. (@abdrhmniqbal)
+
+### ⚙️ Changed
+
+- Migrated from app.json to app.config.ts with Expo Modules API for native code. (@abdrhmniqbal)
+- Upgraded to Expo SDK 57. (@abdrhmniqbal)
+- Migrated file-path.ts from expo-file-system/legacy to modern File/Directory API. (@abdrhmniqbal)
+- App-update sheet redesigned with proper snap points (48%, 88%) and matching footer color. (@abdrhmniqbal)
+- Removed unused exports (101 symbols across 49 files) and consolidated duplicate utilities. (@abdrhmniqbal)
+- Extracted shared detail screen hooks (useArtistDetailData, usePlaybackActions, useDetailScrollHandlers). (@abdrhmniqbal)
+
+### 🧩 Fixed
+
+- Album card crash when handlePress is undefined in horizontal grid. (@abdrhmniqbal)
+- Kotlin JVM target mismatch on react-native-image-colors causing build failures. (@abdrhmniqbal)
+- All lint warnings resolved (unused imports, useless escapes, unsafe finally, exhaustive-deps). (@abdrhmniqbal)
+- Update sheet text now non-selectable with consistent drag handler. (@abdrhmniqbal)
+
 ## [v1.0.0] - 2026-06-30
 
 ### ✨ Added
