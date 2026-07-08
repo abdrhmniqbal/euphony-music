@@ -2,13 +2,13 @@ import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { type LayoutChangeEvent, Text, View } from "react-native"
 import Animated, { useAnimatedStyle, useDerivedValue } from "react-native-reanimated"
-import type { TimedMarkupLine } from "@/modules/lyrics"
+import type { TimedLine } from "@/modules/lyrics"
 import {
-  getTimedMarkupDisplayText,
-  getTimedMarkupLineText,
-  getTimedMarkupWordGroups,
+  getTimedDisplayText,
+  getTimedLineText,
+  getTimedWordGroups,
   hasWordLevelTiming,
-} from "@/modules/lyrics/view-utils"
+} from "@/modules/lyrics"
 
 interface ReadableSharedValue<T> {
   readonly value: T
@@ -29,14 +29,14 @@ const TimedMarkupWordSpan: React.FC<{
     ? "rgba(255,255,255,0.46)"
     : linePast
       ? "rgba(255,255,255,0.54)"
-      : "rgba(255,255,255,0.20)"
+      : "rgba(255,255,255,0.45)"
 
   const activeColor = "rgba(255,255,255,0.96)"
   const fontSize = (lineActive ? 24 : 18) * fontScale
   const lineHeight = (lineActive ? 36 : 28) * fontScale
   const fontWeight = lineActive ? "700" : "600"
 
-  const displayText = getTimedMarkupDisplayText(text)
+  const displayText = getTimedDisplayText(text)
   const wordProgressSv = useDerivedValue(() => {
     const wordDuration = Math.max(end - begin, 0.001)
     const currentTime = currentTimeSv.value
@@ -114,7 +114,7 @@ const TimedMarkupWordSpan: React.FC<{
 }
 
 const TimedMarkupLineRow: React.FC<{
-  line: TimedMarkupLine
+  line: TimedLine
   isActive: boolean
   isPast: boolean
   fontScale: number
@@ -122,7 +122,7 @@ const TimedMarkupLineRow: React.FC<{
   onLayoutLine: (id: string, y: number) => void
   currentTimeSv: ReadableSharedValue<number>
 }> = ({ line, isActive, isPast, fontScale, onSeek, onLayoutLine, currentTimeSv }) => {
-  const lineText = React.useMemo(() => getTimedMarkupLineText(line).trim(), [line])
+  const lineText = React.useMemo(() => getTimedLineText(line).trim(), [line])
   const handlePress = React.useCallback(
     () => onSeek(line.begin, lineText),
     [line.begin, lineText, onSeek]
@@ -131,13 +131,13 @@ const TimedMarkupLineRow: React.FC<{
     (event: LayoutChangeEvent) => onLayoutLine(line.id, event.nativeEvent.layout.y),
     [line.id, onLayoutLine]
   )
-  const wordGroups = React.useMemo(() => getTimedMarkupWordGroups(line), [line])
+  const wordGroups = React.useMemo(() => getTimedWordGroups(line), [line])
   const canRenderWordProgress = isActive && hasWordLevelTiming(line)
   const textColor = isActive
     ? "rgba(255,255,255,0.96)"
     : isPast
       ? "rgba(255,255,255,0.54)"
-      : "rgba(255,255,255,0.20)"
+      : "rgba(255,255,255,0.45)"
   const fontSize = (isActive ? 24 : 18) * fontScale
   const lineHeight = (isActive ? 36 : 28) * fontScale
   const fontWeight = isActive ? "700" : "600"
@@ -145,7 +145,8 @@ const TimedMarkupLineRow: React.FC<{
   return (
     <PressableFeedback
       onPress={handlePress}
-      className="py-1 active:opacity-85"
+      className="active:opacity-85"
+      style={{ paddingVertical: isActive ? 14 : 8 }}
       onLayout={handleLayout}
     >
       {canRenderWordProgress ? (
@@ -195,16 +196,16 @@ const TimedMarkupLineRow: React.FC<{
 }
 
 export const TimedMarkupLyrics: React.FC<{
-  lines: TimedMarkupLine[]
-  activeSyncedLineIndex: number
+  lines: TimedLine[]
+  activeIndex: number
   fontScale: number
   onSeek: (time: number, text?: string) => void
   onLayoutLine: (id: string, y: number) => void
   currentTimeSv: ReadableSharedValue<number>
-}> = ({ lines, activeSyncedLineIndex, fontScale, onSeek, onLayoutLine, currentTimeSv }) => {
+}> = ({ lines, activeIndex, fontScale, onSeek, onLayoutLine, currentTimeSv }) => {
   return lines.map((line, index) => {
-    const isActive = index === activeSyncedLineIndex
-    const isPast = activeSyncedLineIndex >= 0 && index < activeSyncedLineIndex
+    const isActive = index === activeIndex
+    const isPast = activeIndex >= 0 && index < activeIndex
 
     return (
       <TimedMarkupLineRow

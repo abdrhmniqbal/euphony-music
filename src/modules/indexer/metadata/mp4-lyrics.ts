@@ -1,4 +1,3 @@
-import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
 
 function decodeInteger(bytes: Uint8Array, offset: number) {
   return (
@@ -71,9 +70,7 @@ export function extractMp4Lyrics(bytes: Uint8Array) {
     const childEnd = Math.min(lyricAtom.length, offset + childSize)
     if (childType === "data") {
       const payload = lyricAtom.slice(offset + 16, childEnd)
-      const lyrics = stripMalformedUtf16LyricsPrefix(
-        new TextDecoder("utf-8").decode(payload)
-      ).trim()
+      const lyrics = new TextDecoder("utf-8").decode(payload).trim()
       if (lyrics) {
         return lyrics
       }

@@ -1,4 +1,3 @@
-import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
 
 const ID3_HEADER_SIZE = 10
 const ID3_FRAME_HEADER_SIZE = 10
@@ -218,7 +217,7 @@ export function extractId3Lyrics(bytes: Uint8Array) {
       const lyricsStart =
         descriptorEnd >= 0 ? descriptorEnd + (encoding === 0 || encoding === 3 ? 1 : 2) : 0
       const lyricsBytes = descriptorAndLyrics.slice(lyricsStart)
-      const lyrics = stripMalformedUtf16LyricsPrefix(decodeTextValue(lyricsBytes, encoding)).trim()
+      const lyrics = decodeTextValue(lyricsBytes, encoding).trim()
       if (lyrics) {
         return lyrics
       }

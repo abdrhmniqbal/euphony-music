@@ -1,10 +1,10 @@
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
-import type { LyricsLine } from "@/modules/lyrics/plain-text"
+import type { StaticLine } from "@/modules/lyrics"
 
 export const StaticLyrics: React.FC<{
-  lines: LyricsLine[]
+  lines: StaticLine[]
   fontScale: number
 }> = ({ lines, fontScale }) => {
   return lines.map((line) => {
@@ -13,11 +13,11 @@ export const StaticLyrics: React.FC<{
     }
 
     return (
-      <PressableFeedback key={line.id} className="py-1 active:opacity-85">
+      <PressableFeedback key={line.id} className="py-2 active:opacity-85">
         <Text
           selectable={false}
           style={{
-            color: "rgba(255,255,255,0.8)",
+            color: "rgba(255,255,255,0.92)",
             fontSize: 20 * fontScale,
             lineHeight: 32 * fontScale,
             fontWeight: "700",

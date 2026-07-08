@@ -1,18 +1,19 @@
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { Text } from "react-native"
-import type { SyncedLyricsLine } from "@/modules/lyrics/lrc-parser"
+import type { SyncedLine } from "@/modules/lyrics"
 import { seekTo } from "@/modules/player/controls"
 
 export const SyncedLyrics: React.FC<{
-  lines: SyncedLyricsLine[]
-  activeSyncedLineIndex: number
+  lines: SyncedLine[]
+  activeIndex: number
   fontScale: number
   onLayoutLine: (id: string, y: number) => void
-}> = ({ lines, activeSyncedLineIndex, fontScale, onLayoutLine }) => {
+}> = ({ lines, activeIndex, fontScale, onLayoutLine }) => {
   return lines.map((line, index) => {
-    const isActive = index === activeSyncedLineIndex
-    const isPast = activeSyncedLineIndex >= 0 && index < activeSyncedLineIndex
+    const karaokeOn = activeIndex >= 0
+    const isActive = karaokeOn && index === activeIndex
+    const isPast = karaokeOn && index < activeIndex
 
     return (
       <PressableFeedback
@@ -20,7 +21,8 @@ export const SyncedLyrics: React.FC<{
         onPress={() => {
           void seekTo(line.time)
         }}
-        className="py-1 active:opacity-85"
+        className="active:opacity-85"
+        style={{ paddingVertical: isActive ? 14 : 8 }}
         onLayout={(event) => onLayoutLine(line.id, event.nativeEvent.layout.y)}
       >
         <Text
@@ -30,7 +32,7 @@ export const SyncedLyrics: React.FC<{
               ? "rgba(255,255,255,0.96)"
               : isPast
                 ? "rgba(255,255,255,0.48)"
-                : "rgba(255,255,255,0.22)",
+                : "rgba(255,255,255,0.45)",
             fontSize: (isActive ? 22 : 18) * fontScale,
             lineHeight: (isActive ? 34 : 28) * fontScale,
             fontWeight: isActive ? "700" : "600",

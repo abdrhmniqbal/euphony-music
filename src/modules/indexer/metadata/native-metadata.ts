@@ -4,7 +4,6 @@ import { extractId3Lyrics } from "./id3-lyrics"
 import { extractMp4Lyrics } from "./mp4-lyrics"
 import type { SplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
 import { splitArtistsValue, splitGenresValue } from "@/modules/settings/split-multiple-values"
-import { stripMalformedUtf16LyricsPrefix } from "@/modules/lyrics/prefix-normalization"
 
 export interface ExtractedMetadata {
   title: string
@@ -62,9 +61,7 @@ export async function extractEmbeddedLyrics(uri: string) {
   } catch {}
 
   const nativeLyrics = await getLyric(uri).catch(() => null)
-  const sanitizedNativeLyrics = nativeLyrics
-    ? stripMalformedUtf16LyricsPrefix(nativeLyrics).trim()
-    : null
+  const sanitizedNativeLyrics = nativeLyrics ? nativeLyrics.trim() : null
   if (sanitizedNativeLyrics) {
     return sanitizedNativeLyrics
   }
@@ -135,7 +132,7 @@ async function readSidecarLyrics(candidateUri: string): Promise<string | undefin
 
     const bytes = await sidecarFile.bytes()
     const decoded = decodeLyricsBytes(bytes)
-    const normalized = decoded ? stripMalformedUtf16LyricsPrefix(decoded).trim() : undefined
+    const normalized = decoded ? decoded.trim() : undefined
     return normalized && normalized.length > 0 ? normalized : undefined
   } catch {
     return undefined

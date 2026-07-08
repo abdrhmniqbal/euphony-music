@@ -1,7 +1,7 @@
 import type { Track } from "@/modules/player/types"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
-import { ScrollView, Text, useWindowDimensions, type LayoutChangeEvent } from "react-native"
+import { ScrollView, Text, View, useWindowDimensions, type LayoutChangeEvent } from "react-native"
 import { useTranslation } from "react-i18next"
 import Animated, {
   Easing,
@@ -13,9 +13,9 @@ import Animated, {
 } from "react-native-reanimated"
 import LocalMic01Icon from "@/components/icons/local/mic-01"
 import { EmptyState } from "@/components/ui/empty-state"
+import { ScaleLoader } from "@/components/ui/scale-loader"
 import {
   useIsPlaying,
-  usePlaybackCurrentTime,
   usePlaybackDuration,
 } from "@/modules/player/selectors"
 import { useThemeColors } from "@/modules/ui/theme"
@@ -25,10 +25,8 @@ import {
   useUIStore,
 } from "@/modules/ui/store"
 import { seekTo } from "@/modules/player/controls"
-
-import { useResolvedLyrics } from "../use-resolved-lyrics"
-import { useLyricsPresentation } from "../use-lyrics-presentation"
-import { useLyricsAutoScroll } from "../use-lyrics-auto-scroll"
+import type { TimedLine } from "@/modules/lyrics"
+import { useLyrics } from "@/modules/lyrics"
 import { TimedMarkupLyrics } from "./timed-markup-lyrics"
 import { StaticLyrics } from "./static-lyrics"
 import { SyncedLyrics } from "./synced-lyrics"
@@ -41,39 +39,30 @@ const KARAOKE_PROGRESS_TICK_SECONDS = 0.5
 const KARAOKE_PROGRESS_ANIMATION_MS = 520
 const FONT_SCALE_VALUES = [1, 1.2, 1.4] as const
 
-function getInterpolatedPlaybackTimeTarget({
-  duration,
-  isPlaying,
-  line,
-  nextLine,
-  time,
-}: {
+function getInterpolatedPlaybackTimeTarget(args: {
   duration: number
   isPlaying: boolean
-  line: any
-  nextLine: any
+  line: TimedLine | undefined
+  nextLine: TimedLine | undefined
   time: number
-}) {
+}): number {
   "worklet"
 
+  const { duration, isPlaying, line, nextLine, time } = args
   if (!isPlaying) {
     return time
   }
 
   let targetTime = time + KARAOKE_PROGRESS_TICK_SECONDS
-
   if (duration > 0) {
     targetTime = Math.min(duration, targetTime)
   }
-
   if (line && line.end > line.begin && time < line.end) {
     targetTime = Math.min(targetTime, line.end)
   }
-
   if (nextLine && nextLine.begin > time) {
     targetTime = Math.min(targetTime, nextLine.begin)
   }
-
   return targetTime
 }
 
@@ -82,76 +71,52 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
   const { t } = useTranslation()
   const { height } = useWindowDimensions()
   const fontScale = useUIStore((state) => state.playerLyricsFontScale)
-
-  const { data: resolvedLyrics = null } = useResolvedLyrics(track)
-
-  const playbackTime = usePlaybackCurrentTime()
   const isPlaying = useIsPlaying()
   const playbackDuration = usePlaybackDuration()
 
   const {
-    effectiveMode,
-    hasStaticLyrics,
-    hasSyncedLyrics,
-    timedMarkupLines,
-    staticDisplayLines,
-    syncedLines,
-    activeSyncedLineIndex,
+    doc,
+    mode,
+    activeIndex,
     karaokeEnabled,
-  } = useLyricsPresentation(resolvedLyrics, playbackTime)
+    playbackTime,
+    isLoading,
+    scrollViewRef,
+    setLineOffset,
+    onUserScrollStart,
+    onUserScrollEnd,
+    setViewportHeight,
+  } = useLyrics(track)
 
-  const activeLine =
-    effectiveMode === "timedMarkup"
-      ? timedMarkupLines[activeSyncedLineIndex]
-      : effectiveMode === "synced"
-        ? syncedLines[activeSyncedLineIndex]
-        : undefined
-
-  const [viewportHeight, setViewportHeight] = React.useState(0)
-  const layoutCacheKey = `${track?.id ?? ""}:${effectiveMode}:${fontScale}`
-
-  const { scrollViewRef, setSyncedLineOffset, handleUserScrollStart, handleUserScrollEnd } =
-    useLyricsAutoScroll({
-      layoutCacheKey,
-      effectiveMode,
-      fontScale,
-      activeSyncedLineIndex,
-      activeLine,
-      viewportHeight,
-    })
+  const hasLyrics = doc.kind !== "empty"
+  const hasSynced = doc.kind === "synced" || doc.kind === "timed"
 
   const handleToggleKaraoke = React.useCallback(() => {
-    if (!hasSyncedLyrics) {
+    if (!hasSynced) {
       return
     }
     setPlayerLyricsKaraokeEnabled(!karaokeEnabled)
-  }, [hasSyncedLyrics, karaokeEnabled])
+  }, [hasSynced, karaokeEnabled])
 
   const handleToggleFontScale = React.useCallback(() => {
-    const currentIndex = FONT_SCALE_VALUES.indexOf(fontScale)
-    const nextIndex = (currentIndex + 1) % FONT_SCALE_VALUES.length
-    const nextScale = FONT_SCALE_VALUES[nextIndex] ?? 1
-    setPlayerLyricsFontScale(nextScale)
+    const nextIndex = (FONT_SCALE_VALUES.indexOf(fontScale) + 1) % FONT_SCALE_VALUES.length
+    setPlayerLyricsFontScale(FONT_SCALE_VALUES[nextIndex] ?? 1)
   }, [fontScale])
 
-  const fontScaleLabel = React.useMemo(() => {
-    const levelIndex = FONT_SCALE_VALUES.indexOf(fontScale)
-    const level = levelIndex >= 0 ? levelIndex + 1 : 1
-    return `×${level}`
-  }, [fontScale])
+  const fontScaleLabel = `×${(FONT_SCALE_VALUES.indexOf(fontScale) + 1) || 1}`
 
   const handleSeek = React.useCallback((time: number) => {
     void seekTo(time)
   }, [])
 
   const currentTimeSv = useDerivedValue(() => {
-    if (effectiveMode !== "timedMarkup") {
+    if (mode !== "timed" || doc.kind !== "timed") {
       return playbackTime
     }
 
-    const line = timedMarkupLines[activeSyncedLineIndex]
-    const nextLine = timedMarkupLines[activeSyncedLineIndex + 1]
-    const targetTime = getInterpolatedPlaybackTimeTarget({
+    const line = doc.lines[activeIndex]
+    const nextLine = doc.lines[activeIndex + 1]
+    const target = getInterpolatedPlaybackTimeTarget({
       duration: playbackDuration,
       isPlaying,
       line,
@@ -160,18 +125,15 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
     })
 
     return isPlaying
-      ? withTiming(targetTime, {
-          duration: KARAOKE_PROGRESS_ANIMATION_MS,
-          easing: Easing.linear,
-        })
+      ? withTiming(target, { duration: KARAOKE_PROGRESS_ANIMATION_MS, easing: Easing.linear })
       : playbackTime
-  })
+  }, [mode, doc, activeIndex, playbackTime, playbackDuration, isPlaying])
 
   if (!track) {
     return null
   }
 
-  if (!hasStaticLyrics) {
+  if (!hasLyrics) {
     return (
       <Animated.View
         entering={FadeIn.duration(200)}
@@ -179,12 +141,18 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
         layout={Layout.duration(300)}
         className="-mx-2 my-3 flex-1 justify-center"
       >
-        <EmptyState
-          icon={<LocalMic01Icon fill="none" width={36} height={36} color={theme.muted} />}
-          title={t("library.empty.lyricsTitle")}
-          message={t("library.empty.lyricsMessage")}
-          className="py-0"
-        />
+        {isLoading ? (
+          <View className="items-center justify-center py-12">
+            <ScaleLoader size={22} />
+          </View>
+        ) : (
+          <EmptyState
+            icon={<LocalMic01Icon fill="none" width={36} height={36} color={theme.muted} />}
+            title={t("library.empty.lyricsTitle")}
+            message={t("library.empty.lyricsMessage")}
+            className="py-0"
+          />
+        )}
       </Animated.View>
     )
   }
@@ -197,18 +165,15 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
       className="-mx-2 my-3 flex-1 overflow-hidden"
     >
       <ScrollView
-        key={layoutCacheKey}
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled
-        onScrollBeginDrag={handleUserScrollStart}
-        onMomentumScrollBegin={handleUserScrollStart}
-        onScrollEndDrag={handleUserScrollEnd}
-        onMomentumScrollEnd={handleUserScrollEnd}
-        onLayout={(event: LayoutChangeEvent) => {
-          setViewportHeight(event.nativeEvent.layout.height)
-        }}
+        onScrollBeginDrag={onUserScrollStart}
+        onMomentumScrollBegin={onUserScrollStart}
+        onScrollEndDrag={onUserScrollEnd}
+        onMomentumScrollEnd={onUserScrollEnd}
+        onLayout={(event: LayoutChangeEvent) => setViewportHeight(event.nativeEvent.layout.height)}
         contentContainerStyle={{
           paddingTop: 8,
           paddingBottom: Math.max(96, height * 0.24),
@@ -216,41 +181,40 @@ export const LyricsView: React.FC<LyricsViewProps> = ({ track }) => {
           gap: 10,
         }}
       >
-        {effectiveMode === "timedMarkup" ? (
+        {doc.kind === "timed" ? (
           <TimedMarkupLyrics
-            lines={timedMarkupLines}
-            activeSyncedLineIndex={activeSyncedLineIndex}
+            lines={doc.lines}
+            activeIndex={mode === "timed" ? activeIndex : -1}
             fontScale={fontScale}
             onSeek={handleSeek}
-            onLayoutLine={setSyncedLineOffset}
+            onLayoutLine={setLineOffset}
             currentTimeSv={currentTimeSv}
           />
-        ) : effectiveMode === "static" ? (
-          <StaticLyrics lines={staticDisplayLines} fontScale={fontScale} />
-        ) : (
+        ) : doc.kind === "synced" ? (
           <SyncedLyrics
-            lines={syncedLines}
-            activeSyncedLineIndex={activeSyncedLineIndex}
+            lines={doc.lines}
+            activeIndex={mode === "synced" ? activeIndex : -1}
             fontScale={fontScale}
-            onLayoutLine={setSyncedLineOffset}
+            onLayoutLine={setLineOffset}
           />
-        )}
+        ) : doc.kind === "static" ? (
+          <StaticLyrics lines={doc.lines} fontScale={fontScale} />
+        ) : null}
       </ScrollView>
 
-      {hasSyncedLyrics ? (
+      {hasSynced ? (
         <PressableFeedback
           onPress={handleToggleKaraoke}
           className="absolute bottom-3 left-2 rounded-full px-3 py-2 active:opacity-90"
           style={{
-            backgroundColor:
-              effectiveMode !== "static" ? theme.foreground : "rgba(255, 255, 255, 0.14)",
+            backgroundColor: karaokeEnabled ? theme.foreground : "rgba(255, 255, 255, 0.14)",
           }}
         >
           <Text
             className="text-xs font-semibold"
-            style={{ color: effectiveMode !== "static" ? "#0A0A0A" : "white" }}
+            style={{ color: karaokeEnabled ? "#0A0A0A" : "white" }}
           >
-            {effectiveMode !== "static" ? t("player.karaokeOn") : t("player.karaokeOff")}
+            {karaokeEnabled ? t("player.karaokeOn") : t("player.karaokeOff")}
           </Text>
         </PressableFeedback>
       ) : null}
