@@ -233,6 +233,22 @@ jobs:
           files: ${{ steps.collect_apk.outputs.apk_files }}
           fail_on_unmatched_files: true
           overwrite_files: true
-          draft: true
+          draft: false
           prerelease: ${{ contains(env.RELEASE_TAG, '-rc.') }}
           generate_release_notes: false
+
+  attach-release-notes:
+    name: Attach Release Notes
+    needs: build-apk
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Trigger release notes workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.build-apk.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+          gh workflow run release-notes.yml -f release_tag="${RELEASE_TAG}"
+          echo "Triggered release-notes workflow for ${RELEASE_TAG}"

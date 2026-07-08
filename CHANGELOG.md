@@ -2,6 +2,26 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.0.2] - 2026-07-08
+
+### ⚙️ Changed
+
+- Refactored lyrics module into a single parser and `useLyrics` hook, removing workarounds and duplicate files. (@abdrhmniqbal)
+- Collapsed duplicated zoom-transition helpers and thin navigation wrappers. (@abdrhmniqbal)
+- Refactored notifications: fixed dedup key, extracted shared pending-route flush, table-driven indexer actions. (@abdrhmniqbal)
+- Replaced bootstrap waiter registry with a single bootstrap completion promise. (@abdrhmniqbal)
+- Collapsed duplicated cast command try/catch/log boilerplate into one helper. (@abdrhmniqbal)
+- Deleted dead history cache-service and duplicated write functions; consolidated play recording into `tracks/repository`. (@abdrhmniqbal)
+- Redesigned runtime error state with the canonical `EmptyState`; removed `DatabaseProvider` pass-through. (@abdrhmniqbal)
+
+### 🧩 Fixed
+
+- Last.fm artist refresh: avoid HTTP 406, isolate per-artist failures, add resume cursor. (@abdrhmniqbal)
+- Notification-open blank screen: drop stale launch notification replay and gate route until router ready. (@abdrhmniqbal)
+- Mini-player not restoring after idle/paused state on reopen. (@abdrhmniqbal)
+- Replaced deprecated `FileSystem.downloadAsync` with `File.downloadFileAsync` in artwork cache. (@abdrhmniqbal)
+- Bottom bar stays hidden on short (non-scrollable) lists; auto-shows after scroll idle. (@abdrhmniqbal)
+
 ## [v1.0.1] - 2026-07-04
 
 ### ✨ Added
