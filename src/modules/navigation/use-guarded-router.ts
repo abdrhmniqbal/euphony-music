@@ -7,13 +7,13 @@
  */
 
 import { useRouter as useExpoRouter } from "expo-router"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 
 const NAVIGATION_GUARD_WINDOW_MS = 900
 
 type ExpoRouter = ReturnType<typeof useExpoRouter>
-type PushArgs = Parameters<ExpoRouter["push"]>
-type ReplaceArgs = Parameters<ExpoRouter["replace"]>
+type RouterMethod = "push" | "replace"
+type MethodArgs<M extends RouterMethod> = Parameters<ExpoRouter[M]>
 
 interface NavigationGuardState {
   key: string
@@ -53,37 +53,29 @@ function shouldRunNavigation(method: "push" | "replace", target: unknown) {
   return true
 }
 
+function makeGuardedMethod<M extends RouterMethod>(
+  router: ExpoRouter,
+  method: M
+): ExpoRouter[M] {
+  return ((...args: MethodArgs<M>) => {
+    if (!shouldRunNavigation(method, args[0])) {
+      return
+    }
+    return (router[method] as (...a: MethodArgs<M>) => unknown)(...args)
+  }) as ExpoRouter[M]
+}
+
 export function useGuardedRouter(): ExpoRouter {
   const router = useExpoRouter()
 
-  const push = useCallback<ExpoRouter["push"]>(
-    (...args: PushArgs) => {
-      if (!shouldRunNavigation("push", args[0])) {
-        return
-      }
-
-      return router.push(...args)
-    },
-    [router]
-  )
-
-  const replace = useCallback<ExpoRouter["replace"]>(
-    (...args: ReplaceArgs) => {
-      if (!shouldRunNavigation("replace", args[0])) {
-        return
-      }
-
-      return router.replace(...args)
-    },
-    [router]
-  )
-
-  return useMemo(
+  const guarded = useMemo(
     () => ({
       ...router,
-      push,
-      replace,
+      push: makeGuardedMethod(router, "push"),
+      replace: makeGuardedMethod(router, "replace"),
     }),
-    [push, replace, router]
+    [router]
   )
+
+  return guarded
 }

@@ -40,24 +40,6 @@ const ZOOM_TRANSITION_SPEC = {
   },
 }
 
-function getHeaderSafeSlideRightOptions(): NativeStackNavigationOptions {
-  return {
-    animation: "slide_from_right",
-  }
-}
-
-function getHeaderSafeFadeFromBottomOptions(): NativeStackNavigationOptions {
-  return {
-    animation: "fade_from_bottom",
-  }
-}
-
-function getHeaderSafeSlideFromBottomOptions(): NativeStackNavigationOptions {
-  return {
-    animation: "slide_from_bottom",
-  }
-}
-
 const HIDDEN_STACK_SCREEN_OPTIONS = {
   headerShown: false,
 } as const
@@ -68,19 +50,16 @@ type TransitionParams =
     }
   | undefined
 
-function getTransitionId(params: TransitionParams) {
-  return typeof params?.transitionId === "string" && params.transitionId.length > 0
-    ? params.transitionId
-    : undefined
+function getTransitionId(params: TransitionParams): string | undefined {
+  const id = params?.transitionId
+  return typeof id === "string" && id.length > 0 ? id : undefined
 }
 
-function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
+function getHiddenZoomTransitionOptions(boundaryId?: string): NativeStackNavigationOptions {
   if (!boundaryId || !isNavigationMaskAvailable) {
     return {
       ...HIDDEN_STACK_SCREEN_OPTIONS,
-      contentStyle: {
-        backgroundColor: "transparent",
-      },
+      contentStyle: { backgroundColor: "transparent" },
       ...Transition.Presets.ZoomIn(),
       gestureEnabled: false,
       transitionSpec: ZOOM_TRANSITION_SPEC,
@@ -89,9 +68,7 @@ function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
 
   return {
     ...HIDDEN_STACK_SCREEN_OPTIONS,
-    contentStyle: {
-      backgroundColor: "transparent",
-    },
+    contentStyle: { backgroundColor: "transparent" },
     enableTransitions: true,
     navigationMaskEnabled: false,
     gestureEnabled: false,
@@ -108,68 +85,41 @@ function getHiddenBoundaryZoomTransitionOptions(boundaryId?: string) {
   }
 }
 
-function getHiddenArtistZoomTransitionOptions(boundaryId?: string) {
-  return getHiddenBoundaryZoomTransitionOptions(boundaryId)
-}
-
 export function getHiddenBoundaryScreenOptions(params: TransitionParams) {
-  return getHiddenBoundaryZoomTransitionOptions(getTransitionId(params))
+  return getHiddenZoomTransitionOptions(getTransitionId(params))
 }
 
 export function getHiddenArtistScreenOptions(params: TransitionParams) {
-  return getHiddenArtistZoomTransitionOptions(getTransitionId(params))
+  return getHiddenBoundaryScreenOptions(params)
 }
 
 export function getHiddenPlaylistScreenOptions(params: TransitionParams) {
   const transitionId = getTransitionId(params)
-
   return transitionId
-    ? getHiddenBoundaryZoomTransitionOptions(transitionId)
+    ? getHiddenZoomTransitionOptions(transitionId)
     : HIDDEN_STACK_SCREEN_OPTIONS
 }
 
 export function getHiddenPlayerScreenOptions(params: TransitionParams) {
-  return getHiddenPlayerZoomTransitionOptions(getTransitionId(params))
-}
-
-function getHiddenPlayerZoomTransitionOptions(boundaryId?: string) {
-  if (!boundaryId || !isNavigationMaskAvailable) {
-    return {
-      ...HIDDEN_STACK_SCREEN_OPTIONS,
-      contentStyle: {
-        backgroundColor: "transparent",
-      },
-      ...Transition.Presets.ZoomIn(),
-      gestureEnabled: false,
-      transitionSpec: ZOOM_TRANSITION_SPEC,
-    }
-  }
-
-  return {
-    ...HIDDEN_STACK_SCREEN_OPTIONS,
-    contentStyle: {
-      backgroundColor: "transparent",
-    },
-    enableTransitions: true,
-    navigationMaskEnabled: false,
-    gestureEnabled: false,
-    gestureDrivesProgress: false,
-    screenStyleInterpolator: ({ bounds }: ScreenStyleInterpolatorArgs) => {
-      "worklet"
-
-      return bounds({
-        id: boundaryId,
-        scaleMode: "uniform",
-      }).navigation.zoom()
-    },
-    transitionSpec: ZOOM_TRANSITION_SPEC,
-  }
+  return getHiddenBoundaryScreenOptions(params)
 }
 
 export const ROOT_MODAL_SCREEN_OPTIONS = {
   headerShown: false,
   presentation: "modal" as const,
-  ...getHeaderSafeSlideFromBottomOptions(),
+  animation: "slide_from_bottom" as const,
+}
+
+function getBackButtonScreenOptions(title: string, headerLeft: () => ReactNode) {
+  return {
+    title,
+    headerBackButtonMenuEnabled: false,
+    headerBackVisible: false,
+    headerLeft,
+    headerLeftContainerStyle: {
+      paddingRight: 8,
+    },
+  }
 }
 
 export function getDefaultNativeStackOptions(theme: NavigationThemeColors) {
@@ -215,22 +165,10 @@ export function getCenteredRootScreenOptions(options: {
   }
 }
 
-function getBackButtonScreenOptions(title: string, headerLeft: () => ReactNode) {
-  return {
-    title,
-    headerBackButtonMenuEnabled: false,
-    headerBackVisible: false,
-    headerLeft,
-    headerLeftContainerStyle: {
-      paddingRight: 8,
-    },
-  }
-}
-
 export function getDrillDownScreenOptions(title: string, headerLeft: () => ReactNode) {
   return {
     ...getBackButtonScreenOptions(title, headerLeft),
-    ...getHeaderSafeSlideRightOptions(),
+    animation: "slide_from_right",
   }
 }
 
@@ -241,7 +179,7 @@ export function getMediaDetailTransitionOptions(
   return {
     ...getDefaultNativeStackOptions(theme),
     ...getBackButtonScreenOptions("", headerLeft),
-    ...getHeaderSafeFadeFromBottomOptions(),
+    animation: "fade_from_bottom",
   }
 }
 

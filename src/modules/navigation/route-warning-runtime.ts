@@ -20,12 +20,7 @@ const pendingWarnings: RouteWarningOptions[] = []
 let isFlushScheduled = false
 
 function runAfterRender(task: () => void) {
-  if (typeof queueMicrotask === "function") {
-    queueMicrotask(task)
-    return
-  }
-
-  void Promise.resolve().then(task)
+  queueMicrotask(task)
 }
 
 function flushWarnings() {
