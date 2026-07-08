@@ -49,6 +49,11 @@ function setBarsVisible(value: boolean) {
   useUIStore.setState({ barsVisible: value })
 }
 
+export function showBars() {
+  clearAutoShowTimer()
+  setBarsVisible(true)
+}
+
 export function setPlayerExpandedView(value: PlayerExpandedView) {
   useUIStore.setState({ playerExpandedView: value })
 }
@@ -68,14 +73,20 @@ export function togglePlayerExpandedView(value: PlayerExpandedView) {
   })
 }
 
+const BARS_AUTO_SHOW_IDLE_MS = 500
+
 let lastScrollY = 0
 let showTimeout: ReturnType<typeof setTimeout> | null = null
 
-export function handleScroll(currentY: number) {
+function clearAutoShowTimer() {
   if (showTimeout) {
     clearTimeout(showTimeout)
     showTimeout = null
   }
+}
+
+export function handleScroll(currentY: number) {
+  clearAutoShowTimer()
 
   const isScrollingDown = currentY > lastScrollY && currentY > 50
   const isScrollingUp = currentY < lastScrollY
@@ -90,17 +101,12 @@ export function handleScroll(currentY: number) {
 }
 
 export function handleScrollStart() {
-  if (showTimeout) {
-    clearTimeout(showTimeout)
-    showTimeout = null
-  }
+  clearAutoShowTimer()
 }
 
 export function handleScrollStop() {
-  if (showTimeout) {
-    clearTimeout(showTimeout)
-  }
+  clearAutoShowTimer()
   showTimeout = setTimeout(() => {
     setBarsVisible(true)
-  }, 150)
+  }, BARS_AUTO_SHOW_IDLE_MS)
 }
