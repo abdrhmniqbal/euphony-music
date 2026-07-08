@@ -1,7 +1,7 @@
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
-import { type ReactNode, useEffect, useMemo, useState } from "react"
+import { type ReactNode, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { AppState, Text, View } from "react-native"
+import { AppState, View } from "react-native"
 
 import { db } from "@/db/client"
 import migrations from "@/db/migrations/migrations"
@@ -19,6 +19,9 @@ import { restoreCurrentTrackForStartup } from "@/stores/playback/actions/playbac
 import { flushPlaybackStoreSnapshot, playbackStore, usePlaybackStore } from "@/stores/playback/store"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useViewPreferenceStore } from "@/stores/view-preference/store"
+
+import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
+import { EmptyState } from "@/components/ui/empty-state"
 
 type RuntimeStatus = "loading" | "ready" | "error"
 
@@ -48,18 +51,12 @@ async function runStartupScan() {
 }
 
 function startDeferredRuntimeWork(startedAt: number) {
-  const deferredStartedAt = Date.now()
-
-  const dbStartedAt = Date.now()
-  void loadInitialDatabaseState()
-    .then(() =>
-      logInfo("Deferred startup cached DB ready", { elapsedMs: Date.now() - dbStartedAt })
-    )
-    .catch((error) => logError("App runtime failed to load cached tracks", error))
+  void loadInitialDatabaseState().catch((error) =>
+    logError("App runtime failed to load cached tracks", error)
+  )
 
   logInfo("App runtime deferred work dispatched", {
-    elapsedMs: Date.now() - deferredStartedAt,
-    totalElapsedMs: Date.now() - startedAt,
+    elapsedMs: Date.now() - startedAt,
   })
 }
 
@@ -71,10 +68,9 @@ function startPostStartupRuntimeWork() {
   })
 
   schedulePostStartupWork(() => {
-    const scanStartedAt = Date.now()
-    void runStartupScan()
-      .then(() => logInfo("Post-startup scan ready", { elapsedMs: Date.now() - scanStartedAt }))
-      .catch((error) => logError("App runtime failed to run startup scan", error))
+    void runStartupScan().catch((error) =>
+      logError("App runtime failed to run startup scan", error)
+    )
   })
 }
 
@@ -100,6 +96,12 @@ async function startRuntime() {
   })
 
   startDeferredRuntimeWork(startedAt)
+}
+
+function getDatabaseErrorMessage(error: Error, t: (key: string) => string): string {
+  const isLegacySchemaConflict =
+    error.message.includes("CREATE TABLE") || error.message.includes("already exists")
+  return isLegacySchemaConflict ? t("database.schemaConflict") : error.message
 }
 
 export function AppRuntime({
@@ -170,21 +172,14 @@ export function AppRuntime({
     }
   }, [canStart, onError, onReady, status])
 
-  const message = useMemo(() => {
-    if (!error) {
-      return ""
-    }
-
-    const isLegacySchemaConflict =
-      error.message.includes("CREATE TABLE") || error.message.includes("already exists")
-    return isLegacySchemaConflict ? t("database.schemaConflict") : error.message
-  }, [error, t])
-
-  if (status === "error" && error) {
+  if (status === "error") {
     return (
-      <View className="flex-1 items-center justify-center bg-background p-4">
-        <Text className="mb-2 text-center text-danger">{t("database.errorTitle")}</Text>
-        <Text className="text-center text-sm text-muted-foreground">{message}</Text>
+      <View className="flex-1 bg-background">
+        <EmptyState
+          icon={<LocalCancelCircleSolidIcon className="text-danger" width={40} height={40} />}
+          title={t("database.errorTitle")}
+          message={error ? getDatabaseErrorMessage(error, t) : t("database.errorTitle")}
+        />
       </View>
     )
   }

@@ -10,7 +10,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 
 import { queryClient } from "@/lib/tanstack-query"
 
-import { DatabaseProvider } from "./database-provider"
+import { AppRuntime } from "@/modules/runtime/app-runtime"
 import { LocalizationProvider } from "./localization-provider"
 
 export function RootProviders({
@@ -25,9 +25,9 @@ export function RootProviders({
   return (
     <LocalizationProvider>
       <QueryClientProvider client={queryClient}>
-        <DatabaseProvider onReady={onDatabaseReady} onError={onDatabaseError}>
+        <AppRuntime onReady={onDatabaseReady} onError={onDatabaseError}>
           {children}
-        </DatabaseProvider>
+        </AppRuntime>
       </QueryClientProvider>
     </LocalizationProvider>
   )
