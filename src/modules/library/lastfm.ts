@@ -1,6 +1,6 @@
 import { AsyncRateLimiter } from "@tanstack/pacer/async-rate-limiter"
 import * as SecureStore from "expo-secure-store"
-import { and, gt, isNull, or, sql } from "drizzle-orm"
+import { and, gt, isNull, lt, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { artists } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
@@ -35,6 +35,8 @@ async function fetchLastFmPageImage(artistName: string, artistUrl?: string) {
   try {
     const response = await fetch(url, {
       headers: {
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       },
@@ -174,8 +176,15 @@ async function rateLimitedFetch(
   signal?: AbortSignal
 ): Promise<LastFmArtistInfo | undefined> {
   while (!signal?.aborted) {
-    const result = await rateLimiter.maybeExecute(artistName)
-    if (result !== undefined) return result
+    try {
+      const result = await rateLimiter.maybeExecute(artistName)
+      if (result !== undefined) return result
+    } catch (err) {
+      logError("rateLimitedFetch: request failed", err instanceof Error ? err : new Error(String(err)), {
+        artistName,
+      })
+      return undefined
+    }
 
     const waitMs = rateLimiter.getMsUntilNextWindow()
     if (waitMs > 0) {
@@ -189,6 +198,11 @@ export async function refreshLastFmArtistMetadataForIndexedArtists(
   forceRefresh = false,
   signal?: AbortSignal
 ) {
+  // Capture the run start so we can use artists.updatedAt as a resume cursor:
+  // artists already refreshed this run (or by a prior completed run) are skipped,
+  // so an interrupted run restarts without re-fetching already-done artists.
+  const runStartedAt = Date.now()
+
   const whereClause = forceRefresh
     ? gt(artists.trackCount, 0)
     : and(
@@ -197,7 +211,8 @@ export async function refreshLastFmArtistMetadataForIndexedArtists(
           isNull(artists.artwork),
           sql`artists.artwork NOT LIKE 'http%'`,
           isNull(artists.bio)
-        )
+        ),
+        lt(artists.updatedAt, runStartedAt)
       )
 
   const rows = await db.query.artists.findMany({
@@ -222,8 +237,19 @@ export async function refreshLastFmArtistMetadataForIndexedArtists(
 
   for (const artist of rows) {
     if (signal?.aborted) return
+    if (!forceRefresh && artist.artwork?.startsWith("http") && artist.bio) continue
 
-    const info = await rateLimitedFetch(rateLimiter, artist.name, signal)
+    let info: LastFmArtistInfo | undefined
+    try {
+      info = await rateLimitedFetch(rateLimiter, artist.name, signal)
+    } catch (err) {
+      logError(
+        "refreshLastFmArtistMetadata: skipped artist",
+        err instanceof Error ? err : new Error(String(err)),
+        { artistId: artist.id, artistName: artist.name }
+      )
+      continue
+    }
     if (!info?.bio && !info?.image) continue
 
     let cachedImage = info.image

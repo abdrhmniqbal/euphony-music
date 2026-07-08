@@ -47,6 +47,18 @@ When your changes create orphans:
 
 The test: Every changed line should trace directly to the user's request.
 
+## 3b. No Unnecessary Comments
+
+**Don't add comments that merely restate what the code does. We will block changes that dump explanatory comments.**
+
+- Do not add comments that explain obvious code (e.g. `// loop over artists` above a `for` loop, `// send request` above `fetch`).
+- Do not narrate control flow or rephrase the function name.
+- A comment is justified ONLY when it captures non-obvious *why*: a workaround for an external bug/quirk, a security constraint, a non-intuitive invariant, or a decision that future editors would otherwise reverse.
+- Prefer renaming/refactoring to make intent self-evident over adding a comment.
+- When fixing existing code, do not add comments to regions you are not changing.
+
+The test: if a comment can be deleted without losing information a senior engineer wouldn't recover from the code, it should not exist.
+
 ## 4. Goal-Driven Execution
 
 **Define success criteria. Loop until verified.**
