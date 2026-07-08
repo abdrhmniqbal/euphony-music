@@ -1,16 +1,14 @@
 /**
- * Purpose: Reads and mutates listening history, top-track metrics, and playback activity counters.
- * Caller: history queries, history mutations, player activity service, advanced settings maintenance actions.
+ * Purpose: Reads listening history and top-track metrics, and resets playback activity counters.
+ * Caller: history queries, history mutations, advanced settings maintenance actions.
  * Dependencies: Drizzle database client, play_history table, tracks table, track transformers.
- * Main Functions: getTrackHistory(), getTopTracksByPeriod(), addTrackToHistory(), incrementTrackPlayCount(), resetListeningHistory()
- * Side Effects: Reads play history; writes play_history rows; updates track play counts and last-played timestamps.
+ * Main Functions: getTrackHistory(), getTopTracksByPeriod(), resetListeningHistory()
+ * Side Effects: Reads play history; resets play_history rows and track play counts.
  */
 
-import { createId } from "@paralleldrive/cuid2"
+import { desc, sql } from "drizzle-orm"
+
 import type { Track } from "@/modules/player/types"
-
-import { desc, eq, sql } from "drizzle-orm"
-
 import { db } from "@/db/client"
 import { playHistory, tracks } from "@/db/schema"
 import type { DBTrack } from "@/types/database"
@@ -128,42 +126,6 @@ export async function getTopTracksByPeriod(
   }
 }
 
-export async function addTrackToHistory(trackId: string): Promise<void> {
-  try {
-    await db.insert(playHistory).values({
-      id: createId(),
-      trackId,
-      playedAt: Date.now(),
-      duration: 0,
-      completed: 0,
-    })
-
-    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
-    const cutoffThreshold = Date.now() - THIRTY_DAYS_MS
-
-    await db.run(sql`
-      DELETE FROM ${playHistory}
-      WHERE ${playHistory.playedAt} < ${cutoffThreshold}
-    `)
-  } catch {
-    // no-op
-  }
-}
-
-export async function incrementTrackPlayCount(trackId: string): Promise<void> {
-  try {
-    await db
-      .update(tracks)
-      .set({
-        playCount: sql`${tracks.playCount} + 1`,
-        lastPlayedAt: Date.now(),
-      })
-      .where(eq(tracks.id, trackId))
-  } catch {
-    // no-op
-  }
-}
-
 export async function resetListeningHistory(): Promise<void> {
   const now = Date.now()
 
@@ -175,28 +137,4 @@ export async function resetListeningHistory(): Promise<void> {
       updatedAt: now,
     })
   })
-}
-
-export async function addPlayedTrack(trackUri: string) {
-  const row = await db.query.tracks.findFirst({ where: eq(tracks.uri, trackUri) })
-  if (!row) return undefined
-  const now = Date.now()
-  await db
-    .update(tracks)
-    .set({ playCount: (row.playCount ?? 0) + 1, lastPlayedAt: now })
-    .where(eq(tracks.id, row.id))
-  await db.insert(playHistory).values({ id: createId(), trackId: row.id, playedAt: now })
-  return row.id
-}
-
-export async function addPlayedMediaList(_source: unknown) {
-  return undefined
-}
-
-export async function removePlayedMediaList(_source: unknown) {
-  return undefined
-}
-
-export async function updatePlayedMediaList(_params: { oldSource: unknown; newSource: unknown }) {
-  return undefined
 }

@@ -283,10 +283,10 @@ export async function getSortedTracks<TOnlyIds extends boolean | undefined = fal
   return rows.map(toDataTrack) as TOnlyIds extends true ? Array<{ id: string }> : SortedTrack[]
 }
 
-export async function addPlayedTrack(trackUri: string) {
+export async function addPlayedTrack(trackUri: string): Promise<string | undefined> {
   const row = await db.query.tracks.findFirst({ where: eq(tracks.uri, trackUri) })
   if (!row) {
-    return
+    return undefined
   }
 
   const now = Date.now()
@@ -298,4 +298,5 @@ export async function addPlayedTrack(trackUri: string) {
     })
     .where(eq(tracks.id, row.id))
   await db.insert(playHistory).values({ id: createId(), trackId: row.id, playedAt: now })
+  return row.id
 }

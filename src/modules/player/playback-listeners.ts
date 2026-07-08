@@ -1,6 +1,6 @@
 import AudioBrowser from "react-native-audio-browser"
 
-import { addPlayedTrack } from "@/modules/history/repository"
+import { addPlayedTrack } from "@/modules/tracks/repository"
 import { queryClient } from "@/lib/tanstack-query"
 import { invalidateTrackQueries } from "@/modules/tracks/keys"
 import {
