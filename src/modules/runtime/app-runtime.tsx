@@ -1,7 +1,7 @@
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator"
 import { type ReactNode, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Text, View } from "react-native"
+import { AppState, Text, View } from "react-native"
 
 import { db } from "@/db/client"
 import migrations from "@/db/migrations/migrations"
@@ -16,7 +16,7 @@ import { preloadRegisteredSettings } from "@/modules/settings/registry"
 import { updateSettingsState } from "@/modules/settings/store"
 import { canStartIndexingNow } from "@/modules/bootstrap/utils"
 import { restoreCurrentTrackForStartup } from "@/stores/playback/actions/playback-controls"
-import { playbackStore, usePlaybackStore } from "@/stores/playback/store"
+import { flushPlaybackStoreSnapshot, playbackStore, usePlaybackStore } from "@/stores/playback/store"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useViewPreferenceStore } from "@/stores/view-preference/store"
 
@@ -128,6 +128,15 @@ export function AppRuntime({
       onError?.()
     }
   }, [migrationError, onError])
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextState) => {
+      if (nextState === "background") {
+        void flushPlaybackStoreSnapshot()
+      }
+    })
+    return () => subscription.remove()
+  }, [])
 
   useEffect(() => {
     if (!canStart || status !== "loading") {

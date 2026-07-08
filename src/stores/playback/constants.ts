@@ -63,6 +63,7 @@ export const PersistedFields: string[] = [
   "orderSnapshot",
   "queue",
   "activeKey",
+  "activeTrack",
   "queuePosition",
   "isReplayGainEnabled",
   "preAmpWTags",

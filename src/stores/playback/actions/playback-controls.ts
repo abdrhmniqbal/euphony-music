@@ -2,7 +2,7 @@ import AudioBrowser from "react-native-audio-browser"
 
 import { RepeatModes } from "../constants"
 import { extractTrackId } from "../utils"
-import { playbackStore, setPlaybackLastPosition } from "../store"
+import { playbackStore, flushPlaybackStoreSnapshot, setPlaybackLastPosition } from "../store"
 
 import { isAudioBrowserSetUp } from "@/lib/react-native-audio-browser"
 import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
@@ -60,12 +60,14 @@ export async function play(opts?: PlayPauseOptions) {
   playbackStore.setState({ isPlaying: true })
   await preloadCurrentTrack()
   await AudioBrowser.play()
+  void flushPlaybackStoreSnapshot()
   if (!opts?.noRevalidation) revalidateWidgets({ exclude: ["ArtworkPlayer"] })
 }
 
 export async function pause(opts?: PlayPauseOptions) {
   playbackStore.setState({ isPlaying: false })
   AudioBrowser.pause()
+  void flushPlaybackStoreSnapshot()
   if (!opts?.noRevalidation) revalidateWidgets({ exclude: ["ArtworkPlayer"] })
 }
 
@@ -76,6 +78,7 @@ async function stop() {
     _restoredTrackKey: playbackStore.getState().activeKey,
   })
   AudioBrowser.reset()
+  void flushPlaybackStoreSnapshot()
   revalidateWidgets({ openApp: true })
 }
 
