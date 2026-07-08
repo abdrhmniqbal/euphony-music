@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm"
 import { Directory, File, Paths } from "expo-file-system"
-import * as FileSystem from "expo-file-system"
 import { db } from "@/db/client"
 import { artworkCache } from "@/db/schema"
 
@@ -36,16 +35,16 @@ export async function saveArtworkToCache(
         cacheDir.create({ intermediates: true, idempotent: true })
       }
 
-      const artworkFileUri = `${cacheDir.uri}${hash}.${ARTWORK_FILE_EXTENSION}`
-      const downloadResult = await FileSystem.downloadAsync(artworkData, artworkFileUri)
-      
-      const mimeType = downloadResult.headers?.["content-type"] || "image/jpeg"
+      const artworkFile = new File(cacheDir, `${hash}.${ARTWORK_FILE_EXTENSION}`)
+      await File.downloadFileAsync(artworkData, artworkFile)
+
+      const mimeType = "image/jpeg"
 
       await db
         .insert(artworkCache)
         .values({
           hash,
-          path: downloadResult.uri,
+          path: artworkFile.uri,
           mimeType,
           source: "remote",
           createdAt: Date.now(),
@@ -53,13 +52,13 @@ export async function saveArtworkToCache(
         .onConflictDoUpdate({
           target: artworkCache.hash,
           set: {
-            path: downloadResult.uri,
+            path: artworkFile.uri,
             mimeType,
             source: "remote",
           },
         })
 
-      return downloadResult.uri
+      return artworkFile.uri
     }
 
     const normalizedArtwork = normalizeArtworkData(artworkData)
