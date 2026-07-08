@@ -9,43 +9,37 @@ export function isCastConnected(
   return castState === "connected" && client !== null
 }
 
-export async function toggleCastPlayback(client: RemoteMediaClient, isPlaying: boolean) {
+async function runCastCommand(
+  client: RemoteMediaClient,
+  command: (client: RemoteMediaClient) => Promise<void>,
+  label: string,
+  metadata?: Record<string, unknown>
+) {
   try {
-    logInfo("Toggling cast playback", { isPlaying })
-    if (isPlaying) {
-      await client.pause()
-      return
-    }
-
-    await client.play()
+    await command(client)
+    logInfo(`Cast ${label} completed`, metadata)
   } catch (error) {
-    logError("Failed to toggle cast playback", error)
+    logError(`Failed to ${label}`, error, metadata)
   }
 }
 
-export async function seekCastPlayback(client: RemoteMediaClient, position: number) {
-  try {
-    await client.seek({ position })
-    logInfo("Cast seek completed", { position })
-  } catch (error) {
-    logError("Failed to seek cast playback", error, { position })
-  }
+export function toggleCastPlayback(client: RemoteMediaClient, isPlaying: boolean) {
+  return runCastCommand(
+    client,
+    (c) => (isPlaying ? c.pause() : c.play()),
+    "toggle playback",
+    { isPlaying }
+  )
 }
 
-export async function playCastNext(client: RemoteMediaClient) {
-  try {
-    await client.queueNext()
-    logInfo("Cast skipped to next item")
-  } catch (error) {
-    logError("Failed to skip cast queue next", error)
-  }
+export function seekCastPlayback(client: RemoteMediaClient, position: number) {
+  return runCastCommand(client, (c) => c.seek({ position }), "seek", { position })
 }
 
-export async function playCastPrevious(client: RemoteMediaClient) {
-  try {
-    await client.queuePrev()
-    logInfo("Cast skipped to previous item")
-  } catch (error) {
-    logError("Failed to skip cast queue previous", error)
-  }
+export function playCastNext(client: RemoteMediaClient) {
+  return runCastCommand(client, (c) => c.queueNext(), "queue next")
+}
+
+export function playCastPrevious(client: RemoteMediaClient) {
+  return runCastCommand(client, (c) => c.queuePrev(), "queue previous")
 }
