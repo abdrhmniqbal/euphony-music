@@ -31,6 +31,7 @@ import { checkStartupAppUpdate } from "@/modules/updates/app-update-runtime"
 import { ROOT_MODAL_SCREEN_OPTIONS, getHiddenPlayerScreenOptions } from "@/modules/navigation/stack"
 import {
   ensureNotificationRuntimeStarted,
+  markRouterReady,
   setNotificationRouteHandler,
 } from "@/modules/notifications/notification-runtime"
 import { useHasCurrentTrack } from "@/modules/player/selectors"
@@ -198,6 +199,9 @@ export default function Layout() {
   const hasMiniPlayer = useHasCurrentTrack()
   const hasHiddenSplashRef = useRef(false)
   setNotificationRouteHandler((route) => {
+    if (!router.canGoBack() && route !== "/(main)/(home)") {
+      router.replace("/(main)/(home)")
+    }
     router.push(route as never)
   })
   ensureNotificationRuntimeStarted()
@@ -214,6 +218,7 @@ export default function Layout() {
   }
   const notifyDatabaseReady = async () => {
     await handleBootstrapDatabaseReady()
+    markRouterReady()
     void checkStartupAppUpdate()
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -223,6 +228,7 @@ export default function Layout() {
   }
   const notifyDatabaseError = () => {
     handleBootstrapDatabaseError()
+    markRouterReady()
     hideSplash()
   }
   const completedOnboarding = usePreferenceStore((state) => state.completedOnboarding)
