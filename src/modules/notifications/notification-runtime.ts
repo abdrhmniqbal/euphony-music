@@ -8,6 +8,8 @@
 
 import * as Notifications from "expo-notifications"
 
+import { getNotificationRoute, handleNotificationAction } from "@/modules/notifications/notification-actions"
+
 const APP_START_TIME = Date.now()
 
 let hasStartedNotificationRuntime = false
@@ -17,16 +19,17 @@ let routerReady = false
 let pendingRoute: string | null = null
 
 function buildNotificationResponseKey(response: Notifications.NotificationResponse) {
-  const responseTitle = response.notification.request.content.title ?? ""
-  const responseBody = response.notification.request.content.body ?? ""
+  return `${response.notification.request.identifier}:${response.actionIdentifier}`
+}
 
-  return [
-    response.notification.request.identifier,
-    response.actionIdentifier,
-    response.notification.date,
-    responseTitle,
-    responseBody,
-  ].join(":")
+function flushPendingRoute() {
+  if (!pendingRoute || !routeHandler) {
+    return
+  }
+
+  const route = pendingRoute
+  pendingRoute = null
+  routeHandler(route)
 }
 
 function dispatchRoute(route: string) {
@@ -40,11 +43,7 @@ function dispatchRoute(route: string) {
 
 export function markRouterReady() {
   routerReady = true
-  if (pendingRoute) {
-    const route = pendingRoute
-    pendingRoute = null
-    routeHandler?.(route)
-  }
+  flushPendingRoute()
 }
 
 function handleNotificationResponse(
@@ -84,10 +83,8 @@ function handleNotificationResponse(
 
 export function setNotificationRouteHandler(handler: ((route: string) => void) | null) {
   routeHandler = handler
-  if (routerReady && handler && pendingRoute) {
-    const route = pendingRoute
-    pendingRoute = null
-    handler(route)
+  if (routerReady) {
+    flushPendingRoute()
   }
 }
 
