@@ -6,6 +6,17 @@ Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-s
 
 ALWAYS use nub as package manager
 
+## 0. Commit Messages (Conventional Commits)
+
+**Match the repo's existing convention. Do not invent your own style.**
+
+- Format: `type(scope): subject` — lowercase type, optional scope in parens, subject in lowercase, no trailing period.
+- Types in use: `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `ci`, `release`.
+- Scope is the area touched (e.g. `lastfm`, `ci`, `indexer`); omit when not a natural fit.
+- Subject is a concise imperative summary; do not capitalize the first word or end with a period.
+- Examples from this repo: `fix: zoom transition settling early`, `fix(ci): separate package name for dev build`, `chore: remove unused dependencies`.
+- Verify against `git log --oneline -10` before committing. Never write a one-off non-conventional message.
+
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
