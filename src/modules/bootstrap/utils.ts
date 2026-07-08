@@ -1,9 +1,9 @@
 /**
- * Purpose: Bootstraps playback, settings, media permissions, startup resume behavior, and configured initial indexing.
+ * Purpose: Resolves whether indexing may run now and resumes prior playback during bootstrap.
  * Caller: App root providers during launch.
- * Dependencies: media library service, Drizzle database, settings preloaders, indexer service, logging, playback controls.
- * Main Functions: bootstrapApp()
- * Side Effects: Reads local settings, may resume playback, requests media permissions, queries track count, and may start indexing.
+ * Dependencies: media library service, settings preloaders, playback controls, logging.
+ * Main Functions: canStartIndexingNow(), bootstrapApp()
+ * Side Effects: Reads local settings, may resume playback, requests media permissions.
  */
 
 import {

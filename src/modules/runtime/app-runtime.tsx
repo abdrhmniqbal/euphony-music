@@ -55,9 +55,9 @@ function startDeferredRuntimeWork(startedAt: number) {
     .then(() =>
       logInfo("Deferred startup cached DB ready", { elapsedMs: Date.now() - dbStartedAt })
     )
-    .catch((error) => logError("Reference-style app runtime failed to load cached tracks", error))
+    .catch((error) => logError("App runtime failed to load cached tracks", error))
 
-  logInfo("Reference-style app runtime deferred work dispatched", {
+  logInfo("App runtime deferred work dispatched", {
     elapsedMs: Date.now() - deferredStartedAt,
     totalElapsedMs: Date.now() - startedAt,
   })
@@ -74,7 +74,7 @@ function startPostStartupRuntimeWork() {
     const scanStartedAt = Date.now()
     void runStartupScan()
       .then(() => logInfo("Post-startup scan ready", { elapsedMs: Date.now() - scanStartedAt }))
-      .catch((error) => logError("Reference-style app runtime failed to run startup scan", error))
+      .catch((error) => logError("App runtime failed to run startup scan", error))
   })
 }
 
@@ -82,7 +82,7 @@ async function startRuntime() {
   const startedAt = Date.now()
 
   await ensureLoggingInitialized()
-  logInfo("Reference-style app runtime starting")
+  logInfo("App runtime starting")
   await setupPlayer()
   registerPlaybackListeners()
 
@@ -91,11 +91,11 @@ async function startRuntime() {
 
   const settingsStartedAt = Date.now()
   await preloadSettings()
-  logInfo("Reference-style app runtime settings ready", {
+  logInfo("App runtime settings ready", {
     elapsedMs: Date.now() - settingsStartedAt,
   })
   subscribePlaybackStoreToPlayerStore()
-  logInfo("Reference-style app runtime critical path ready", {
+  logInfo("App runtime critical path ready", {
     elapsedMs: Date.now() - startedAt,
   })
 
@@ -159,7 +159,7 @@ export function AppRuntime({
           return
         }
         const nextError = runtimeError as Error
-        logError("Reference-style app runtime failed", nextError)
+        logError("App runtime failed", nextError)
         setError(nextError)
         setStatus("error")
         onError?.()
