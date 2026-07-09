@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.0.3] - 2026-07-09
+
+### ✨ Added
+
+- Dev builds default to extra logging so contributors get full diagnostics without manually enabling it. (@abdrhmniqbal)
+
+### ⚙️ Changed
+
+- Categorized the indexer module into cohesive submodules (scan, metadata, external, progress, state, utils) and moved batch utilities into `indexer/utils/batch`. (@abdrhmniqbal)
+- Redesigned the now-playing equalizer loader into a continuous, seamless wave with proportional sizing; larger on grid carousels. (@abdrhmniqbal)
+
+### 🧩 Fixed
+
+- Version comparison ignores the local `-dev` build marker so dev builds no longer offer a spurious app update. (@abdrhmniqbal)
+- Bottom navigation hides while scrolling and reappears after scroll settles, removing the hide→show→hide flicker. (@abdrhmniqbal)
+
 ## [v1.0.2] - 2026-07-08
 
 ### ⚙️ Changed
