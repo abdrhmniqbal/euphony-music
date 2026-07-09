@@ -9,7 +9,7 @@
 import * as Notifications from "expo-notifications"
 import { Platform } from "react-native"
 
-import type { IndexerScanProgress } from "@/modules/indexer/types"
+import type { IndexerScanProgress } from "@/modules/indexer/state/types"
 import { i18n } from "@/modules/localization/i18n"
 import { logError, logInfo } from "@/modules/logging/service"
 import { ensureIndexerNotificationsConfigLoaded } from "@/modules/settings/indexer-notifications"
@@ -177,20 +177,14 @@ async function ensureNotificationPermission() {
 async function replaceIndexerNotification(
   title: string,
   body: string,
+  requestVersion: number,
   options?: {
     autoDismiss?: boolean
     paused?: boolean
     interactive?: boolean
-    requestVersion?: number
     sticky?: boolean
   }
 ) {
-  const requestVersion = options?.requestVersion ?? ++latestNotificationRequestVersion
-
-  if (requestVersion < latestNotificationRequestVersion) {
-    return
-  }
-
   const notificationsEnabled = await ensureIndexerNotificationsConfigLoaded()
   if (requestVersion < latestNotificationRequestVersion) {
     return
@@ -269,7 +263,8 @@ export async function beginIndexerProgressNotification() {
   await replaceIndexerNotification(
     i18n.t("indexing.notification.indexingLibrary"),
     `${i18n.t("indexing.notification.preparingScan")} • ${getElapsedLabel()}`,
-    { interactive: true, requestVersion }
+    requestVersion,
+    { interactive: true }
   )
 }
 
@@ -280,9 +275,8 @@ export async function updateIndexerProgressNotification(progress: IndexerScanPro
       ? i18n.t("indexing.notification.scanningFiles")
       : i18n.t("indexing.notification.processingMetadata")
 
-  await replaceIndexerNotification(title, formatProgressBody(progress), {
+  await replaceIndexerNotification(title, formatProgressBody(progress), requestVersion, {
     interactive: true,
-    requestVersion,
   })
 }
 
@@ -291,7 +285,8 @@ export async function completeIndexerProgressNotification(totalFiles: number) {
   await replaceIndexerNotification(
     i18n.t("indexing.notification.complete"),
     `${i18n.t("indexing.notification.tracksUpdated", { count: totalFiles })} • ${getElapsedLabel()}`,
-    { autoDismiss: true, interactive: false, requestVersion, sticky: false }
+    requestVersion,
+    { autoDismiss: true, interactive: false, sticky: false }
   )
 }
 
@@ -300,7 +295,8 @@ export async function failIndexerProgressNotification() {
   await replaceIndexerNotification(
     i18n.t("indexing.notification.failed"),
     i18n.t("indexing.notification.tapToReopen"),
-    { autoDismiss: true, interactive: false, requestVersion, sticky: false }
+    requestVersion,
+    { autoDismiss: true, interactive: false, sticky: false }
   )
 }
 
@@ -315,10 +311,9 @@ export async function pauseIndexerProgressNotification(progress: {
       ? `${progress.current}/${progress.total} • ${i18n.t("indexing.paused")}`
       : i18n.t("indexing.paused")
 
-  await replaceIndexerNotification(i18n.t("indexing.notification.paused"), body, {
+  await replaceIndexerNotification(i18n.t("indexing.notification.paused"), body, requestVersion, {
     paused: true,
     interactive: true,
-    requestVersion,
   })
 }
 
@@ -329,16 +324,16 @@ export async function resumeIndexerProgressNotification(progress: IndexerScanPro
       ? i18n.t("indexing.notification.scanningFiles")
       : i18n.t("indexing.notification.processingMetadata"),
     formatProgressBody(progress),
+    requestVersion,
     {
       paused: false,
       interactive: true,
-      requestVersion,
     }
   )
 }
 
 export async function dismissIndexerProgressNotification() {
-  latestNotificationRequestVersion += 1
+  ++latestNotificationRequestVersion
   try {
     await Notifications.dismissNotificationAsync(INDEXER_NOTIFICATION_ID)
   } catch (error) {

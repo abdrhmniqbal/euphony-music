@@ -23,7 +23,7 @@ import { screenEnterTransition, screenExitTransition } from "@/modules/shared/co
 import { Stack } from "@/modules/shared/layouts/stack"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { startIndexing } from "@/modules/indexer/service"
-import { useIndexerStore } from "@/modules/indexer/store"
+import { useIndexerStore } from "@/modules/indexer/progress/store"
 import { ALBUM_SORT_OPTIONS } from "@/modules/library/sort-constants"
 import { sortAlbums } from "@/modules/library/sort-utils"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"

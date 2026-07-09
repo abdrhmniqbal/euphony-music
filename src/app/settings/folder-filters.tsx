@@ -17,7 +17,7 @@ import LocalCancel01Icon from "@/modules/shared/components/icons/local/cancel-01
 import LocalFolder01SolidIcon from "@/modules/shared/components/icons/local/folder-01-solid"
 import { EmptyState } from "@/modules/shared/components/ui/empty-state"
 import { startIndexing } from "@/modules/indexer/service"
-import { useIndexerStore } from "@/modules/indexer/store"
+import { useIndexerStore } from "@/modules/indexer/progress/store"
 import { usePlayerTracks } from "@/modules/player/selectors"
 import {
   commitFolderFilterConfig,

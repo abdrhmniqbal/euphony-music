@@ -15,20 +15,7 @@ export function generateAssetHash(asset: MediaLibrary.Asset): string {
   const modificationTime =
     info?.modificationTime ?? asset.modificationTime ?? asset.creationTime ?? 0
 
-  return generateFileHash(asset.uri, modificationTime)
-}
-
-function getFileInfo(uri: string): { size?: number; modificationTime?: number | null } | null {
-  try {
-    const file = new File(uri)
-    return file.info()
-  } catch {
-    return null
-  }
-}
-
-function generateFileHash(uri: string, modTime: number): string {
-  const fingerprint = `${uri}|${modTime}`
+  const fingerprint = `${asset.uri}|${modificationTime}`
   let hashA = 5381
   let hashB = 52711
 
@@ -43,6 +30,15 @@ function generateFileHash(uri: string, modTime: number): string {
   return `${partA}${partB}`
 }
 
+function getFileInfo(uri: string): { size?: number; modificationTime?: number | null } | null {
+  try {
+    const file = new File(uri)
+    return file.info()
+  } catch {
+    return null
+  }
+}
+
 export function generateSortName(name: string): string {
   const articles = ["The", "A", "An"]
   for (const article of articles) {
@@ -51,12 +47,4 @@ export function generateSortName(name: string): string {
     }
   }
   return name
-}
-
-export function hashString(value: string): number {
-  let hash = 0
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0
-  }
-  return hash
 }

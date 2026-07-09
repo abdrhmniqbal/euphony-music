@@ -8,7 +8,7 @@
 
 import { useTranslation } from "react-i18next"
 
-import { dismissIndexerProgressNotification } from "@/modules/indexer/notification"
+import { dismissIndexerProgressNotification } from "@/modules/indexer/progress/notification"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { setIndexerNotificationsEnabled } from "@/modules/settings/indexer-notifications"
 import { useSettingsStore } from "@/modules/settings/store"

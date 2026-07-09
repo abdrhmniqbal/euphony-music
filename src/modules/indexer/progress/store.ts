@@ -6,7 +6,7 @@ export interface IndexerState {
   currentFile: string
   totalFiles: number
   processedFiles: number
-  phase: "idle" | "scanning" | "processing" | "cleanup" | "complete" | "paused"
+  phase: "idle" | "scanning" | "processing" | "complete" | "paused"
   showProgress: boolean
 }
 

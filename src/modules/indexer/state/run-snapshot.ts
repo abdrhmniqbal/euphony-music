@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm"
 import { db } from "@/db/client"
 import { indexerState } from "@/db/schema"
 
-import type { IndexerRunSnapshot } from "./types"
+import type { IndexerRunSnapshot } from "@/modules/indexer/state/types"
 
 const INDEXER_LAST_RUN_SNAPSHOT_KEY = "indexer:last-run-snapshot"
 

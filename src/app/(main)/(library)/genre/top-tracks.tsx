@@ -20,7 +20,7 @@ import { ThemedRefreshControl } from "@/modules/shared/components/ui/themed-refr
 import { screenEnterTransition, screenExitTransition } from "@/modules/shared/constants/animations"
 import { Stack } from "@/modules/shared/layouts/stack"
 import { startIndexing } from "@/modules/indexer/service"
-import { useIndexerStore } from "@/modules/indexer/store"
+import { useIndexerStore } from "@/modules/indexer/progress/store"
 import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
 import { playTrack } from "@/modules/player/service"
 import { useGenreTopTracks } from "@/modules/search/queries"

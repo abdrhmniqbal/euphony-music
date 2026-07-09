@@ -4,7 +4,7 @@ import { and, gt, isNull, lt, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { artists } from "@/db/schema"
 import { logError } from "@/modules/logging/service"
-import { saveArtworkToCache } from "@/modules/indexer/metadata/artwork-cache-repository"
+import { saveArtworkToCache } from "@/modules/indexer/metadata/metadata"
 
 export interface LastFmArtistInfo {
   bio?: string

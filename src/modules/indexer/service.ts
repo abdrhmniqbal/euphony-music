@@ -6,9 +6,9 @@
  * Side Effects: Reads media library through repository, writes indexer progress/runtime state, refreshes player/query caches.
  */
 
-import { refreshIndexedMediaState } from "@/modules/indexer/refresh"
+import { refreshIndexedMediaState } from "@/modules/indexer/utils/refresh"
 import { refreshLastFmArtistMetadataForIndexedArtists } from "@/modules/library/lastfm"
-import { rebuildSplitMetadataRelations, scanMediaLibrary } from "@/modules/indexer/repository"
+import { rebuildSplitMetadataRelations, scanMediaLibrary } from "@/modules/indexer/scan/repository"
 import {
   consumeQueuedIndexerRun,
   finishIndexerRunRuntime,
@@ -21,7 +21,7 @@ import {
   scheduleIndexerCompletePhaseReset,
   startIndexerRunRuntime,
   stopIndexerRunRuntime,
-} from "@/modules/indexer/runtime"
+} from "@/modules/indexer/scan/runtime"
 import {
   beginIndexerProgress,
   completeIndexerProgress,
@@ -32,8 +32,8 @@ import {
   resetIndexerProgress,
   resumeIndexerProgress,
   updateIndexerProgress,
-} from "@/modules/indexer/progress"
-import { logError, logInfo, logWarn } from "@/modules/logging/service"
+} from "@/modules/indexer/progress/progress"
+import { logError, logInfo } from "@/modules/logging/service"
 import { measurePerfTrace } from "@/modules/logging/perf-trace"
 import type { SplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
 
@@ -160,7 +160,7 @@ export async function rebuildSplitRelationsForConfig(config: SplitMultipleValueC
 }
 
 function stopIndexing() {
-  logWarn("Indexer stopped")
+  logInfo("Indexer stopped")
   stopIndexerRunRuntime()
   resetIndexerProgress()
   logInfo("Indexer stop handling completed")

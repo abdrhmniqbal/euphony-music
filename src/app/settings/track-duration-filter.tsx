@@ -18,7 +18,7 @@ import {
   type TrackDurationFilterMode,
 } from "@/modules/settings/track-duration-filter"
 import { startIndexing } from "@/modules/indexer/service"
-import { useIndexerStore } from "@/modules/indexer/store"
+import { useIndexerStore } from "@/modules/indexer/progress/store"
 import { useSettingsStore } from "@/modules/settings/store"
 import { showAppToast } from "@/modules/ui/toast"
 

@@ -11,7 +11,7 @@ import {
   buildExternalTrack,
   findIndexedTrackForExternalUri,
   indexExternalFileTrack,
-} from "@/modules/indexer/external-file-import"
+} from "@/modules/indexer/external/external-file-import"
 import { handleTrackActivated } from "@/modules/player/activity"
 import { resetCrossfadeVolume } from "@/modules/player/crossfade"
 import { playFromTracks, setupPlaybackCore } from "@/modules/player/playback-core"

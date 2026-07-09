@@ -1,0 +1,354 @@
+import { and, eq } from "drizzle-orm"
+import { db } from "@/db/client"
+import { albums, artists, genres, trackArtists, trackGenres, tracks } from "@/db/schema"
+import { generateId } from "@/utils/common"
+import { GENRE_COLORS, GENRE_SHAPES, getGenreRainbowColor, getGenreShape, type GenreShape } from "@/modules/genres/constants"
+import type { PreparedAssetForIndex } from "@/modules/indexer/scan/batch"
+import { generateSortName } from "@/modules/indexer/scan/file-identity"
+
+// --- Lookup cache -----------------------------------------------------------
+
+export interface GenreVisualLookup {
+  supportsVisualColumns: boolean
+  usedCombinations: Set<string>
+  colorUsage: Map<string, number>
+  shapeUsage: Map<GenreShape, number>
+}
+
+export interface IndexingLookupCache {
+  artistIdsByName: Map<string, string>
+  albumIdsByArtistAndTitle: Map<string, string>
+  genreIdsByName: Map<string, string>
+  genreVisuals: GenreVisualLookup
+}
+
+function createEmptyGenreVisualLookup(): GenreVisualLookup {
+  const colorUsage = new Map<string, number>()
+  const shapeUsage = new Map<GenreShape, number>()
+
+  for (const color of GENRE_COLORS) {
+    colorUsage.set(color, 0)
+  }
+  for (const shape of GENRE_SHAPES) {
+    shapeUsage.set(shape, 0)
+  }
+
+  return {
+    supportsVisualColumns: true,
+    usedCombinations: new Set(),
+    colorUsage,
+    shapeUsage,
+  }
+}
+
+function registerGenreVisual(visualLookup: GenreVisualLookup, color: string, shape: GenreShape) {
+  visualLookup.usedCombinations.add(`${color}::${shape}`)
+  visualLookup.colorUsage.set(color, (visualLookup.colorUsage.get(color) ?? 0) + 1)
+  visualLookup.shapeUsage.set(shape, (visualLookup.shapeUsage.get(shape) ?? 0) + 1)
+}
+
+function selectGenreVisuals(
+  name: string,
+  visualLookup?: GenreVisualLookup
+): { color: string; shape: GenreShape } {
+  const color = getGenreRainbowColor(name)
+
+  if (!visualLookup?.supportsVisualColumns) {
+    return { color, shape: getGenreShape(name) }
+  }
+
+  const { shapeUsage, usedCombinations } = visualLookup
+  const shapesByUsage = [...GENRE_SHAPES].sort(
+    (a, b) => (shapeUsage.get(a) ?? 0) - (shapeUsage.get(b) ?? 0)
+  )
+
+  for (const shape of shapesByUsage) {
+    if (!usedCombinations.has(`${color}::${shape}`)) {
+      return { color, shape }
+    }
+  }
+
+  return { color, shape: getGenreShape(name) }
+}
+
+function getAlbumLookupKey(artistId: string, title: string) {
+  return `${artistId}::${title}`
+}
+
+export async function preloadIndexingLookupCache(): Promise<IndexingLookupCache> {
+  const [artistRows, albumRows] = await Promise.all([
+    db.query.artists.findMany({ columns: { id: true, name: true } }),
+    db.query.albums.findMany({ columns: { id: true, title: true, artistId: true } }),
+  ])
+
+  const genreVisuals = createEmptyGenreVisualLookup()
+  const genreIdsByName = new Map<string, string>()
+
+  try {
+    const genreRows = await db.query.genres.findMany({
+      columns: { id: true, name: true, color: true, shape: true },
+    })
+    for (const genre of genreRows) {
+      genreIdsByName.set(genre.name, genre.id)
+      registerGenreVisual(genreVisuals, genre.color, genre.shape as GenreShape)
+    }
+  } catch {
+    genreVisuals.supportsVisualColumns = false
+    const genreRows = await db.query.genres.findMany({ columns: { id: true, name: true } })
+    for (const genre of genreRows) {
+      genreIdsByName.set(genre.name, genre.id)
+    }
+  }
+
+  return {
+    artistIdsByName: new Map(artistRows.map((artist) => [artist.name, artist.id])),
+    albumIdsByArtistAndTitle: new Map(
+      albumRows
+        .filter((album) => album.artistId)
+        .map((album) => [getAlbumLookupKey(album.artistId as string, album.title), album.id])
+    ),
+    genreIdsByName,
+    genreVisuals,
+  }
+}
+
+export async function getOrCreateArtist(
+  name: string,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
+  const cachedArtistId = lookupCache?.artistIdsByName.get(name)
+  if (cachedArtistId) {
+    return cachedArtistId
+  }
+
+  const sortName = generateSortName(name)
+  const existing = await db.query.artists.findFirst({ where: eq(artists.name, name) })
+  if (existing) {
+    lookupCache?.artistIdsByName.set(name, existing.id)
+    return existing.id
+  }
+
+  const id = generateId()
+  await db.insert(artists).values({
+    id,
+    name,
+    sortName,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  })
+
+  lookupCache?.artistIdsByName.set(name, id)
+  return id
+}
+
+export async function getOrCreateAlbum(
+  title: string,
+  artistId: string,
+  artwork?: string,
+  year?: number,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
+  const cacheKey = getAlbumLookupKey(artistId, title)
+  const cachedAlbumId = lookupCache?.albumIdsByArtistAndTitle.get(cacheKey)
+  if (cachedAlbumId) {
+    return cachedAlbumId
+  }
+
+  const existing = await db.query.albums.findFirst({
+    where: and(eq(albums.title, title), eq(albums.artistId, artistId)),
+  })
+  if (existing) {
+    lookupCache?.albumIdsByArtistAndTitle.set(cacheKey, existing.id)
+    return existing.id
+  }
+
+  const id = generateId()
+  await db.insert(albums).values({
+    id,
+    title,
+    artistId,
+    year: year || null,
+    artwork: artwork || null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  })
+
+  lookupCache?.albumIdsByArtistAndTitle.set(cacheKey, id)
+  return id
+}
+
+export async function getOrCreateGenre(
+  name: string,
+  lookupCache?: IndexingLookupCache
+): Promise<string> {
+  const cachedGenreId = lookupCache?.genreIdsByName.get(name)
+  if (cachedGenreId) {
+    return cachedGenreId
+  }
+
+  const existing = await db.query.genres.findFirst({ where: eq(genres.name, name) })
+  if (existing) {
+    lookupCache?.genreIdsByName.set(name, existing.id)
+    return existing.id
+  }
+
+  const id = generateId()
+  const { color, shape } = selectGenreVisuals(name, lookupCache?.genreVisuals)
+  try {
+    await db.insert(genres).values({ id, name, color, shape, createdAt: Date.now() })
+  } catch {
+    await db.insert(genres).values({ id, name, createdAt: Date.now() })
+  }
+
+  lookupCache?.genreIdsByName.set(name, id)
+  if (lookupCache?.genreVisuals.supportsVisualColumns) {
+    registerGenreVisual(lookupCache.genreVisuals, color, shape)
+  }
+
+  return id
+}
+
+// --- Track upsert -----------------------------------------------------------
+
+export async function upsertPreparedAsset(
+  prepared: PreparedAssetForIndex,
+  signal?: AbortSignal,
+  lookupCache?: IndexingLookupCache
+): Promise<void> {
+  const { asset, fileHash, metadata, artworkPath } = prepared
+  if (signal?.aborted) {
+    return
+  }
+
+  const relationArtistNames = metadata.artists.length
+    ? metadata.artists
+    : metadata.artist
+      ? [metadata.artist]
+      : []
+  const artistId = relationArtistNames[0]
+    ? await getOrCreateArtist(relationArtistNames[0], lookupCache)
+    : null
+  const relationArtistIds = Array.from(
+    new Set(
+      await Promise.all(relationArtistNames.map((artist) => getOrCreateArtist(artist, lookupCache)))
+    )
+  )
+
+  const albumArtistId =
+    metadata.albumArtist && metadata.albumArtist !== metadata.artist
+      ? await getOrCreateArtist(metadata.albumArtist, lookupCache)
+      : artistId
+
+  const albumId =
+    metadata.album && albumArtistId
+      ? await getOrCreateAlbum(
+          metadata.album,
+          albumArtistId,
+          artworkPath,
+          metadata.year,
+          lookupCache
+        )
+      : null
+
+  const genresToProcess = metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
+  const genreIds = await Promise.all(
+    genresToProcess.map((genre) => getOrCreateGenre(genre, lookupCache))
+  )
+  if (signal?.aborted) {
+    return
+  }
+
+  const now = Date.now()
+  await db
+    .insert(tracks)
+    .values({
+      id: asset.id,
+      title: metadata.title,
+      artistId,
+      albumId,
+      duration: metadata.duration,
+      uri: asset.uri,
+      trackNumber: metadata.trackNumber,
+      discNumber: metadata.discNumber,
+      year: metadata.year,
+      filename: asset.filename || "",
+      fileHash,
+      audioBitrate: metadata.bitrate || null,
+      audioSampleRate: metadata.sampleRate || null,
+      audioCodec: metadata.codec || null,
+      audioFormat: metadata.format || null,
+      artwork: artworkPath || null,
+      lyrics: metadata.lyrics || null,
+      composer: metadata.composer || null,
+      comment: metadata.comment || null,
+      rawArtist: metadata.rawArtist || null,
+      rawAlbumArtist: metadata.rawAlbumArtist || null,
+      rawGenre: metadata.rawGenre || null,
+      dateAdded: asset.creationTime || now,
+      scanTime: now,
+      isDeleted: 0,
+      isFavorite: 0,
+      playCount: 0,
+      rating: null,
+      lastPlayedAt: null,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: tracks.id,
+      set: {
+        title: metadata.title,
+        artistId,
+        albumId,
+        duration: metadata.duration,
+        trackNumber: metadata.trackNumber,
+        discNumber: metadata.discNumber,
+        year: metadata.year,
+        fileHash,
+        audioBitrate: metadata.bitrate || null,
+        audioSampleRate: metadata.sampleRate || null,
+        audioCodec: metadata.codec || null,
+        audioFormat: metadata.format || null,
+        artwork: artworkPath || null,
+        lyrics: metadata.lyrics || null,
+        composer: metadata.composer || null,
+        comment: metadata.comment || null,
+        rawArtist: metadata.rawArtist || null,
+        rawAlbumArtist: metadata.rawAlbumArtist || null,
+        rawGenre: metadata.rawGenre || null,
+        scanTime: now,
+        isDeleted: 0,
+        updatedAt: now,
+      },
+    })
+
+  if (signal?.aborted) {
+    return
+  }
+
+  if (genreIds.length === 0) {
+    return
+  }
+
+  await db.delete(trackGenres).where(eq(trackGenres.trackId, asset.id))
+  await db.delete(trackArtists).where(eq(trackArtists.trackId, asset.id))
+  if (signal?.aborted) {
+    return
+  }
+
+  if (relationArtistIds.length > 0) {
+    await db.insert(trackArtists).values(
+      relationArtistIds.map((relationArtistId) => ({
+        trackId: asset.id,
+        artistId: relationArtistId,
+      }))
+    )
+  }
+
+  await db.insert(trackGenres).values(
+    genreIds.map((genreId) => ({
+      trackId: asset.id,
+      genreId,
+    }))
+  )
+}

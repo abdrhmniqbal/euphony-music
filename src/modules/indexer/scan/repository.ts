@@ -6,12 +6,12 @@
  * Side Effects: Reads media library/files, writes tracks/artists/albums/genres/track_artists/track_genres/indexer_state, recomputes stored artist artwork from primary tracks during reindex, rebuilds split artist/genre relations, emits incremental commit notifications, marks missing tracks deleted, and cleans unused artwork cache files.
  */
 
-import type { IndexerScanProgress } from "./types"
+import type { IndexerScanProgress } from "../state/types"
 
 import * as MediaLibrary from "expo-media-library/legacy"
 import { db } from "@/db/client"
-import { updateAlbumCounts, updateArtistCounts, updateGenreCounts } from "./counts-repository"
-import { waitForIndexerResume } from "@/modules/indexer/runtime"
+import { updateArtistCounts, updateAlbumCounts, updateGenreCounts } from "@/modules/indexer/scan/maintenance"
+import { waitForIndexerResume } from "@/modules/indexer/scan/runtime"
 
 import {
   ensureFolderFilterConfigLoaded,
@@ -24,25 +24,21 @@ import {
 import {
   ensureSplitMultipleValueConfigLoaded,
 } from "@/modules/settings/split-multiple-values"
-import { cleanupUnusedArtworkCache } from "./metadata"
-import { generateAssetHash } from "./file-identity"
-import { saveIndexerRunSnapshot } from "./run-snapshot"
-import { isAllowedAssetUri, isSupportedAssetByExtension } from "./scan-filter"
-import { yieldToEventLoop } from "./batch-utils"
+import { cleanupUnusedArtworkCache } from "../metadata/metadata"
+import { generateAssetHash } from "@/modules/indexer/scan/file-identity"
+import { saveIndexerRunSnapshot } from "../state/run-snapshot"
+import { isAllowedAssetUri, isSupportedAssetByExtension } from "@/modules/indexer/scan/scan-filter"
+import { yieldToEventLoop } from "../utils/batch"
 import {
   processDeletedTracksInScopes,
   hardDeleteSoftDeletedTracksInScopes,
-} from "./deleted-tracks-repository"
-export {
-  rebuildSplitMetadataRelations,
-} from "./relation-rebuild-repository"
-import { processBatch } from "./batch-processor"
-import { preloadIndexingLookupCache } from "./lookup-cache-repository"
+} from "@/modules/indexer/scan/maintenance"
+import { processBatch } from "@/modules/indexer/scan/batch"
+import { preloadIndexingLookupCache } from "@/modules/indexer/scan/upsert"
+import { COMMIT_SCOPE_SIZE } from "@/modules/indexer/scan/scope-commit"
 
-export { getLastIndexerRunSnapshot } from "./run-snapshot"
-
-const BATCH_SIZE = 24
-
+export { getLastIndexerRunSnapshot } from "../state/run-snapshot"
+export { rebuildSplitMetadataRelations } from "@/modules/indexer/scan/maintenance"
 
 
 interface IncrementalCommitResult {
@@ -165,12 +161,12 @@ export async function scanMediaLibrary(
     : Math.max(0, scopedAssets.length - assetsToProcess.length)
 
   // Process in batches
-  for (let i = 0; i < assetsToProcess.length; i += BATCH_SIZE) {
+  for (let i = 0; i < assetsToProcess.length; i += COMMIT_SCOPE_SIZE) {
     if (signal?.aborted) return
     await waitForIndexerResume(signal)
     if (signal?.aborted) return
 
-    const batch = assetsToProcess.slice(i, i + BATCH_SIZE)
+    const batch = assetsToProcess.slice(i, i + COMMIT_SCOPE_SIZE)
 
     const batchResult = await processBatch(
       batch,

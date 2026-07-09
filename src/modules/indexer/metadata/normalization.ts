@@ -1,27 +1,5 @@
-/**
- * Purpose: Normalizes extracted audio metadata for indexing.
- * Caller: Indexer repository and split relation rebuild.
- * Dependencies: None.
- * Main Functions: normalizeText(), normalizeMetadata()
- * Side Effects: None.
- */
-
 import { resolveGenreName } from "@/modules/genres/constants"
-
-interface NormalizableMetadata {
-  title?: string | null
-  artist?: string | null
-  artists: string[]
-  album?: string | null
-  albumArtist?: string | null
-  genres: string[]
-  rawArtist?: string | null
-  rawAlbumArtist?: string | null
-  rawGenre?: string | null
-  composer?: string | null
-  comment?: string | null
-  lyrics?: string | null
-}
+import type { ExtractedMetadata } from "@/modules/indexer/metadata/metadata"
 
 export function normalizeText(value?: string | null): string | undefined {
   if (!value) {
@@ -37,17 +15,12 @@ function stripFileExtension(filename: string): string {
   if (lastDotIndex <= 0) {
     return filename
   }
-
   return filename.slice(0, lastDotIndex)
 }
 
 function extractFallbackTitle(filename: string): string {
   const fromFilename = stripFileExtension(filename).trim()
-  if (fromFilename.length > 0) {
-    return fromFilename
-  }
-
-  return "Unknown Title"
+  return fromFilename.length > 0 ? fromFilename : "Unknown Title"
 }
 
 function normalizeGenres(genres: string[]): string[] {
@@ -56,16 +29,10 @@ function normalizeGenres(genres: string[]): string[] {
 
   for (const genre of genres) {
     const normalizedGenre = normalizeText(genre)
-    if (!normalizedGenre) {
-      continue
-    }
-
+    if (!normalizedGenre) continue
     const resolved = resolveGenreName(normalizedGenre)
     const key = resolved.toLowerCase()
-    if (seen.has(key)) {
-      continue
-    }
-
+    if (seen.has(key)) continue
     seen.add(key)
     normalized.push(resolved)
   }
@@ -73,18 +40,7 @@ function normalizeGenres(genres: string[]): string[] {
   return normalized
 }
 
-/**
- * Purpose: Normalizes scanner metadata into database-ready values, including album-artist fallback from track artist.
- * Caller: Indexer metadata preparation and external track indexing.
- * Dependencies: Text normalization helpers, fallback title extraction, genre normalization, and malformed lyric cleanup.
- * Main Functions: normalizeMetadata()
- * Side Effects: None.
- */
-
-export function normalizeMetadata<T extends NormalizableMetadata>(
-  metadata: T,
-  filename: string
-): T {
+export function normalizeMetadata(metadata: ExtractedMetadata, filename: string): ExtractedMetadata {
   const normalizedTitle = normalizeText(metadata.title) || extractFallbackTitle(filename)
   const normalizedArtist = normalizeText(metadata.artist)
   const normalizedGenres = normalizeGenres(metadata.genres)
@@ -114,6 +70,5 @@ export function normalizeMetadata<T extends NormalizableMetadata>(
     composer: normalizeText(metadata.composer),
     comment: normalizeText(metadata.comment),
     lyrics: normalizeText(metadata.lyrics),
-
-  } as T
+  }
 }

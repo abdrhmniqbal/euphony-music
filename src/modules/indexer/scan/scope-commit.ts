@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm"
 
 import { db } from "@/db/client"
-import { wait } from "./batch-utils"
+import { wait } from "../utils/batch"
 
 const COMMIT_SCOPE_MAX_ATTEMPTS = 3
 const COMMIT_SCOPE_RETRY_DELAY_MS = 160

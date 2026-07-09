@@ -1,21 +1,19 @@
 import { db } from "@/db/client"
 import {
-  albums,
-  artists,
   genres,
   trackArtists,
   trackGenres,
   tracks as tracksTable,
 } from "@/db/schema"
 import { and, eq, inArray, or, sql, type SQL } from "drizzle-orm"
-import { generateSortName } from "@/modules/indexer/file-identity"
-import { extractMetadata, saveArtworkToCache } from "@/modules/indexer/metadata"
+import { extractMetadata, saveArtworkToCache } from "@/modules/indexer/metadata/metadata"
 import { logWarn } from "@/modules/logging/service"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
 import { generateId } from "@/utils/common"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import { getTracksState } from "@/modules/player/store"
 import { EXTERNAL_TRACK_ID_PREFIX, type Track } from "@/modules/player/types"
+import { getOrCreateArtist, getOrCreateAlbum } from "@/modules/indexer/scan/upsert"
 import {
   extractExternalUriTrackIds,
   getExternalFilename,
@@ -23,55 +21,6 @@ import {
   hashExternalTrackId,
   normalizeUriForComparison,
 } from "@/modules/player/external-track-utils"
-
-async function getOrCreateExternalArtist(name: string) {
-  const existing = await db.query.artists.findFirst({
-    where: eq(artists.name, name),
-  })
-
-  if (existing) {
-    return existing.id
-  }
-
-  const id = generateId()
-  await db.insert(artists).values({
-    id,
-    name,
-    sortName: generateSortName(name),
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  })
-
-  return id
-}
-
-async function getOrCreateExternalAlbum(
-  title: string,
-  artistId: string,
-  artwork?: string,
-  year?: number
-) {
-  const existing = await db.query.albums.findFirst({
-    where: and(eq(albums.title, title), eq(albums.artistId, artistId)),
-  })
-
-  if (existing) {
-    return existing.id
-  }
-
-  const id = generateId()
-  await db.insert(albums).values({
-    id,
-    title,
-    artistId,
-    year: year || null,
-    artwork: artwork || null,
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  })
-
-  return id
-}
 
 async function getOrCreateExternalGenre(name: string) {
   const existing = await db.query.genres.findFirst({
@@ -127,6 +76,14 @@ async function updateExternalLibraryCounts() {
   `)
 }
 
+async function extractExternalFileMetadata(uri: string, resolvedUri: string) {
+  const playableUri = resolvedUri || uri
+  const splitConfig = await ensureSplitMultipleValueConfigLoaded()
+  const metadata = await extractMetadata(playableUri, getExternalFilename(uri), 0, splitConfig)
+  const artworkPath = await saveArtworkToCache(metadata.artwork)
+  return { playableUri, metadata, artworkPath }
+}
+
 export async function buildExternalTrack(uri: string, resolvedUri: string): Promise<Track> {
   const fallbackTitle = getExternalTrackTitle(uri)
   const playableUri = resolvedUri || uri
@@ -139,9 +96,7 @@ export async function buildExternalTrack(uri: string, resolvedUri: string): Prom
   }
 
   try {
-    const splitConfig = await ensureSplitMultipleValueConfigLoaded()
-    const metadata = await extractMetadata(playableUri, getExternalFilename(uri), 0, splitConfig)
-    const artworkPath = await saveArtworkToCache(metadata.artwork)
+    const { metadata, artworkPath } = await extractExternalFileMetadata(uri, resolvedUri)
 
     return {
       ...fallbackTrack,
@@ -248,10 +203,8 @@ export async function indexExternalFileTrack(uri: string, resolvedUri: string) {
     return existingTrack
   }
 
-  const splitConfig = await ensureSplitMultipleValueConfigLoaded()
-  const metadata = await extractMetadata(playableUri, getExternalFilename(uri), 0, splitConfig)
-  const artworkPath = await saveArtworkToCache(metadata.artwork)
-  const artistId = metadata.artist ? await getOrCreateExternalArtist(metadata.artist) : null
+  const { metadata, artworkPath } = await extractExternalFileMetadata(uri, resolvedUri)
+  const artistId = metadata.artist ? await getOrCreateArtist(metadata.artist) : null
   const relationArtistNames = metadata.artists.length
     ? metadata.artists
     : metadata.artist
@@ -262,17 +215,17 @@ export async function indexExternalFileTrack(uri: string, resolvedUri: string) {
       await Promise.all(
         [...relationArtistNames, metadata.artist ?? ""]
           .filter((artist): artist is string => Boolean(artist))
-          .map((artist) => getOrCreateExternalArtist(artist))
+          .map((artist) => getOrCreateArtist(artist))
       )
     )
   )
   const albumArtistId =
     metadata.albumArtist && metadata.albumArtist !== metadata.artist
-      ? await getOrCreateExternalArtist(metadata.albumArtist)
+      ? await getOrCreateArtist(metadata.albumArtist)
       : artistId
   const albumId =
     metadata.album && albumArtistId
-      ? await getOrCreateExternalAlbum(metadata.album, albumArtistId, artworkPath, metadata.year)
+      ? await getOrCreateAlbum(metadata.album, albumArtistId, artworkPath, metadata.year)
       : null
   const genreNames = metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
   const genreIds = await Promise.all(genreNames.map((genre) => getOrCreateExternalGenre(genre)))

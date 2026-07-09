@@ -22,7 +22,7 @@ import { ThemedRefreshControl } from "@/modules/shared/components/ui/themed-refr
 import { screenEnterTransition, screenExitTransition } from "@/modules/shared/constants/animations"
 import { useTopTracksByPeriod } from "@/modules/history/queries"
 import { startIndexing } from "@/modules/indexer/service"
-import { useIndexerStore } from "@/modules/indexer/store"
+import { useIndexerStore } from "@/modules/indexer/progress/store"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"

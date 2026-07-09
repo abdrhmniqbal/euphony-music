@@ -13,7 +13,7 @@ import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import { forceReindexLibrary } from "@/modules/indexer/service"
-import { useIndexerStore } from "@/modules/indexer/store"
+import { useIndexerStore } from "@/modules/indexer/progress/store"
 import { setAutoScanConfig } from "@/modules/settings/auto-scan"
 import { setCountAsPlayedConfig } from "@/modules/settings/count-as-played"
 import type { IndexerScanConfig } from "@/modules/settings/types"

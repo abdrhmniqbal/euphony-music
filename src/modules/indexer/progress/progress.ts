@@ -1,4 +1,4 @@
-import type { IndexerScanProgress } from "@/modules/indexer/types"
+import type { IndexerScanProgress } from "@/modules/indexer/state/types"
 import { logInfo, logWarn } from "@/modules/logging/service"
 import {
   beginIndexerProgressNotification,
@@ -8,9 +8,18 @@ import {
   pauseIndexerProgressNotification,
   resumeIndexerProgressNotification,
   updateIndexerProgressNotification,
-} from "@/modules/indexer/notification"
+} from "@/modules/indexer/progress/notification"
 
 import { getDefaultIndexerState, getIndexerState, updateIndexerState } from "./store"
+
+function dismissAndResetWhenHidden(): boolean {
+  if (getIndexerState().showProgress) {
+    return false
+  }
+  void dismissIndexerProgressNotification()
+  resetIndexerProgress()
+  return true
+}
 
 const VISIBLE_PROGRESS_UPDATE_INTERVAL_MS = 120
 const NOTIFICATION_PROGRESS_UPDATE_INTERVAL_MS = 750
@@ -105,10 +114,8 @@ export function updateIndexerProgress(progress: IndexerScanProgress) {
 }
 
 export function completeIndexerProgress() {
-  if (!getIndexerState().showProgress) {
+  if (dismissAndResetWhenHidden()) {
     logInfo("Indexer progress completed while progress UI hidden")
-    void dismissIndexerProgressNotification()
-    resetIndexerProgress()
     return
   }
 
@@ -133,10 +140,8 @@ export function resetIndexerProgress() {
 }
 
 export function failIndexerProgress() {
-  if (!getIndexerState().showProgress) {
+  if (dismissAndResetWhenHidden()) {
     logWarn("Indexer progress failed while progress UI hidden")
-    void dismissIndexerProgressNotification()
-    resetIndexerProgress()
     return
   }
 
@@ -152,12 +157,10 @@ export function failIndexerProgress() {
 export function hideIndexerProgress(options?: { keepNotification?: boolean }) {
   const keepNotification = options?.keepNotification ?? false
 
-  if (!getIndexerState().showProgress) {
-    logInfo("Indexer progress hide requested while already hidden")
+  if (dismissAndResetWhenHidden()) {
     if (!keepNotification) {
       void dismissIndexerProgressNotification()
     }
-    resetIndexerProgress()
     return
   }
 

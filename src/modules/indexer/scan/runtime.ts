@@ -9,10 +9,14 @@ let runToken = 0
 let completePhaseTimeout: ReturnType<typeof setTimeout> | null = null
 let paused = false
 let pauseWaiters: Array<() => void> = []
-let queuedRun: QueuedIndexerRun = {
-  requested: false,
-  forceFullScan: false,
-  showProgress: false,
+let queuedRun: QueuedIndexerRun = createEmptyQueuedRun()
+
+function createEmptyQueuedRun(): QueuedIndexerRun {
+  return {
+    requested: false,
+    forceFullScan: false,
+    showProgress: false,
+  }
 }
 
 export function isIndexerRunActive() {
@@ -96,11 +100,7 @@ export function consumeQueuedIndexerRun(controller: AbortController, currentRunT
     forceFullScan: queuedRun.forceFullScan,
     showProgress: queuedRun.showProgress,
   }
-  queuedRun = {
-    requested: false,
-    forceFullScan: false,
-    showProgress: false,
-  }
+  queuedRun = createEmptyQueuedRun()
 
   return nextQueuedRun
 }
@@ -108,11 +108,7 @@ export function consumeQueuedIndexerRun(controller: AbortController, currentRunT
 export function stopIndexerRunRuntime() {
   runToken += 1
   paused = false
-  queuedRun = {
-    requested: false,
-    forceFullScan: false,
-    showProgress: false,
-  }
+  queuedRun = createEmptyQueuedRun()
   clearIndexerCompletePhaseTimeout()
   flushPauseWaiters()
 

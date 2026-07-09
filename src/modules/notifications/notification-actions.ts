@@ -12,7 +12,7 @@ import {
   INDEXER_NOTIFICATION_ACTION_CANCEL,
   INDEXER_NOTIFICATION_ACTION_PAUSE,
   INDEXER_NOTIFICATION_ACTION_RESUME,
-} from "@/modules/indexer/notification"
+} from "@/modules/indexer/progress/notification"
 import { cancelIndexing, pauseIndexing, resumeIndexing } from "@/modules/indexer/service"
 import { openLatestAppUpdatePrompt } from "@/modules/updates/app-update-runtime"
 
