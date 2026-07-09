@@ -243,6 +243,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      GH_REPO: ${{ github.repository }}
     steps:
       - name: Trigger release notes workflow
         env:
