@@ -20,7 +20,9 @@ export function isPreviewReleaseVersion(version: string) {
 }
 
 export function normalizeVersion(value: string) {
-  return value.trim().replace(/^[^0-9]+/, "")
+  // Strip the local development-build marker (e.g. "1.2.3-dev") so a dev
+  // client compares equal to its published release instead of appearing older.
+  return value.trim().replace(/^[^0-9]+/, "").replace(/-dev(?:\.\d+)?$/i, "")
 }
 
 export function parseVersion(value: string) {

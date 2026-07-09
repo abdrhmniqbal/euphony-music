@@ -15,6 +15,12 @@ describe("normalizeVersion", () => {
     expect(normalizeVersion("  1.2 ")).toBe("1.2")
     expect(normalizeVersion("1.0.0")).toBe("1.0.0")
   })
+
+  it("strips the local dev-build marker", () => {
+    expect(normalizeVersion("1.2.3-dev")).toBe("1.2.3")
+    expect(normalizeVersion("1.2.3-dev.2")).toBe("1.2.3")
+    expect(normalizeVersion("v1.2.3-dev")).toBe("1.2.3")
+  })
 })
 
 describe("parseVersion", () => {
@@ -61,6 +67,11 @@ describe("compareVersions", () => {
   it("compares prerelease parts lexically when both are strings", () => {
     expect(compareVersions("1.0.0-alpha", "1.0.0-beta")).toBeLessThan(0)
   })
+
+  it("treats a dev build as equal to its published release", () => {
+    expect(compareVersions("1.2.3-dev", "1.2.3")).toBe(0)
+    expect(compareVersions("1.2.3", "1.2.3-dev")).toBe(0)
+  })
 })
 
 describe("isNewerVersion", () => {
@@ -82,6 +93,10 @@ describe("isPreviewReleaseVersion", () => {
   it("returns false for stable versions", () => {
     expect(isPreviewReleaseVersion("1.0.0")).toBe(false)
     expect(isPreviewReleaseVersion("1.0.0-stable")).toBe(false)
+  })
+
+  it("does not treat a dev build as a preview release", () => {
+    expect(isPreviewReleaseVersion("1.2.3-dev")).toBe(false)
   })
 })
 
@@ -124,5 +139,9 @@ Beta body
 
   it("returns an empty array for empty input", () => {
     expect(parseChangelogReleaseNotes("", "1.0.0")).toEqual([])
+  })
+
+  it("treats a dev build as its published version for the cutoff", () => {
+    expect(parseChangelogReleaseNotes(markdown, "1.5.0-dev")).toHaveLength(2)
   })
 })
