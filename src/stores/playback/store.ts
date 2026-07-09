@@ -33,7 +33,6 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
         }
 
         console.log(`[Database Mismatch] Track (${tId}) doesn't exist in the database.`)
-        await get().reset()
       } catch (error) {
         logWarn("Failed to resolve playback track from database", {
           error,

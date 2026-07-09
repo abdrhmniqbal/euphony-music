@@ -88,11 +88,11 @@ export async function playToggle(opts?: PlayPauseOptions) {
 }
 
 export async function prev() {
-  const { getTrack, reset, lastPosition, queue, queuePosition } = playbackStore.getState()
+  const { getTrack, lastPosition, queue, queuePosition } = playbackStore.getState()
 
   const prevIndex = queuePosition === 0 ? queue.length - 1 : queuePosition - 1
   const prevTrackKey = queue[prevIndex]
-  if (!prevTrackKey) return await reset()
+  if (!prevTrackKey) return
   const prevTrack = await getTrack(prevTrackKey)
   if (!prevTrack) return
 
