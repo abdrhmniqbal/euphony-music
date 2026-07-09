@@ -80,7 +80,7 @@ export default function SearchScreen() {
       }
       onLongPress={() => openTrackSheet(item)}
       titleClassName={currentTrackId === item.id ? "text-accent" : undefined}
-      imageOverlay={currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined}
+      imageOverlay={currentTrackId === item.id ? <ScaleLoader size={28} /> : undefined}
     />
   )
 

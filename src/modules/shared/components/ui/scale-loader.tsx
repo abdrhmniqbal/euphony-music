@@ -6,49 +6,59 @@
  * Side Effects: Runs native-thread loading animations.
  */
 
+import { useEffect } from "react"
 import { View } from "react-native"
 import Animated, {
+  Easing,
   useAnimatedStyle,
-  useDerivedValue,
-  withDelay,
+  useSharedValue,
   withRepeat,
-  withSequence,
   withTiming,
 } from "react-native-reanimated"
 
 import { useThemeColors } from "@/modules/ui/theme"
 
 const BAR_COUNT = 3
-const BAR_WIDTH = 3
-const BAR_DELAYS = Array.from({ length: BAR_COUNT }, (_, index) => index * 150)
+const BAR_DURATION = 1000
+const BAR_MIN = 0.3
 
 interface ScaleLoaderProps {
   size?: number
 }
 
-function Bar({ delay, maxHeight }: { delay: number; maxHeight: number }) {
+function Bar({
+  phase,
+  maxHeight,
+  width,
+}: {
+  phase: number
+  maxHeight: number
+  width: number
+}) {
   const theme = useThemeColors()
-  const scale = useDerivedValue(() =>
-    withDelay(
-      delay,
-      withRepeat(
-        withSequence(withTiming(1, { duration: 360 }), withTiming(0.35, { duration: 360 })),
-        -1,
-        false
-      )
-    )
-  )
+  const progress = useSharedValue(phase)
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    height: scale.value * maxHeight,
-  }))
+  useEffect(() => {
+    progress.value = withRepeat(
+      withTiming(phase + 1, { duration: BAR_DURATION, easing: Easing.linear }),
+      -1,
+      false
+    )
+  }, [progress, phase])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const wave = 0.5 + 0.5 * Math.sin(progress.value * 2 * Math.PI)
+    return {
+      height: (BAR_MIN + (1 - BAR_MIN) * wave) * maxHeight,
+    }
+  })
 
   return (
     <Animated.View
       style={[
         {
-          width: BAR_WIDTH,
-          borderRadius: BAR_WIDTH / 2,
+          width,
+          borderRadius: width / 2,
           backgroundColor: theme.accent,
         },
         animatedStyle,
@@ -57,8 +67,10 @@ function Bar({ delay, maxHeight }: { delay: number; maxHeight: number }) {
   )
 }
 
-export function ScaleLoader({ size = 20 }: ScaleLoaderProps) {
+export function ScaleLoader({ size = 28 }: ScaleLoaderProps) {
   const theme = useThemeColors()
+  const barWidth = Math.max(3, Math.round(size * 0.24))
+  const gap = Math.round(barWidth * 0.8)
 
   return (
     <View
@@ -69,12 +81,12 @@ export function ScaleLoader({ size = 20 }: ScaleLoaderProps) {
         style={{
           flexDirection: "row",
           alignItems: "flex-end",
-          gap: 2,
+          gap,
           height: size,
         }}
       >
-        {BAR_DELAYS.map((delay) => (
-          <Bar key={delay} delay={delay} maxHeight={size} />
+        {Array.from({ length: BAR_COUNT }, (_, index) => (
+          <Bar key={index} phase={index / BAR_COUNT} maxHeight={size} width={barWidth} />
         ))}
       </View>
     </View>

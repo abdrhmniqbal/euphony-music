@@ -92,7 +92,7 @@ export default function HomeScreen() {
         }
         onLongPress={() => openTrackSheet(item, recentlyPlayedTracks, t("home.recentlyPlayed"))}
         titleClassName={currentTrackId === item.id ? "text-accent" : undefined}
-        imageOverlay={currentTrackId === item.id ? <ScaleLoader size={16} /> : undefined}
+        imageOverlay={currentTrackId === item.id ? <ScaleLoader size={28} /> : undefined}
       />
     )
   }
