@@ -17,7 +17,7 @@ import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 
 import { useCallback, useMemo } from "react"
-import { Text, View } from "react-native"
+import { Keyboard, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { LEGEND_LIST_SECTION_CONFIG } from "@/components/blocks/legend-list-config"
 import { SearchResultsTabBar, type SearchTab } from "@/components/blocks/search-results-tab-bar"
