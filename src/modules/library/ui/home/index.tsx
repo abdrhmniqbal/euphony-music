@@ -8,12 +8,6 @@
 
 import * as React from "react"
 import { View } from "react-native"
-import Animated, {
-  FadeInLeft,
-  FadeInRight,
-  FadeOutLeft,
-  FadeOutRight,
-} from "react-native-reanimated"
 import { useTranslation } from "react-i18next"
 import { AlbumsTab } from "@/components/blocks/albums-tab"
 import { ArtistsTab } from "@/components/blocks/artists-tab"
@@ -38,14 +32,7 @@ export default function LibraryScreen() {
 
   const state = useLibraryHomeState()
 
-  const [tabTransitionDirection, setTabTransitionDirection] = React.useState<1 | -1>(1)
-
   const handleActiveTabChange = (nextTab: typeof state.activeTab) => {
-    const currentIndex = state.visibleTabs.indexOf(state.activeTab)
-    const nextIndex = state.visibleTabs.indexOf(nextTab)
-    const direction: 1 | -1 = nextIndex >= currentIndex ? 1 : -1
-
-    setTabTransitionDirection(direction)
     state.setActiveTab(nextTab)
   }
 
@@ -198,22 +185,9 @@ export default function LibraryScreen() {
               </View>
             )}
             <View className="flex-1 overflow-hidden">
-              <Animated.View
-                key={state.activeTab}
-                className="flex-1"
-                entering={
-                  tabTransitionDirection === 1
-                    ? FadeInRight.duration(220)
-                    : FadeInLeft.duration(220)
-                }
-                exiting={
-                  tabTransitionDirection === 1
-                    ? FadeOutLeft.duration(180)
-                    : FadeOutRight.duration(180)
-                }
-              >
+              <View key={state.activeTab} className="flex-1">
                 {renderTabContent()}
-              </Animated.View>
+              </View>
             </View>
           </View>
         </View>
