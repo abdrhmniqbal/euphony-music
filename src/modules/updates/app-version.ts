@@ -15,3 +15,9 @@ export { isPreviewReleaseVersion }
 export function getCurrentAppVersion() {
   return Application.nativeApplicationVersion || ""
 }
+
+const DEV_VERSION_PATTERN = /-dev(?:\.\d+)?$/i
+
+export function isDevBuild(version: string = getCurrentAppVersion()) {
+  return DEV_VERSION_PATTERN.test(version)
+}

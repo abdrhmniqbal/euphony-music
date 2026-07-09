@@ -9,7 +9,7 @@
 import { create } from "zustand"
 
 import { getDefaultLibraryTabsConfig } from "@/modules/library/tabs"
-import { getCurrentAppVersion, isPreviewReleaseVersion } from "@/modules/updates/app-version"
+import { getCurrentAppVersion, isDevBuild, isPreviewReleaseVersion } from "@/modules/updates/app-version"
 import type {
   AudioPlaybackConfig,
   AppUpdateConfig,
@@ -58,7 +58,7 @@ const DEFAULT_FOLDER_FILTER_CONFIG: FolderFilterConfig = {
   blacklist: [],
 }
 const DEFAULT_LOGGING_CONFIG: LoggingConfig = {
-  level: "minimal",
+  level: isDevBuild() ? "extra" : "minimal",
 }
 const DEFAULT_TRACK_DURATION_FILTER: TrackDurationFilterConfig = {
   mode: "off",
