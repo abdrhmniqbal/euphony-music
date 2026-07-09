@@ -55,7 +55,7 @@ export function ArtistDetailHeader({
       />
       {isHeaderSolid ? (
         <View pointerEvents="none" className="absolute right-16 bottom-4 left-16 items-center">
-          <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+          <Text className="text-xl font-semibold text-foreground" numberOfLines={1}>
             {artistName}
           </Text>
         </View>

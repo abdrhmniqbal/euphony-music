@@ -19,7 +19,7 @@ import {
   getHiddenArtistScreenOptions,
   getHiddenBoundaryScreenOptions,
   getHiddenPlaylistScreenOptions,
-  getLargeTitleRootScreenOptions,
+  getMainRootScreenOptions,
 } from "@/modules/navigation/stack"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -32,7 +32,7 @@ export default function LibraryLayout() {
     <Stack screenOptions={getDefaultNativeStackOptions(theme)}>
       <Stack.Screen
         name="index"
-        options={getLargeTitleRootScreenOptions({
+        options={getMainRootScreenOptions({
           title: t("navigation.tabs.library"),
           headerRight: () => (
             <StackHeaderActions

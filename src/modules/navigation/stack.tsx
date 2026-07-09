@@ -2,7 +2,7 @@
  * Purpose: Centralizes navigation stack screen options and shared route transition helpers, including player modal gesture boundaries.
  * Caller: Expo Router app layouts and nested detail route stacks.
  * Dependencies: expo-router stack options, react-native-screen-transitions, react-native-reanimated, react-native.
- * Main Functions: getDefaultNativeStackOptions(), getLargeTitleRootScreenOptions(), getCenteredRootScreenOptions(), getDrillDownScreenOptions(), getMediaDetailTransitionOptions(), getModalTaskTransitionOptions(), getHiddenBoundaryScreenOptions(), getHiddenArtistScreenOptions(), getHiddenPlaylistScreenOptions(), getHiddenPlayerScreenOptions()
+ * Main Functions: getDefaultNativeStackOptions(), getMainRootScreenOptions(), getCenteredRootScreenOptions(), getDrillDownScreenOptions(), getMediaDetailTransitionOptions(), getModalTaskTransitionOptions(), getHiddenBoundaryScreenOptions(), getHiddenArtistScreenOptions(), getHiddenPlaylistScreenOptions(), getHiddenPlayerScreenOptions()
  * Side Effects: None; builds navigation option objects only.
  */
 
@@ -110,6 +110,11 @@ export const ROOT_MODAL_SCREEN_OPTIONS = {
   animation: "slide_from_bottom" as const,
 }
 
+const ROOT_TITLE_STYLE = {
+  fontSize: 20,
+  fontWeight: "600" as const,
+}
+
 function getBackButtonScreenOptions(title: string, headerLeft: () => ReactNode) {
   return {
     title,
@@ -131,6 +136,7 @@ export function getDefaultNativeStackOptions(theme: NavigationThemeColors) {
     headerTintColor: theme.foreground,
     headerShadowVisible: false,
     headerTitleAlign: "center" as const,
+    headerTitleStyle: ROOT_TITLE_STYLE,
     freezeOnBlur: false,
     contentStyle: {
       backgroundColor: theme.background,
@@ -138,14 +144,13 @@ export function getDefaultNativeStackOptions(theme: NavigationThemeColors) {
   }
 }
 
-export function getLargeTitleRootScreenOptions(options: {
+export function getMainRootScreenOptions(options: {
   title: string
   headerRight?: () => ReactNode
   headerLeft?: () => ReactNode
 }) {
   return {
     title: options.title,
-    headerLargeTitle: true,
     headerTitleAlign: "left" as const,
     headerRight: options.headerRight,
     headerLeft: options.headerLeft,

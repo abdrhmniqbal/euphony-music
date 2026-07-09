@@ -16,7 +16,7 @@ import { Stack } from "@/layouts/stack"
 import {
   getDefaultNativeStackOptions,
   getDrillDownScreenOptions,
-  getLargeTitleRootScreenOptions,
+  getMainRootScreenOptions,
 } from "@/modules/navigation/stack"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -29,7 +29,7 @@ export default function HomeLayout() {
     <Stack screenOptions={getDefaultNativeStackOptions(theme)}>
       <Stack.Screen
         name="index"
-        options={getLargeTitleRootScreenOptions({
+        options={getMainRootScreenOptions({
           title: t("navigation.tabs.home"),
           headerRight: () => (
             <StackHeaderActions
