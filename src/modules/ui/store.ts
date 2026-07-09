@@ -9,6 +9,7 @@
 import AsyncStorage from "expo-sqlite/kv-store"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
+import { debounce } from "@tanstack/react-pacer/debouncer"
 
 export type PlayerExpandedView = "artwork" | "lyrics" | "queue"
 export type PlayerLyricsFontScale = 1 | 1.2 | 1.4
@@ -50,7 +51,6 @@ function setBarsVisible(value: boolean) {
 }
 
 export function showBars() {
-  clearAutoShowTimer()
   setBarsVisible(true)
 }
 
@@ -73,40 +73,13 @@ export function togglePlayerExpandedView(value: PlayerExpandedView) {
   })
 }
 
-const BARS_AUTO_SHOW_IDLE_MS = 500
+const BARS_AUTO_SHOW_IDLE_MS = 200
 
-let lastScrollY = 0
-let showTimeout: ReturnType<typeof setTimeout> | null = null
+const showBarsAfterIdle = debounce(() => {
+  setBarsVisible(true)
+}, { wait: BARS_AUTO_SHOW_IDLE_MS })
 
-function clearAutoShowTimer() {
-  if (showTimeout) {
-    clearTimeout(showTimeout)
-    showTimeout = null
-  }
-}
-
-export function handleScroll(currentY: number) {
-  clearAutoShowTimer()
-
-  const isScrollingDown = currentY > lastScrollY && currentY > 50
-  const isScrollingUp = currentY < lastScrollY
-
-  if (isScrollingDown) {
-    setBarsVisible(false)
-  } else if (isScrollingUp) {
-    setBarsVisible(true)
-  }
-
-  lastScrollY = currentY
-}
-
-export function handleScrollStart() {
-  clearAutoShowTimer()
-}
-
-export function handleScrollStop() {
-  clearAutoShowTimer()
-  showTimeout = setTimeout(() => {
-    setBarsVisible(true)
-  }, BARS_AUTO_SHOW_IDLE_MS)
+export function handleScroll() {
+  setBarsVisible(false)
+  showBarsAfterIdle()
 }

@@ -53,7 +53,7 @@ import {
 } from "@/modules/playlist/utils"
 import { useThemeColors } from "@/modules/ui/theme"
 import { handleScroll } from "@/modules/ui/store"
-import { usePlaybackActions, useDetailScrollHandlers, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
+import { usePlaybackActions, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
 import LocalEdit02Icon from "@/modules/shared/components/icons/local/edit-02"
 import LocalDelete02Icon from "@/modules/shared/components/icons/local/delete-02"
 
@@ -172,7 +172,6 @@ export default function PlaylistDetailsScreen() {
     sortedTracks,
     { type: "playlist", title: playlist?.name || t("library.playlists") }
   )
-  const scrollHandlers = useDetailScrollHandlers()
 
   function handleSortSelect(field: PlaylistTrackSortField, order?: PlaylistTrackSortOrder) {
     const isNewField = field !== sortField
@@ -289,14 +288,13 @@ export default function PlaylistDetailsScreen() {
           resetScrollKey={`${sortField}-${sortOrder}`}
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
           onScroll={(e) => {
+            handleScroll()
             const y = e.nativeEvent.contentOffset.y
-            handleScroll(y)
             const nextShowHeaderTitle = y > HEADER_COLLAPSE_THRESHOLD
             if (nextShowHeaderTitle !== showHeaderTitle) {
               setShowHeaderTitle(nextShowHeaderTitle)
             }
           }}
-          {...scrollHandlers}
           listHeader={
             <>
               <View

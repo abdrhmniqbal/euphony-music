@@ -38,8 +38,8 @@ import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime
 import { usePlayerTracks } from "@/modules/player/selectors"
 import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
+import { usePlaybackActions, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
 import { handleScroll } from "@/modules/ui/store"
-import { usePlaybackActions, useDetailScrollHandlers, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
 import { mergeText } from "@/utils/merge-text"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
@@ -155,7 +155,6 @@ export default function AlbumDetailsScreen() {
     sortedTracks,
     { type: "album", title: activeAlbumInfo.title }
   )
-  const scrollHandlers = useDetailScrollHandlers()
 
   function getSortLabel() {
     return resolveSortLabel(ALBUM_TRACK_SORT_OPTIONS, sortConfig.field, t)
@@ -257,14 +256,13 @@ export default function AlbumDetailsScreen() {
           resetScrollKey={`${albumId || albumInfo.title}-${sortConfig.field}-${sortConfig.order}`}
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
           onScroll={(event) => {
+            handleScroll()
             const y = event.nativeEvent.contentOffset.y
-            handleScroll(y)
             const nextShowHeaderTitle = y > HEADER_COLLAPSE_THRESHOLD
             if (nextShowHeaderTitle !== showHeaderTitle) {
               setShowHeaderTitle(nextShowHeaderTitle)
             }
           }}
-          {...scrollHandlers}
           listHeader={
             <>
               <View

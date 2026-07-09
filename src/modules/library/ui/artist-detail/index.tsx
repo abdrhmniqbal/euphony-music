@@ -54,9 +54,9 @@ import { ALBUM_SORT_OPTIONS, TRACK_SORT_OPTIONS } from "@/modules/library/sort-c
 import { setSortConfig } from "@/modules/library/sort-store"
 import { useCurrentTrack } from "@/modules/player/selectors"
 import { useThemeColors } from "@/modules/ui/theme"
-import { handleScroll } from "@/modules/ui/store"
 import { playTrack } from "@/modules/player/service"
-import { usePlaybackActions, useDetailScrollHandlers, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
+import { usePlaybackActions, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
+import { handleScroll } from "@/modules/ui/store"
 
 const SCROLL_SYNC_DELTA = 12
 
@@ -110,10 +110,10 @@ export default function ArtistDetailsScreen() {
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const y = event.nativeEvent.contentOffset.y
       setAnimatedValue(scrollY, y)
+      handleScroll()
 
       const scrollDelta = Math.abs(y - lastSyncedScrollYRef.current)
       if (scrollDelta >= SCROLL_SYNC_DELTA || y <= 0) {
-        handleScroll(y)
         lastSyncedScrollYRef.current = y
       }
 
@@ -185,7 +185,6 @@ export default function ArtistDetailsScreen() {
     sortedArtistTracks,
     { type: "artist", title: artistName }
   )
-  const scrollHandlers = useDetailScrollHandlers()
 
   function openAlbum(album: Album) {
     router.push({
@@ -252,7 +251,6 @@ export default function ArtistDetailsScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 200 }}
             onScroll={onScreenScroll}
-            {...scrollHandlers}
             scrollEventThrottle={16}
           >
             {renderHeroSection()}
@@ -326,7 +324,6 @@ export default function ArtistDetailsScreen() {
               paddingHorizontal: 24,
             }}
             onScroll={onScreenScroll}
-            {...scrollHandlers}
             listHeader={
               <>
                 <View style={{ marginHorizontal: -24 }}>{renderHeroSection()}</View>
@@ -375,7 +372,6 @@ export default function ArtistDetailsScreen() {
               paddingHorizontal: 16,
             }}
             onScroll={onScreenScroll}
-            {...scrollHandlers}
             listHeader={
               <>
                 <View style={{ marginHorizontal: -16 }}>{renderHeroSection()}</View>

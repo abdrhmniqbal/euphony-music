@@ -13,9 +13,7 @@ interface LibraryGenresSectionProps {
   refreshControl: React.ReactElement<any>
   sharedListEvents: {
     onScroll: (event: any) => void
-    onScrollBeginDrag: () => void
-    onScrollEndDrag: () => void
-    onMomentumScrollEnd: () => void
+    scrollEventThrottle: number
   }
   mutedColor: string
   genresEmptyTitle: string

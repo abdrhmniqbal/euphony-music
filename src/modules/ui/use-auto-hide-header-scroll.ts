@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native"
-import { handleScroll, handleScrollStart, handleScrollStop, showBars } from "@/modules/ui/store"
+import { handleScroll, showBars } from "@/modules/ui/store"
 
 const NON_SCROLLABLE_THRESHOLD = 4
 
@@ -8,7 +8,7 @@ export function useAutoHideHeaderScroll() {
   return useMemo(
     () => ({
       onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent
+        const { contentSize, layoutMeasurement } = e.nativeEvent
         const hasContentMetrics =
           typeof contentSize?.height === "number" &&
           typeof layoutMeasurement?.height === "number"
@@ -19,11 +19,8 @@ export function useAutoHideHeaderScroll() {
           showBars()
           return
         }
-        handleScroll(contentOffset.y)
+        handleScroll()
       },
-      onScrollBeginDrag: handleScrollStart,
-      onMomentumScrollEnd: handleScrollStop,
-      onScrollEndDrag: handleScrollStop,
       scrollEventThrottle: 16,
     }),
     []

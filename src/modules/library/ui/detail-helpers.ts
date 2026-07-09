@@ -1,6 +1,5 @@
 import type { Track } from "@/modules/player/types"
 import { playTrack } from "@/modules/player/service"
-import { handleScrollStart, handleScrollStop } from "@/modules/ui/store"
 
 // --- Playback actions ---
 
@@ -22,16 +21,6 @@ export function usePlaybackActions(tracks: Track[], context: PlaybackContext) {
   }
 
   return { playAll, shuffle }
-}
-
-// --- Scroll handlers ---
-
-export function useDetailScrollHandlers() {
-  return {
-    onScrollBeginDrag: handleScrollStart,
-    onMomentumScrollEnd: handleScrollStop,
-    onScrollEndDrag: handleScrollStop,
-  }
 }
 
 // --- Sort label ---
