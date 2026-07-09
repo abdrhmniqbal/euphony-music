@@ -68,17 +68,17 @@ export function useLyrics(track: Track | null): UseLyricsResult {
           return null
         }
 
-        if (track?.id && track?.title) {
-          const fetched = await fetchAndPersistLyrics(track)
-          if (fetched) {
-            return resolveLyricsSource({ ...track, lyrics: fetched } as Track) ?? null
-          }
-        }
-
         if (track?.id) {
           const dbLyrics = await loadLyricsFromDatabase(track.id)
           if (dbLyrics) {
             return dbLyrics
+          }
+        }
+
+        if (track?.id && track?.title) {
+          const fetched = await fetchAndPersistLyrics(track)
+          if (fetched) {
+            return resolveLyricsSource({ ...track, lyrics: fetched } as Track) ?? null
           }
         }
 
