@@ -11,7 +11,7 @@ import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalTick02Icon from "@/components/icons/local/tick-02"
+import LocalTick02Icon from "@/modules/shared/components/icons/local/tick-02"
 import { useThemeColors } from "@/modules/ui/theme"
 import {
   setTrackDurationFilterConfig,

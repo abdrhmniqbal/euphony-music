@@ -12,7 +12,7 @@ import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalSearch01Icon from "@/components/icons/local/search-01"
+import LocalSearch01Icon from "@/modules/shared/components/icons/local/search-01"
 import { useThemeColors } from "@/modules/ui/theme"
 
 import { SETTINGS_CATEGORY_ROUTES } from "@/modules/settings/routes"
@@ -21,8 +21,8 @@ import {
   SettingsListGroup,
   SettingsNavigationRow,
   SettingsScrollView,
-} from "@/components/blocks/settings"
-import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
+} from "@/modules/settings/ui"
+import LocalCancelCircleSolidIcon from "@/modules/shared/components/icons/local/cancel-circle-solid"
 
 function normalizeSearchText(value: string) {
   return value.toLocaleLowerCase().replace(/\s+/g, " ").trim()

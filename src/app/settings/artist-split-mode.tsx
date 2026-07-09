@@ -11,7 +11,7 @@ import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import LocalTick02Icon from "@/components/icons/local/tick-02"
+import LocalTick02Icon from "@/modules/shared/components/icons/local/tick-02"
 import { rebuildSplitRelationsForConfig } from "@/modules/indexer/service"
 import { setSplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"

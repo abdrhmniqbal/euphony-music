@@ -1,4 +1,4 @@
-import type { Album } from "@/components/blocks/album-grid"
+import type { Album } from "@/modules/library/ui/album-grid"
 import type { Track } from "@/modules/player/store"
 import * as React from "react"
 import { useLocalSearchParams } from "expo-router"

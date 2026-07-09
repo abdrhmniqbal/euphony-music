@@ -16,7 +16,7 @@ import {
   SettingsListGroup,
   SettingsScrollView,
   SettingsSwitchRow,
-} from "@/components/blocks/settings"
+} from "@/modules/settings/ui"
 import { setAudioPlaybackConfig, type AudioPlaybackConfig } from "@/modules/settings/audio-playback"
 import { setCrossfadeConfig } from "@/modules/settings/audio-crossfade"
 import { useSettingsStore } from "@/modules/settings/store"

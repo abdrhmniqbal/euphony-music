@@ -1,4 +1,4 @@
-import type { Album } from "@/components/blocks/album-grid"
+import type { Album } from "@/modules/library/ui/album-grid"
 import type { GenreAlbumInfo as BaseGenreAlbumInfo } from "@/modules/genres/types"
 
 export type GenreAlbumInfo = BaseGenreAlbumInfo

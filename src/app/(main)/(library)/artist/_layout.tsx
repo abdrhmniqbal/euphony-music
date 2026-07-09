@@ -1,5 +1,5 @@
-import { BackButton } from "@/components/patterns/back-button"
-import { Stack } from "@/layouts/stack"
+import { BackButton } from "@/modules/shared/components/patterns/back-button"
+import { Stack } from "@/modules/shared/layouts/stack"
 import { getMediaDetailTransitionOptions } from "@/modules/navigation/stack"
 import { useThemeColors } from "@/modules/ui/theme"
 

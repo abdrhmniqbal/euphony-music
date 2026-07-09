@@ -20,7 +20,7 @@ import {
   SettingsNavigationRow,
   SettingsScrollView,
   SettingsSwitchRow,
-} from "@/components/blocks/settings"
+} from "@/modules/settings/ui"
 import { ensureAppUpdateConfigLoaded, setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { checkForAppUpdate, getCurrentAppVersion } from "@/modules/updates/app-update-service"
 import { openAppUpdatePrompt } from "@/modules/updates/app-update-store"

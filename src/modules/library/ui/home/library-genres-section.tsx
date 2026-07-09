@@ -1,10 +1,10 @@
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { CollectionActionSheet } from "@/components/blocks/sheets/collection-action-sheet"
-import { EmptyState } from "@/components/ui/empty-state"
-import { GenreCard } from "@/components/patterns/genre-card"
-import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
+import { CollectionActionSheet } from "@/modules/library/ui/collection-action-sheet"
+import { EmptyState } from "@/modules/shared/components/ui/empty-state"
+import { GenreCard } from "@/modules/genres/ui/genre-card"
+import LocalMusicNote04SolidIcon from "@/modules/shared/components/icons/local/music-note-04-solid"
 import type { GenreCategory } from "@/modules/genres/types"
 
 interface LibraryGenresSectionProps {

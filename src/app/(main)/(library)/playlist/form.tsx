@@ -13,10 +13,10 @@ import * as React from "react"
 
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { PlaylistForm, TrackPickerSheetContent } from "@/components/blocks/playlist-form"
-import LocalTick02Icon from "@/components/icons/local/tick-02"
-import { BackButton } from "@/components/patterns/back-button"
-import { Stack } from "@/layouts/stack"
+import { PlaylistForm, TrackPickerSheetContent } from "@/modules/playlist/ui/playlist-form"
+import LocalTick02Icon from "@/modules/shared/components/icons/local/tick-02"
+import { BackButton } from "@/modules/shared/components/patterns/back-button"
+import { Stack } from "@/modules/shared/layouts/stack"
 import {
   clearPlaylistFormDraft,
   consumePlaylistFormDraft,

@@ -9,7 +9,7 @@
 import {
   getMediaLibraryPermission,
   requestMediaLibraryPermission,
-} from "@/core/storage/media-library-service"
+} from "@/modules/shared/core/storage/media-library-service"
 import { logError } from "@/modules/logging/service"
 import { ensureAudioPlaybackConfigLoaded } from "@/modules/settings/audio-playback"
 import { ensureAutoScanConfigLoaded } from "@/modules/settings/auto-scan"

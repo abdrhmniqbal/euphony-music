@@ -13,7 +13,7 @@ import {
   SettingsListGroup,
   SettingsNavigationRow,
   SettingsScrollView,
-} from "@/components/blocks/settings"
+} from "@/modules/settings/ui"
 import { useSettingsStore } from "@/modules/settings/store"
 import { getLanguageOptions } from "@/modules/localization/language-settings"
 import { getDeviceLanguageCode } from "@/modules/localization/i18n"

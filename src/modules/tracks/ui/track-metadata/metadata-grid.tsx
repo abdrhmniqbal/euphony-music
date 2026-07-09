@@ -1,7 +1,7 @@
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { Card } from "heroui-native"
-import { MarqueeText } from "@/components/ui/marquee-text"
+import { MarqueeText } from "@/modules/shared/components/ui/marquee-text"
 import type { MetadataLayoutItem } from "./metadata-derivation"
 
 interface MetadataGridProps {

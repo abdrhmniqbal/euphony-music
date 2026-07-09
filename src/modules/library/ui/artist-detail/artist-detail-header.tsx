@@ -1,9 +1,9 @@
 import { Text, View } from "react-native"
 import { Button } from "heroui-native"
-import { BackButton } from "@/components/patterns/back-button"
-import LocalFavouriteIcon from "@/components/icons/local/favourite"
-import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
+import { BackButton } from "@/modules/shared/components/patterns/back-button"
+import LocalFavouriteIcon from "@/modules/shared/components/icons/local/favourite"
+import LocalFavouriteSolidIcon from "@/modules/shared/components/icons/local/favourite-solid"
+import LocalMoreHorizontalCircle01SolidIcon from "@/modules/shared/components/icons/local/more-horizontal-circle-01-solid"
 import { cn } from "@/utils/common"
 import { useThemeColors } from "@/modules/ui/theme"
 

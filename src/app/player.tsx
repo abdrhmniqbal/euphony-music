@@ -14,10 +14,10 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react"
 import {
   ValueNavigationSheet,
   type ValueNavigationSheetItem,
-} from "@/components/blocks/sheets/value-navigation-sheet"
+} from "@/modules/library/ui/value-navigation-sheet"
 import { buildArtistPickerItems } from "@/modules/library/artist-picker-utils"
-import { FullPlayerContent } from "@/components/blocks/player/full-player-content"
-import { PlayerActionSheet } from "@/components/blocks/player/action-sheet"
+import { FullPlayerContent } from "@/modules/player/ui/player/full-player-content"
+import { PlayerActionSheet } from "@/modules/player/ui/player/action-sheet"
 import { useCurrentTrack, useIsPlaying, usePlayerQueueContext } from "@/modules/player/selectors"
 import {
   getPlayerIntentRuntimeSnapshot,

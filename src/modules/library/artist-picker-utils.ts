@@ -6,7 +6,7 @@
  * Side Effects: None.
  */
 
-import type { ValueNavigationSheetItem } from "@/components/blocks/sheets/value-navigation-sheet"
+import type { ValueNavigationSheetItem } from "@/modules/library/ui/value-navigation-sheet"
 
 interface PickerArtistSource {
   name?: string | null

@@ -1,4 +1,4 @@
-import type { RecentSearchItem } from "@/components/blocks/recent-searches"
+import type { RecentSearchItem } from "@/modules/search/ui/recent-searches"
 import {
   resolveAlbumTransitionId,
   resolveArtistTransitionId,

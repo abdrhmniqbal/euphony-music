@@ -9,10 +9,10 @@
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
 import { useTranslation } from "react-i18next"
 
-import LocalSettings01Icon from "@/components/icons/local/settings-01"
-import { BackButton } from "@/components/patterns/back-button"
-import { StackHeaderActions } from "@/components/patterns/stack-header-actions"
-import { Stack } from "@/layouts/stack"
+import LocalSettings01Icon from "@/modules/shared/components/icons/local/settings-01"
+import { BackButton } from "@/modules/shared/components/patterns/back-button"
+import { StackHeaderActions } from "@/modules/shared/components/patterns/stack-header-actions"
+import { Stack } from "@/modules/shared/layouts/stack"
 import {
   getDefaultNativeStackOptions,
   getDrillDownScreenOptions,

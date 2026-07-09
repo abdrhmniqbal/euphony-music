@@ -1,6 +1,6 @@
-import { BackButton } from "@/components/patterns/back-button"
+import { BackButton } from "@/modules/shared/components/patterns/back-button"
 import { useTranslation } from "react-i18next"
-import { Stack } from "@/layouts/stack"
+import { Stack } from "@/modules/shared/layouts/stack"
 import {
   getMediaDetailTransitionOptions,
   getModalTaskTransitionOptions,

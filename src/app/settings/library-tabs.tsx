@@ -9,7 +9,7 @@ import ReorderableList, {
 import { Gesture } from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
 
-import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
+import LocalDragDropVerticalIcon from "@/modules/shared/components/icons/local/drag-drop-vertical"
 import { useSettingsStore } from "@/modules/settings/store"
 import { setLibraryTabsConfig } from "@/modules/settings/library-tabs"
 import type { LibraryTabSettingsItem, LibraryTabsConfig } from "@/modules/library/tabs"

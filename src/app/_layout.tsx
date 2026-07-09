@@ -18,11 +18,11 @@ import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from "react-n
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useUniwind, ScopedTheme } from "uniwind"
 
-import { RootProviders } from "@/components/providers/root-providers"
-import { AppUpdateSheet } from "@/components/blocks/sheets/app-update-sheet"
-import { AppToastRuntime } from "@/components/providers/app-toast-runtime"
-import { getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/constants/layout"
-import { Stack } from "@/layouts/stack"
+import { RootProviders } from "@/modules/shared/components/providers/root-providers"
+import { AppUpdateSheet } from "@/modules/updates/ui/app-update-sheet"
+import { AppToastRuntime } from "@/modules/shared/components/providers/app-toast-runtime"
+import { getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/modules/shared/constants/layout"
+import { Stack } from "@/modules/shared/layouts/stack"
 import {
   handleBootstrapDatabaseError,
   handleBootstrapDatabaseReady,

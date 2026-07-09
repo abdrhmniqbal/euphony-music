@@ -10,9 +10,9 @@ import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-
 import { PressableFeedback } from "heroui-native"
 import { useTranslation } from "react-i18next"
 
-import LocalCancel01Icon from "@/components/icons/local/cancel-01"
-import { BackButton } from "@/components/patterns/back-button"
-import { Stack } from "@/layouts/stack"
+import LocalCancel01Icon from "@/modules/shared/components/icons/local/cancel-01"
+import { BackButton } from "@/modules/shared/components/patterns/back-button"
+import { Stack } from "@/modules/shared/layouts/stack"
 import {
   getCenteredRootScreenOptions,
   getDefaultNativeStackOptions,

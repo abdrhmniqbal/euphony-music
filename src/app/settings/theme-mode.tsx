@@ -12,7 +12,7 @@ import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Uniwind } from "uniwind"
 
-import LocalTick02Icon from "@/components/icons/local/tick-02"
+import LocalTick02Icon from "@/modules/shared/components/icons/local/tick-02"
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useThemeColors } from "@/modules/ui/theme"
 

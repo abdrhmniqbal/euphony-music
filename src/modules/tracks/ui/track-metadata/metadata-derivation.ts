@@ -7,7 +7,7 @@
  */
 
 import type { TFunction } from "i18next"
-import type { ValueNavigationSheetItem } from "@/components/blocks/sheets/value-navigation-sheet"
+import type { ValueNavigationSheetItem } from "@/modules/library/ui/value-navigation-sheet"
 import type { Track } from "@/modules/player/store"
 import {
   formatQualityLabel,

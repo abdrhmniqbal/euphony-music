@@ -17,7 +17,7 @@ import {
   SettingsListGroup,
   SettingsScrollView,
   SettingsSwitchRow,
-} from "@/components/blocks/settings"
+} from "@/modules/settings/ui"
 
 export default function NotificationSettingsScreen() {
   const { t } = useTranslation()

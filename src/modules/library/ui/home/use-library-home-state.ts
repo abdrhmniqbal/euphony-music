@@ -13,7 +13,7 @@ import type { FavoriteType } from "@/modules/favorites/types"
 import type { GenreCategory } from "@/modules/genres/types"
 import type { SortField } from "@/modules/library/sort-types"
 import type { Track } from "@/modules/player/store"
-import type { Playlist } from "@/components/blocks/playlist-list"
+import type { Playlist } from "@/modules/playlist/ui/playlist-list"
 import { useFavorites } from "@/modules/favorites/queries"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/store"
@@ -33,7 +33,7 @@ import { usePlaylistsWithOptions } from "@/modules/playlist/queries"
 
 import { useGenres } from "@/modules/genres/queries"
 import { mapGenresToCategories } from "@/modules/genres/utils"
-import { getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/constants/layout"
+import { getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/modules/shared/constants/layout"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   resolveAlbumTransitionId,

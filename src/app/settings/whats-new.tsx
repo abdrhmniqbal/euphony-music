@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
-import { ReleaseNotesMarkdown } from "@/components/blocks/release-notes-markdown"
+import { ReleaseNotesMarkdown } from "@/modules/updates/ui/release-notes-markdown"
 import { Separator } from "heroui-native"
 import {
   getChangelogReleaseNotesUntilCurrent,

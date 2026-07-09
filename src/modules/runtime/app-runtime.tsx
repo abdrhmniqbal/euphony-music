@@ -20,8 +20,8 @@ import { flushPlaybackStoreSnapshot, playbackStore, usePlaybackStore } from "@/s
 import { preferenceStore, usePreferenceStore } from "@/stores/preference/store"
 import { useViewPreferenceStore } from "@/stores/view-preference/store"
 
-import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
-import { EmptyState } from "@/components/ui/empty-state"
+import LocalCancelCircleSolidIcon from "@/modules/shared/components/icons/local/cancel-circle-solid"
+import { EmptyState } from "@/modules/shared/components/ui/empty-state"
 
 type RuntimeStatus = "loading" | "ready" | "error"
 

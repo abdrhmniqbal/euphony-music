@@ -1,4 +1,4 @@
-import type { Album } from "@/components/blocks/album-grid"
+import type { Album } from "@/modules/library/ui/album-grid"
 
 import type { Category, GenreAlbumInfo, PatternType } from "./types"
 

@@ -1,1 +1,1 @@
-export { default } from "@/components/blocks/search-detail-layout"
+export { default } from "@/modules/search/ui/search-detail-layout"

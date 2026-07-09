@@ -1,6 +1,6 @@
 import { Text, View } from "react-native"
 
-import { SectionHeader } from "@/components/ui/section-header"
+import { SectionHeader } from "@/modules/shared/components/ui/section-header"
 
 interface ArtistInfoSectionProps {
   title: string

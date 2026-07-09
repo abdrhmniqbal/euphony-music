@@ -24,7 +24,7 @@ import {
   SettingsHighlight,
   SettingsListGroup,
   SettingsScrollView,
-} from "@/components/blocks/settings"
+} from "@/modules/settings/ui"
 
 function getSliderNumericValue(value: number | number[]): number {
   return Array.isArray(value) ? (value[0] ?? 0) : value

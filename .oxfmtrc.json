@@ -7,7 +7,7 @@
   "ignorePatterns": [
     "lock.yaml",
     "src/uniwind-types.d.ts",
-    "src/components/icons",
+    "src/modules/shared/components/icons",
     "src/assets/open-source-licenses.json"
   ]
 }

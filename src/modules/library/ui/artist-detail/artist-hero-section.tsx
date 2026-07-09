@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient"
 import Transition from "react-native-screen-transitions"
 import Animated from "react-native-reanimated"
 import { Text, View } from "react-native"
-import LocalUserSolidIcon from "@/components/icons/local/user-solid"
+import LocalUserSolidIcon from "@/modules/shared/components/icons/local/user-solid"
 import { useThemeColors } from "@/modules/ui/theme"
 
 import { adjustOpacity } from "@/utils/colors"

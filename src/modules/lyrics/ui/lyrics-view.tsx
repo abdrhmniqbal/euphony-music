@@ -11,9 +11,9 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from "react-native-reanimated"
-import LocalMic01Icon from "@/components/icons/local/mic-01"
-import { EmptyState } from "@/components/ui/empty-state"
-import { ScaleLoader } from "@/components/ui/scale-loader"
+import LocalMic01Icon from "@/modules/shared/components/icons/local/mic-01"
+import { EmptyState } from "@/modules/shared/components/ui/empty-state"
+import { ScaleLoader } from "@/modules/shared/components/ui/scale-loader"
 import {
   useIsPlaying,
   usePlaybackDuration,

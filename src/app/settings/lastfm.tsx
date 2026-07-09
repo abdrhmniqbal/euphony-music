@@ -12,8 +12,8 @@ import {
   setLastFmScrobbleConfig,
   type LastFmIntegrationState,
 } from "@/modules/settings/lastfm-integration"
-import { BottomSheetInput } from "@/components/ui/bottom-sheet-input"
-import { SettingsHighlight, SettingsScrollView } from "@/components/blocks/settings"
+import { BottomSheetInput } from "@/modules/shared/components/ui/bottom-sheet-input"
+import { SettingsHighlight, SettingsScrollView } from "@/modules/settings/ui"
 import { showAppToast } from "@/modules/ui/toast"
 
 export default function LastFmSettingsScreen() {

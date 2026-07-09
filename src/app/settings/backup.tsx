@@ -9,7 +9,7 @@ import {
   SettingsHighlight,
   SettingsListGroup,
   SettingsScrollView,
-} from "@/components/blocks/settings"
+} from "@/modules/settings/ui"
 import { useTranslation } from "react-i18next"
 
 import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"

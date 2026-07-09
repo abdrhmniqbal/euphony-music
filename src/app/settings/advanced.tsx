@@ -16,7 +16,7 @@ import {
   SettingsHighlight,
   SettingsListGroup,
   SettingsScrollView,
-} from "@/components/blocks/settings"
+} from "@/modules/settings/ui"
 import { queryClient } from "@/lib/tanstack-query"
 
 import {
