@@ -35,7 +35,13 @@ export function resolveRecentItemPress(item: RecentSearchItem): SearchAction {
       recentSearch: item,
       route: {
         pathname: "artist/[name]",
-        params: { name: item.query },
+        params: {
+          name: item.query,
+          transitionId: resolveArtistTransitionId({
+            id: item.targetId,
+            name: item.query,
+          }),
+        },
       },
     }
   }

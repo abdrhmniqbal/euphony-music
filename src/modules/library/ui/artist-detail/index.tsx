@@ -138,7 +138,11 @@ export default function ArtistDetailsScreen() {
   })
 
   if (isLoading) {
-    return <View className="flex-1 bg-background" />
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ScaleLoader size={22} />
+      </View>
+    )
   }
 
   function handleSortSelect(field: SortField, order?: "asc" | "desc") {

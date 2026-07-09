@@ -32,6 +32,7 @@ import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { collectPlaylistImages } from "@/modules/playlist/repository"
 import { EmptyState } from "@/components/ui/empty-state"
+import { ScaleLoader } from "@/components/ui/scale-loader"
 import { screenEnterTransition } from "@/constants/animations"
 import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/constants/layout"
 import { Stack } from "@/layouts/stack"
@@ -215,7 +216,11 @@ export default function PlaylistDetailsScreen() {
 
   if (!playlist) {
     if (isLoading) {
-      return <View className="flex-1 bg-background" />
+      return (
+        <View className="flex-1 items-center justify-center bg-background">
+          <ScaleLoader size={22} />
+        </View>
+      )
     }
 
     return (
