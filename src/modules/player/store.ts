@@ -23,15 +23,9 @@ export interface PlayerState {
   tracks: Track[]
   currentTrack: Track | null
   isPlaying: boolean
-  currentTime: number
-  duration: number
-  playbackRefreshVersion: number
   repeatMode: RepeatModeType
   queueTrackIds: string[]
   originalQueueTrackIds: string[]
-  immediateQueueTrackIds: string[]
-  queue: Track[]
-  originalQueue: Track[]
   isShuffled: boolean
   queueContext: PlayerQueueContext | null
   sleepTimer: SleepTimerState
@@ -52,15 +46,9 @@ export const usePlayerStore = create<PlayerState>(() => ({
   tracks: [],
   currentTrack: null,
   isPlaying: false,
-  currentTime: 0,
-  duration: 0,
-  playbackRefreshVersion: 0,
   repeatMode: "off",
   queueTrackIds: [],
   originalQueueTrackIds: [],
-  immediateQueueTrackIds: [],
-  queue: [],
-  originalQueue: [],
   isShuffled: false,
   queueContext: null,
   sleepTimer: DEFAULT_SLEEP_TIMER_STATE,
@@ -80,14 +68,6 @@ export function getCurrentTrackState() {
 
 export function getIsPlayingState() {
   return usePlayerStore.getState().isPlaying
-}
-
-export function setPlaybackRefreshVersionState(value: number) {
-  usePlayerStore.setState({ playbackRefreshVersion: value })
-}
-
-export function getPlaybackRefreshVersionState() {
-  return usePlayerStore.getState().playbackRefreshVersion
 }
 
 export function getRepeatModeState() {
