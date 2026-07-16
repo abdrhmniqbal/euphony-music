@@ -11,6 +11,11 @@ import { createSettingsModule } from "@/modules/settings/factory"
 import { getDefaultSplitMultipleValueConfig } from "@/modules/settings/store"
 
 export type { ArtistSplitMode, SplitMultipleValueConfig }
+export {
+  extractArtistFromTitle,
+  formatArtistsForDisplay,
+  splitArtistsValue,
+} from "@/modules/settings/split-engine"
 
 function sanitizeSymbols(value: unknown, fallback: string[]): string[] {
   if (!Array.isArray(value)) {
@@ -80,94 +85,19 @@ function sanitizeConfig(config: unknown): SplitMultipleValueConfig {
     source.artistSplitMode === "original" ? "original" : "split"
 
   return {
-    artistSplitSymbols: sanitizeSymbols(source.artistSplitSymbols, defaults.artistSplitSymbols),
-    unsplitArtists: sanitizeArtists(source.unsplitArtists),
     artistSplitMode,
+    artistCharDelimiters: sanitizeSymbols(
+      source.artistCharDelimiters,
+      defaults.artistCharDelimiters
+    ),
+    artistWordDelimiters: sanitizeSymbols(
+      source.artistWordDelimiters,
+      defaults.artistWordDelimiters
+    ),
+    extractArtistFromTitle: Boolean(source.extractArtistFromTitle),
+    unsplitArtists: sanitizeArtists(source.unsplitArtists),
     genreSplitSymbols: sanitizeSymbols(source.genreSplitSymbols, defaults.genreSplitSymbols),
   }
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-}
-
-function maskUnsplitArtists(value: string, unsplitArtists: string[]) {
-  const placeholders: string[] = []
-  let maskedValue = value
-
-  for (const unsplitArtist of unsplitArtists) {
-    const escaped = escapeRegExp(unsplitArtist)
-    const regex = new RegExp(escaped, "gi")
-    maskedValue = maskedValue.replace(regex, (matched) => {
-      const token = `@@UNSPLIT_${placeholders.length}@@`
-      placeholders.push(matched)
-      return token
-    })
-  }
-
-  return { maskedValue, placeholders }
-}
-
-function restoreMaskedArtists(values: string[], placeholders: string[]) {
-  if (placeholders.length === 0) {
-    return values
-  }
-
-  return values.map((value) => {
-    let restored = value
-    placeholders.forEach((original, index) => {
-      restored = restored.replace(`@@UNSPLIT_${index}@@`, original)
-    })
-    return restored
-  })
-}
-
-function splitBySymbols(value: string, symbols: string[]): string[] {
-  if (!value.trim()) {
-    return []
-  }
-
-  const escapedSymbols = symbols
-    .map((symbol) => symbol.trim())
-    .filter(Boolean)
-    .sort((a, b) => b.length - a.length)
-    .map((symbol) => escapeRegExp(symbol))
-
-  if (escapedSymbols.length === 0) {
-    return [value.trim()]
-  }
-
-  const regex = new RegExp(`\\s*(?:${escapedSymbols.join("|")})\\s*`, "gi")
-
-  return value
-    .split(regex)
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0)
-}
-
-function dedupeValues(values: string[]): string[] {
-  const seen = new Set<string>()
-  const result: string[] = []
-
-  for (const value of values) {
-    const key = value.toLowerCase()
-    if (seen.has(key)) {
-      continue
-    }
-
-    seen.add(key)
-    result.push(value)
-  }
-
-  return result
-}
-
-function splitArtistsWithConfig(value: string, config: SplitMultipleValueConfig): string[] {
-  const { maskedValue, placeholders } = maskUnsplitArtists(value, config.unsplitArtists)
-
-  return dedupeValues(
-    restoreMaskedArtists(splitBySymbols(maskedValue, config.artistSplitSymbols), placeholders)
-  )
 }
 
 const mod = createSettingsModule<SplitMultipleValueConfig>({
@@ -180,17 +110,6 @@ const mod = createSettingsModule<SplitMultipleValueConfig>({
 export const ensureSplitMultipleValueConfigLoaded = mod.ensureLoaded
 export const setSplitMultipleValueConfig = mod.set
 
-export function splitArtistsValue(
-  value: string | null | undefined,
-  config: SplitMultipleValueConfig
-): string[] {
-  if (!value) {
-    return []
-  }
-
-  return splitArtistsWithConfig(value, config)
-}
-
 export function splitGenresValue(
   value: string | null | undefined,
   config: SplitMultipleValueConfig
@@ -199,20 +118,20 @@ export function splitGenresValue(
     return []
   }
 
-  return dedupeValues(splitBySymbols(value, config.genreSplitSymbols))
-}
+  const escapedSymbols = config.genreSplitSymbols
+    .map((symbol) => symbol.trim())
+    .filter(Boolean)
+    .sort((a, b) => b.length - a.length)
+    .map((symbol) => symbol.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
 
-export function formatArtistsForDisplay(
-  originalValue: string | null | undefined,
-  splitValues: string[],
-  mode: ArtistSplitMode
-): string {
-  if (mode === "original") {
-    const normalizedOriginal = originalValue?.trim()
-    if (normalizedOriginal) {
-      return normalizedOriginal
-    }
+  if (escapedSymbols.length === 0) {
+    return [value.trim()]
   }
 
-  return splitValues.join(", ")
+  const regex = new RegExp(`\\s*(?:${escapedSymbols.join("|")})\\s*`, "gi")
+
+  return value
+    .split(regex)
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0)
 }

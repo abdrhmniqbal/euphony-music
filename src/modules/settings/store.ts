@@ -69,9 +69,22 @@ const DEFAULT_COUNT_AS_PLAYED_CONFIG: CountAsPlayedConfig = {
 }
 
 const DEFAULT_SPLIT_MULTIPLE_VALUE_CONFIG: SplitMultipleValueConfig = {
-  artistSplitSymbols: [";", "/", "&", ",", "ft.", "feat."],
-  unsplitArtists: [],
   artistSplitMode: "split",
+  artistCharDelimiters: ["/", ";", ",", "+", "&"],
+  artistWordDelimiters: [
+    "featuring",
+    "feat.",
+    "feat",
+    "ft.",
+    "ft",
+    "vs.",
+    "versus",
+    "with",
+    "prod.",
+    "prod",
+  ],
+  extractArtistFromTitle: false,
+  unsplitArtists: [],
   genreSplitSymbols: [";", "/", ","],
 }
 

@@ -95,9 +95,11 @@ export interface AudioPlaybackConfig {
 export type ArtistSplitMode = "original" | "split"
 
 export interface SplitMultipleValueConfig {
-  artistSplitSymbols: string[]
-  unsplitArtists: string[]
   artistSplitMode: ArtistSplitMode
+  artistCharDelimiters: string[]
+  artistWordDelimiters: string[]
+  extractArtistFromTitle: boolean
+  unsplitArtists: string[]
   genreSplitSymbols: string[]
 }
 

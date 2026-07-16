@@ -505,7 +505,14 @@
       "tabsGenres": "Genres",
       "tabsPlaylists": "Playlists",
       "tabsFolders": "Folders",
-      "tabsFavorites": "Favorites"
+      "tabsFavorites": "Favorites",
+      "artistCharDelimiters": "Artist Split Characters",
+      "artistCharDelimitersDescription": "Characters used to split artists. No surrounding spaces required.",
+      "artistWordDelimiters": "Artist Split Words",
+      "artistWordDelimitersDescription": "Words used to split artists. Matched case-insensitively with spaces on both sides.",
+      "artistWordDelimitersPlaceholder": "feat., featuring, vs., with",
+      "extractArtistFromTitle": "Extract Artist From Title",
+      "extractArtistFromTitleDescription": "Detect featured artists in the track title via split words and add them as co-artists."
     },
     "audio": {
       "sections": {

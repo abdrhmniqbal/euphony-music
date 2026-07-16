@@ -16,6 +16,7 @@ import LocalAdd01Icon from "@/modules/shared/components/icons/local/add-01"
 import { BottomSheetInput } from "@/modules/shared/components/ui/bottom-sheet-input"
 import { rebuildSplitRelationsForConfig } from "@/modules/indexer/service"
 import { setSplitMultipleValueConfig } from "@/modules/settings/split-multiple-values"
+import { SettingsSwitchRow } from "@/modules/settings/ui"
 import { useSettingsStore } from "@/modules/settings/store"
 import { useThemeColors } from "@/modules/ui/theme"
 
@@ -126,15 +127,12 @@ export default function SplitMultipleValuesSettingsScreen() {
   const { t } = useTranslation()
   const router = useRouter()
   const config = useSettingsStore((state) => state.splitMultipleValueConfig)
-  const [artistSymbolsOpen, setArtistSymbolsOpen] = React.useState(false)
+  const [artistCharOpen, setArtistCharOpen] = React.useState(false)
+  const [artistWordOpen, setArtistWordOpen] = React.useState(false)
   const [unsplitArtistsOpen, setUnsplitArtistsOpen] = React.useState(false)
   const [genreSymbolsOpen, setGenreSymbolsOpen] = React.useState(false)
 
-  async function updateSplitConfig(next: {
-    artistSplitSymbols?: string[]
-    unsplitArtists?: string[]
-    genreSplitSymbols?: string[]
-  }) {
+  async function updateSplitConfig(next: Partial<SplitMultipleValueConfig>) {
     const updated = await setSplitMultipleValueConfig(next)
     await rebuildSplitRelationsForConfig(updated)
   }
@@ -149,17 +147,17 @@ export default function SplitMultipleValuesSettingsScreen() {
       <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="gap-5 px-4 py-4">
           <ListGroup>
-            <ListGroup.Item onPress={() => setArtistSymbolsOpen(true)}>
+            <ListGroup.Item onPress={() => setArtistCharOpen(true)}>
               <ListGroup.ItemContent>
                 <ListGroup.ItemTitle>
-                  {t("settings.library.artistSplitSymbols")}
+                  {t("settings.library.artistCharDelimiters")}
                 </ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
-                  {t("settings.library.artistSplitSymbolsDescription")}
+                  {t("settings.library.artistCharDelimitersDescription")}
                 </ListGroup.ItemDescription>
-                {config.artistSplitSymbols.length > 0 ? (
+                {config.artistCharDelimiters.length > 0 ? (
                   <View className="mt-1.5 flex-row flex-wrap gap-1">
-                    {config.artistSplitSymbols.map((s) => (
+                    {config.artistCharDelimiters.map((s) => (
                       <Chip key={s} variant="secondary" size="sm">
                         <Chip.Label>{s}</Chip.Label>
                       </Chip>
@@ -169,6 +167,40 @@ export default function SplitMultipleValuesSettingsScreen() {
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
             </ListGroup.Item>
+
+            <Separator className="mx-4" />
+
+            <ListGroup.Item onPress={() => setArtistWordOpen(true)}>
+              <ListGroup.ItemContent>
+                <ListGroup.ItemTitle>
+                  {t("settings.library.artistWordDelimiters")}
+                </ListGroup.ItemTitle>
+                <ListGroup.ItemDescription>
+                  {t("settings.library.artistWordDelimitersDescription")}
+                </ListGroup.ItemDescription>
+                {config.artistWordDelimiters.length > 0 ? (
+                  <View className="mt-1.5 flex-row flex-wrap gap-1">
+                    {config.artistWordDelimiters.map((s) => (
+                      <Chip key={s} variant="secondary" size="sm">
+                        <Chip.Label>{s}</Chip.Label>
+                      </Chip>
+                    ))}
+                  </View>
+                ) : null}
+              </ListGroup.ItemContent>
+              <ListGroup.ItemSuffix />
+            </ListGroup.Item>
+
+            <Separator className="mx-4" />
+
+            <SettingsSwitchRow
+              title={t("settings.library.extractArtistFromTitle")}
+              description={t("settings.library.extractArtistFromTitleDescription")}
+              isSelected={config.extractArtistFromTitle}
+              onSelectedChange={(selected) =>
+                void updateSplitConfig({ extractArtistFromTitle: selected })
+              }
+            />
 
             <Separator className="mx-4" />
 
@@ -226,15 +258,28 @@ export default function SplitMultipleValuesSettingsScreen() {
       </ScrollView>
 
       <TagEditorSheet
-        isOpen={artistSymbolsOpen}
-        onOpenChange={setArtistSymbolsOpen}
-        title={t("settings.library.artistSplitSymbols")}
-        values={config.artistSplitSymbols}
+        isOpen={artistCharOpen}
+        onOpenChange={setArtistCharOpen}
+        title={t("settings.library.artistCharDelimiters")}
+        values={config.artistCharDelimiters}
         placeholder={t("settings.library.splitSymbolsPlaceholder")}
         addLabel={t("settings.library.addSplitSymbol")}
         removeLabel={t("settings.library.removeSplitSymbol")}
-        onChange={(artistSplitSymbols) => {
-          void updateSplitConfig({ artistSplitSymbols })
+        onChange={(artistCharDelimiters) => {
+          void updateSplitConfig({ artistCharDelimiters })
+        }}
+      />
+
+      <TagEditorSheet
+        isOpen={artistWordOpen}
+        onOpenChange={setArtistWordOpen}
+        title={t("settings.library.artistWordDelimiters")}
+        values={config.artistWordDelimiters}
+        placeholder={t("settings.library.artistWordDelimitersPlaceholder")}
+        addLabel={t("settings.library.addSplitSymbol")}
+        removeLabel={t("settings.library.removeSplitSymbol")}
+        onChange={(artistWordDelimiters) => {
+          void updateSplitConfig({ artistWordDelimiters })
         }}
       />
 

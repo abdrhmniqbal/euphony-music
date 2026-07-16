@@ -153,7 +153,7 @@ export default function LibrarySettingsScreen() {
                   {t("settings.library.splitMultipleValues")}
                 </ListGroup.ItemTitle>
                 <ListGroup.ItemDescription>
-                  {t("settings.library.artistSplitSymbolsDescription")}
+                  {t("settings.library.artistCharDelimitersDescription")}
                 </ListGroup.ItemDescription>
               </ListGroup.ItemContent>
               <ListGroup.ItemSuffix />
