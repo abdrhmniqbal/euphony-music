@@ -7,7 +7,7 @@
  */
 
 import { refreshIndexedMediaState } from "@/modules/indexer/utils/refresh"
-import { refreshLastFmArtistMetadataForIndexedArtists } from "@/modules/library/lastfm"
+import { refreshDeezerArtistImages } from "@/modules/library/deezer"
 import { rebuildSplitMetadataRelations, scanMediaLibrary } from "@/modules/indexer/scan/repository"
 import {
   consumeQueuedIndexerRun,
@@ -114,7 +114,7 @@ export async function startIndexing(forceFullScan = false, showProgress = true) 
     // Run Last.fm metadata refresh in background after indexing completes
     void measurePerfTrace("indexer.refreshLastFmArtistMetadata", async () => {
       try {
-        await refreshLastFmArtistMetadataForIndexedArtists(forceFullScan)
+        await refreshDeezerArtistImages(forceFullScan)
         await refreshIndexedMediaState()
       } catch (error) {
         logError("Background Last.fm metadata refresh failed", error)
