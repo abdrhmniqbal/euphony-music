@@ -60,7 +60,7 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false, on
   return (
     <Animated.View
       layout={Layout.duration(300)}
-      className={`flex-row items-center justify-between ${compact ? "mb-3" : "mb-6"}`}
+      className={`mt-auto flex-row items-center justify-between ${compact ? "mb-3" : "mb-6"}`}
     >
       <View className="mr-4 flex-1">
         <MarqueeText text={track.title} className={titleClassName} />
