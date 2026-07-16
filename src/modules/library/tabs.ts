@@ -46,8 +46,17 @@ export function sanitizeLibraryTabsConfig(config: unknown): LibraryTabsConfig {
 }
 
 export function getVisibleLibraryTabs(config: LibraryTabsConfig): LibraryTab[] {
-  const tabs = sanitizeLibraryTabsConfig(config)
+  return sanitizeLibraryTabsConfig(config)
     .tabs.filter((tab) => tab.visible)
     .map((tab) => tab.id)
-  return tabs.length ? tabs : [LIBRARY_TABS[0]]
+}
+
+// A library with no visible tabs renders a blank home screen (it keys off the
+// first visible tab). Enforce at least one visible tab before persisting.
+export function ensureAtLeastOneVisibleTab(config: LibraryTabsConfig): LibraryTabsConfig {
+  if (config.tabs.some((tab) => tab.visible)) return config
+  const tabs = config.tabs.length
+    ? config.tabs
+    : getDefaultLibraryTabsConfig().tabs
+  return { tabs: [{ ...tabs[0], visible: true }, ...tabs.slice(1)] }
 }

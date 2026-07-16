@@ -5,7 +5,11 @@ import {
 } from "@/modules/settings/repository"
 import { getSettingsState, updateSettingsState } from "@/modules/settings/store"
 import type { LibraryTabsConfig } from "@/modules/library/tabs"
-import { getDefaultLibraryTabsConfig, sanitizeLibraryTabsConfig } from "@/modules/library/tabs"
+import {
+  ensureAtLeastOneVisibleTab,
+  getDefaultLibraryTabsConfig,
+  sanitizeLibraryTabsConfig,
+} from "@/modules/library/tabs"
 
 const FILE = createSettingsConfigFile("library-tabs.json")
 let promise: Promise<LibraryTabsConfig> | null = null
@@ -26,7 +30,8 @@ export async function ensureLibraryTabsConfigLoaded() {
 }
 
 export async function setLibraryTabsConfig(config: LibraryTabsConfig) {
-  const next = sanitizeLibraryTabsConfig(config)
+  const next = ensureAtLeastOneVisibleTab(sanitizeLibraryTabsConfig(config))
+
   updateSettingsState({ libraryTabsConfig: next })
   hasLoadedConfig = true
   await saveSettingsConfig(FILE, next)

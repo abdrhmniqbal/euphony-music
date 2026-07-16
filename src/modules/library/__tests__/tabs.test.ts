@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest"
 
 import {
+  ensureAtLeastOneVisibleTab,
   getDefaultLibraryTabsConfig,
   getVisibleLibraryTabs,
+  LIBRARY_TABS,
   sanitizeLibraryTabsConfig,
 } from "@/modules/library/tabs"
 
@@ -85,6 +87,16 @@ describe("getVisibleLibraryTabs", () => {
     ])
   })
 
+  it("returns an empty list when every tab is explicitly hidden", () => {
+    // The previous fallback-to-first-tab branch was removed: with no dead
+    // fallback, an all-hidden config honestly yields []. Callers that require
+    // a non-empty selection must enforce it themselves.
+    const config = sanitizeLibraryTabsConfig({
+      tabs: LIBRARY_TABS.map((id) => ({ id, visible: false })),
+    })
+    expect(getVisibleLibraryTabs(config)).toEqual([])
+  })
+
   it("re-sanitizes its input, so unlisted tabs are always present and visible", () => {
     // getVisibleLibraryTabs re-runs sanitize, which appends every built-in tab
     // as visible when absent. The fallback-to-first-tab branch is therefore
@@ -102,5 +114,33 @@ describe("getVisibleLibraryTabs", () => {
       "Folders",
       "Favorites",
     ])
+  })
+})
+
+describe("ensureAtLeastOneVisibleTab", () => {
+  it("leaves a config with at least one visible tab unchanged", () => {
+    const config = sanitizeLibraryTabsConfig({
+      tabs: [
+        { id: "Tracks", visible: false },
+        { id: "Albums", visible: true },
+      ],
+    })
+    expect(ensureAtLeastOneVisibleTab(config)).toBe(config)
+  })
+
+  it("forces the first tab visible when all are hidden", () => {
+    const config = sanitizeLibraryTabsConfig({
+      tabs: LIBRARY_TABS.map((id) => ({ id, visible: false })),
+    })
+    const fixed = ensureAtLeastOneVisibleTab(config)
+    expect(fixed.tabs[0].visible).toBe(true)
+    expect(fixed.tabs.slice(1).every((t) => !t.visible)).toBe(true)
+    expect(getVisibleLibraryTabs(fixed)).toEqual([fixed.tabs[0].id])
+  })
+
+  it("defaults to built-in tabs when given an empty config", () => {
+    const fixed = ensureAtLeastOneVisibleTab({ tabs: [] })
+    expect(fixed.tabs).toHaveLength(7)
+    expect(fixed.tabs[0].visible).toBe(true)
   })
 })
