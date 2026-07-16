@@ -95,9 +95,10 @@ export default function LibraryTabsSettingsScreen() {
   )
 
   const renderItem = useCallback(
-    ({ item, index }: { item: LibraryTabSettingsItem; index: number }) => (
-      <LibraryTabItem item={item} index={index} onToggle={handleToggle} />
-    ),
+    ({ item, index }: { item: LibraryTabSettingsItem; index: number }) => {
+      if (!item) return null
+      return <LibraryTabItem item={item} index={index} onToggle={handleToggle} />
+    },
     [handleToggle]
   )
 
@@ -112,7 +113,7 @@ export default function LibraryTabsSettingsScreen() {
           data={libraryTabsConfig.tabs}
           onReorder={handleReorder}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => item?.id ?? `tab-${index}`}
           shouldUpdateActiveItem
           panGesture={panGesture}
           scrollEnabled={false}

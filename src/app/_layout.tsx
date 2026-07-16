@@ -198,16 +198,25 @@ export default function Layout() {
   const barsVisible = useUIStore((state) => state.barsVisible)
   const hasMiniPlayer = useHasCurrentTrack()
   const hasHiddenSplashRef = useRef(false)
+  const routerRef = useRef(router)
+  routerRef.current = router
 
+  // Register the notification route handler once on mount, before the async
+  // bootstrap marks the router ready. Using a ref keeps the latest router
+  // without re-running on every render (the previous render-body registration
+  // ran on every render; a [router] effect re-registered on router identity
+  // changes and delayed handler setup past markRouterReady, which left
+  // notification taps unhandled and corrupted player restore state).
   useEffect(() => {
     setNotificationRouteHandler((route) => {
-      if (!router.canGoBack() && route !== "/(main)/(home)") {
-        router.replace("/(main)/(home)")
+      const activeRouter = routerRef.current
+      if (!activeRouter.canGoBack() && route !== "/(main)/(home)") {
+        activeRouter.replace("/(main)/(home)")
       }
-      router.push(route as never)
+      activeRouter.push(route as never)
     })
     ensureNotificationRuntimeStarted()
-  }, [router])
+  }, [])
 
   const hideSplash = () => {
     if (hasHiddenSplashRef.current) {
