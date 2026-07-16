@@ -6,7 +6,6 @@ import {
 } from "@/modules/settings/lastfm-integration"
 import type { Track } from "@/modules/tracks/types"
 import {
-  formatArtistsForDisplay,
   splitArtistsValue,
 } from "@/modules/settings/split-multiple-values"
 import { getSettingsState } from "@/modules/settings/store"
@@ -61,16 +60,12 @@ export async function handleTrackChanged(track: Track | undefined) {
 
     const splitConfig = getSettingsState().splitMultipleValueConfig
     const artistNames = splitArtistsValue(rawArtist, splitConfig)
-    const displayArtist = formatArtistsForDisplay(
-      rawArtist,
-      artistNames,
-      splitConfig.artistSplitMode
-    )
+    const primaryArtist = artistNames[0] || rawArtist
 
     current = {
       trackId: track.id,
       title: track.name,
-      artist: displayArtist,
+      artist: primaryArtist,
       album: track.albumName ?? undefined,
       duration,
       startedAt: Math.floor(Date.now() / 1000),
