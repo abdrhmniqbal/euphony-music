@@ -94,7 +94,7 @@ Startune Music is a feature-rich local music player built on Expo Router, React 
 7. **Theme system duplication (MED).** `ui/static-themes.ts` (520 LOC JS color map) duplicates uniwind's 32 CSS theme classes generated from the same `global.css`. `useThemeColors` bypasses CSS classes in 19 files.
 8. **Navigation workaround singletons (MED).** `use-guarded-router.ts` module-level mutable dedup guard (900ms window, JSON.stringify keyed); `route-warning-runtime.ts` `seenWarningKeys` Set never resets (permanent suppression).
 9. **Replay-gain dead (MED).** `audio/replay-gain/core/apply.ts` always returns `replayGain: 0`; `isReplayGainEnabled`/`preAmpWTags` config in store is dead.
-10. **CI gaps (MED).** CI runs lint + `vitest` (node env) only; no typecheck gate (intentional per AGENTS.md but leaves `tsc` errors latent); no device/E2E smoke for playback.
+10. **CI gaps (MED).** CI runs lint + `vitest` (node env) only; no typecheck gate (intentional per AGENTS.md but leaves `tsc` errors latent); device behavior is covered by manual QA, not automated E2E.
 
 **Confirmed vs assumption:** Issues 1–9 are confirmed from source. The exact desync blast radius (issue 1) and whether `external-file-import` genre divergence causes visible bugs are assumptions requiring runtime verification.
 
@@ -174,8 +174,8 @@ src/
 **Rules:**
 - One playback store. Delete `src/stores/playback` and `modules/player/store` projector.
 - One repository per aggregate; delete feature/`ui`-co-located `repository.ts` duplicates (`search/repository.ts` is a thin wrapper of `genres/repository`).
-- Native playback behind `player/adapter` interface (no fake native mocks; device/E2E verifies real behavior).
-- **Hard rule: never add a mock that always passes.** A test must fail when the real behavior is wrong. If we do not know what an external/native API actually does, we do NOT invent a mock for it — that only produces green tests that prove nothing. Such behavior is verified by device/E2E or documented manual steps, never by a guess-mock.
+- Native playback behind `player/adapter` interface (no fake native mocks; real behavior verified by manual QA).
+- **Hard rule: never add a mock that always passes.** A test must fail when the real behavior is wrong. If we do not know what an external/native API actually does, we do NOT invent a mock for it — that only produces green tests that prove nothing. Such behavior is verified by manual QA on the owner's device, never by a guess-mock.
 - Settings: single `createSettingsModule` factory; delete copy-pasted loaders and dual SecureStore path.
 - Theme: pick uniwind CSS classes OR JS map — not both. Delete `ui/static-themes.ts` + generator if CSS wins.
 - Delete `SYSTEM_MAP*.md` (generated), `knip.txt` (build artifact).
@@ -206,7 +206,7 @@ src/
 - Fix: `extractTrackId(activeKey!)` non-null assertions; `setupPlayer` string-match double-init; `playExternalFileUri` background mutate race.
 - Preserve: play/pause/next/prev/shuffle/repeat, external intent playback, queue replacement semantics, sleep timer, crossfade.
 - Tests first (TDD): queue build, repeat/shuffle transitions, external-uri fallback, queue replacement, adapter command contract.
-- Test level: unit (pure) + integration (adapter contract) + device (real playback). The adapter is a verified app-owned contract derived from the real AudioBrowser API surface we control — NOT a fabricated native replica. We never mock behavior we have not observed.
+- Test level: unit (pure) + integration (adapter contract + real `bun:sqlite`). We never mock behavior we have not observed; native playback itself is manual QA.
 - Risk: High.
 
 ### `src/modules/audio/`
@@ -228,7 +228,7 @@ src/
 - Fix: empty `catch {}` in `scope-commit.ts`/`upsert.ts` (log + surface); non-atomic genre insert silent drop.
 - Preserve: incremental scan, paged asset loop, progress notification, deleted-track cleanup.
 - Tests first: upsert idempotency, genre dedupe, scope-commit rollback, external import merge path.
-- Test level: unit (pure) + integration (DB-backed, in-memory sqlite or real expo-sqlite in test). Device: full media-library scan.
+- Test level: unit (pure) + integration (DB-backed via `bun:sqlite` in-memory). Full media-library scan → manual QA.
 - Risk: High.
 
 ### `src/modules/library/`
@@ -416,7 +416,7 @@ src/
 **Rewrite priority:** P2
 **Confidence:** High
 - `scripts/generate-static-themes.mjs`: delete if CSS theme wins.
-- `.github/workflows/ci.yml`: add typecheck gate (optional) + separate device/E2E job.
+- `.github/workflows/ci.yml`: add optional informational typecheck (non-blocking); device behavior stays manual QA (no E2E job).
 - `.env`: remove secrets (see §11). `keystore.jks`: confirm gitignore + rotate.
 - `knip.json`/`knip.txt`: keep config, delete generated `knip.txt`.
 - `SYSTEM_MAP*.md`: delete (generated).
@@ -483,17 +483,38 @@ Good news: **no fake native mocks exist.** `setup.ts` is empty. All current test
 
 **Summary:** 19 KEEP / 0 REWRITE / 0 DELETE / 0 CONVERT / 0 MANUAL. **0 fake native mocks.**
 
-### Gaps to fill (TDD for rewrites)
-- **Player:** integration tests for queue build, repeat/shuffle, restore, external intent using REAL application code through the `player/adapter` seam. The adapter is a stable app-owned interface whose contract is taken from the actual AudioBrowser API we ship against — it is NOT an invented native mock that always passes. For any native behavior we do not actually know (e.g. exact crossfade timing, cast handoff), we do NOT guess with a passing mock; we verify via device/E2E or document a manual check.
-- **Indexer:** integration tests for upsert idempotency, genre dedupe, scope-commit rollback, external-import merge, file fingerprint. Device for full scan.
-- **Settings:** integration tests for each config load/sanitize/persist/migrate.
-- **Library/search/tracks:** integration tests for searchLibrary, recent-searches read/write, tabs sanitizer.
-- **Bootstrap:** startup sequencing test (no `setTimeout` race).
+### Testing strategy & hard constraints (decided with owner)
+
+**Test levels we maintain: ONLY three.**
+1. **Static** — `oxlint` (+ `tsc --noEmit` as informational, never a hard gate per AGENTS.md). No separate type-check job that blocks; it is a guardrail.
+2. **Unit** — pure logic with real inputs/outputs, no mocks. (Current 19 tests are all this level and are KEEP.)
+3. **Integration** — real application code exercised across module boundaries against a real in-memory SQLite backend (`bun:sqlite`, see setup below). Mock ONLY true external boundaries (HTTP/clock/randomness) at the outermost edge.
+
+**Explicitly OUT of scope: E2E / device tests.** We do **not** add E2E, Maestro, Detox, or emulator-driven suites. The device cannot run them and they would rot. All native/device behavior (real AudioBrowser playback, cast handoff, media-library scan, background/foreground, notification deep-links, miniplayer persistence) is covered by **manual QA on the owner's device**, tracked as a checklist, not automated tests.
+
+**Meaningful tests over quantity.** We do not chase coverage percentage. A test is added only when it protects a real behavior or business rule an owner would care about. We delete tests that assert implementation plumbing, duplicate production logic in a fixture, or exist only to raise a number. No snapshot tests, no trivial getter/setter tests, no tests of framework internals.
+
+**No fake native mocks (unchanged hard rule).** If we do not know an external/native API's real behavior, we do NOT invent a mock — we rely on manual QA. A test must be able to fail.
+
+### Integration-test setup (recommended, compatible with vitest under Bun)
+- Backend: **`bun:sqlite`** (Bun built-in, zero native compilation) via **`drizzle-orm/bun-sqlite`** — both already present in `node_modules`. Verified working: `new Database(':memory:')` + `drizzle()` import succeed under `bun`.
+- The app schema (`src/db/schema.ts`) uses only standard `sqliteTable` + Drizzle `relations` — **no `expo-sqlite`-specific custom column types** — so it loads unchanged against `bun:sqlite`. No schema fork needed.
+- Harness: a shared `src/__tests__/helpers/db.ts` that opens an in-memory `bun:sqlite` db, pushes the schema (via Drizzle `createTable`/`push`-equivalent or a trimmed migration), and returns a `drizzle` instance aliased to `@/db/client`'s `db` via a test-only path/Vitest `server.deps`/`alias` override. Tests import repositories and run real SQL.
+- Vitest config: keep `environment: "node"`; add a `bun:sqlite` test project or simply rely on Bun's built-in `bun:sqlite` (already node-compatible under Bun). `setup.ts` stays empty (no global mocks).
+- Integration tests live in the same `__tests__/` folders as units, named `*.integration.test.ts` or under `__tests__/integration/`, to keep them visually separable without a second runner.
+
+### Gaps to fill (TDD, integration level — NOT E2E)
+- **Indexer:** upsert idempotency, genre dedupe (color/shape assigned once), scope-commit rollback, external-import merge. These run real SQL against `bun:sqlite` — fully automatable, no device needed. (Full media-library *scan* stays manual QA.)
+- **Settings:** each config load/sanitize/persist/migrate against the KvStore-equivalent in-memory backend.
+- **Library/search/tracks:** `searchLibrary`, recent-searches read/write, tabs sanitizer.
+- **Player:** queue build / repeat / shuffle transitions / restore are PURE logic → unit. Native playback itself → manual QA only (no mock).
+- **Bootstrap:** startup sequencing (no `setTimeout` race) where it can be driven without native modules.
 
 ### Conventions
-- Place tests next to source in `__tests__/`. Pure logic → unit, no mocks. Feature behavior → integration using real modules, mock only network/clock at boundary. Player native → `player/adapter` seam whose contract mirrors the real native API we control; it is NOT a fake-native mock and must encode real expected behavior so the test can fail when wrong. **We never add a mock of an external/native API whose actual behavior is unknown** — that mock would always pass and proves nothing. Unknown behavior is covered by device/E2E or explicit manual verification. Critical flows → device/E2E smoke (documented manually if CI can't run native).
-- Delete no current tests (all behavioral). Add the above. No coverage targets beyond behavioral risk.
-- Remove: `knip.txt` (artifact). Keep `vitest.config.ts` but add `src/__tests__/adapters` to include.
+- Place tests next to source in `__tests__/`. Pure logic → unit, no mocks. Feature behavior → integration using real modules + real `bun:sqlite`, mock only network/clock at the outermost boundary.
+- Player native → `player/adapter` seam whose contract mirrors the real native API we control; it is NOT a fake-native mock and must encode real expected behavior so the test can fail when wrong. **We never add a mock of an external/native API whose actual behavior is unknown** — that mock would always pass and proves nothing. Unknown behavior → manual QA checklist.
+- Delete no current tests (all behavioral and meaningful). Add integration tests only where they protect real behavior. No coverage targets.
+- Keep `vitest.config.ts`; add the integration DB helper under `src/__tests__/helpers/`.
 
 ---
 
@@ -571,9 +592,9 @@ No speculative optimization. Measure with Expo Atlas / profiler before/after.
 - **oxlint:** keep (`import/no-cycle:error`). Add `no-cycle` already enforced. Good.
 - **oxfmt:** keep.
 - **Typecheck:** AGENTS.md states no `tsc` gate (latent errors). Optionally add `bun run typecheck` (non-blocking) to CI for visibility. Recommend adding once rewrites land.
-- **vitest:** keep node env for pure; add integration tests (still node where possible, device for native). Keep empty `setup.ts` (no fake native mocks — correct). Add a CI guard note: any new `__mocks__` or global mock that makes a test pass without asserting real behavior is rejected in review.
+- **vitest:** keep `environment: "node"` for pure units; integration tests use the `bun:sqlite` in-memory backend (no extra runner). Keep empty `setup.ts` (no fake native mocks — correct). CI guard: any new `__mocks__` or global mock that makes a test pass without asserting real behavior is rejected in review.
 - **knip:** keep config; delete generated `knip.txt`.
-- **CI (`ci.yml`):** lint + test only. Add a separate device/E2E job (manual or emulator) for playback smoke. Do NOT add coverage gate.
+- **CI (`ci.yml`):** lint + `vitest` (unit + integration via `bun:sqlite`) only. Do NOT add E2E/device jobs (device cannot run them) and do NOT add a coverage gate. Manual QA checklist is the device-coverage mechanism, not CI.
 - **`.env` security:** remove `EXPO_PUBLIC_LASTFM_API_KEY`/`EXPO_PUBLIC_LASTFM_API_SECRET` (client-embedded secrets). Rotate the secret. Last.fm calls should proxy server-side or use key-only public auth. This is a pre-rewrite blocker.
 - **`keystore.jks`:** confirm in `.gitignore`; if committed, rotate + remove.
 - **docs:** delete `SYSTEM_MAP*.md` (generated). Keep `build-guide.md`; archive `reference-engine-target-map.md` after migration.
@@ -615,7 +636,7 @@ No speculative optimization. Measure with Expo Atlas / profiler before/after.
 
 **Phase 1 — Baseline safety (P0, Risk: Low)**
 - Lock `vitest` green; document manual device checklist for playback.
-- Add `src/__tests__/adapters` + `player/adapter` interface stub. The adapter encodes ONLY the real AudioBrowser contract we ship against; if a native behavior is unknown, we leave it un-mocked and cover it via device/E2E instead of inventing a passing mock.
+- Add `src/__tests__/adapters` + `player/adapter` interface stub. The adapter encodes ONLY the real AudioBrowser contract we ship against; if a native behavior is unknown, we leave it un-mocked and cover it via manual QA instead of inventing a passing mock.
 - Verify: `bun run check` passes.
 
 **Phase 2 — Delete clearly dead code (P1, Risk: Low)**
@@ -651,7 +672,7 @@ No speculative optimization. Measure with Expo Atlas / profiler before/after.
 - Apply §10 fixes after architecture stable; measure with profiler.
 
 **Phase 9 — Docs/CI (P3, Risk: Low)**
-- Delete generated docs; add device/E2E CI job; optional typecheck gate.
+- Delete generated docs; manual QA checklist (no E2E CI job); optional informational typecheck.
 
 Each phase deletes its legacy immediately; no permanent adapters.
 
@@ -700,7 +721,7 @@ gitignored so no commit needed. `keystore.jks` confirmed untracked/gitignored.
 
 ### Deferred (requires device / manual verification — NOT safe to automate blind)
 These are architectural restructurings that touch 20–60 files and have no
-device/E2E coverage in CI. Automating them without on-device testing risks
+manual QA on the owner's device. Automating them without on-device testing risks
 regressions only catchable manually:
 
 - **Dual playback-store collapse** (`stores/playback` + `player/store` + projector).
