@@ -2,17 +2,11 @@ import { AsyncRateLimiter } from "@tanstack/pacer/async-rate-limiter"
 import { and, gt, isNull, lt, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { artists } from "@/db/schema"
-import { logError } from "@/modules/logging/service"
+import { logError } from "@modules/logging/service"
 import { saveArtworkToCache } from "@/modules/indexer/metadata/metadata"
+import { selectArtistCandidate } from "@/modules/library/deezer-artist-match"
 
 const DEEZER_API_URL = "https://api.deezer.com"
-
-function normalizeArtistName(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "")
-    .trim()
-}
 
 async function resolveArtistImage(artistName: string): Promise<string | null> {
   const searchUrl = `${DEEZER_API_URL}/search/artist?q=${encodeURIComponent(artistName)}&limit=10`
@@ -37,9 +31,7 @@ async function resolveArtistImage(artistName: string): Promise<string | null> {
 
   if (candidates.length === 0) return null
 
-  const normalized = normalizeArtistName(artistName)
-  const matched = candidates.find((c) => normalizeArtistName(c.name) === normalized)
-  const chosen = matched ?? candidates[0]
+  const chosen = selectArtistCandidate(candidates, artistName)
   if (!chosen) return null
 
   if (chosen.picture_xl) return chosen.picture_xl
