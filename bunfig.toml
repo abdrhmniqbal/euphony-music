@@ -2,8 +2,7 @@
 # Match the previously-hoisted pnpm layout the app expects.
 linker = "hoisted"
 
-# Equivalent to the old package.json `trustedDependencies` list.
+# esbuild needs its postinstall to fetch the platform binary (used by Metro + vitest).
 trust = [
-  "@missingcore/react-native-metadata-retriever",
   "esbuild",
 ]
