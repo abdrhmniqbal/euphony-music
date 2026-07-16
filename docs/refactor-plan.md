@@ -603,7 +603,9 @@ No speculative optimization. Measure with Expo Atlas / profiler before/after.
 | `player/runtime.ts` `beginPlayerQueueReplacement`/`endPlayerQueueReplacement` | Dead counter | none | player rewrite | P5 | grep shows no readers |
 | `audio/replay-gain/core/apply.ts` (if feature dropped) | Inert | delete config flags | decision | P6 | RG tests or config grep |
 | `search/repository.ts` | Redundant wrapper | `genres/repository` | library refactor | P6 | consumer reroute |
+| `library/tabs.ts` `getVisibleLibraryTabs` fallback branch | Unreachable (re-sanitize appends all tabs visible) | remove dead fallback | library refactor | P6 | unit tests lock actual behavior |
 | `indexer/external-file-import.ts` upsert block | Dup of `upsert.ts` | merged upsert | indexer rewrite | P4 | external import test |
+| `library/tabs.ts` `getVisibleLibraryTabs` fallback (`tabs.length ? tabs : [LIBRARY_TABS[0]]`) | Unreachable: `sanitizeLibraryTabsConfig` re-append every built-in tab as visible, so the filtered visible list is never empty | delete the dead fallback | library refactor | P6 | tabs unit tests now lock the real (append-missing) behavior |
 | `settings/*` 10× loader singletons | Copy-paste | `createSettingsModule` | settings rewrite | P5 | settings tests |
 | `settings/lastfm-integration.ts` SecureStore path | Divergent persistence | KvStore | settings rewrite | P5 | unit (sanitize) + manual QA |
 | `lib/query-invalidation.ts` | Thin wrapper | direct call | lib refactor | P6 | lint |
