@@ -95,11 +95,6 @@
     "typescript": "~6.0.3",
     "vitest": "^4.1.9"
   },
-  "allowBuilds": {
-    "@missingcore/react-native-metadata-retriever": true,
-    "esbuild": true,
-    "react-native-audio-browser": true
-  },
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
@@ -113,10 +108,5 @@
   "patchedDependencies": {
     "@missingcore/react-native-metadata-retriever@3.2.1": "patches/@missingcore__react-native-metadata-retriever@3.2.1.patch",
     "react-native-image-colors@2.6.0": "patches/react-native-image-colors@2.6.0.patch"
-  },
-  "trustedDependencies": [
-    "@missingcore/react-native-metadata-retriever",
-    "esbuild",
-    "react-native-audio-browser"
-  ]
+  }
 }
