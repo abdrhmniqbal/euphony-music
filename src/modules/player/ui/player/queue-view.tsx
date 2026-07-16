@@ -23,31 +23,27 @@ import { ScaleLoader } from "@/modules/shared/components/ui/scale-loader"
 import { skipToQueueItem } from "@/modules/player/controls"
 import { moveInQueue, removeFromQueue } from "@/modules/player/queue"
 import { extractTrackId } from "@/stores/playback/utils"
-import { usePlaybackStore } from "@/stores/playback/store"
-import { useCurrentTrack, usePlayerQueueInfo, usePlayerQueueTracks } from "@/modules/player/selectors"
-import { usePlayerStore } from "@/modules/player/store"
+import { useCurrentTrack, usePlayerQueueInfo, usePlayerTrackByKey } from "@/modules/player/selectors"
 
 interface QueueItemProps {
   trackKey: string
-  track: Track | null
   index: number
+  isCurrent: boolean
+  isPlayed: boolean
   onPress: (index: number) => void
   onRemove: (trackId: string) => void
 }
 
 export const QueueItem: React.FC<QueueItemProps> = ({
   trackKey,
-  track,
   index,
+  isCurrent,
+  isPlayed,
   onPress,
   onRemove,
 }) => {
   const trackId = extractTrackId(trackKey)
-  const currentTrackState = usePlayerStore((state) => state.currentTrack)
-  const currentIndex = usePlaybackStore((state) => state.queuePosition)
-  const isCurrentTrack = index === currentIndex
-  const isPlayedTrack = index < currentIndex
-  const resolvedTrack = track ?? (isCurrentTrack ? currentTrackState : null)
+  const track = usePlayerTrackByKey(trackKey)
 
   const drag = useReorderableDrag()
   const handleDragPress = useCallback(
@@ -68,13 +64,13 @@ export const QueueItem: React.FC<QueueItemProps> = ({
     onPress(index)
   }, [onPress, index])
 
-  if (!resolvedTrack) {
+  if (!track) {
     return <View style={{ height: 64 }} className="justify-center px-4" />
   }
 
   return (
     <TrackRow
-      track={resolvedTrack}
+      track={track}
       onPress={handlePress}
       leftAction={
         <PressableFeedback onPressIn={handleDragPress} className="p-2 opacity-60">
@@ -83,16 +79,16 @@ export const QueueItem: React.FC<QueueItemProps> = ({
       }
       className={cn(
         "rounded-xl px-2",
-        isCurrentTrack ? "bg-white/10" : "active:bg-white/5",
-        isPlayedTrack && "opacity-45"
+        isCurrent ? "bg-white/10" : "active:bg-white/5",
+        isPlayed && "opacity-45"
       )}
       imageClassName="h-12 w-12 bg-white/10"
-      imageOverlay={isCurrentTrack ? <ScaleLoader size={16} /> : undefined}
-      titleClassName={isCurrentTrack ? "text-white" : "text-white/90"}
+      imageOverlay={isCurrent ? <ScaleLoader size={16} /> : undefined}
+      titleClassName={isCurrent ? "text-white" : "text-white/90"}
       descriptionClassName="text-white/50 text-sm"
       rightAction={
         <View className="flex-row items-center">
-          {!isCurrentTrack ? (
+          {!isCurrent ? (
             <PressableFeedback onPress={handleRemovePress} className="p-2 opacity-60">
               <LocalCancel01Icon fill="none" width={24} height={24} color="white" />
             </PressableFeedback>
@@ -112,7 +108,6 @@ export const QueueView: React.FC = () => {
   const { t } = useTranslation()
   const currentTrack = useCurrentTrack()
   const { queue, upNext, currentIndex } = usePlayerQueueInfo()
-  const tracksById = usePlayerQueueTracks()
   const listRef = useRef<FlatList>(null)
   const handleRemove = useCallback(async (trackId: string) => {
     await removeFromQueue(trackId)
@@ -128,18 +123,18 @@ export const QueueView: React.FC = () => {
   }, [])
   const renderItem = useCallback(
     ({ item, index }: { item: string; index: number }) => {
-      const trackId = extractTrackId(item)
       return (
         <MemoizedQueueItem
           trackKey={item}
-          track={tracksById[trackId] ?? null}
           index={index}
+          isCurrent={index === currentIndex}
+          isPlayed={index < currentIndex}
           onPress={handlePlayFromQueue}
           onRemove={handleRemove}
         />
       )
     },
-    [handlePlayFromQueue, handleRemove, tracksById]
+    [handlePlayFromQueue, handleRemove, currentIndex]
   )
   if (!currentTrack || queue.length === 0) {
     return (

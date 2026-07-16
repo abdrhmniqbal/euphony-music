@@ -61,20 +61,12 @@ export function usePlayerTracks(): Track[] {
   return usePlayerStore((state) => state.tracks)
 }
 
-// In-memory resolved queue tracks (populated by the playback projector), keyed
-// by track id. Read by the queue UI to avoid a per-render DB query.
-export function usePlayerQueueTracks(): Record<string, Track | null> {
-  const tracks = usePlayerStore((state) => state.tracks)
-  const trackKeys = usePlayerStore((state) => state.queueKeys)
-  return useMemo(() => {
-    const byId: Record<string, Track | null> = {}
-    for (const key of trackKeys) {
-      const id = extractTrackId(key)
-      const track = tracks.find((t) => t.id === id)
-      if (track) byId[id] = track
-    }
-    return byId
-  }, [tracks, trackKeys])
+// Selects the resolved queue track for a single key from the in-memory
+// projector `tracks`. Per-row subscription means a row only re-renders when its
+// own track object changes (once per queue load), not on every playback tick.
+export function usePlayerTrackByKey(trackKey: string): Track | null {
+  const id = extractTrackId(trackKey)
+  return usePlayerStore((state) => state.tracks.find((t) => t.id === id) ?? null)
 }
 
 export function usePlayerQueue(): string[] {
