@@ -15,7 +15,6 @@ import {
 import { handleTrackActivated } from "@/modules/player/activity"
 import { resetCrossfadeVolume } from "@/modules/player/crossfade"
 import { playFromTracks, setupPlaybackCore } from "@/modules/player/playback-core"
-import { beginPlayerQueueReplacement, endPlayerQueueReplacement } from "@/modules/player/runtime"
 import { buildPlaybackQueue, inferQueueContext } from "./queue-context"
 import {
   EXTERNAL_TRACK_ID_PREFIX,
@@ -99,8 +98,6 @@ export async function playTrack(
     return false
   }
 
-  beginPlayerQueueReplacement()
-
   try {
     logInfo("Playing track", {
       trackId: track.id,
@@ -129,8 +126,6 @@ export async function playTrack(
   } catch (error) {
     logError("Failed to play track", error, { trackId: track.id })
     return false
-  } finally {
-    endPlayerQueueReplacement()
   }
 }
 
