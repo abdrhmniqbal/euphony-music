@@ -13,18 +13,16 @@ type AdditionalConfig = {
   continuePlaybackOnDismiss?: boolean
 }
 
-const previousOptions: AdditionalConfig = {
+const DEFAULT_CONFIG: Required<AdditionalConfig> = {
   continuePlaybackOnDismiss: true,
 }
 
 export function getAudioBrowserOptions(options?: AdditionalConfig): UpdateOptions {
-  if (options) {
-    Object.assign(previousOptions, options)
-  }
+  const config = { ...DEFAULT_CONFIG, ...options }
 
   return {
     android: {
-      appKilledPlaybackBehavior: previousOptions.continuePlaybackOnDismiss
+      appKilledPlaybackBehavior: config.continuePlaybackOnDismiss
         ? "continue-playback"
         : "stop-playback-and-remove-notification",
     },
