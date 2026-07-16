@@ -6,5 +6,4 @@ linker = "hoisted"
 trust = [
   "@missingcore/react-native-metadata-retriever",
   "esbuild",
-  "react-native-audio-browser",
 ]
