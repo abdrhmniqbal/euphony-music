@@ -8,23 +8,10 @@
 
 import { i18n } from "@/modules/localization/i18n"
 import type { TrackDurationFilterConfig, TrackDurationFilterMode } from "@/modules/settings/types"
-import {
-  createSettingsConfigFile,
-  loadSettingsConfig,
-  saveSettingsConfig,
-} from "@/modules/settings/repository"
-import {
-  getDefaultTrackDurationFilterConfig,
-  getSettingsState,
-  updateSettingsState,
-} from "@/modules/settings/store"
+import { createSettingsModule } from "@/modules/settings/factory"
+import { getDefaultTrackDurationFilterConfig } from "@/modules/settings/store"
 
 export type { TrackDurationFilterConfig, TrackDurationFilterMode }
-
-const TRACK_DURATION_FILTER_FILE = createSettingsConfigFile("track-duration-filter.json")
-
-let loadPromise: Promise<TrackDurationFilterConfig> | null = null
-let hasLoadedConfig = false
 
 function clampCustomSeconds(value: number): number {
   if (!Number.isFinite(value)) {
@@ -54,46 +41,15 @@ function sanitizeConfig(config: unknown): TrackDurationFilterConfig {
   }
 }
 
-async function persistConfig(config: TrackDurationFilterConfig): Promise<void> {
-  await saveSettingsConfig(TRACK_DURATION_FILTER_FILE, config)
-}
+const mod = createSettingsModule<TrackDurationFilterConfig>({
+  fileName: "track-duration-filter.json",
+  stateKey: "trackDurationFilterConfig",
+  getDefault: getDefaultTrackDurationFilterConfig,
+  sanitize: sanitizeConfig,
+})
 
-export async function ensureTrackDurationFilterConfigLoaded(): Promise<TrackDurationFilterConfig> {
-  if (hasLoadedConfig) {
-    return getSettingsState().trackDurationFilterConfig
-  }
-
-  if (loadPromise) {
-    return loadPromise
-  }
-
-  loadPromise = (async () => {
-    const next = await loadSettingsConfig(
-      TRACK_DURATION_FILTER_FILE,
-      getDefaultTrackDurationFilterConfig(),
-      sanitizeConfig
-    )
-    updateSettingsState({ trackDurationFilterConfig: next })
-    hasLoadedConfig = true
-    return next
-  })()
-
-  const result = await loadPromise
-  loadPromise = null
-  return result
-}
-
-export async function setTrackDurationFilterConfig(
-  updates: Partial<TrackDurationFilterConfig>
-): Promise<TrackDurationFilterConfig> {
-  await ensureTrackDurationFilterConfigLoaded()
-  const current = getSettingsState().trackDurationFilterConfig
-  const next = sanitizeConfig({ ...current, ...updates })
-  updateSettingsState({ trackDurationFilterConfig: next })
-  hasLoadedConfig = true
-  await persistConfig(next)
-  return next
-}
+export const ensureTrackDurationFilterConfigLoaded = mod.ensureLoaded
+export const setTrackDurationFilterConfig = mod.set
 
 function getTrackDurationMinimumSeconds(config: TrackDurationFilterConfig): number {
   if (config.mode === "min30s") {

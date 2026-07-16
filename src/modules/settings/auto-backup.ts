@@ -5,19 +5,9 @@
  */
 
 import { Directory, File } from "expo-file-system"
-import { getSettingsState, updateSettingsState } from "@/modules/settings/store"
-import {
-  createSettingsConfigFile,
-  loadSettingsConfig,
-  saveSettingsConfig,
-} from "@/modules/settings/repository"
+import { createSettingsModule } from "@/modules/settings/factory"
 import type { AutoBackupConfig } from "@/modules/settings/types"
 import { backupPreferencesToFile } from "./backup"
-
-const AUTO_BACKUP_FILE = createSettingsConfigFile("auto-backup.json")
-
-let loadPromise: Promise<AutoBackupConfig> | null = null
-let hasLoadedConfig = false
 
 export const DEFAULT_AUTO_BACKUP_CONFIG: AutoBackupConfig = {
   enabled: false,
@@ -46,42 +36,15 @@ function sanitizeConfig(config: unknown): AutoBackupConfig {
   }
 }
 
-async function persistConfig(config: AutoBackupConfig): Promise<void> {
-  await saveSettingsConfig(AUTO_BACKUP_FILE, config)
-}
+const mod = createSettingsModule<AutoBackupConfig>({
+  fileName: "auto-backup.json",
+  stateKey: "autoBackupConfig",
+  getDefault: () => DEFAULT_AUTO_BACKUP_CONFIG,
+  sanitize: sanitizeConfig,
+})
 
-export async function ensureAutoBackupConfigLoaded(): Promise<AutoBackupConfig> {
-  if (hasLoadedConfig) return getSettingsState().autoBackupConfig
-
-  if (loadPromise) return loadPromise
-
-  loadPromise = (async () => {
-    const next = await loadSettingsConfig(
-      AUTO_BACKUP_FILE,
-      DEFAULT_AUTO_BACKUP_CONFIG,
-      sanitizeConfig
-    )
-    updateSettingsState({ autoBackupConfig: next })
-    hasLoadedConfig = true
-    return next
-  })()
-
-  const result = await loadPromise
-  loadPromise = null
-  return result
-}
-
-export async function setAutoBackupConfig(
-  updates: Partial<AutoBackupConfig>
-): Promise<AutoBackupConfig> {
-  await ensureAutoBackupConfigLoaded()
-  const current = getSettingsState().autoBackupConfig
-  const next = sanitizeConfig({ ...current, ...updates })
-  updateSettingsState({ autoBackupConfig: next })
-  hasLoadedConfig = true
-  await persistConfig(next)
-  return next
-}
+export const ensureAutoBackupConfigLoaded = mod.ensureLoaded
+export const setAutoBackupConfig = mod.set
 
 export async function runAutoBackupCheck(force = false): Promise<boolean> {
   const config = await ensureAutoBackupConfigLoaded()

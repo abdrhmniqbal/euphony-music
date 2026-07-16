@@ -7,25 +7,13 @@
  */
 
 import type { CrossfadeConfig } from "@/modules/settings/types"
-import {
-  createSettingsConfigFile,
-  loadSettingsConfig,
-  saveSettingsConfig,
-} from "@/modules/settings/repository"
-import {
-  getDefaultCrossfadeConfig,
-  getSettingsState,
-  updateSettingsState,
-} from "@/modules/settings/store"
+import { createSettingsModule } from "@/modules/settings/factory"
+import { getDefaultCrossfadeConfig } from "@/modules/settings/store"
 
 export type { CrossfadeConfig }
 
-const CROSSFADE_FILE = createSettingsConfigFile("audio-crossfade.json")
 const MIN_CROSSFADE_SECONDS = 1
 const MAX_CROSSFADE_SECONDS = 12
-
-let loadPromise: Promise<CrossfadeConfig> | null = null
-let hasLoadedConfig = false
 
 function clampDurationSeconds(value: number): number {
   if (!Number.isFinite(value)) {
@@ -50,45 +38,14 @@ function sanitizeConfig(config: unknown): CrossfadeConfig {
   }
 }
 
-async function persistConfig(config: CrossfadeConfig): Promise<void> {
-  await saveSettingsConfig(CROSSFADE_FILE, config)
-}
+const mod = createSettingsModule<CrossfadeConfig>({
+  fileName: "audio-crossfade.json",
+  stateKey: "crossfadeConfig",
+  getDefault: getDefaultCrossfadeConfig,
+  sanitize: sanitizeConfig,
+})
 
-export async function ensureCrossfadeConfigLoaded(): Promise<CrossfadeConfig> {
-  if (hasLoadedConfig) {
-    return getSettingsState().crossfadeConfig
-  }
-
-  if (loadPromise) {
-    return loadPromise
-  }
-
-  loadPromise = (async () => {
-    const next = await loadSettingsConfig(
-      CROSSFADE_FILE,
-      getDefaultCrossfadeConfig(),
-      sanitizeConfig
-    )
-    updateSettingsState({ crossfadeConfig: next })
-    hasLoadedConfig = true
-    return next
-  })()
-
-  const result = await loadPromise
-  loadPromise = null
-  return result
-}
-
-export async function setCrossfadeConfig(
-  updates: Partial<CrossfadeConfig>
-): Promise<CrossfadeConfig> {
-  await ensureCrossfadeConfigLoaded()
-  const current = getSettingsState().crossfadeConfig
-  const next = sanitizeConfig({ ...current, ...updates })
-  updateSettingsState({ crossfadeConfig: next })
-  hasLoadedConfig = true
-  await persistConfig(next)
-  return next
-}
+export const ensureCrossfadeConfigLoaded = mod.ensureLoaded
+export const setCrossfadeConfig = mod.set
 
 

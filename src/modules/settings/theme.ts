@@ -7,22 +7,9 @@
  */
 
 import type { ThemeConfig } from "@/modules/settings/types"
-import {
-  createSettingsConfigFile,
-  loadSettingsConfig,
-  saveSettingsConfig,
-} from "@/modules/settings/repository"
-import {
-  getDefaultThemeConfig,
-  getSettingsState,
-  updateSettingsState,
-} from "@/modules/settings/store"
+import { createSettingsModule } from "@/modules/settings/factory"
+import { getDefaultThemeConfig } from "@/modules/settings/store"
 import { isAppThemeId } from "@/modules/ui/theme-registry"
-
-const THEME_FILE = createSettingsConfigFile("app-theme.json")
-
-let loadPromise: Promise<ThemeConfig> | null = null
-let hasLoadedConfig = false
 
 function sanitizeConfig(config: unknown): ThemeConfig {
   const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
@@ -32,34 +19,12 @@ function sanitizeConfig(config: unknown): ThemeConfig {
   return { themeId }
 }
 
-export async function ensureThemeConfigLoaded(): Promise<ThemeConfig> {
-  if (hasLoadedConfig) {
-    return getSettingsState().themeConfig
-  }
+const mod = createSettingsModule<ThemeConfig>({
+  fileName: "app-theme.json",
+  stateKey: "themeConfig",
+  getDefault: getDefaultThemeConfig,
+  sanitize: sanitizeConfig,
+})
 
-  if (loadPromise) {
-    return loadPromise
-  }
-
-  loadPromise = (async () => {
-    const config = await loadSettingsConfig(THEME_FILE, getDefaultThemeConfig(), sanitizeConfig)
-
-    updateSettingsState({ themeConfig: config })
-    hasLoadedConfig = true
-    return config
-  })()
-
-  const result = await loadPromise
-  loadPromise = null
-  return result
-}
-
-export async function setThemeConfig(updates: Partial<ThemeConfig>): Promise<ThemeConfig> {
-  await ensureThemeConfigLoaded()
-  const current = getSettingsState().themeConfig
-  const next = sanitizeConfig({ ...current, ...updates })
-  updateSettingsState({ themeConfig: next })
-  hasLoadedConfig = true
-  await saveSettingsConfig(THEME_FILE, next)
-  return next
-}
+export const ensureThemeConfigLoaded = mod.ensureLoaded
+export const setThemeConfig = mod.set

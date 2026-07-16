@@ -7,23 +7,10 @@
  */
 
 import type { ArtistSplitMode, SplitMultipleValueConfig } from "@/modules/settings/types"
-import {
-  createSettingsConfigFile,
-  loadSettingsConfig,
-  saveSettingsConfig,
-} from "@/modules/settings/repository"
-import {
-  getDefaultSplitMultipleValueConfig,
-  getSettingsState,
-  updateSettingsState,
-} from "@/modules/settings/store"
+import { createSettingsModule } from "@/modules/settings/factory"
+import { getDefaultSplitMultipleValueConfig } from "@/modules/settings/store"
 
 export type { ArtistSplitMode, SplitMultipleValueConfig }
-
-const SPLIT_MULTIPLE_VALUES_FILE = createSettingsConfigFile("split-multiple-values.json")
-
-let loadPromise: Promise<SplitMultipleValueConfig> | null = null
-let hasLoadedConfig = false
 
 function sanitizeSymbols(value: unknown, fallback: string[]): string[] {
   if (!Array.isArray(value)) {
@@ -183,46 +170,15 @@ function splitArtistsWithConfig(value: string, config: SplitMultipleValueConfig)
   )
 }
 
-async function persistConfig(config: SplitMultipleValueConfig): Promise<void> {
-  await saveSettingsConfig(SPLIT_MULTIPLE_VALUES_FILE, config)
-}
+const mod = createSettingsModule<SplitMultipleValueConfig>({
+  fileName: "split-multiple-values.json",
+  stateKey: "splitMultipleValueConfig",
+  getDefault: getDefaultSplitMultipleValueConfig,
+  sanitize: sanitizeConfig,
+})
 
-export async function ensureSplitMultipleValueConfigLoaded(): Promise<SplitMultipleValueConfig> {
-  if (hasLoadedConfig) {
-    return getSettingsState().splitMultipleValueConfig
-  }
-
-  if (loadPromise) {
-    return loadPromise
-  }
-
-  loadPromise = (async () => {
-    const next = await loadSettingsConfig(
-      SPLIT_MULTIPLE_VALUES_FILE,
-      getDefaultSplitMultipleValueConfig(),
-      sanitizeConfig
-    )
-    updateSettingsState({ splitMultipleValueConfig: next })
-    hasLoadedConfig = true
-    return next
-  })()
-
-  const result = await loadPromise
-  loadPromise = null
-  return result
-}
-
-export async function setSplitMultipleValueConfig(
-  updates: Partial<SplitMultipleValueConfig>
-): Promise<SplitMultipleValueConfig> {
-  await ensureSplitMultipleValueConfigLoaded()
-  const current = getSettingsState().splitMultipleValueConfig
-  const next = sanitizeConfig({ ...current, ...updates })
-  updateSettingsState({ splitMultipleValueConfig: next })
-  hasLoadedConfig = true
-  await persistConfig(next)
-  return next
-}
+export const ensureSplitMultipleValueConfigLoaded = mod.ensureLoaded
+export const setSplitMultipleValueConfig = mod.set
 
 export function splitArtistsValue(
   value: string | null | undefined,

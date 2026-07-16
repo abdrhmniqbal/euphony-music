@@ -7,22 +7,9 @@
  */
 
 import type { AppUpdateConfig } from "@/modules/settings/types"
-import {
-  createSettingsConfigFile,
-  loadSettingsConfig,
-  saveSettingsConfig,
-} from "@/modules/settings/repository"
-import {
-  getDefaultAppUpdateConfig,
-  getSettingsState,
-  updateSettingsState,
-} from "@/modules/settings/store"
+import { createSettingsModule } from "@/modules/settings/factory"
+import { getDefaultAppUpdateConfig } from "@/modules/settings/store"
 import { getCurrentAppVersion, isPreviewReleaseVersion } from "@/modules/updates/app-version"
-
-const APP_UPDATES_FILE = createSettingsConfigFile("app-updates.json")
-
-let loadPromise: Promise<AppUpdateConfig> | null = null
-let hasLoadedConfig = false
 
 function sanitizeConfig(config: unknown): AppUpdateConfig {
   const fallback = getDefaultAppUpdateConfig()
@@ -43,40 +30,12 @@ function sanitizeConfig(config: unknown): AppUpdateConfig {
   }
 }
 
-export async function ensureAppUpdateConfigLoaded(): Promise<AppUpdateConfig> {
-  if (hasLoadedConfig) {
-    return getSettingsState().appUpdateConfig
-  }
+const mod = createSettingsModule<AppUpdateConfig>({
+  fileName: "app-updates.json",
+  stateKey: "appUpdateConfig",
+  getDefault: getDefaultAppUpdateConfig,
+  sanitize: sanitizeConfig,
+})
 
-  if (loadPromise) {
-    return loadPromise
-  }
-
-  loadPromise = (async () => {
-    const config = await loadSettingsConfig(
-      APP_UPDATES_FILE,
-      getDefaultAppUpdateConfig(),
-      sanitizeConfig
-    )
-
-    updateSettingsState({ appUpdateConfig: config })
-    hasLoadedConfig = true
-    return config
-  })()
-
-  const result = await loadPromise
-  loadPromise = null
-  return result
-}
-
-export async function setAppUpdateConfig(
-  updates: Partial<AppUpdateConfig>
-): Promise<AppUpdateConfig> {
-  await ensureAppUpdateConfigLoaded()
-  const current = getSettingsState().appUpdateConfig
-  const next = sanitizeConfig({ ...current, ...updates })
-  updateSettingsState({ appUpdateConfig: next })
-  hasLoadedConfig = true
-  await saveSettingsConfig(APP_UPDATES_FILE, next)
-  return next
-}
+export const ensureAppUpdateConfigLoaded = mod.ensureLoaded
+export const setAppUpdateConfig = mod.set
