@@ -70,7 +70,7 @@ export function usePlayerTrackByKey(trackKey: string): Track | null {
 }
 
 export function usePlayerQueue(): string[] {
-  return usePlayerStore((state) => state.queueKeys)
+  return usePlaybackStore((state) => state.queue)
 }
 
 export function usePlayerQueueContext() {
