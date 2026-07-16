@@ -44,10 +44,15 @@ export default function LastFmSettingsScreen() {
   }
 
   useEffect(() => {
+    let active = true
     getLastFmIntegrationState().then((s) => {
+      if (!active) return
       updateIntegrationState(s)
       setIsLoading(false)
     })
+    return () => {
+      active = false
+    }
   }, [])
 
   const connectionDescription = useMemo(() => {
