@@ -1,6 +1,6 @@
 # Purpose: Runs lint and unit tests on every push and pull request.
 # Caller: GitHub Actions on push to master and pull requests.
-# Dependencies: actions/checkout, setup-node, Corepack, nubjs/setup-nub, nub toolchain.
+# Dependencies: actions/checkout, oven-sh/setup-bun, bun toolchain.
 # Main Functions: Install dependencies, run oxlint, run vitest.
 # Side Effects: None (read-only checks; no artifacts published).
 
@@ -22,26 +22,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: .nvmrc
-
-      - name: Setup Corepack package managers
-        run: |
-          npm install --global corepack@latest
-          corepack enable
-          corepack prepare pnpm@11.5.1 --activate
-          corepack prepare yarn@4.13.0 --activate
-
-      - name: Setup Nub toolkit
-        uses: nubjs/setup-nub@v0
+          bun-version: latest
 
       - name: Install dependencies
-        run: nub install --frozen-lockfile --node-linker hoisted
+        run: bun install --frozen-lockfile
 
       - name: Lint
-        run: nub run lint
+        run: bun run lint
 
       - name: Test
-        run: nub run test
+        run: bun run test

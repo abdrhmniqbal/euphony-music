@@ -1,0 +1,10 @@
+[install]
+# Match the previously-hoisted pnpm layout the app expects.
+linker = "hoisted"
+
+# Equivalent to the old package.json `trustedDependencies` list.
+trust = [
+  "@missingcore/react-native-metadata-retriever",
+  "esbuild",
+  "react-native-audio-browser",
+]

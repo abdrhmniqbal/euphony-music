@@ -5,7 +5,7 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "ignorePatterns": [
-    "lock.yaml",
+    "bun.lock",
     "src/uniwind-types.d.ts",
     "src/modules/shared/components/icons",
     "src/assets/open-source-licenses.json"

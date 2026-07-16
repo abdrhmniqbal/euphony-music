@@ -66,10 +66,10 @@ The facts the executor needs, inlined — never "as discussed" or "see audit":
 
 | Purpose   | Command                | Expected on success |
 | --------- | ---------------------- | ------------------- |
-| Install   | `nub install`          | exit 0              |
-| Typecheck | `nub typecheck`        | exit 0, no errors   |
-| Tests     | `nub test -- <filter>` | all pass            |
-| Lint      | `nub lint`             | exit 0              |
+| Install   | `bun install`          | exit 0              |
+| Typecheck | `tsc --noEmit`         | exit 0, no errors   |
+| Tests     | `bun test -- <filter>` | all pass            |
+| Lint      | `bun run lint`         | exit 0              |
 
 (Exact commands from this repo — verified during recon, not guessed.)
 
@@ -131,8 +131,8 @@ callers, then remove old path.)
 
 Machine-checkable. ALL must hold:
 
-- [ ] `nub typecheck` exits 0
-- [ ] `nub test` exits 0; new tests for <X> exist and pass
+- [ ] `tsc --noEmit` exits 0
+- [ ] `bun run test` exits 0; new tests for <X> exist and pass
 - [ ] `grep -rn "<old pattern>" src/` returns no matches
 - [ ] No files outside the in-scope list are modified (`git status`)
 - [ ] `plans/README.md` status row updated

@@ -1,6 +1,6 @@
 # Purpose: Manually creates Android development APKs with Gradle.
 # Caller: GitHub Actions workflow_dispatch.
-# Dependencies: actions/checkout, setup-node, Corepack, setup-java, Gradle cache, Android Gradle project.
+# Dependencies: actions/checkout, oven-sh/setup-bun, setup-java, Gradle cache, Android Gradle project.
 # Main Functions: Install dependencies with nub, build Android debug APK through Gradle, upload APK artifact.
 # Side Effects: Generates Android debug APK files and uploads workflow artifacts.
 
@@ -23,20 +23,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 22.13.0
-
-      - name: Setup Corepack package managers
-        run: |
-          npm install --global corepack@latest
-          corepack enable
-          corepack prepare pnpm@11.5.1 --activate
-          corepack prepare yarn@4.13.0 --activate
-
-      - name: Setup Nub toolkit
-        uses: nubjs/setup-nub@v0
+          bun-version: latest
 
       - name: Setup JDK 18
         uses: actions/setup-java@v4
@@ -48,13 +38,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Install dependencies
-        run: nub install --frozen-lockfile --node-linker hoisted
+        run: bun install --frozen-lockfile
 
       - name: Generate native bindings
         run: |
           cd node_modules/react-native-audio-browser
-          node codegen/index.js --logLevel="debug"
-          node post-script.cjs
+          bun codegen/index.js --logLevel="debug"
+          bun post-script.cjs
 
       - name: Build debug APK
         run: |
