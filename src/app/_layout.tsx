@@ -198,13 +198,16 @@ export default function Layout() {
   const barsVisible = useUIStore((state) => state.barsVisible)
   const hasMiniPlayer = useHasCurrentTrack()
   const hasHiddenSplashRef = useRef(false)
-  setNotificationRouteHandler((route) => {
-    if (!router.canGoBack() && route !== "/(main)/(home)") {
-      router.replace("/(main)/(home)")
-    }
-    router.push(route as never)
-  })
-  ensureNotificationRuntimeStarted()
+
+  useEffect(() => {
+    setNotificationRouteHandler((route) => {
+      if (!router.canGoBack() && route !== "/(main)/(home)") {
+        router.replace("/(main)/(home)")
+      }
+      router.push(route as never)
+    })
+    ensureNotificationRuntimeStarted()
+  }, [router])
 
   const hideSplash = () => {
     if (hasHiddenSplashRef.current) {
