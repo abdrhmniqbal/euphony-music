@@ -24,10 +24,8 @@ import { skipToQueueItem } from "@/modules/player/controls"
 import { moveInQueue, removeFromQueue } from "@/modules/player/queue"
 import { extractTrackId } from "@/stores/playback/utils"
 import { usePlaybackStore } from "@/stores/playback/store"
-import { useCurrentTrack, usePlayerQueueInfo } from "@/modules/player/selectors"
+import { useCurrentTrack, usePlayerQueueInfo, usePlayerQueueTracks } from "@/modules/player/selectors"
 import { usePlayerStore } from "@/modules/player/store"
-
-import { useQueueTracks } from "./use-queue-tracks"
 
 interface QueueItemProps {
   trackKey: string
@@ -114,7 +112,7 @@ export const QueueView: React.FC = () => {
   const { t } = useTranslation()
   const currentTrack = useCurrentTrack()
   const { queue, upNext, currentIndex } = usePlayerQueueInfo()
-  const tracksById = useQueueTracks(queue)
+  const tracksById = usePlayerQueueTracks()
   const listRef = useRef<FlatList>(null)
   const handleRemove = useCallback(async (trackId: string) => {
     await removeFromQueue(trackId)

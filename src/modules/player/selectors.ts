@@ -12,6 +12,7 @@ import { usePolledProgress } from "react-native-audio-browser"
 import { type RepeatModeType, type Track, usePlayerStore } from "./store"
 import { usePlaybackStore } from "@/stores/playback/store"
 import type { PlayerQueueContext } from "@/modules/player/types"
+import { extractTrackId } from "@/stores/playback/utils"
 
 export function useCurrentTrack() {
   return usePlayerStore((state) => state.currentTrack)
@@ -58,6 +59,22 @@ export function useIsShuffled() {
 
 export function usePlayerTracks(): Track[] {
   return usePlayerStore((state) => state.tracks)
+}
+
+// In-memory resolved queue tracks (populated by the playback projector), keyed
+// by track id. Read by the queue UI to avoid a per-render DB query.
+export function usePlayerQueueTracks(): Record<string, Track | null> {
+  const tracks = usePlayerStore((state) => state.tracks)
+  const trackKeys = usePlayerStore((state) => state.queueKeys)
+  return useMemo(() => {
+    const byId: Record<string, Track | null> = {}
+    for (const key of trackKeys) {
+      const id = extractTrackId(key)
+      const track = tracks.find((t) => t.id === id)
+      if (track) byId[id] = track
+    }
+    return byId
+  }, [tracks, trackKeys])
 }
 
 export function usePlayerQueue(): string[] {
