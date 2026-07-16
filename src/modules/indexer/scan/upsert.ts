@@ -212,6 +212,64 @@ export async function getOrCreateGenre(
   return id
 }
 
+// --- Track references -------------------------------------------------------
+
+interface TrackReferenceInput {
+  artist?: string | null
+  artists: string[]
+  albumArtist?: string | null
+  album?: string | null
+  year?: number | null
+  genres: string[]
+  artworkPath?: string | null
+}
+
+export interface ResolvedTrackReferences {
+  artistId: string | null
+  albumId: string | null
+  albumArtistId: string | null
+  relationArtistIds: string[]
+  genreIds: string[]
+}
+
+// Both the main scan and the external-file import resolve artist/album/genre
+// references the same way. This single helper removes that duplicated block.
+export async function resolveTrackReferences(
+  input: TrackReferenceInput,
+  lookupCache?: IndexingLookupCache
+): Promise<ResolvedTrackReferences> {
+  const relationArtistNames = input.artists.length
+    ? input.artists
+    : input.artist
+      ? [input.artist]
+      : []
+
+  const artistId = relationArtistNames[0]
+    ? await getOrCreateArtist(relationArtistNames[0], lookupCache)
+    : null
+
+  const relationArtistIds = Array.from(
+    new Set(
+      await Promise.all(relationArtistNames.map((name) => getOrCreateArtist(name, lookupCache)))
+    )
+  )
+
+  const albumArtistId =
+    input.albumArtist && input.albumArtist !== input.artist
+      ? await getOrCreateArtist(input.albumArtist, lookupCache)
+      : artistId
+
+  const albumId =
+    input.album && albumArtistId
+      ? await getOrCreateAlbum(input.album, albumArtistId, input.artworkPath, input.year, lookupCache)
+      : null
+
+  const genreNames = input.genres.length > 0 ? input.genres : ["Unknown"]
+  const genreIds = await Promise.all(genreNames.map((genre) => getOrCreateGenre(genre, lookupCache)))
+
+  return { artistId, albumId, albumArtistId, relationArtistIds, genreIds }
+}
+
 // --- Track upsert -----------------------------------------------------------
 
 export async function upsertPreparedAsset(
@@ -224,39 +282,17 @@ export async function upsertPreparedAsset(
     return
   }
 
-  const relationArtistNames = metadata.artists.length
-    ? metadata.artists
-    : metadata.artist
-      ? [metadata.artist]
-      : []
-  const artistId = relationArtistNames[0]
-    ? await getOrCreateArtist(relationArtistNames[0], lookupCache)
-    : null
-  const relationArtistIds = Array.from(
-    new Set(
-      await Promise.all(relationArtistNames.map((artist) => getOrCreateArtist(artist, lookupCache)))
-    )
-  )
-
-  const albumArtistId =
-    metadata.albumArtist && metadata.albumArtist !== metadata.artist
-      ? await getOrCreateArtist(metadata.albumArtist, lookupCache)
-      : artistId
-
-  const albumId =
-    metadata.album && albumArtistId
-      ? await getOrCreateAlbum(
-          metadata.album,
-          albumArtistId,
-          artworkPath,
-          metadata.year,
-          lookupCache
-        )
-      : null
-
-  const genresToProcess = metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
-  const genreIds = await Promise.all(
-    genresToProcess.map((genre) => getOrCreateGenre(genre, lookupCache))
+  const { artistId, albumId, relationArtistIds, genreIds } = await resolveTrackReferences(
+    {
+      artist: metadata.artist,
+      artists: metadata.artists,
+      albumArtist: metadata.albumArtist,
+      album: metadata.album,
+      year: metadata.year,
+      genres: metadata.genres,
+      artworkPath,
+    },
+    lookupCache
   )
   if (signal?.aborted) {
     return

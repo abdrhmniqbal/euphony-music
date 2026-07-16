@@ -12,9 +12,7 @@ import { transformDBTrackToTrack } from "@/utils/transformers"
 import { getTracksState } from "@/modules/player/store"
 import { EXTERNAL_TRACK_ID_PREFIX, type Track } from "@/modules/player/types"
 import {
-  getOrCreateArtist,
-  getOrCreateAlbum,
-  getOrCreateGenre,
+  resolveTrackReferences,
 } from "@/modules/indexer/scan/upsert"
 import {
   updateArtistCounts,
@@ -163,31 +161,18 @@ export async function indexExternalFileTrack(uri: string, resolvedUri: string) {
   }
 
   const { metadata, artworkPath } = await extractExternalFileMetadata(uri, resolvedUri)
-  const artistId = metadata.artist ? await getOrCreateArtist(metadata.artist) : null
-  const relationArtistNames = metadata.artists.length
-    ? metadata.artists
-    : metadata.artist
-      ? [metadata.artist]
-      : []
-  const relationArtistIds = Array.from(
-    new Set(
-      await Promise.all(
-        [...relationArtistNames, metadata.artist ?? ""]
-          .filter((artist): artist is string => Boolean(artist))
-          .map((artist) => getOrCreateArtist(artist))
-      )
-    )
+  const { artistId, albumId, relationArtistIds, genreIds } = await resolveTrackReferences(
+    {
+      artist: metadata.artist,
+      artists: metadata.artists,
+      albumArtist: metadata.albumArtist,
+      album: metadata.album,
+      year: metadata.year,
+      genres: metadata.genres,
+      artworkPath,
+    },
+    undefined
   )
-  const albumArtistId =
-    metadata.albumArtist && metadata.albumArtist !== metadata.artist
-      ? await getOrCreateArtist(metadata.albumArtist)
-      : artistId
-  const albumId =
-    metadata.album && albumArtistId
-      ? await getOrCreateAlbum(metadata.album, albumArtistId, artworkPath, metadata.year)
-      : null
-  const genreNames = metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
-  const genreIds = await Promise.all(genreNames.map((genre) => getOrCreateGenre(genre)))
   const now = Date.now()
 
   await db

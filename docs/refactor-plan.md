@@ -206,7 +206,7 @@ src/
 - Fix: `extractTrackId(activeKey!)` non-null assertions; `setupPlayer` string-match double-init; `playExternalFileUri` background mutate race.
 - Preserve: play/pause/next/prev/shuffle/repeat, external intent playback, queue replacement semantics, sleep timer, crossfade.
 - Tests first (TDD): queue build, repeat/shuffle transitions, external-uri fallback, queue replacement, adapter command contract.
-- Test level: unit (pure) + integration (adapter contract + real `bun:sqlite`). We never mock behavior we have not observed; native playback itself is manual QA.
+- Test level: unit (pure) only. Native playback itself is manual QA.
 - Risk: High.
 
 ### `src/modules/audio/`
@@ -228,7 +228,7 @@ src/
 - Fix: empty `catch {}` in `scope-commit.ts`/`upsert.ts` (log + surface); non-atomic genre insert silent drop.
 - Preserve: incremental scan, paged asset loop, progress notification, deleted-track cleanup.
 - Tests first: upsert idempotency, genre dedupe, scope-commit rollback, external import merge path.
-- Test level: unit (pure) + integration (DB-backed via `bun:sqlite` in-memory). Full media-library scan → manual QA.
+- Test level: unit (pure) only. Full media-library scan → manual QA.
 - Risk: High.
 
 ### `src/modules/library/`
@@ -457,7 +457,7 @@ src/
 ## 7. Test Audit and TDD Migration Plan
 
 ### Existing test inventory (19 test files + 1 setup, 0 mocks, 0 `__mocks__`, 0 snapshots)
-Good news: **no fake native mocks exist.** `setup.ts` is empty. All current tests are pure-logic unit tests. The gap is absence of integration/device tests for player, indexer, settings.
+Good news: **no fake native mocks exist.** `setup.ts` is empty. All current tests are pure-logic unit tests. The gap is DB/native behavior, which is covered by manual QA (no automated integration/E2E).
 
 | Current test path | Classification | Behavior covered | Smell | Mocks | Target level | Action | Replacement | Reason |
 |---|---|---|---|---|---|---|---|
@@ -485,36 +485,28 @@ Good news: **no fake native mocks exist.** `setup.ts` is empty. All current test
 
 ### Testing strategy & hard constraints (decided with owner)
 
-**Test levels we maintain: ONLY three.**
+**Test levels we maintain: ONLY two.**
 1. **Static** — `oxlint` (+ `tsc --noEmit` as informational, never a hard gate per AGENTS.md). No separate type-check job that blocks; it is a guardrail.
 2. **Unit** — pure logic with real inputs/outputs, no mocks. (Current 19 tests are all this level and are KEEP.)
-3. **Integration** — real application code exercised across module boundaries against a real in-memory SQLite backend (`bun:sqlite`, see setup below). Mock ONLY true external boundaries (HTTP/clock/randomness) at the outermost edge.
 
-**Explicitly OUT of scope: E2E / device tests.** We do **not** add E2E, Maestro, Detox, or emulator-driven suites. The device cannot run them and they would rot. All native/device behavior (real AudioBrowser playback, cast handoff, media-library scan, background/foreground, notification deep-links, miniplayer persistence) is covered by **manual QA on the owner's device**, tracked as a checklist, not automated tests.
+**Explicitly OUT of scope: E2E, device, AND integration (DB-backed) tests.** We do **not** add E2E, Maestro, Detox, emulator suites, nor `bun:sqlite`/vitest integration harnesses — the RN/expo module graph cannot be loaded by the test bundler without heavy native stubs, which contradicts the no-fake-mocks rule and adds no behavior confidence. All native/device/DB-persistence behavior (real AudioBrowser playback, cast handoff, media-library scan, background/foreground, notification deep-links, miniplayer persistence, indexer upsert/counts) is covered by **manual QA on the owner's device**, tracked as a checklist, not automated tests. Attempted integration scaffolding (bun:sqlite + expo/react-native stubs) was removed as overcomplicated.
 
 **Meaningful tests over quantity.** We do not chase coverage percentage. A test is added only when it protects a real behavior or business rule an owner would care about. We delete tests that assert implementation plumbing, duplicate production logic in a fixture, or exist only to raise a number. No snapshot tests, no trivial getter/setter tests, no tests of framework internals.
 
 **No fake native mocks (unchanged hard rule).** If we do not know an external/native API's real behavior, we do NOT invent a mock — we rely on manual QA. A test must be able to fail.
 
-### Integration-test setup (recommended, compatible with vitest under Bun)
-- Backend: **`bun:sqlite`** (Bun built-in, zero native compilation) via **`drizzle-orm/bun-sqlite`** — both already present in `node_modules`. Verified working: `new Database(':memory:')` + `drizzle()` import succeed under `bun`.
-- The app schema (`src/db/schema.ts`) uses only standard `sqliteTable` + Drizzle `relations` — **no `expo-sqlite`-specific custom column types** — so it loads unchanged against `bun:sqlite`. No schema fork needed.
-- Harness: a shared `src/__tests__/helpers/db.ts` that opens an in-memory `bun:sqlite` db, pushes the schema (via Drizzle `createTable`/`push`-equivalent or a trimmed migration), and returns a `drizzle` instance aliased to `@/db/client`'s `db` via a test-only path/Vitest `server.deps`/`alias` override. Tests import repositories and run real SQL.
-- Vitest config: keep `environment: "node"`; add a `bun:sqlite` test project or simply rely on Bun's built-in `bun:sqlite` (already node-compatible under Bun). `setup.ts` stays empty (no global mocks).
-- Integration tests live in the same `__tests__/` folders as units, named `*.integration.test.ts` or under `__tests__/integration/`, to keep them visually separable without a second runner.
-
-### Gaps to fill (TDD, integration level — NOT E2E)
-- **Indexer:** upsert idempotency, genre dedupe (color/shape assigned once), scope-commit rollback, external-import merge. These run real SQL against `bun:sqlite` — fully automatable, no device needed. (Full media-library *scan* stays manual QA.)
-- **Settings:** each config load/sanitize/persist/migrate against the KvStore-equivalent in-memory backend.
-- **Library/search/tracks:** `searchLibrary`, recent-searches read/write, tabs sanitizer.
-- **Player:** queue build / repeat / shuffle transitions / restore are PURE logic → unit. Native playback itself → manual QA only (no mock).
+### Gaps to fill (TDD — unit only; DB/native behavior → manual QA)
+- **Player:** queue build / repeat / shuffle transitions / restore are PURE logic → unit tests where a pure seam exists.
+- **Settings:** config sanitize/persist are unit-testable as pure functions (sanitize helpers) without DB.
+- **Library/search/tracks:** `searchLibrary`, recent-searches read/write, tabs sanitizer — unit-test the pure transforms.
+- **Indexer:** genre dedupe / upsert idempotency — the pure `resolveTrackReferences` helper is unit-testable; full DB write paths → manual QA.
 - **Bootstrap:** startup sequencing (no `setTimeout` race) where it can be driven without native modules.
 
 ### Conventions
-- Place tests next to source in `__tests__/`. Pure logic → unit, no mocks. Feature behavior → integration using real modules + real `bun:sqlite`, mock only network/clock at the outermost boundary.
-- Player native → `player/adapter` seam whose contract mirrors the real native API we control; it is NOT a fake-native mock and must encode real expected behavior so the test can fail when wrong. **We never add a mock of an external/native API whose actual behavior is unknown** — that mock would always pass and proves nothing. Unknown behavior → manual QA checklist.
-- Delete no current tests (all behavioral and meaningful). Add integration tests only where they protect real behavior. No coverage targets.
-- Keep `vitest.config.ts`; add the integration DB helper under `src/__tests__/helpers/`.
+- Place tests next to source in `__tests__/`. Pure logic → unit, no mocks. No integration/DB harness.
+- Player native → `player/adapter` seam whose contract mirrors the real native API we control; it is NOT a fake-native mock. **We never add a mock of an external/native API whose actual behavior is unknown** — that mock would always pass and proves nothing. Unknown behavior → manual QA checklist.
+- Delete no current tests (all behavioral and meaningful). Add unit tests only where they protect real pure-logic behavior. No coverage targets.
+- Keep `vitest.config.ts` as the original unit-only config (no aliases, no `bun:sqlite`).
 
 ---
 
@@ -545,7 +537,7 @@ Good news: **no fake native mocks exist.** `setup.ts` is empty. All current test
 - external intent: indexed match vs fallback vs background index update (no now-playing flash).
 - sleep timer modes.
 - crossfade math (has test).
-- **Integration:** adapter command contract. **Device/E2E:** real AudioBrowser playback, cast sync, background/foreground.
+- **Manual QA:** real AudioBrowser playback, cast sync, background/foreground (no automated test).
 
 ---
 
@@ -577,7 +569,7 @@ Only code-evidenced issues:
 
 | Path | Root cause | Impact | Fix | Trade-off | Measure | Verify |
 |---|---|---|---|---|---|---|
-| `player/playback-subscriber.ts` full `setState` on every playback change | Copies all fields each tick | Extra renders | Single store removes projector | — | render count | integration test |
+| `player/playback-subscriber.ts` full `setState` on every playback change | Copies all fields each tick | Extra renders | Single store removes projector | — | render count | manual QA (visual) |
 | `indexer/batch.ts` 4-worker `lookupCache` | Cross-worker inconsistency | Possible dup/omit | Serialize or drop + DB unique | slight throughput | scan consistency | indexer test |
 | `library/repository.ts` settings formatting per read | Recompute on every query | CPU on list render | Format at selector | — | profiler | repository test |
 | `usePlayerQueue` reads `queueKeys` while `queue` always `[]` | Vestigial field copied | Wasted allocation | Remove `queue` field | — | — | typecheck |
@@ -592,9 +584,9 @@ No speculative optimization. Measure with Expo Atlas / profiler before/after.
 - **oxlint:** keep (`import/no-cycle:error`). Add `no-cycle` already enforced. Good.
 - **oxfmt:** keep.
 - **Typecheck:** AGENTS.md states no `tsc` gate (latent errors). Optionally add `bun run typecheck` (non-blocking) to CI for visibility. Recommend adding once rewrites land.
-- **vitest:** keep `environment: "node"` for pure units; integration tests use the `bun:sqlite` in-memory backend (no extra runner). Keep empty `setup.ts` (no fake native mocks — correct). CI guard: any new `__mocks__` or global mock that makes a test pass without asserting real behavior is rejected in review.
+- **vitest:** keep original `environment: "node"` config, unit-only, no aliases, no `bun:sqlite`. Keep empty `setup.ts` (no fake native mocks — correct). CI guard: any new `__mocks__` or global mock that makes a test pass without asserting real behavior is rejected in review.
 - **knip:** keep config; delete generated `knip.txt`.
-- **CI (`ci.yml`):** lint + `vitest` (unit + integration via `bun:sqlite`) only. Do NOT add E2E/device jobs (device cannot run them) and do NOT add a coverage gate. Manual QA checklist is the device-coverage mechanism, not CI.
+- **CI (`ci.yml`):** lint + `vitest` (unit only) only. Do NOT add E2E/device/integration jobs (device cannot run them and the RN graph can't load in the test bundler) and do NOT add a coverage gate. Manual QA checklist is the device-coverage mechanism, not CI.
 - **`.env` security:** remove `EXPO_PUBLIC_LASTFM_API_KEY`/`EXPO_PUBLIC_LASTFM_API_SECRET` (client-embedded secrets). Rotate the secret. Last.fm calls should proxy server-side or use key-only public auth. This is a pre-rewrite blocker.
 - **`keystore.jks`:** confirm in `.gitignore`; if committed, rotate + remove.
 - **docs:** delete `SYSTEM_MAP*.md` (generated). Keep `build-guide.md`; archive `reference-engine-target-map.md` after migration.
@@ -613,7 +605,7 @@ No speculative optimization. Measure with Expo Atlas / profiler before/after.
 | `search/repository.ts` | Redundant wrapper | `genres/repository` | library refactor | P6 | consumer reroute |
 | `indexer/external-file-import.ts` upsert block | Dup of `upsert.ts` | merged upsert | indexer rewrite | P4 | external import test |
 | `settings/*` 10× loader singletons | Copy-paste | `createSettingsModule` | settings rewrite | P5 | settings tests |
-| `settings/lastfm-integration.ts` SecureStore path | Divergent persistence | KvStore | settings rewrite | P5 | integration test |
+| `settings/lastfm-integration.ts` SecureStore path | Divergent persistence | KvStore | settings rewrite | P5 | unit (sanitize) + manual QA |
 | `lib/query-invalidation.ts` | Thin wrapper | direct call | lib refactor | P6 | lint |
 | `lib/react-native-audio-browser.ts` mutable state | Hidden state | player adapter | player rewrite | P5 | — |
 | `utils/file-path.ts` hidden cache | Side effect in util | explicit cache | utils refactor | P6 | — |
@@ -647,7 +639,7 @@ No speculative optimization. Measure with Expo Atlas / profiler before/after.
 - Single PlaybackStore; delete `stores/playback` + `player/store` + projector.
 - `player/adapter` interface; `service`/`playback-core` via adapter.
 - TDD: queue, repeat/shuffle, restore, external intent, adapter contract.
-- Tests: unit + integration + device. Delete legacy immediately after.
+- Tests: unit only. DB/native → manual QA. Delete legacy immediately after.
 
 **Phase 4 — Indexer rewrite (P1, Risk: High)**
 - Merge external import into `upsert`; serialize/drop `lookupCache`; add size to fingerprint; fix empty catches.
