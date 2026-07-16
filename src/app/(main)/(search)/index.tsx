@@ -178,7 +178,7 @@ export default function SearchScreen() {
             images={dailyMixImages}
             color={dailyMixColor}
             pattern={dailyMixPattern}
-            onPress={() => router.push("/(main)/(search)/mix/daily" as any)}
+            onPress={() => router.push("/(main)/(search)/mix/daily")}
             onLongPress={() => handleMixLongPress("daily")}
           />
           <MixCard
@@ -186,7 +186,7 @@ export default function SearchScreen() {
             images={forYouMixImages}
             color={forYouMixColor}
             pattern={forYouMixPattern}
-            onPress={() => router.push("/(main)/(search)/mix/foryou" as any)}
+            onPress={() => router.push("/(main)/(search)/mix/foryou")}
             onLongPress={() => handleMixLongPress("foryou")}
           />
         </View>

@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next"
 import LocalDragDropVerticalIcon from "@/modules/shared/components/icons/local/drag-drop-vertical"
 import { useSettingsStore } from "@/modules/settings/store"
 import { setLibraryTabsConfig } from "@/modules/settings/library-tabs"
-import type { LibraryTabSettingsItem, LibraryTabsConfig } from "@/modules/library/tabs"
+import type { LibraryTabSettingsItem } from "@/modules/library/tabs"
 import { useThemeColors } from "@/modules/ui/theme"
 
 interface LibraryTabItemProps {
@@ -73,9 +73,7 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
 }
 
 export default function LibraryTabsSettingsScreen() {
-  const libraryTabsConfig = useSettingsStore(
-    (state) => state.libraryTabsConfig
-  ) as unknown as LibraryTabsConfig
+  const libraryTabsConfig = useSettingsStore((state) => state.libraryTabsConfig)
   const _theme = useThemeColors()
 
   const handleReorder = useCallback(
