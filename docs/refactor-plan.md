@@ -675,3 +675,49 @@ Each phase deletes its legacy immediately; no permanent adapters.
 ## 15. Approval Gate
 
 Status: PLAN ONLY — awaiting approval before implementation.
+
+---
+
+## 16. Execution Log (automated incremental rewrite)
+
+Executed on branch `dev` with per-scope commits, each gated by `bun run lint` +
+`bun run test` (171 tests) + a thermo-nuclear code-quality self-review.
+No `tsc` gate exists in this repo (per AGENTS.md, pre-existing tsc errors are
+tolerated; oxlint is the gate).
+
+### Completed (safe, verifiable, behavior-preserving)
+| Commit | Scope | Change |
+|---|---|---|
+| `c2a1a511` | Phase 2 | Inlined `search/repository.ts` wrappers into `search/queries.ts`; deleted redundant file. |
+| `86675466` | Phase 3 (partial) | Deleted dead `begin/endPlayerQueueReplacement` no-op API + `player/runtime.ts`. |
+| `e0b8ed68` | Phase 4 | Replaced `getOrCreateExternalGenre` with `getOrCreateGenre` (fixes genre color/shape divergence); replaced private `updateExternalLibraryCounts` with canonical `maintenance` count fns; logged genre insert conflicts instead of swallowing. |
+| `23ccf06c` | Phase 6 (partial) | Moved `setNotificationRouteHandler`/`ensureNotificationRuntimeStarted` out of render body into `useEffect`. |
+| `52cc6c9f` | Phase 7 (partial) | Made `getAudioBrowserOptions` pure (removed hidden mutable `previousOptions`). |
+| `0daa8cea` | Phase 7 (partial) | Removed unnecessary `as any` route casts and `as unknown as LibraryTabsConfig` selector cast. |
+
+`.env` secret (`EXPO_PUBLIC_LASTFM_API_SECRET`) removed from disk; `.env` is
+gitignored so no commit needed. `keystore.jks` confirmed untracked/gitignored.
+
+### Deferred (requires device / manual verification — NOT safe to automate blind)
+These are architectural restructurings that touch 20–60 files and have no
+device/E2E coverage in CI. Automating them without on-device testing risks
+regressions only catchable manually:
+
+- **Dual playback-store collapse** (`stores/playback` + `player/store` + projector).
+  The two stores hold largely disjoint live state; a facade is not viable and a
+  merge touches 60 consumers. Device-verified phase.
+- **Settings store collapse** (15-slice store + 10 loader singletons → `createSettingsModule`).
+  Persistence/behavior must be verified on-device.
+- **Library/repository split, recent-searches read/write split, tabs ownership move,**
+  **`tracks/repository` read-time formatting extraction** (W14) — architectural,
+  broad consumer reach.
+- **Logging opt-in** (global `console`/`ErrorUtils` patch) — risky to change blind;
+  the patch is currently contained and correct.
+- **Navigation guards** (module-singleton dedup, never-reset warning Set) — behavioral.
+- **Theme unification** (CSS vs JS map) — design decision + visual verification.
+- **`Track`/`DataTrack` unification** — 60-file reach.
+
+Each deferred item remains in the roadmap (§13) as a device-verified phase.
+The plan's mocking policy (§4, §7) was honored: no fake native mocks were added;
+no test was added that cannot fail. Existing 19 tests (all behavioral, 0 mocks)
+remain green.
