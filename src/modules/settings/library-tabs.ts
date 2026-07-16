@@ -1,12 +1,14 @@
-import { saveSettingsConfig } from "@/modules/settings/repository"
+import { createSettingsConfigFile, saveSettingsConfig } from "@/modules/settings/repository"
 import { updateSettingsState } from "@/modules/settings/store"
+import { createSettingsModule } from "@/modules/settings/factory"
 import type { LibraryTabsConfig } from "@/modules/library/tabs"
 import {
-  createSettingsModule,
   ensureAtLeastOneVisibleTab,
   getDefaultLibraryTabsConfig,
   sanitizeLibraryTabsConfig,
 } from "@/modules/library/tabs"
+
+const FILE = createSettingsConfigFile("library-tabs.json")
 
 const mod = createSettingsModule<LibraryTabsConfig>({
   fileName: "library-tabs.json",
@@ -21,7 +23,6 @@ export async function setLibraryTabsConfig(config: LibraryTabsConfig) {
   const next = ensureAtLeastOneVisibleTab(sanitizeLibraryTabsConfig(config))
 
   updateSettingsState({ libraryTabsConfig: next })
-  hasLoadedConfig = true
   await saveSettingsConfig(FILE, next)
   return next
 }
