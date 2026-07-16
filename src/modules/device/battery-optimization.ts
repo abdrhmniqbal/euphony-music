@@ -1,5 +1,4 @@
-import { Platform } from "react-native"
-import { requireNativeModule } from "expo"
+import { NativeModules, Platform } from "react-native"
 
 import { logError, logWarn } from "@/modules/logging/service"
 
@@ -14,9 +13,8 @@ interface BatteryOptimizationNativeModule {
 let batteryOptimizationModule: BatteryOptimizationNativeModule | null = null
 
 if (Platform.OS === "android") {
-  try {
-    batteryOptimizationModule = requireNativeModule("BatteryOptimization")
-  } catch {
+  batteryOptimizationModule = NativeModules.BatteryOptimization as BatteryOptimizationNativeModule | null
+  if (!batteryOptimizationModule) {
     logWarn("BatteryOptimization native module not available")
   }
 }

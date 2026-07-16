@@ -14,12 +14,16 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ExpoReactHostFactory
 
+import com.startune.music.modules.StartuneMusicModulesPackage
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactHost: ReactHost by lazy {
+    val packages = PackageList(this).packages.toMutableList()
+    packages.add(StartuneMusicModulesPackage())
     ExpoReactHostFactory.getDefaultReactHost(
       context = applicationContext,
-      packageList = PackageList(this).packages
+      packageList = packages
     )
   }
 

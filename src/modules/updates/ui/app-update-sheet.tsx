@@ -19,7 +19,7 @@ import { useTranslation } from "react-i18next"
 import { ReleaseNotesMarkdown } from "@/modules/updates/ui/release-notes-markdown"
 import { setAppUpdateConfig } from "@/modules/settings/app-updates"
 import { closeAppUpdatePrompt, useAppUpdatePromptStore } from "@/modules/updates/app-update-store"
-import { downloadAndInstall } from "@/modules/app-updater"
+import { downloadAndInstall } from "@/modules/device/app-updater"
 
 export function AppUpdateSheet() {
   const { t } = useTranslation()

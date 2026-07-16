@@ -1,4 +1,4 @@
-package com.startune.music.appupdater
+package com.startune.music.modules.appupdater
 
 import android.app.DownloadManager
 import android.app.NotificationChannel
@@ -15,8 +15,9 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
 
 private const val NOTIFICATION_CHANNEL = "app_update_download"
 private const val NOTIFICATION_ID = 1001
@@ -30,7 +31,9 @@ class InstallBroadcastReceiver : BroadcastReceiver() {
   }
 }
 
-class AppUpdaterModule : Module() {
+class AppUpdaterModule(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
+
   companion object {
     private const val TAG = "AppUpdater"
     private var handler: Handler? = null
@@ -54,26 +57,15 @@ class AppUpdaterModule : Module() {
     }
   }
 
-  override fun definition() = ModuleDefinition {
-    Name("AppUpdater")
+  override fun getName(): String = "AppUpdater"
 
-    AsyncFunction("downloadAndInstall") { url: String ->
-      startDownload(url)
-    }
-  }
-
-  private fun startDownload(url: String) {
-    Log.d(TAG, "startDownload called with url: $url")
-    val context = appContext.reactContext
-    if (context == null) {
-      Log.e(TAG, "startDownload failed: reactContext is null")
-      return
-    }
-
+  @ReactMethod
+  fun downloadAndInstall(url: String) {
+    Log.d(TAG, "downloadAndInstall called with url: $url")
+    val context = reactApplicationContext
     createNotificationChannel(context)
 
     val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-
     val request = DownloadManager.Request(Uri.parse(url))
       .setTitle("Startune Music Update")
       .setDescription("Downloading...")
@@ -170,9 +162,7 @@ class AppUpdaterModule : Module() {
               cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
 
             if (status == DownloadManager.STATUS_SUCCESSFUL) {
-              // Show install notification
               showInstallNotification(ctx, downloadId)
-              // Auto-install if app is running
               installApk(ctx, downloadId)
             } else if (status == DownloadManager.STATUS_FAILED) {
               showDownloadFailedNotification(ctx)
