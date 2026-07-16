@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm"
 import { db } from "@/db/client"
 import { albums, artists, genres, trackArtists, trackGenres, tracks } from "@/db/schema"
 import { generateId } from "@/utils/common"
+import { logWarn } from "@/modules/logging/service"
 import { GENRE_COLORS, GENRE_SHAPES, getGenreRainbowColor, getGenreShape, type GenreShape } from "@/modules/genres/constants"
 import type { PreparedAssetForIndex } from "@/modules/indexer/scan/batch"
 import { generateSortName } from "@/modules/indexer/scan/file-identity"
@@ -196,7 +197,10 @@ export async function getOrCreateGenre(
   const { color, shape } = selectGenreVisuals(name, lookupCache?.genreVisuals)
   try {
     await db.insert(genres).values({ id, name, color, shape, createdAt: Date.now() })
-  } catch {
+  } catch (error) {
+    // genre.name is unique; a concurrent insert may have won the race.
+    // fall back to a color/shape-less row only on the unique-constraint conflict.
+    logWarn("Genre insert conflict, retrying without visual metadata", { name, error })
     await db.insert(genres).values({ id, name, createdAt: Date.now() })
   }
 

@@ -1,19 +1,26 @@
 import { db } from "@/db/client"
 import {
-  genres,
   trackArtists,
   trackGenres,
   tracks as tracksTable,
 } from "@/db/schema"
-import { and, eq, inArray, or, sql, type SQL } from "drizzle-orm"
+import { and, eq, inArray, or, type SQL } from "drizzle-orm"
 import { extractMetadata, saveArtworkToCache } from "@/modules/indexer/metadata/metadata"
 import { logWarn } from "@/modules/logging/service"
 import { ensureSplitMultipleValueConfigLoaded } from "@/modules/settings/split-multiple-values"
-import { generateId } from "@/utils/common"
 import { transformDBTrackToTrack } from "@/utils/transformers"
 import { getTracksState } from "@/modules/player/store"
 import { EXTERNAL_TRACK_ID_PREFIX, type Track } from "@/modules/player/types"
-import { getOrCreateArtist, getOrCreateAlbum } from "@/modules/indexer/scan/upsert"
+import {
+  getOrCreateArtist,
+  getOrCreateAlbum,
+  getOrCreateGenre,
+} from "@/modules/indexer/scan/upsert"
+import {
+  updateArtistCounts,
+  updateAlbumCounts,
+  updateGenreCounts,
+} from "@/modules/indexer/scan/maintenance"
 import {
   extractExternalUriTrackIds,
   getExternalFilename,
@@ -22,58 +29,10 @@ import {
   normalizeUriForComparison,
 } from "@/modules/player/external-track-utils"
 
-async function getOrCreateExternalGenre(name: string) {
-  const existing = await db.query.genres.findFirst({
-    where: eq(genres.name, name),
-  })
-
-  if (existing) {
-    return existing.id
-  }
-
-  const id = generateId()
-  await db.insert(genres).values({
-    id,
-    name,
-    createdAt: Date.now(),
-  })
-
-  return id
-}
-
 async function updateExternalLibraryCounts() {
-  await db.run(sql`
-    UPDATE artists
-    SET track_count = (
-      SELECT COUNT(DISTINCT t.id)
-      FROM tracks t
-      LEFT JOIN track_artists ta ON ta.track_id = t.id
-      WHERE t.is_deleted = 0
-        AND (t.artist_id = artists.id OR ta.artist_id = artists.id)
-    )
-  `)
-  await db.run(sql`
-    UPDATE albums
-    SET track_count = (
-      SELECT COUNT(*)
-      FROM tracks t
-      WHERE t.album_id = albums.id AND t.is_deleted = 0
-    ),
-    duration = (
-      SELECT COALESCE(SUM(t.duration), 0)
-      FROM tracks t
-      WHERE t.album_id = albums.id AND t.is_deleted = 0
-    )
-  `)
-  await db.run(sql`
-    UPDATE genres
-    SET track_count = (
-      SELECT COUNT(*)
-      FROM track_genres tg
-      JOIN tracks t ON tg.track_id = t.id
-      WHERE tg.genre_id = genres.id AND t.is_deleted = 0
-    )
-  `)
+  await updateArtistCounts()
+  await updateAlbumCounts()
+  await updateGenreCounts()
 }
 
 async function extractExternalFileMetadata(uri: string, resolvedUri: string) {
@@ -228,7 +187,7 @@ export async function indexExternalFileTrack(uri: string, resolvedUri: string) {
       ? await getOrCreateAlbum(metadata.album, albumArtistId, artworkPath, metadata.year)
       : null
   const genreNames = metadata.genres.length > 0 ? metadata.genres : ["Unknown"]
-  const genreIds = await Promise.all(genreNames.map((genre) => getOrCreateExternalGenre(genre)))
+  const genreIds = await Promise.all(genreNames.map((genre) => getOrCreateGenre(genre)))
   const now = Date.now()
 
   await db
