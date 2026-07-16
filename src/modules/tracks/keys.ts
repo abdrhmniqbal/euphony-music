@@ -1,5 +1,4 @@
 import type { QueryClient } from "@tanstack/react-query"
-import { invalidateQueryKeys } from "@/lib/query-invalidation"
 
 export const TRACKS_KEY = "tracks"
 
@@ -20,5 +19,5 @@ export async function invalidateTrackQueries(
     keys.push(trackKeys.detail(options.trackId))
   }
 
-  await invalidateQueryKeys(queryClient, keys)
+  await Promise.all(keys.map((queryKey) => queryClient.invalidateQueries({ queryKey })))
 }

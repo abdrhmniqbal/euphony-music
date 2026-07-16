@@ -7,7 +7,6 @@
  */
 
 import type { QueryClient } from "@tanstack/react-query"
-import { invalidateQueryKeys } from "@/lib/query-invalidation"
 
 export const ARTISTS_KEY = "artists"
 export const ALBUMS_KEY = "albums"
@@ -30,5 +29,9 @@ export const libraryKeys = {
 }
 
 export async function invalidateLibraryQueries(queryClient: QueryClient) {
-  await invalidateQueryKeys(queryClient, [[ARTISTS_KEY], [ALBUMS_KEY], [SEARCH_KEY]])
+  await Promise.all(
+    [[ARTISTS_KEY], [ALBUMS_KEY], [SEARCH_KEY]].map((queryKey) =>
+      queryClient.invalidateQueries({ queryKey })
+    )
+  )
 }
