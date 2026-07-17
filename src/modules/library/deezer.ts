@@ -2,7 +2,7 @@ import { AsyncRateLimiter } from "@tanstack/pacer/async-rate-limiter"
 import { and, gt, isNull, lt, or, sql } from "drizzle-orm"
 import { db } from "@/db/client"
 import { artists } from "@/db/schema"
-import { logError } from "@modules/logging/service"
+import { logError } from "@/modules/logging/service"
 import { saveArtworkToCache } from "@/modules/indexer/metadata/metadata"
 import { selectArtistCandidate } from "@/modules/library/deezer-artist-match"
 

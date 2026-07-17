@@ -5,7 +5,7 @@ export function normalizeArtistName(value: string): string {
     .trim()
 }
 
-export type DeezerCandidate = { id: number; name: string; nb_fan?: number }
+export type DeezerCandidate = { id: number; name: string; picture_xl?: string; nb_fan?: number }
 
 export function selectArtistCandidate(
   candidates: DeezerCandidate[],

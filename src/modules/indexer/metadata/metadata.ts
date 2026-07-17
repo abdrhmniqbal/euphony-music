@@ -515,6 +515,7 @@ export async function extractMetadata(
   const rawArtist = metadata?.artist?.trim()
   const rawAlbumArtist = metadata?.albumArtist?.trim()
   const rawGenre = metadata?.genre?.trim()
+  const title = metadata?.title?.trim() || cleanFilename(filename)
 
   const splitArtists = rawArtist ? splitArtistsValue(rawArtist, splitConfig, title) : []
   const artist =
@@ -524,7 +525,6 @@ export async function extractMetadata(
   const artists = splitConfig.artistSplitMode === "split" ? splitArtists : artist ? [artist] : []
   const genres = rawGenre ? splitGenresValue(rawGenre, splitConfig) : []
 
-  const title = metadata?.title?.trim() || cleanFilename(filename)
   const album = metadata?.albumTitle?.trim() || undefined
   const composer = metadata?.composer?.trim() || undefined
   const comment = metadata?.description?.trim() || undefined
