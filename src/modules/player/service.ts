@@ -28,6 +28,7 @@ import { resolvePlayableFileUri } from "@/utils/file-path"
 import { updateNowPlaying } from "react-native-audio-browser"
 import { getExternalTrackTitle, normalizeExternalIntentUri } from "./external-track-utils"
 import { getIsShuffledState, getTracksState, setTracksState } from "./store"
+import { isAlreadyInitializedError } from "@/modules/player/setup-error"
 
 let isPlayerReady = false
 let setupPlayerPromise: Promise<void> | null = null
@@ -64,7 +65,7 @@ export async function setupPlayer() {
       isPlayerReady = true
       logInfo("Playback core setup completed")
     } catch (error: unknown) {
-      if (error instanceof Error && error.message.includes("already been initialized")) {
+      if (isAlreadyInitializedError(error)) {
         isPlayerReady = true
         logInfo("AudioBrowser playback core already initialized")
         return

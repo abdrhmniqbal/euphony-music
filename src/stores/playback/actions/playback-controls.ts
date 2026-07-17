@@ -1,7 +1,7 @@
 import AudioBrowser from "react-native-audio-browser"
 
 import { RepeatModes } from "../constants"
-import { extractTrackId } from "../utils"
+import { extractTrackId } from "../pure-utils"
 import { playbackStore, flushPlaybackStoreSnapshot, setPlaybackLastPosition } from "../store"
 
 import { isAudioBrowserSetUp } from "@/lib/react-native-audio-browser"

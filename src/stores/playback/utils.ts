@@ -8,6 +8,7 @@
 
 import { logWarn } from "@/modules/logging/service"
 import type { PlayFromSource } from "./types"
+import { extractTrackId, arePlaybackSourceEqual } from "./pure-utils"
 
 import {
   getAlbumDetails,
@@ -22,19 +23,6 @@ import { getSortedTracks } from "@/modules/tracks/repository"
 import { FavoritesPlaylistKey, ReservedNames, ReservedPlaylists } from "@/modules/media/constants"
 import { i18n } from "@/modules/localization/i18n"
 import { shuffleArray } from "@/utils/object"
-
-export function arePlaybackSourceEqual(
-  source1: PlayFromSource | undefined,
-  source2: PlayFromSource
-) {
-  if (!source1) return false
-  const keys = Object.keys(source1) as Array<keyof PlayFromSource>
-  return keys.every((key) => source1[key] === source2[key])
-}
-
-export function extractTrackId(key: string) {
-  return key.split("__")[0]!
-}
 
 export async function getSourceName({ type, id }: PlayFromSource) {
   let name = ""

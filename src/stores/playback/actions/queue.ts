@@ -6,13 +6,15 @@ import type { Track } from "@/modules/tracks/types"
 import { i18n } from "@/modules/localization/i18n"
 import { preferenceStore } from "@/stores/preference/store"
 import { playbackStore } from "../store"
-import { extractTrackId } from "../utils"
+import { extractTrackId } from "../pure-utils"
 
 import { clamp } from "@/utils/number"
 import { moveArray } from "@/utils/object"
 import { bgWait } from "@/utils/promise"
 import { isString } from "@/utils/validation"
 import { applyReplayGainToTrack } from "@/modules/audio/replay-gain/core/apply"
+
+import { calculateMoveTrackState, calculateRemoveIdsState, calculateInsertIntoQueueState } from "./queue-state"
 
 interface QueueInsertionProps {
   id: string | string[]
@@ -38,49 +40,18 @@ export function addToEnd({ id, name }: QueueInsertionProps) {
 
 export function moveTrack(fromIndex: number, toIndex: number) {
   const { queue, queuePosition, numQueuedNext } = playbackStore.getState()
-
-  const clampedToIndex = clamp(0, toIndex, queue.length - 1)
-
-  let newQueuePosition = queuePosition
-  if (fromIndex === queuePosition) newQueuePosition = clampedToIndex
-  else if (fromIndex < queuePosition && clampedToIndex >= queuePosition) {
-    newQueuePosition -= 1
-  } else if (fromIndex > queuePosition && clampedToIndex <= queuePosition) {
-    newQueuePosition += 1
-  }
-
-  let newNumQueuedNext = numQueuedNext
-  const playNextStart = queuePosition + 1
-  const playNextEnd = queuePosition + numQueuedNext
-  if (isWithin(playNextStart, fromIndex, playNextEnd)) {
-    if (!isWithin(playNextStart, clampedToIndex, playNextEnd)) newNumQueuedNext -= 1
-  } else {
-    if (isWithin(playNextStart, clampedToIndex, playNextEnd)) newNumQueuedNext = 0
-  }
-
-  playbackStore.setState({
-    queue: moveArray(queue, { fromIndex, toIndex: clampedToIndex }),
-    queuePosition: newQueuePosition,
-    numQueuedNext: Math.max(0, newNumQueuedNext),
-  })
+  const nextState = calculateMoveTrackState(queue, queuePosition, numQueuedNext, fromIndex, toIndex)
+  playbackStore.setState(nextState)
 }
 
 export async function removeIds(ids: string[]) {
-  const idSet = new Set(ids.map(extractTrackId))
   const { reset, getTrack, orderSnapshot, queue, activeTrack, queuePosition } =
     playbackStore.getState()
 
   if (!activeTrack) return
 
-  let newQueuePosition = queuePosition
-  const activeTrackRemoved = idSet.has(activeTrack.id)
-
-  const updatedSnapshot = orderSnapshot.filter((tId) => !idSet.has(tId))
-  const updatedQueue = queue.filter((tKey, index) => {
-    const isRemoved = idSet.has(extractTrackId(tKey))
-    if (isRemoved && index < queuePosition) newQueuePosition -= 1
-    return !isRemoved
-  })
+  const { activeTrackRemoved, orderSnapshot: updatedSnapshot, queue: updatedQueue, queuePosition: newQueuePosition } =
+    calculateRemoveIdsState(orderSnapshot, queue, queuePosition, activeTrack.id, ids)
 
   if (queue.length === updatedQueue.length) return
   if (updatedQueue.length === 0) return reset()
@@ -118,19 +89,21 @@ function insertIntoQueue({
   afterQueuedNext = false,
   after,
 }: QueueInsertionProps & { after: number }) {
-  const { queue, numQueuedNext } = playbackStore.getState()
+  const { queue, queuePosition, numQueuedNext } = playbackStore.getState()
   showAppToast(i18n.t("common.feedback.addedToQueue", { name }))
 
   if (queue.length === 0) return
   const uniqueId = createId()
-  playbackStore.setState({
-    queue: queue.toSpliced(
-      afterQueuedNext ? after + numQueuedNext : after,
-      0,
-      ...(isString(id) ? [id] : id).map((i) => `${i}__${uniqueId}`)
-    ),
-    numQueuedNext: !afterQueuedNext ? 0 : numQueuedNext + (isString(id) ? 1 : id.length),
-  })
+  const nextState = calculateInsertIntoQueueState(
+    queue,
+    queuePosition,
+    numQueuedNext,
+    id,
+    afterQueuedNext,
+    after,
+    uniqueId
+  )
+  playbackStore.setState(nextState)
 }
 
 export function clearToCurrent() {

@@ -13,7 +13,7 @@ import { resetWidgets } from "@/modules/widget/utils"
 import { logWarn } from "@/modules/logging/service"
 import type { PlaybackStore } from "./constants"
 import { PersistedFields, RepeatModes } from "./constants"
-import { extractTrackId } from "./utils"
+import { extractTrackId } from "./pure-utils"
 
 export const playbackStore = createPersistedStore<PlaybackStore>(
   (set, get) => ({
