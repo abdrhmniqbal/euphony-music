@@ -3,7 +3,7 @@
  * Caller: Route screens validating local search params.
  * Dependencies: Logging service.
  * Main Functions: scheduleRouteWarning()
- * Side Effects: Emits warning logs once per warning key.
+ * Side Effects: Emits warning logs.
  */
 
 import { logWarn } from "@/modules/logging/service"
@@ -15,39 +15,8 @@ interface RouteWarningOptions {
   enabled: boolean
 }
 
-const seenWarningKeys = new Set<string>()
-const pendingWarnings: RouteWarningOptions[] = []
-let isFlushScheduled = false
-
-function runAfterRender(task: () => void) {
-  queueMicrotask(task)
-}
-
-function flushWarnings() {
-  isFlushScheduled = false
-
-  while (pendingWarnings.length > 0) {
-    const warning = pendingWarnings.shift()
-    if (!warning) {
-      continue
-    }
-
-    logWarn(warning.message, warning.metadata)
+export function scheduleRouteWarning({ message, metadata, enabled }: RouteWarningOptions) {
+  if (enabled) {
+    logWarn(message, metadata)
   }
-}
-
-export function scheduleRouteWarning({ key, message, metadata, enabled }: RouteWarningOptions) {
-  if (!enabled || seenWarningKeys.has(key)) {
-    return
-  }
-
-  seenWarningKeys.add(key)
-  pendingWarnings.push({ key, message, metadata, enabled })
-
-  if (isFlushScheduled) {
-    return
-  }
-
-  isFlushScheduled = true
-  runAfterRender(flushWarnings)
 }
