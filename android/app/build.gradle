@@ -17,6 +17,22 @@ def releaseArchitectures = ((findProperty('reactNativeArchitectures') ?: 'armeab
     .findAll { it }
 def enableAbiSplits = (findProperty('android.enableAbiSplits') ?: 'false').toBoolean()
 
+// Derive the Android version from package.json so it never drifts from the
+// JS/bundle version (app.config.ts also reads package.json). Works for both
+// tag-triggered release builds and untagged dev builds without a CI rewrite step.
+def pkgVersion = new groovy.json.JsonSlurper()
+    .parse(new File(projectRoot, 'package.json'))
+    .version as String
+def versionName = pkgVersion
+def (major, minor, patch, rc) = pkgVersion
+    .tokenize('-')[0]
+    .tokenize('.')
+    .collect { it.toInteger() } + [0, 0, 0]
+def rcSuffix = pkgVersion.contains('-rc.')
+    ? pkgVersion.tokenize('-rc.')[1].toInteger()
+    : 99
+def versionCode = major * 1000000 + minor * 10000 + patch * 100 + Math.min(rcSuffix, 99)
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -104,8 +120,8 @@ android {
         applicationId 'com.startune.music'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
+        versionCode versionCode
+        versionName versionName
         // Keep only English resources to reduce APK size.
         resConfigs "en"
 

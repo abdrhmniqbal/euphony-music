@@ -117,27 +117,14 @@ jobs:
           const fs = require('node:fs')
 
           const versionName = process.env.APP_VERSION_NAME
-          const versionCode = process.env.APP_VERSION_CODE
 
-          // Update package.json version (app.config.ts reads from here)
+          // Update package.json version (app.config.ts reads from here).
+          // android/app/build.gradle derives versionCode/versionName from
+          // package.json directly, so no native field rewrite is needed.
           const pkgPath = 'package.json'
           const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
           pkg.version = versionName
           fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)
-
-          // Update native Android version fields
-          const gradlePath = 'android/app/build.gradle'
-          const originalGradle = fs.readFileSync(gradlePath, 'utf8')
-          let nextGradle = originalGradle
-            .replace(/versionCode\s+\d+/, `versionCode ${versionCode}`)
-            .replace(/versionName\s+"[^"]*"/, `versionName "${versionName}"`)
-
-          if (nextGradle === originalGradle) {
-            console.error('Failed to update versionCode/versionName in android/app/build.gradle')
-            process.exit(1)
-          }
-
-          fs.writeFileSync(gradlePath, nextGradle)
           NODE
 
       - name: Show resolved versions
