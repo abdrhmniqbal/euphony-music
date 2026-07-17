@@ -1,6 +1,6 @@
 /**
- * CQRS Read-Model Projector: Synchronizes the Drizzle KV `playbackStore` (source of truth)
- * into `usePlayerStore` (legacy UI read-model) to keep synchronous full-object getter helpers working.
+ * Projects the Drizzle KV `playbackStore` (source of truth) into `usePlayerStore`
+ * (legacy UI read-model) so synchronous full-object getter helpers keep working.
  */
 import { toPlayerTrack } from "@/modules/player/track-projection"
 import { updateColorsForImage } from "@/modules/player/colors"
@@ -12,51 +12,41 @@ import { maybeGetTrack } from "@/modules/tracks/repository"
 import type { SplitMultipleValueConfig } from "@/modules/settings/types"
 import type { Track as PlayerTrack } from "@/modules/player/types"
 
-let lastActiveKey = ""
-let lastQueueSig = ""
-let lastMetaSig = ""
+// Re-resolving the queue reads every track from the DB. Only do it when the queue
+// itself changes, not on every playback tick (e.g. position updates).
+let lastQueue: readonly string[] = []
 
-function project(force = false) {
+function project() {
   const state = playbackStore.getState()
   const splitConfig = getSettingsState().splitMultipleValueConfig
 
-  const activeKey = state.activeKey ?? ""
-  if (force || activeKey !== lastActiveKey) {
-    lastActiveKey = activeKey
-    usePlayerStore.setState({ currentTrack: toPlayerTrack(state.activeTrack, splitConfig) })
-    void updateColorsForImage(state.activeTrack?.artwork ?? undefined)
-  }
+  usePlayerStore.setState({
+    currentTrack: toPlayerTrack(state.activeTrack, splitConfig),
+    isPlaying: state.isPlaying,
+    repeatMode:
+      state.repeat === "no-repeat" ? "off" : state.repeat === "repeat" ? "queue" : "track",
+    isShuffled: state.shuffle,
+    queueTrackIds: state.queue.map(extractTrackId),
+    originalQueueTrackIds: state.orderSnapshot.map(extractTrackId),
+    queueContext: state.queueContext,
+  })
 
-  const metaSig = `${state.isPlaying}|${state.repeat}|${state.shuffle}`
-  if (force || metaSig !== lastMetaSig) {
-    lastMetaSig = metaSig
-    usePlayerStore.setState({
-      isPlaying: state.isPlaying,
-      repeatMode:
-        state.repeat === "no-repeat" ? "off" : state.repeat === "repeat" ? "queue" : "track",
-      isShuffled: state.shuffle,
-      queueTrackIds: state.queue.map(extractTrackId),
-      originalQueueTrackIds: state.orderSnapshot.map(extractTrackId),
-      queueContext: state.queueContext,
-    })
-  }
+  void updateColorsForImage(state.activeTrack?.artwork ?? undefined)
 
-  const queueSig = state.queue.join("\u0000")
-  if (force || queueSig !== lastQueueSig) {
-    lastQueueSig = queueSig
+  if (state.queue !== lastQueue) {
+    lastQueue = state.queue
     void resolveQueueTracks(state.queue, splitConfig)
   }
 }
 
 async function resolveQueueTracks(
   queueKeys: string[],
-  splitConfig: SplitMultipleValueConfig | undefined
+  splitConfig: SplitMultipleValueConfig
 ): Promise<void> {
-  const safeSplitConfig = splitConfig ?? getSettingsState().splitMultipleValueConfig
   const tracks = await Promise.all(
     queueKeys.map(async (key) => {
       const track = await maybeGetTrack(extractTrackId(key))
-      return toPlayerTrack(track, safeSplitConfig)
+      return toPlayerTrack(track, splitConfig)
     })
   )
   usePlayerStore.setState({ tracks: tracks.filter((t): t is PlayerTrack => t !== null) })
@@ -65,12 +55,11 @@ async function resolveQueueTracks(
 let isSubscribed = false
 
 export function subscribePlaybackStoreToPlayerStore() {
-  if (isSubscribed) return
+  if (isSubscribed) {
+    return
+  }
   isSubscribed = true
 
-  project(true)
-
-  playbackStore.subscribe(() => {
-    project()
-  })
+  project()
+  playbackStore.subscribe(project)
 }
