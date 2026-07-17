@@ -101,7 +101,6 @@ export const QueueItem: React.FC<QueueItemProps> = ({
 
 const MemoizedQueueItem = React.memo(QueueItem)
 
-const ITEM_HEIGHT = 64
 const ITEM_GAP = 6
 
 export const QueueView: React.FC = () => {
@@ -173,11 +172,6 @@ export const QueueView: React.FC = () => {
           initialScrollIndex={currentIndex >= 0 ? currentIndex : undefined}
           onReorder={handleReorder}
           renderItem={renderItem}
-          getItemLayout={(_, index) => ({
-            length: ITEM_HEIGHT,
-            offset: (ITEM_HEIGHT + ITEM_GAP) * index,
-            index,
-          })}
           style={{ flex: 1, minHeight: 1 }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: ITEM_GAP, paddingBottom: 20 }}
