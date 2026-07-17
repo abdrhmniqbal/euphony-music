@@ -33,8 +33,12 @@ export async function playFromTracks(options: {
   const listInfo = getUpdatedLists(trackIds, options.shuffle, options.track.id)
   const activeKey = listInfo.queue[listInfo.queuePosition]
 
+  if (!activeKey) {
+    return false
+  }
+
   let activeTrack: DataTrack | undefined
-  if (options.track.isExternal && options.track.id === extractTrackId(activeKey!)) {
+  if (options.track.isExternal && options.track.id === extractTrackId(activeKey)) {
     activeTrack = {
       id: options.track.id,
       name: options.track.title,
@@ -51,7 +55,7 @@ export async function playFromTracks(options: {
       parentFolder: null,
     }
   } else {
-    activeTrack = await playbackStore.getState().getTrack(activeKey!)
+    activeTrack = await playbackStore.getState().getTrack(activeKey)
   }
 
   if (!activeTrack) return false
