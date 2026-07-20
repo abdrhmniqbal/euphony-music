@@ -19,7 +19,11 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
   (set, get) => ({
     _hasHydrated: false,
     _init: async ({ activeKey }) => {
-      const activeTrack = activeKey ? await get().getTrack(activeKey) : undefined
+      // Preserve a hydrated activeTrack; only re-resolve when missing. Re-resolution
+      // can fail transiently at startup (DB not ready), so never clobber a good
+      // restored track with undefined — that wipes the miniplayer on every launch.
+      const hydratedActiveTrack = get().activeTrack
+      const activeTrack = hydratedActiveTrack ?? (activeKey ? await get().getTrack(activeKey) : undefined)
       set({ _hasHydrated: true, activeTrack })
     },
 
@@ -42,11 +46,11 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
     },
     restoreActiveTrack: async () => {
       const { activeTrack, activeKey, getTrack: resolveTrack } = get()
-      if (!activeTrack && activeKey) {
-        const resolved = await resolveTrack(activeKey)
-        if (resolved) {
-          set({ activeTrack: resolved })
-        }
+      if (activeTrack) return
+      if (!activeKey) return
+      const resolved = await resolveTrack(activeKey)
+      if (resolved) {
+        set({ activeTrack: resolved })
       }
     },
     reset: async () => {

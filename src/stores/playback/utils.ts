@@ -10,6 +10,8 @@ import { logWarn } from "@/modules/logging/service"
 import type { PlayFromSource } from "./types"
 import { extractTrackId, arePlaybackSourceEqual } from "./pure-utils"
 
+export { arePlaybackSourceEqual, extractTrackId }
+
 import {
   getAlbumDetails,
   getAlbumTracks,
