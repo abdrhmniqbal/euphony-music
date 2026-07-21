@@ -2,6 +2,26 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.0.4] - 2026-07-21
+
+### ⚙️ Changed
+
+- Replaced `react-native-audio-browser` with custom pure modules and explicitly pin Node 24 for APK releases. (@abdrhmniqbal)
+- Consolidated navigation, logging, and localization wrappers. (@abdrhmniqbal)
+- Player projector now syncs based on meaningful state updates rather than playback ticks to prevent UI stutters. (@abdrhmniqbal)
+- Moved Deezer artist queries entirely to the client side, dropping Last.fm integration for bios. (@abdrhmniqbal)
+- Cleaned up build scripts: migrated to Bun, removed dead metadata retrievers, and pinned trusted deps. (@abdrhmniqbal)
+
+### 🧩 Fixed
+
+- Playlist active track hydration no longer gets wiped on restore. (@abdrhmniqbal)
+- Queue list fast-scroll crash fixed by dropping mismatched `getItemLayout`. (@abdrhmniqbal)
+- Player no longer forces full re-render of queue items on every tick. (@abdrhmniqbal)
+- TrackInfo anchors to bottom reliably in compact, lyrics, and queue views. (@abdrhmniqbal)
+- Last.fm scrobbler now sends only the primary artist name. (@abdrhmniqbal)
+- Notification handlers execute at the right time, decoupled from render bodies. (@abdrhmniqbal)
+- Deezer search prefers exact artist matches before falling back to normalized ones. (@abdrhmniqbal)
+
 ## [v1.0.3] - 2026-07-09
 
 ### ✨ Added
