@@ -6,7 +6,7 @@
  * Side Effects: None beyond rendering navigation state.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { useTranslation } from "react-i18next"
 
 import LocalSettings01Icon from "@/modules/shared/components/icons/local/settings-01"
@@ -17,7 +17,7 @@ import {
   getDefaultNativeStackOptions,
   getDrillDownScreenOptions,
   getMainRootScreenOptions,
-} from "@/modules/navigation/stack"
+} from "@/modules/navigation"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export default function HomeLayout() {

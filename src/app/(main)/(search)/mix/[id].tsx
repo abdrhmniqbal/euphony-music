@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { useMemo, useState, useCallback } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"

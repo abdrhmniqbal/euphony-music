@@ -8,7 +8,7 @@
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router/react-navigation"
 import { useSegments } from "expo-router"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import * as SplashScreen from "expo-splash-screen"
 import { HeroUINativeProvider } from "heroui-native"
 import { type ReactNode, useEffect, useRef } from "react"
@@ -28,7 +28,7 @@ import {
   handleBootstrapDatabaseReady,
 } from "@/modules/bootstrap/runtime"
 import { checkStartupAppUpdate } from "@/modules/updates/app-update-runtime"
-import { ROOT_MODAL_SCREEN_OPTIONS, getHiddenPlayerScreenOptions } from "@/modules/navigation/stack"
+import { ROOT_MODAL_SCREEN_OPTIONS, getHiddenPlayerScreenOptions } from "@/modules/navigation"
 import {
   ensureNotificationRuntimeStarted,
   markRouterReady,

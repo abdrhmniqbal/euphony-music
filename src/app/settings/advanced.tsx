@@ -7,7 +7,7 @@
  */
 
 import * as Application from "expo-application"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { Button, Dialog, ListGroup } from "heroui-native"
 import { useState } from "react"
 import { Linking, Platform, View, Text } from "react-native"

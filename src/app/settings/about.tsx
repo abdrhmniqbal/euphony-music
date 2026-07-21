@@ -8,7 +8,7 @@
 
 import * as Application from "expo-application"
 import { Image } from "expo-image"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { Linking, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"

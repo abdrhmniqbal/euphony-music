@@ -6,7 +6,7 @@
  * Side Effects: Starts indexing on refresh, updates scroll state, and starts playback from full section queues.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import * as React from "react"
 
 import { ScrollView, View } from "react-native"

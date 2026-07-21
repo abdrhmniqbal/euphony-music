@@ -8,7 +8,7 @@
 
 import { useMemo, useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import type { FavoriteType } from "@/modules/favorites/types"
 import type { GenreCategory } from "@/modules/genres/types"
 import type { SortField } from "@/modules/library/sort-types"

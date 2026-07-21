@@ -7,7 +7,7 @@
  */
 
 import { useLocalSearchParams } from "expo-router"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { BottomSheet, Button } from "heroui-native"
 import * as React from "react"
 

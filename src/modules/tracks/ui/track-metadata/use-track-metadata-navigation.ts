@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import type { ValueNavigationSheetItem } from "@/modules/library/ui/value-navigation-sheet"
 import { resolveAlbumTransitionId } from "@/modules/artists/artist-transition"
 import { buildArtistSelectionItems, dedupeValues, type FullTrackData } from "./metadata-derivation"

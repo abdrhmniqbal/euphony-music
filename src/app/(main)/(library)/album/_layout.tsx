@@ -1,6 +1,6 @@
 import { BackButton } from "@/modules/shared/components/patterns/back-button"
 import { Stack } from "@/modules/shared/layouts/stack"
-import { getMediaDetailTransitionOptions } from "@/modules/navigation/stack"
+import { getMediaDetailTransitionOptions } from "@/modules/navigation"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export default function AlbumLayout() {

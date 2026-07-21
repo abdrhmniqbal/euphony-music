@@ -6,7 +6,7 @@
  * Side Effects: Navigates back, closes settings, or replaces with root route.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { PressableFeedback } from "heroui-native"
 import { useTranslation } from "react-i18next"
 
@@ -17,7 +17,7 @@ import {
   getCenteredRootScreenOptions,
   getDefaultNativeStackOptions,
   getDrillDownScreenOptions,
-} from "@/modules/navigation/stack"
+} from "@/modules/navigation"
 import { SETTINGS_SCREEN_TITLE_KEYS } from "@/modules/settings/routes"
 import { useThemeColors } from "@/modules/ui/theme"
 

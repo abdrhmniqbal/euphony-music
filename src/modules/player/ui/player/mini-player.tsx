@@ -1,5 +1,5 @@
 import { Image } from "expo-image"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"

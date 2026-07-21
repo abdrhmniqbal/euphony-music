@@ -14,8 +14,8 @@ import {
   splitArtistsValue,
 } from "@/modules/settings/split-multiple-values"
 import { useSettingsStore } from "@/modules/settings/store"
-import { getSafeRouteName } from "@/modules/navigation/route-params"
-import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
+import { getSafeRouteName } from "@/modules/navigation"
+import { scheduleRouteWarning } from "@/modules/navigation"
 
 export function trackMatchesArtistName(
   track: Track,

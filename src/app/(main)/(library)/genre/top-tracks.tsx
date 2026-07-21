@@ -21,10 +21,10 @@ import { screenEnterTransition, screenExitTransition } from "@/modules/shared/co
 import { Stack } from "@/modules/shared/layouts/stack"
 import { startIndexing } from "@/modules/indexer/service"
 import { useIndexerStore } from "@/modules/indexer/progress/store"
-import { scheduleRouteWarning } from "@/modules/navigation/route-warning-runtime"
+import { scheduleRouteWarning } from "@/modules/navigation"
 import { playTrack } from "@/modules/player/service"
 import { useGenreTopTracks } from "@/modules/search/queries"
-import { getSafeRouteName } from "@/modules/navigation/route-params"
+import { getSafeRouteName } from "@/modules/navigation"
 import { useThemeColors } from "@/modules/ui/theme"
 import { useAutoHideHeaderScroll } from "@/modules/ui/use-auto-hide-header-scroll"
 

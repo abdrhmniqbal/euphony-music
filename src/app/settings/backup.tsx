@@ -12,7 +12,7 @@ import {
 } from "@/modules/settings/ui"
 import { useTranslation } from "react-i18next"
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { backupPreferencesToFile, restorePreferencesFromFile } from "@/modules/settings/backup"
 import { setAutoBackupConfig } from "@/modules/settings/auto-backup"
 import { useSettingsStore } from "@/modules/settings/store"

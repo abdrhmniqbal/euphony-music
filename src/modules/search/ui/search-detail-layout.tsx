@@ -4,12 +4,12 @@
  * Used by album/, artist/, and playlist/ _layout.tsx to avoid triplication.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { PressableFeedback } from "heroui-native"
 
 import LocalArrowLeft02Icon from "@/modules/shared/components/icons/local/arrow-left-02"
 import { Stack } from "@/modules/shared/layouts/stack"
-import { getMediaDetailTransitionOptions } from "@/modules/navigation/stack"
+import { getMediaDetailTransitionOptions } from "@/modules/navigation"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export default function SearchDetailLayout() {

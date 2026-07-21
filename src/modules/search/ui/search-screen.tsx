@@ -7,7 +7,7 @@
  */
 
 import { useLocalSearchParams, useNavigation } from "expo-router"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { Input, PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { useRef, useState } from "react"

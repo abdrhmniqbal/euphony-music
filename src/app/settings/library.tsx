@@ -6,7 +6,7 @@
  * Side Effects: Persists library settings, shows a manual reindex dialog, and can trigger a full library reindex.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { Button, Dialog, ListGroup, Slider, Switch } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"

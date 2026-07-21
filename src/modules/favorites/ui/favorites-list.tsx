@@ -8,7 +8,7 @@
 
 import type { FavoriteEntry, FavoriteType } from "@/modules/favorites/types"
 import { LegendList, type LegendListRenderItemProps } from "@legendapp/list/react-native"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { Chip } from "heroui-native"
 import type { TFunction } from "i18next"
 import * as React from "react"

@@ -4,7 +4,7 @@ import { Stack } from "@/modules/shared/layouts/stack"
 import {
   getMediaDetailTransitionOptions,
   getModalTaskTransitionOptions,
-} from "@/modules/navigation/stack"
+} from "@/modules/navigation"
 import { useThemeColors } from "@/modules/ui/theme"
 
 export default function PlaylistLayout() {

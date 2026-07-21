@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next"
 import { Uniwind } from "uniwind"
 
 import { startIndexing } from "@/modules/indexer/service"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import {
   commitFolderFilterConfig,
   type FolderFilterConfig,

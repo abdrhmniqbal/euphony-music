@@ -7,7 +7,7 @@
  */
 
 import type { Track } from "@/modules/player/types"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { ActionSheet } from "@/modules/shared/components/ui/action-sheet"
 import { useQueries } from "@tanstack/react-query"
 import { useMemo, useState } from "react"

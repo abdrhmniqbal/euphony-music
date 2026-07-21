@@ -6,7 +6,7 @@
  * Side Effects: Persists split settings config and rebuilds split metadata relations.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { BottomSheet, Button, Chip, ListGroup, Separator, TagGroup } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"

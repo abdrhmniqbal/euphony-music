@@ -8,7 +8,7 @@
 
 import * as Linking from "expo-linking"
 import { Redirect, useLocalSearchParams } from "expo-router"
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react"
 
 import {

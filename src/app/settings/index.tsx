@@ -6,7 +6,7 @@
  * Side Effects: Navigates to settings detail routes.
  */
 
-import { useGuardedRouter as useRouter } from "@/modules/navigation/use-guarded-router"
+import { useGuardedRouter as useRouter } from "@/modules/navigation"
 import { Input, PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
