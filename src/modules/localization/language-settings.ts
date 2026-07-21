@@ -2,7 +2,7 @@
  * Purpose: Loads, validates, and persists the selected app language.
  * Caller: Localization provider and language settings route.
  * Dependencies: i18next readiness, settings repository, localization type guards, settings store.
- * Main Functions: ensureLanguageConfigLoaded(), setLanguageCode(), getLanguageOptions().
+ * Main Functions: initLocalization(), setLanguageCode(), getLanguageOptions().
  * Side Effects: Reads/writes language settings JSON and changes the active i18next language.
  */
 
@@ -19,7 +19,7 @@ import {
   loadSettingsConfig,
   saveSettingsConfig,
 } from "@/modules/settings/repository"
-import { getSettingsState, updateSettingsState } from "@/modules/settings/store"
+import { updateSettingsState } from "@/modules/settings/store"
 
 interface LanguageConfig {
   languageCode: LanguageCode
@@ -100,8 +100,7 @@ const LANGUAGE_OPTIONS: LanguageOption[] = [
   },
 ]
 
-let loadPromise: Promise<LanguageCode> | null = null
-let hasLoadedConfig = false
+let initPromise: Promise<void> | null = null
 
 function sanitizeConfig(config: unknown): LanguageConfig {
   const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
@@ -124,36 +123,24 @@ export function getLanguageOptions(): LanguageOption[] {
   return LANGUAGE_OPTIONS
 }
 
-export async function ensureLanguageConfigLoaded(): Promise<LanguageCode> {
-  if (hasLoadedConfig) {
-    return getSettingsState().languageCode
-  }
+export function initLocalization(): Promise<void> {
+  if (initPromise) return initPromise
 
-  if (loadPromise) {
-    return loadPromise
-  }
-
-  loadPromise = (async () => {
-    const config = await loadSettingsConfig(
-      LANGUAGE_SETTINGS_FILE,
-      { languageCode: getDeviceLanguageCode() },
-      sanitizeConfig
-    )
+  initPromise = loadSettingsConfig(
+    LANGUAGE_SETTINGS_FILE,
+    { languageCode: getDeviceLanguageCode() },
+    sanitizeConfig
+  ).then(async (config) => {
     updateSettingsState({ languageCode: config.languageCode })
     await applyLanguage(config.languageCode)
-    hasLoadedConfig = true
-    return config.languageCode
-  })()
+  })
 
-  const result = await loadPromise
-  loadPromise = null
-  return result
+  return initPromise
 }
 
 export async function setLanguageCode(languageCode: LanguageCode): Promise<LanguageCode> {
   const next = isSupportedLanguageCode(languageCode) ? languageCode : DEFAULT_LANGUAGE_CODE
   updateSettingsState({ languageCode: next })
-  hasLoadedConfig = true
   await applyLanguage(next)
   await saveSettingsConfig(LANGUAGE_SETTINGS_FILE, { languageCode: next })
   return next
