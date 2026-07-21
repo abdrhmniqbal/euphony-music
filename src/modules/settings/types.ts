@@ -7,6 +7,7 @@
  */
 
 import type { LanguageCode } from "@/modules/localization/types"
+import type { AppLogLevel, LoggingConfig } from "@/modules/logging/types"
 
 export type SettingsRouteName =
   | "index"
@@ -36,13 +37,7 @@ export interface SettingsRouteDefinition {
   descriptionKey?: string
 }
 
-export type { LanguageCode }
-
-export type AppLogLevel = "minimal" | "extra"
-
-export interface LoggingConfig {
-  level: AppLogLevel
-}
+export type { LanguageCode, AppLogLevel, LoggingConfig }
 
 export interface AppUpdateConfig {
   notificationsEnabled: boolean
