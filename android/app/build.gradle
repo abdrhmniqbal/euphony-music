@@ -23,7 +23,7 @@ def enableAbiSplits = (findProperty('android.enableAbiSplits') ?: 'false').toBoo
 def pkgVersion = new groovy.json.JsonSlurper()
     .parse(new File(projectRoot, 'package.json'))
     .version as String
-def versionName = pkgVersion
+def computedVersionName = pkgVersion
 def (major, minor, patch, rc) = pkgVersion
     .tokenize('-')[0]
     .tokenize('.')
@@ -31,7 +31,7 @@ def (major, minor, patch, rc) = pkgVersion
 def rcSuffix = pkgVersion.contains('-rc.')
     ? pkgVersion.tokenize('-rc.')[1].toInteger()
     : 99
-def versionCode = major * 1000000 + minor * 10000 + patch * 100 + Math.min(rcSuffix, 99)
+def computedVersionCode = major * 1000000 + minor * 10000 + patch * 100 + Math.min(rcSuffix, 99)
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -120,8 +120,8 @@ android {
         applicationId 'com.startune.music'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode versionCode
-        versionName versionName
+        versionCode computedVersionCode
+        versionName computedVersionName
         // Keep only English resources to reduce APK size.
         resConfigs "en"
 
