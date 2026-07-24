@@ -9,7 +9,7 @@ import { useState } from "react"
 
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import Transition from "react-native-screen-transitions"
+
 import Animated from "react-native-reanimated"
 import { CollectionActionSheet } from "@/modules/library/ui/collection-action-sheet"
 import { PlaybackActionsRow } from "@/modules/player/ui/playback-actions-row"
@@ -40,6 +40,7 @@ import { playTrack } from "@/modules/player/service"
 import { useThemeColors } from "@/modules/ui/theme"
 import { usePlaybackActions, resolveSortLabel } from "@/modules/library/ui/detail-helpers"
 import { handleScroll } from "@/modules/ui/store"
+import Transition from "react-native-screen-transitions"
 import { mergeText } from "@/utils/merge-text"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
@@ -81,7 +82,6 @@ export default function AlbumDetailsScreen() {
   const {
     data: albumTracksFromQuery = [],
     isLoading: isAlbumTracksLoading,
-    isFetching: isAlbumTracksFetching,
   } = useTracksByAlbumName(albumName)
   const albumTracks =
     albumTracksFromQuery.length > 0
@@ -111,7 +111,7 @@ export default function AlbumDetailsScreen() {
     title: albumInfo?.title || albumName,
   })
   const { data: isAlbumFavorite = false } = useIsFavorite("album", albumId || "")
-  const isLoading = (isAlbumTracksLoading || isAlbumTracksFetching) && albumTracks.length === 0
+  const isLoading = isAlbumTracksLoading && albumTracks.length === 0
   const totalDurationLabel = formatAlbumDuration(totalDuration)
   const hasMultipleDiscs = new Set(sortedTracks.map((track) => track.discNumber || 1)).size > 1
 

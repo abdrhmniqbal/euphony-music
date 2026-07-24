@@ -89,7 +89,6 @@ export function useArtistDetailData(activeView: ArtistView) {
   const {
     data: artistTracksFromQuery = [],
     isLoading: isArtistTracksLoading,
-    isFetching: isArtistTracksFetching,
   } = useTracksByArtistName(artistName)
   const fallbackArtistTracks = allTracks.filter((track) =>
     trackMatchesArtistName(track, normalizedArtistName, splitMultipleValueConfig)
@@ -97,7 +96,7 @@ export function useArtistDetailData(activeView: ArtistView) {
   const artistTracks = mergeArtistTracks(artistTracksFromQuery, fallbackArtistTracks)
   const { data: artistRecord } = useArtistByName(artistName)
   const artistId = artistRecord?.id
-  const isLoading = (isArtistTracksLoading || isArtistTracksFetching) && artistTracks.length === 0
+  const isLoading = isArtistTracksLoading && artistTracks.length === 0
 
   const albumArtistTracks = artistTracks.filter((track) => {
     const primaryArtist = track.albumArtist || track.artist

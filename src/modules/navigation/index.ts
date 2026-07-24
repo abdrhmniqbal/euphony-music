@@ -1,25 +1,10 @@
 import { useRouter as useExpoRouter } from "expo-router"
-import { useMemo, ReactNode } from "react"
+import { ReactNode } from "react"
 import { Platform, UIManager } from "react-native"
 import Transition from "react-native-screen-transitions"
 
-// --- Guarded Router ---
-let guardExpires = 0
-let guardKey = ""
-
 export function useGuardedRouter() {
-  const router = useExpoRouter()
-  return useMemo(() => {
-    const make = (method: "push" | "replace") => (href: any, ...args: any[]) => {
-      const key = method + JSON.stringify(href)
-      const now = Date.now()
-      if (guardKey === key && guardExpires > now) return
-      guardKey = key
-      guardExpires = now + 900
-      ;(router[method] as any)(href, ...args)
-    }
-    return { ...router, push: make("push"), replace: make("replace") }
-  }, [router])
+  return useExpoRouter()
 }
 
 // --- Route Params ---
