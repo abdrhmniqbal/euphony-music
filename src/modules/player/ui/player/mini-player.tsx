@@ -4,7 +4,7 @@ import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
-import Animated, { SlideInDown, SlideOutDown } from "react-native-reanimated"
+import Animated, { useAnimatedStyle, withTiming, useDerivedValue } from "react-native-reanimated"
 import Transition from "react-native-screen-transitions"
 
 import LocalNextSolidIcon from "@/modules/shared/components/icons/local/next-solid"
@@ -16,6 +16,7 @@ import { useCurrentTrack, useIsPlaying, usePlaybackProgressState } from "@/modul
 import { resolvePlayerTransitionId } from "@/modules/player/transition"
 import { useThemeColors } from "@/modules/ui/theme"
 import { setPlayerExpandedView } from "@/modules/ui/store"
+import type { Track } from "@/modules/player/types"
 
 import { useSettingsStore } from "@/modules/settings/store"
 import {
@@ -57,9 +58,9 @@ interface MiniPlayerMetaProps {
   artist?: string | null
 }
 
-function MiniPlayerMeta({ title, artist }: MiniPlayerMetaProps) {
+function MiniPlayerMeta({ title, artist, track }: MiniPlayerMetaProps & { track?: Track | null }) {
   const { t } = useTranslation()
-  const currentTrack = useCurrentTrack()
+  const currentTrack = track
   const splitMultipleValueConfig = useSettingsStore((state) => state.splitMultipleValueConfig)
   const artistName = React.useMemo(() => {
     const rawArtist = currentTrack?.rawArtistName || currentTrack?.artistName || artist
@@ -108,17 +109,38 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
   const router = useRouter()
   const currentTrack = useCurrentTrack()
   const isPlaying = useIsPlaying()
-
   const theme = useThemeColors()
 
-  if (!currentTrack) return null
+  const [lastTrack, setLastTrack] = React.useState<Track | null>(null)
+  React.useEffect(() => {
+    if (currentTrack) {
+      setLastTrack(currentTrack)
+    }
+  }, [currentTrack])
+
+  const displayTrack = currentTrack || lastTrack
+
+  const isVisible = !!currentTrack
+  const translateY = useDerivedValue(() => {
+    return withTiming(isVisible ? 0 : 100, { duration: 300 })
+  }, [isVisible])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+      opacity: withTiming(isVisible ? 1 : 0, { duration: 300 }),
+    }
+  })
+
+  if (!displayTrack) return null
 
   const transitionId = resolvePlayerTransitionId({
-    trackId: currentTrack.id,
-    title: currentTrack.title,
+    trackId: displayTrack.id,
+    title: displayTrack.title,
   })
 
   const openFullPlayer = (initialView: "artwork" | "queue") => {
+    if (!currentTrack) return
     setPlayerExpandedView(initialView)
     router.push({
       pathname: "/player",
@@ -131,12 +153,14 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
 
   return (
     <Animated.View
-      entering={SlideInDown.duration(300)}
-      exiting={SlideOutDown.duration(300)}
+      pointerEvents={isVisible ? "auto" : "none"}
       className="absolute right-0 left-0 h-17"
-      style={{
-        bottom: bottomOffset,
-      }}
+      style={[
+        {
+          bottom: bottomOffset,
+        },
+        animatedStyle
+      ]}
     >
       <View
         className="absolute inset-0 border-t border-border bg-surface-secondary"
@@ -147,15 +171,15 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
 
       <View className="flex-1 flex-row items-center gap-3 px-4">
         <BoundaryPressableFeedback
-          key={currentTrack.id}
+          key={displayTrack.id}
           id={transitionId}
           onPress={() => {
             openFullPlayer("artwork")
           }}
           className="flex-1 flex-row items-center gap-3 active:opacity-80"
         >
-          <MiniPlayerArtwork image={currentTrack.image} mutedColor={theme.muted} />
-          <MiniPlayerMeta title={currentTrack.title} artist={currentTrack.artist} />
+          <MiniPlayerArtwork image={displayTrack.image} mutedColor={theme.muted} />
+          <MiniPlayerMeta title={displayTrack.title} artist={displayTrack.artist} track={displayTrack} />
         </BoundaryPressableFeedback>
 
         <MiniPlayerControls
