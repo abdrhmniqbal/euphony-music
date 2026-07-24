@@ -42,9 +42,18 @@ async function resolveArtistImage(artistName: string): Promise<string | null> {
   return detail.picture_xl ?? null
 }
 
+const deezerCache = new Map<string, string | null>()
+
 export async function fetchDeezerArtistImage(artistName: string): Promise<string | null> {
+  const normalizedName = artistName.trim().toLowerCase()
+  if (deezerCache.has(normalizedName)) {
+    return deezerCache.get(normalizedName)!
+  }
+
   try {
-    return (await resolveArtistImage(artistName)) ?? null
+    const result = (await resolveArtistImage(artistName)) ?? null
+    deezerCache.set(normalizedName, result)
+    return result
   } catch (err) {
     logError(
       "fetchDeezerArtistImage: general failure",
@@ -88,7 +97,7 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
     ? gt(artists.trackCount, 0)
     : and(
         gt(artists.trackCount, 0),
-        or(isNull(artists.artwork), sql`artists.artwork NOT LIKE 'http%'`),
+        or(isNull(artists.artwork), eq(artists.artwork, "")),
         lt(artists.updatedAt, runStartedAt)
       )
 
@@ -113,7 +122,7 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
 
   for (const artist of rows) {
     if (signal?.aborted) return
-    if (!forceRefresh && artist.artwork?.startsWith("http")) continue
+    if (!forceRefresh && artist.artwork) continue
 
     let image: string | null | undefined
     try {
@@ -126,10 +135,11 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       )
       continue
     }
-    if (!image) continue
 
-    let cachedImage = image
-    if (cachedImage.startsWith("http://") || cachedImage.startsWith("https://")) {
+    // Always update the artist to bump updatedAt so we don't query repeatedly
+    // for artists that aren't found on Deezer in the same session.
+    let cachedImage = image || null
+    if (cachedImage && (cachedImage.startsWith("http://") || cachedImage.startsWith("https://"))) {
       try {
         const localPath = await saveArtworkToCache(cachedImage)
         if (localPath) cachedImage = localPath
@@ -138,12 +148,14 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       }
     }
 
-    await db
-      .update(artists)
-      .set({
-        artwork: cachedImage || (artist.artwork?.startsWith("http") ? null : artist.artwork) || null,
-        updatedAt: Date.now(),
-      })
-      .where(sql`${artists.id} = ${artist.id}`)
+    if (image !== undefined) {
+      await db
+        .update(artists)
+        .set({
+          artwork: cachedImage,
+          updatedAt: Date.now(),
+        })
+        .where(eq(artists.id, artist.id))
+    }
   }
 }
