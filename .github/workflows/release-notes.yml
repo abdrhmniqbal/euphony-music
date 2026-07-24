@@ -13,6 +13,12 @@ on:
         description: "Release tag (example: v1.2.3 or v1.2.3-rc.1)"
         required: true
         type: string
+  workflow_call:
+    inputs:
+      release_tag:
+        description: "Release tag (example: v1.2.3 or v1.2.3-rc.1)"
+        required: true
+        type: string
 
 jobs:
   attach-release-notes:
