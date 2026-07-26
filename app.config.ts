@@ -106,5 +106,6 @@ export default (): ExpoConfig => ({
         },
       },
     ],
+    "./plugins/with-startune-modules.js",
   ],
 })
