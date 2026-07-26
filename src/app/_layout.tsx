@@ -248,9 +248,9 @@ export default function Layout() {
 
   useEffect(() => {
     if (isHydrated && !completedOnboarding) {
-      router.replace("/onboarding")
+      routerRef.current.replace("/onboarding")
     }
-  }, [isHydrated, completedOnboarding, router])
+  }, [isHydrated, completedOnboarding])
 
   const appTheme = getAppThemeDefinition(themeId)
   const tabBarHeight = getTabBarHeight(insets.bottom)
