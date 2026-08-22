@@ -11,6 +11,7 @@ export default defineConfig({
     globals: true,
     include: ["src/**/__tests__/**/*.test.ts"],
     exclude: ["node_modules", "android", "ios", ".expo"],
+    passWithNoTests: true,
     environment: "node",
     testTimeout: 10_000,
     setupFiles: ["src/__tests__/setup.ts"],
