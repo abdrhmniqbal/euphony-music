@@ -1,0 +1,136 @@
+/**
+ * Purpose: Renders the main tab shell, anchored tab bar, and mini player for the core app routes.
+ * Caller: Expo Router root stack.
+ * Dependencies: Expo Router tabs, React Navigation tab bar, react-i18next, mini player, UI store, layout constants, theme colors.
+ * Main Functions: MainLayout()
+ * Side Effects: Animates tab visibility based on shared UI chrome state.
+ */
+
+import { BottomTabBar, type BottomTabBarProps } from "expo-router/js-tabs"
+import { Tabs } from "expo-router"
+import { useTranslation } from "react-i18next"
+import Animated, { useDerivedValue, useAnimatedStyle, withTiming } from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+
+import { MiniPlayer } from "@/modules/player/ui/player/mini-player"
+import LocalHome09Icon from "@/modules/shared/components/icons/local/home-09"
+import LocalHome09SolidIcon from "@/modules/shared/components/icons/local/home-09-solid"
+import LocalLibraryIcon from "@/modules/shared/components/icons/local/library"
+import LocalLibrarySolidIcon from "@/modules/shared/components/icons/local/library-solid"
+import LocalSearch01Icon from "@/modules/shared/components/icons/local/search-01"
+import LocalSearch01SolidIcon from "@/modules/shared/components/icons/local/search-01-solid"
+import { getTabBarBottomPadding, getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/modules/shared/constants/layout"
+import { useUIStore } from "@/modules/ui/store"
+import { useThemeColors } from "@/modules/ui/theme"
+
+const TAB_HIDE_DURATION_MS = 250
+const TAB_HIDE_EXTRA_OFFSET = 16
+
+export default function MainLayout() {
+  const theme = useThemeColors()
+  const { t } = useTranslation()
+  const insets = useSafeAreaInsets()
+  const barsVisible = useUIStore((state) => state.barsVisible)
+  const tabBarBottomPadding = getTabBarBottomPadding(insets.bottom)
+  const tabBarHeight = getTabBarHeight(insets.bottom)
+  const hiddenOffset = tabBarHeight + MINI_PLAYER_HEIGHT + TAB_HIDE_EXTRA_OFFSET
+  const translateY = useDerivedValue(() => {
+    return withTiming(barsVisible ? 0 : hiddenOffset, {
+      duration: TAB_HIDE_DURATION_MS,
+    })
+  }, [barsVisible, hiddenOffset])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: translateY.value,
+        },
+      ],
+    }
+  })
+
+  return (
+    <Tabs
+      tabBar={(props: BottomTabBarProps) => (
+        <Animated.View
+          pointerEvents="box-none"
+          style={[
+            animatedStyle,
+            {
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+            },
+          ]}
+        >
+          <MiniPlayer bottomOffset={tabBarHeight} />
+          <BottomTabBar {...props} />
+        </Animated.View>
+      )}
+      detachInactiveScreens={false}
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: theme.foreground,
+        tabBarInactiveTintColor: theme.muted,
+        tabBarHideOnKeyboard: true,
+        freezeOnBlur: false,
+        sceneStyle: {
+          backgroundColor: theme.background,
+        },
+        tabBarStyle: {
+          backgroundColor: theme.background,
+          borderTopWidth: 1,
+          borderTopColor: theme.border,
+          height: tabBarHeight,
+          paddingTop: 8,
+          paddingBottom: tabBarBottomPadding,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600" as const,
+        },
+        animation: "shift",
+      }}
+    >
+      <Tabs.Screen
+        name="(home)"
+        options={{
+          title: t("navigation.tabs.home"),
+          tabBarIcon: ({ color, size, focused }) =>
+            focused ? (
+              <LocalHome09SolidIcon fill="none" color={color} width={size} height={size} />
+            ) : (
+              <LocalHome09Icon fill="none" color={color} width={size} height={size} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="(search)"
+        options={{
+          title: t("navigation.tabs.search"),
+          tabBarIcon: ({ color, size, focused }) =>
+            focused ? (
+              <LocalSearch01SolidIcon fill="none" color={color} width={size} height={size} />
+            ) : (
+              <LocalSearch01Icon fill="none" color={color} width={size} height={size} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="(library)"
+        options={{
+          title: t("navigation.tabs.library"),
+          popToTopOnBlur: true,
+          tabBarIcon: ({ color, size, focused }) =>
+            focused ? (
+              <LocalLibrarySolidIcon fill="none" color={color} width={size} height={size} />
+            ) : (
+              <LocalLibraryIcon fill="none" color={color} width={size} height={size} />
+            ),
+        }}
+      />
+    </Tabs>
+  )
+}

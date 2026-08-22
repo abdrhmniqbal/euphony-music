@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["import", "react", "typescript", "unicorn"],
-  "ignorePatterns": ["android/app/build", "src/modules/shared/components/icons"],
+  "ignorePatterns": ["android/app/build", "src_dep", "src/components/icons"],
   "settings": {
     "react": {
       "version": "19.0"

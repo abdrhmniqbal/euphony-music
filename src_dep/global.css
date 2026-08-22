@@ -1,0 +1,2846 @@
+@import "tailwindcss";
+@import "uniwind";
+
+@import "heroui-native/styles";
+
+@source '../node_modules/heroui-native/lib';
+
+@layer theme {
+  :root {
+    @variant light {
+      --radius: 0.5rem;
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
+    }
+
+    @variant dark {
+      --radius: 0.5rem;
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
+    }
+
+    @variant theme-default-light {
+      --radius: 0.5rem;
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base Colors */
+      --background: #ffffff;
+      --foreground: var(--eclipse);
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: oklch(0.9524 0.0013 286.37);
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: oklch(0.9373 0.0013 286.37);
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: var(--white);
+      --overlay-foreground: var(--foreground);
+      --backdrop: oklch(0% 0 0 / 20%);
+
+      --muted: #71717a;
+
+      --default: #f4f4f5;
+      --default-foreground: var(--eclipse);
+
+      --accent: #2563eb;
+      --accent-foreground: #ffffff;
+
+      /* Form Fields */
+      --field-background: var(--white);
+      --field-foreground: oklch(0.2103 0.0059 285.89);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: oklch(0.7329 0.1935 150.81);
+      --success-foreground: var(--eclipse);
+
+      --warning: oklch(0.7819 0.1585 72.33);
+      --warning-foreground: var(--eclipse);
+
+      --danger: oklch(0.6532 0.2328 25.74);
+      --danger-foreground: var(--snow);
+
+      /* Component Colors */
+      --segment: var(--white);
+      --segment-foreground: var(--eclipse);
+
+      /* Misc Colors */
+      --border: #e4e4e7;
+      --separator: oklch(74% 0.004 286.32);
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
+    }
+
+    @variant theme-default-dark {
+      --radius: 0.5rem;
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base Colors */
+      --background: #09090b;
+      --foreground: var(--snow);
+
+      /* Surface */
+      --surface: #18181b;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: oklch(0.257 0.0037 286.14);
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: oklch(0.2721 0.0024 247.91);
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: oklch(0.2103 0.0059 285.89);
+      --overlay-foreground: var(--foreground);
+      --backdrop: oklch(0% 0 0 / 20%);
+
+      --muted: #a1a1aa;
+
+      --default: #27272a;
+      --default-foreground: var(--snow);
+
+      --accent: #3b82f6;
+      --accent-foreground: #ffffff;
+
+      /* Form Fields */
+      --field-background: oklch(0.2103 0.0059 285.89);
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: oklch(0.7329 0.1935 150.81);
+      --success-foreground: var(--eclipse);
+
+      --warning: oklch(0.8203 0.1388 76.34);
+      --warning-foreground: var(--eclipse);
+
+      --danger: oklch(0.594 0.1967 24.63);
+      --danger-foreground: var(--snow);
+
+      /* Component Colors */
+      --segment: oklch(0.3964 0.01 285.93);
+      --segment-foreground: var(--foreground);
+
+      /* Misc Colors */
+      --border: #27272a;
+      --separator: oklch(40% 0.006 286.033);
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #32b842;
+      --rainbow-1: #24b869;
+      --rainbow-2: #19b8a3;
+      --rainbow-3: #1cbdbd;
+      --rainbow-4: #11a8c9;
+      --rainbow-5: #248eed;
+      --rainbow-6: #436ee8;
+      --rainbow-7: #5a5ae8;
+      --rainbow-8: #8659ed;
+      --rainbow-9: #b64aed;
+      --rainbow-10: #e84697;
+      --rainbow-11: #e84154;
+      --rainbow-12: #eb5928;
+      --rainbow-13: #d9a42b;
+      --rainbow-14: #c2c423;
+      --rainbow-15: #6a7285;
+    }
+
+    @variant theme-nord-light {
+      --radius: 0.5rem;
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base Colors */
+      --background: #eceff4;
+      --foreground: #2e3440;
+
+      /* Surface */
+      --surface: #e5e9f0;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #d8dee9;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #d0d7e5;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #e5e9f0;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(46, 52, 64, 0.2);
+
+      --muted: #4c566a;
+
+      --default: #d8dee9;
+      --default-foreground: #2e3440;
+
+      --accent: #4c709c;
+      --accent-foreground: #eceff4;
+
+      /* Form Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #a3be8c;
+      --success-foreground: #2e3440;
+
+      --warning: #ebcb8b;
+      --warning-foreground: #2e3440;
+
+      --danger: #bf616a;
+      --danger-foreground: #eceff4;
+
+      /* Component Colors */
+      --segment: #ffffff;
+      --segment-foreground: #2e3440;
+
+      /* Misc Colors */
+      --border: #d8dee9;
+      --separator: #d8dee9;
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #bf616a;
+      --rainbow-1: #c8746d;
+      --rainbow-2: #d08770;
+      --rainbow-3: #d8a271;
+      --rainbow-4: #dfbc73;
+      --rainbow-5: #b6be7d;
+      --rainbow-6: #89a572;
+      --rainbow-7: #8fbcbb;
+      --rainbow-8: #88c0d0;
+      --rainbow-9: #84b0c8;
+      --rainbow-10: #81a1c1;
+      --rainbow-11: #5e81ac;
+      --rainbow-12: #7686b4;
+      --rainbow-13: #9587b1;
+      --rainbow-14: #b48ead;
+      --rainbow-15: #b9759f;
+    }
+
+    @variant theme-nord-dark {
+      --radius: 0.5rem;
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base Colors */
+      --background: #2e3440;
+      --foreground: #eceff4;
+
+      /* Surface */
+      --surface: #3b4252;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #434c5e;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #4c566a;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #3b4252;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(0, 0, 0, 0.3);
+
+      --muted: #d8dee9;
+
+      --default: #434c5e;
+      --default-foreground: #eceff4;
+
+      --accent: #88c0d0;
+      --accent-foreground: #2e3440;
+
+      /* Form Fields */
+      --field-background: #3b4252;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #a3be8c;
+      --success-foreground: #2e3440;
+
+      --warning: #ebcb8b;
+      --warning-foreground: #2e3440;
+
+      --danger: #bf616a;
+      --danger-foreground: #eceff4;
+
+      /* Component Colors */
+      --segment: #434c5e;
+      --segment-foreground: var(--foreground);
+
+      /* Misc Colors */
+      --border: #4c566a;
+      --separator: #434c5e;
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #bf616a;
+      --rainbow-1: #c8746d;
+      --rainbow-2: #d08770;
+      --rainbow-3: #d8a271;
+      --rainbow-4: #dfbc73;
+      --rainbow-5: #b6be7d;
+      --rainbow-6: #89a572;
+      --rainbow-7: #8fbcbb;
+      --rainbow-8: #88c0d0;
+      --rainbow-9: #84b0c8;
+      --rainbow-10: #81a1c1;
+      --rainbow-11: #5e81ac;
+      --rainbow-12: #7686b4;
+      --rainbow-13: #9587b1;
+      --rainbow-14: #b48ead;
+      --rainbow-15: #b9759f;
+    }
+
+    @variant theme-dracula-light {
+      --radius: 0.5rem;
+      --surface-shadow:
+        0 2px 4px 0 rgba(31, 31, 31, 0.05), 0 1px 2px 0 rgba(31, 31, 31, 0.08),
+        0 0 1px 0 rgba(31, 31, 31, 0.08);
+      --overlay-shadow:
+        0 2px 8px 0 rgba(31, 31, 31, 0.04), 0 -6px 12px 0 rgba(31, 31, 31, 0.02),
+        0 14px 28px 0 rgba(31, 31, 31, 0.04);
+      --field-shadow:
+        0 2px 4px 0 rgba(31, 31, 31, 0.05), 0 1px 2px 0 rgba(31, 31, 31, 0.08),
+        0 0 1px 0 rgba(31, 31, 31, 0.08);
+
+      /* Base Colors */
+      --background: #fffbeb;
+      --foreground: #1f1f1f;
+
+      /* Surface */
+      --surface: #dedccf;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #ece9df;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ceccc0;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #efeddc;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(31, 31, 31, 0.45);
+
+      --muted: #6c664b;
+
+      --default: #e2deca;
+      --default-foreground: #1f1f1f;
+
+      --accent: #644ac9;
+      --accent-foreground: #fffbeb;
+
+      /* Form Fields */
+      --field-background: #ece9df;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #14710a;
+      --success-foreground: #fffbeb;
+
+      --warning: #a34d14;
+      --warning-foreground: #fffbeb;
+
+      --danger: #cb3a2a;
+      --danger-foreground: #fffbeb;
+
+      /* Component Colors */
+      --segment: #ece9df;
+      --segment-foreground: #1f1f1f;
+
+      /* Misc Colors */
+      --border: #bcbab3;
+      --separator: #dcdeef;
+      --focus: #644ac9;
+      --link: #036a96;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #cb3a2a;
+      --rainbow-1: #b7441f;
+      --rainbow-2: #a34d14;
+      --rainbow-3: #945d15;
+      --rainbow-4: #846e15;
+      --rainbow-5: #4c6f10;
+      --rainbow-6: #14710a;
+      --rainbow-7: #0d6e50;
+      --rainbow-8: #036a96;
+      --rainbow-9: #1b5ba8;
+      --rainbow-10: #334dba;
+      --rainbow-11: #4c4bcc;
+      --rainbow-12: #644ac9;
+      --rainbow-13: #842f8b;
+      --rainbow-14: #a3144d;
+      --rainbow-15: #b7273c;
+    }
+
+    @variant theme-dracula-dark {
+      --radius: 0.5rem;
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(248, 248, 242, 0.18) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base Colors */
+      --background: #282a36;
+      --foreground: #f8f8f2;
+
+      /* Surface */
+      --surface: #343746;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #424450;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #21222c;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #343746;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(0, 0, 0, 0.45);
+
+      --muted: #7d8dbd;
+
+      --default: #353747;
+      --default-foreground: #f8f8f2;
+
+      --accent: #bd93f9;
+      --accent-foreground: #282a36;
+
+      /* Form Fields */
+      --field-background: #21222c;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #50fa7b;
+      --success-foreground: #282a36;
+
+      --warning: #ffb86c;
+      --warning-foreground: #282a36;
+
+      --danger: #ff5555;
+      --danger-foreground: #f8f8f2;
+
+      /* Component Colors */
+      --segment: #343746;
+      --segment-foreground: var(--foreground);
+
+      /* Misc Colors */
+      --border: #44475a;
+      --separator: #3e404a;
+      --focus: #d6acff;
+      --link: #8be9fd;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #ff5555;
+      --rainbow-1: #ff7755;
+      --rainbow-2: #f29838;
+      --rainbow-3: #f4b844;
+      --rainbow-4: #d7df21;
+      --rainbow-5: #8ae234;
+      --rainbow-6: #1dd951;
+      --rainbow-7: #2ae09c;
+      --rainbow-8: #31c4e0;
+      --rainbow-9: #64d2ff;
+      --rainbow-10: #4ea8ff;
+      --rainbow-11: #8270ff;
+      --rainbow-12: #bd93f9;
+      --rainbow-13: #d87bff;
+      --rainbow-14: #f249ab;
+      --rainbow-15: #ff6688;
+    }
+    @variant theme-catppuccin-light {
+      --radius: 0.5rem;
+      --surface-shadow:
+        0 2px 4px 0 rgba(76, 79, 105, 0.05), 0 1px 2px 0 rgba(76, 79, 105, 0.08),
+        0 0 1px 0 rgba(76, 79, 105, 0.08);
+      --overlay-shadow:
+        0 2px 8px 0 rgba(76, 79, 105, 0.04), 0 -6px 12px 0 rgba(76, 79, 105, 0.02),
+        0 14px 28px 0 rgba(76, 79, 105, 0.04);
+      --field-shadow:
+        0 2px 4px 0 rgba(76, 79, 105, 0.05), 0 1px 2px 0 rgba(76, 79, 105, 0.08),
+        0 0 1px 0 rgba(76, 79, 105, 0.08);
+
+      /* Base Colors */
+      --background: #eff1f5;
+      --foreground: #4c4f69;
+
+      /* Surface */
+      --surface: #e6e9ef;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #dce0e8;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ccd0da;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #e6e9ef;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(76, 79, 105, 0.2);
+
+      --muted: #6f7385;
+
+      --default: #ccd0da;
+      --default-foreground: #4c4f69;
+
+      --accent: #8839ef;
+      --accent-foreground: #eff1f5;
+
+      /* Form Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #40a02b;
+      --success-foreground: #eff1f5;
+
+      --warning: #df8e1d;
+      --warning-foreground: #eff1f5;
+
+      --danger: #d20f39;
+      --danger-foreground: #eff1f5;
+
+      /* Component Colors */
+      --segment: #ffffff;
+      --segment-foreground: #4c4f69;
+
+      /* Misc Colors */
+      --border: #bcc0cc;
+      --separator: #dce0e8;
+      --focus: #8839ef;
+      --link: #1b5cdc;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #d20f39;
+      --rainbow-1: #e64553;
+      --rainbow-2: #eb5900;
+      --rainbow-3: #ea7a23;
+      --rainbow-4: #df8e1d;
+      --rainbow-5: #88972e;
+      --rainbow-6: #348a20;
+      --rainbow-7: #0f7e85;
+      --rainbow-8: #04a5e5;
+      --rainbow-9: #209fb5;
+      --rainbow-10: #1e66f5;
+      --rainbow-11: #7287fd;
+      --rainbow-12: #8839ef;
+      --rainbow-13: #d351b0;
+      --rainbow-14: #dd7878;
+      --rainbow-15: #dc8a78;
+    }
+
+    @variant theme-catppuccin-dark {
+      --radius: 0.5rem;
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(205, 214, 244, 0.18) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base Colors */
+      --background: #1e1e2e;
+      --foreground: #cdd6f4;
+
+      /* Surface */
+      --surface: #181825;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #313244;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #45475a;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #181825;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgba(0, 0, 0, 0.3);
+
+      --muted: #6c7086;
+
+      --default: #313244;
+      --default-foreground: #cdd6f4;
+
+      --accent: #cba6f7;
+      --accent-foreground: #1e1e2e;
+
+      /* Form Fields */
+      --field-background: #11111b;
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #a6e3a1;
+      --success-foreground: #1e1e2e;
+
+      --warning: #f9e2af;
+      --warning-foreground: #1e1e2e;
+
+      --danger: #f38ba8;
+      --danger-foreground: #1e1e2e;
+
+      /* Component Colors */
+      --segment: #11111b;
+      --segment-foreground: var(--foreground);
+
+      /* Misc Colors */
+      --border: #45475a;
+      --separator: #313244;
+      --focus: #cba6f7;
+      --link: #89b4fa;
+
+      /* Backward compatibility aliases */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #f38ba8;
+      --rainbow-1: #eba0ac;
+      --rainbow-2: #fab387;
+      --rainbow-3: #f4c08b;
+      --rainbow-4: #e5ba65;
+      --rainbow-5: #b5d898;
+      --rainbow-6: #87ca82;
+      --rainbow-7: #73beae;
+      --rainbow-8: #89dceb;
+      --rainbow-9: #74c7ec;
+      --rainbow-10: #89b4fa;
+      --rainbow-11: #b4befe;
+      --rainbow-12: #cba6f7;
+      --rainbow-13: #f5c2e7;
+      --rainbow-14: #f2cdcd;
+      --rainbow-15: #f5e0dc;
+    }
+
+    @variant theme-tokyo-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base Colors */
+      --background: #1a1b26;
+      --foreground: #c0caf5;
+
+      /* Surface */
+      --surface: #24283b;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #292e42;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #414868;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #24283b;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #9aa5ce;
+
+      --default: #2f3549;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #7aa2f7;
+      --accent-foreground: #1a1b26;
+
+      /* Form Fields */
+      --field-background: #1f2335;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #787c99;
+      --field-border: transparent;
+
+      /* Status Colors */
+      --success: #9ece6a;
+      --success-foreground: #1a1b26;
+
+      --warning: #e0af68;
+      --warning-foreground: #1a1b26;
+
+      --danger: #f7768e;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #414868;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #3b4261;
+      --separator: #3b4261;
+      --focus: var(--accent);
+      --link: #7dcfff;
+
+      /* Backward compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow (Tokyo Night inspired) */
+      --rainbow-0: #9ece6a;
+      --rainbow-1: #73daca;
+      --rainbow-2: #2ac3de;
+      --rainbow-3: #7dcfff;
+      --rainbow-4: #7aa2f7;
+      --rainbow-5: #6183ff;
+      --rainbow-6: #7e8df4;
+      --rainbow-7: #9d7cd8;
+      --rainbow-8: #bb9af7;
+      --rainbow-9: #c099ff;
+      --rainbow-10: #ff9ebb;
+      --rainbow-11: #f7768e;
+      --rainbow-12: #ff9e64;
+      --rainbow-13: #e0af68;
+      --rainbow-14: #c3e88d;
+      --rainbow-15: #565f89;
+    }
+
+    @variant theme-tokyo-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base Colors */
+      --background: #d5d6db;
+      --foreground: #1a3575;
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #eceff4;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #dfe4ee;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #ffffff;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #555d78;
+
+      --default: #eceff4;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #1054b1;
+      --accent-foreground: #ffffff;
+
+      /* Form Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #848cb5;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #587539;
+      --success-foreground: #ffffff;
+
+      --warning: #8c6c3e;
+      --warning-foreground: #ffffff;
+
+      --danger: #f52a65;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #ffffff;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #c8d0e0;
+      --separator: #c8d0e0;
+      --focus: var(--accent);
+      --link: #1054b1;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #587539;
+      --rainbow-1: #007197;
+      --rainbow-2: #118c74;
+      --rainbow-3: #2e7de9;
+      --rainbow-4: #3760bf;
+      --rainbow-5: #5a4aeb;
+      --rainbow-6: #7847bd;
+      --rainbow-7: #9854f1;
+      --rainbow-8: #b15cdb;
+      --rainbow-9: #d20065;
+      --rainbow-10: #f52a65;
+      --rainbow-11: #f7768e;
+      --rainbow-12: #b15c00;
+      --rainbow-13: #8c6c3e;
+      --rainbow-14: #6f8f3f;
+      --rainbow-15: #9699a3;
+    }
+
+    @variant theme-gruvbox-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #fbf1c7;
+      --foreground: #3c3836;
+
+      /* Surface */
+      --surface: #f9f5d7;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #f2e5bc;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ebdbb2;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #f9f5d7;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #7c6f64;
+
+      --default: #ebdbb2;
+      --default-foreground: var(--foreground);
+
+      --accent: #d79921;
+      --accent-foreground: #ffffff;
+
+      /* Fields */
+      --field-background: #f9f5d7;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #928374;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #98971a;
+      --success-foreground: #ffffff;
+
+      --warning: #d79921;
+      --warning-foreground: #ffffff;
+
+      --danger: #cc241d;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #ebdbb2;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #d5c4a1;
+      --separator: #d5c4a1;
+      --focus: var(--accent);
+      --link: #076678;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #98971a;
+      --rainbow-1: #689d6a;
+      --rainbow-2: #427b58;
+      --rainbow-3: #458588;
+      --rainbow-4: #076678;
+      --rainbow-5: #83a598;
+      --rainbow-6: #b16286;
+      --rainbow-7: #8f3f71;
+      --rainbow-8: #d3869b;
+      --rainbow-9: #d65d0e;
+      --rainbow-10: #fe8019;
+      --rainbow-11: #fabd2f;
+      --rainbow-12: #b57614;
+      --rainbow-13: #cc241d;
+      --rainbow-14: #79740e;
+      --rainbow-15: #928374;
+    }
+
+    @variant theme-gruvbox-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #282828;
+      --foreground: #ebdbb2;
+
+      /* Surface */
+      --surface: #32302f;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #3c3836;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #504945;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #32302f;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #a89984;
+
+      --default: #504945;
+      --default-foreground: var(--foreground);
+
+      --accent: #fabd2f;
+      --accent-foreground: #282828;
+
+      /* Fields */
+      --field-background: #282828;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #928374;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #b8bb26;
+      --success-foreground: #282828;
+
+      --warning: #fabd2f;
+      --warning-foreground: #282828;
+
+      --danger: #fb4934;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #504945;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #504945;
+      --separator: #665c54;
+      --focus: var(--accent);
+      --link: #83a598;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #b8bb26;
+      --rainbow-1: #8ec07c;
+      --rainbow-2: #689d6a;
+      --rainbow-3: #83a598;
+      --rainbow-4: #458588;
+      --rainbow-5: #7daea3;
+      --rainbow-6: #b16286;
+      --rainbow-7: #d3869b;
+      --rainbow-8: #d65d0e;
+      --rainbow-9: #fe8019;
+      --rainbow-10: #fabd2f;
+      --rainbow-11: #fb4934;
+      --rainbow-12: #cc241d;
+      --rainbow-13: #d79921;
+      --rainbow-14: #98971a;
+      --rainbow-15: #928374;
+    }
+
+    @variant theme-everforest-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #fdf6e3;
+      --foreground: #445056;
+
+      /* Surface */
+      --surface: #fff9e8;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #f3ead3;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ede3c7;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #fff9e8;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #6e7b6d;
+
+      --default: #ede3c7;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #8da101;
+      --accent-foreground: #1c2324;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #9da9a0;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #6f894e;
+      --success-foreground: #ffffff;
+
+      --warning: #d08a32;
+      --warning-foreground: #ffffff;
+
+      --danger: #e66868;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #ede3c7;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #ddd3ba;
+      --separator: #ddd3ba;
+      --focus: var(--accent);
+      --link: #227099;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #8da101;
+      --rainbow-1: #6f894e;
+      --rainbow-2: #35a77c;
+      --rainbow-3: #3a94c5;
+      --rainbow-4: #5f9ea0;
+      --rainbow-5: #6ca0dc;
+      --rainbow-6: #8b7ec8;
+      --rainbow-7: #b16286;
+      --rainbow-8: #d699b6;
+      --rainbow-9: #e67e22;
+      --rainbow-10: #d08a32;
+      --rainbow-11: #e69875;
+      --rainbow-12: #e66868;
+      --rainbow-13: #a7a847;
+      --rainbow-14: #859289;
+      --rainbow-15: #9da9a0;
+    }
+
+    @variant theme-everforest-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #2d353b;
+      --foreground: #d3c6aa;
+
+      /* Surface */
+      --surface: #343f44;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #3d484d;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #475258;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #343f44;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #9da9a0;
+
+      --default: #475258;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #a7c080;
+      --accent-foreground: #2d353b;
+
+      /* Fields */
+      --field-background: #2d353b;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #859289;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #a7c080;
+      --success-foreground: #2d353b;
+
+      --warning: #dbbc7f;
+      --warning-foreground: #2d353b;
+
+      --danger: #e67e80;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #475258;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #475258;
+      --separator: #56635f;
+      --focus: var(--accent);
+      --link: #7fbbb3;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #a7c080;
+      --rainbow-1: #83c092;
+      --rainbow-2: #7fbbb3;
+      --rainbow-3: #6cb6eb;
+      --rainbow-4: #8ec5ff;
+      --rainbow-5: #9da9ff;
+      --rainbow-6: #d699b6;
+      --rainbow-7: #e69875;
+      --rainbow-8: #e67e80;
+      --rainbow-9: #e69875;
+      --rainbow-10: #dbbc7f;
+      --rainbow-11: #d3c6aa;
+      --rainbow-12: #859289;
+      --rainbow-13: #a7c080;
+      --rainbow-14: #7a8478;
+      --rainbow-15: #56635f;
+    }
+
+    @variant theme-rose-pine-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #faf4ed;
+      --foreground: #575279;
+
+      /* Surface */
+      --surface: #fffaf3;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #f2e9e1;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #e9ddd3;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #fffaf3;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #797593;
+
+      --default: #f2e9e1;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #ab5a71;
+      --accent-foreground: #ffffff;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #9893a5;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #56949f;
+      --success-foreground: #ffffff;
+
+      --warning: #ea9d34;
+      --warning-foreground: #ffffff;
+
+      --danger: #b4637a;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #f2e9e1;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #dfdad9;
+      --separator: #dfdad9;
+      --focus: var(--accent);
+      --link: #286983;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #56949f;
+      --rainbow-1: #286983;
+      --rainbow-2: #907aa9;
+      --rainbow-3: #d7827e;
+      --rainbow-4: #b4637a;
+      --rainbow-5: #ea9d34;
+      --rainbow-6: #cecacd;
+      --rainbow-7: #9893a5;
+      --rainbow-8: #797593;
+      --rainbow-9: #907aa9;
+      --rainbow-10: #d7827e;
+      --rainbow-11: #ea9d34;
+      --rainbow-12: #56949f;
+      --rainbow-13: #286983;
+      --rainbow-14: #b4637a;
+      --rainbow-15: #9893a5;
+    }
+
+    @variant theme-rose-pine-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #191724;
+      --foreground: #e0def4;
+
+      /* Surface */
+      --surface: #1f1d2e;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #26233a;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #393552;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #1f1d2e;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #908caa;
+
+      --default: #393552;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #eb6f92;
+      --accent-foreground: #191724;
+
+      /* Fields */
+      --field-background: #191724;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #6e6a86;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #9ccfd8;
+      --success-foreground: #191724;
+
+      --warning: #f6c177;
+      --warning-foreground: #191724;
+
+      --danger: #eb6f92;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #393552;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #403d52;
+      --separator: #403d52;
+      --focus: var(--accent);
+      --link: #9ccfd8;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #31748f;
+      --rainbow-1: #9ccfd8;
+      --rainbow-2: #c4a7e7;
+      --rainbow-3: #f6c177;
+      --rainbow-4: #ebbcba;
+      --rainbow-5: #eb6f92;
+      --rainbow-6: #908caa;
+      --rainbow-7: #6e6a86;
+      --rainbow-8: #524f67;
+      --rainbow-9: #c4a7e7;
+      --rainbow-10: #eb6f92;
+      --rainbow-11: #f6c177;
+      --rainbow-12: #9ccfd8;
+      --rainbow-13: #31748f;
+      --rainbow-14: #ebbcba;
+      --rainbow-15: #6e6a86;
+    }
+
+    @variant theme-solarized-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #fdf6e3;
+      --foreground: #586e75;
+
+      /* Surface */
+      --surface: #fefcf3;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #eee8d5;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #e6dfc8;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #fefcf3;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #657b83;
+
+      --default: #eee8d5;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #1b74b3;
+      --accent-foreground: #ffffff;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #93a1a1;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #859900;
+      --success-foreground: #ffffff;
+
+      --warning: #b58900;
+      --warning-foreground: #ffffff;
+
+      --danger: #dc322f;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #eee8d5;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #d8d2c2;
+      --separator: #d8d2c2;
+      --focus: var(--accent);
+      --link: #196a63;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #859900;
+      --rainbow-1: #2aa198;
+      --rainbow-2: #268bd2;
+      --rainbow-3: #6c71c4;
+      --rainbow-4: #d33682;
+      --rainbow-5: #cb4b16;
+      --rainbow-6: #dc322f;
+      --rainbow-7: #b58900;
+      --rainbow-8: #268bd2;
+      --rainbow-9: #2aa198;
+      --rainbow-10: #859900;
+      --rainbow-11: #b58900;
+      --rainbow-12: #cb4b16;
+      --rainbow-13: #dc322f;
+      --rainbow-14: #6c71c4;
+      --rainbow-15: #93a1a1;
+    }
+
+    @variant theme-solarized-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #002b36;
+      --foreground: #93a1a1;
+
+      /* Surface */
+      --surface: #073642;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #0b4554;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #164b5a;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #073642;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #839496;
+
+      --default: #164b5a;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #268bd2;
+      --accent-foreground: #001e26;
+
+      /* Fields */
+      --field-background: #002b36;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #657b83;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #859900;
+      --success-foreground: #ffffff;
+
+      --warning: #b58900;
+      --warning-foreground: #ffffff;
+
+      --danger: #dc322f;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #164b5a;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #1b5564;
+      --separator: #1b5564;
+      --focus: var(--accent);
+      --link: #3ebbcd;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #859900;
+      --rainbow-1: #2aa198;
+      --rainbow-2: #268bd2;
+      --rainbow-3: #6c71c4;
+      --rainbow-4: #d33682;
+      --rainbow-5: #cb4b16;
+      --rainbow-6: #dc322f;
+      --rainbow-7: #b58900;
+      --rainbow-8: #268bd2;
+      --rainbow-9: #2aa198;
+      --rainbow-10: #859900;
+      --rainbow-11: #b58900;
+      --rainbow-12: #cb4b16;
+      --rainbow-13: #dc322f;
+      --rainbow-14: #6c71c4;
+      --rainbow-15: #657b83;
+    }
+
+    @variant theme-ayu-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #faf7f0;
+      --foreground: #5c6773;
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #f2ede3;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #e8e2d7;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #ffffff;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #737c85;
+
+      --default: #f2ede3;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #e6b450;
+      --accent-foreground: #2d3640;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #8a9199;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #6cbf43;
+      --success-foreground: #ffffff;
+
+      --warning: #e6b450;
+      --warning-foreground: #2d3640;
+
+      --danger: #f07178;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #f2ede3;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #ddd6ca;
+      --separator: #ddd6ca;
+      --focus: var(--accent);
+      --link: #1273b8;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #6cbf43;
+      --rainbow-1: #86b300;
+      --rainbow-2: #4cbf99;
+      --rainbow-3: #399ee6;
+      --rainbow-4: #36a3d9;
+      --rainbow-5: #a37acc;
+      --rainbow-6: #d95757;
+      --rainbow-7: #f07178;
+      --rainbow-8: #f29668;
+      --rainbow-9: #ff8f40;
+      --rainbow-10: #e6b450;
+      --rainbow-11: #ffb454;
+      --rainbow-12: #86b300;
+      --rainbow-13: #6cbf43;
+      --rainbow-14: #8a9199;
+      --rainbow-15: #707a8c;
+    }
+
+    @variant theme-ayu-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #1f2430;
+      --foreground: #cccac2;
+
+      /* Surface */
+      --surface: #242936;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #2a3040;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #343b4d;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #242936;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #707a8c;
+
+      --default: #343b4d;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #e6b450;
+      --accent-foreground: #1f2430;
+
+      /* Fields */
+      --field-background: #1f2430;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #707a8c;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #aad94c;
+      --success-foreground: #1f2430;
+
+      --warning: #e6b450;
+      --warning-foreground: #1f2430;
+
+      --danger: #f28779;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #343b4d;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #3a4152;
+      --separator: #3a4152;
+      --focus: var(--accent);
+      --link: #59c2ff;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #aad94c;
+      --rainbow-1: #bae67e;
+      --rainbow-2: #95e6cb;
+      --rainbow-3: #59c2ff;
+      --rainbow-4: #39bae6;
+      --rainbow-5: #d4bfff;
+      --rainbow-6: #f07178;
+      --rainbow-7: #f28779;
+      --rainbow-8: #ffad66;
+      --rainbow-9: #ffcc66;
+      --rainbow-10: #e6b450;
+      --rainbow-11: #ffd580;
+      --rainbow-12: #bae67e;
+      --rainbow-13: #aad94c;
+      --rainbow-14: #707a8c;
+      --rainbow-15: #565b66;
+    }
+
+    @variant theme-monochrome-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #fafafa;
+      --foreground: #18181b;
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #f4f4f5;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #e4e4e7;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #ffffff;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #71717a;
+
+      --default: #f4f4f5;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #27272a;
+      --accent-foreground: #ffffff;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #71717a;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #3f3f46;
+      --success-foreground: #ffffff;
+
+      --warning: #52525b;
+      --warning-foreground: #ffffff;
+
+      --danger: #18181b;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #ffffff;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #e4e4e7;
+      --separator: #d4d4d8;
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Neutral Rainbow */
+      --rainbow-0: #909098;
+      --rainbow-1: #808088;
+      --rainbow-2: #73737a;
+      --rainbow-3: #66666e;
+      --rainbow-4: #5c5c64;
+      --rainbow-5: #52525b;
+      --rainbow-6: #45454d;
+      --rainbow-7: #3f3f46;
+      --rainbow-8: #27272a;
+      --rainbow-9: #18181b;
+      --rainbow-10: #09090b;
+      --rainbow-11: #121215;
+      --rainbow-12: #1c1c1f;
+      --rainbow-13: #2d2d30;
+      --rainbow-14: #52525b;
+      --rainbow-15: #73737a;
+    }
+
+    @variant theme-monochrome-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #09090b;
+      --foreground: #fafafa;
+
+      /* Surface */
+      --surface: #18181b;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #27272a;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #3f3f46;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #18181b;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #a1a1aa;
+
+      --default: #27272a;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #fafafa;
+      --accent-foreground: #09090b;
+
+      /* Fields */
+      --field-background: #18181b;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #71717a;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #d4d4d8;
+      --success-foreground: #09090b;
+
+      --warning: #e4e4e7;
+      --warning-foreground: #09090b;
+
+      --danger: #ffffff;
+      --danger-foreground: #09090b;
+
+      /* Components */
+      --segment: #3f3f46;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #27272a;
+      --separator: #3f3f46;
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Neutral Rainbow */
+      --rainbow-0: #909098;
+      --rainbow-1: #808088;
+      --rainbow-2: #73737a;
+      --rainbow-3: #66666e;
+      --rainbow-4: #5c5c64;
+      --rainbow-5: #52525b;
+      --rainbow-6: #45454d;
+      --rainbow-7: #3f3f46;
+      --rainbow-8: #27272a;
+      --rainbow-9: #18181b;
+      --rainbow-10: #09090b;
+      --rainbow-11: #121215;
+      --rainbow-12: #1c1c1f;
+      --rainbow-13: #2d2d30;
+      --rainbow-14: #52525b;
+      --rainbow-15: #73737a;
+    }
+
+    @variant theme-aquamarine-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #f3fffd;
+      --foreground: #114b5f;
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #e8f8f5;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #d8f0eb;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #ffffff;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #5d8b94;
+
+      --default: #e8f8f5;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #14b8a6;
+      --accent-foreground: #0b1f24;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #76a5ad;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #22c55e;
+      --success-foreground: #ffffff;
+
+      --warning: #f59e0b;
+      --warning-foreground: #ffffff;
+
+      --danger: #ef4444;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #e8f8f5;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #ccebe6;
+      --separator: #ccebe6;
+      --focus: var(--accent);
+      --link: #0a7c98;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #22c55e;
+      --rainbow-1: #10b981;
+      --rainbow-2: #14b8a6;
+      --rainbow-3: #06b6d4;
+      --rainbow-4: #0ea5e9;
+      --rainbow-5: #3b82f6;
+      --rainbow-6: #6366f1;
+      --rainbow-7: #8b5cf6;
+      --rainbow-8: #d946ef;
+      --rainbow-9: #ec4899;
+      --rainbow-10: #ef4444;
+      --rainbow-11: #f97316;
+      --rainbow-12: #f59e0b;
+      --rainbow-13: #84cc16;
+      --rainbow-14: #22c55e;
+      --rainbow-15: #7a8f96;
+    }
+
+    @variant theme-aquamarine-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #0b1f24;
+      --foreground: #d7f6f2;
+
+      /* Surface */
+      --surface: #132d33;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #1a3a42;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #224a53;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #132d33;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #8cb8b7;
+
+      --default: #224a53;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #2dd4bf;
+      --accent-foreground: #0b1f24;
+
+      /* Fields */
+      --field-background: #0f262c;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #73a2a1;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #4ade80;
+      --success-foreground: #0b1f24;
+
+      --warning: #fbbf24;
+      --warning-foreground: #0b1f24;
+
+      --danger: #f87171;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #224a53;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #2b5a64;
+      --separator: #2b5a64;
+      --focus: var(--accent);
+      --link: #38bdf8;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #4ade80;
+      --rainbow-1: #22c55e;
+      --rainbow-2: #10b981;
+      --rainbow-3: #2dd4bf;
+      --rainbow-4: #06b6d4;
+      --rainbow-5: #38bdf8;
+      --rainbow-6: #60a5fa;
+      --rainbow-7: #818cf8;
+      --rainbow-8: #c084fc;
+      --rainbow-9: #e879f9;
+      --rainbow-10: #fb7185;
+      --rainbow-11: #fb923c;
+      --rainbow-12: #fbbf24;
+      --rainbow-13: #84cc16;
+      --rainbow-14: #4ade80;
+      --rainbow-15: #5d8b94;
+    }
+
+    @variant theme-crimson-pulse-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #fff7f8;
+      --foreground: #2b1d20;
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #fbecef;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #f5dde3;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #ffffff;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #86707a;
+
+      --default: #f5dde3;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #e11d48;
+      --accent-foreground: #ffffff;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #9d8791;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #22c55e;
+      --success-foreground: #ffffff;
+
+      --warning: #f59e0b;
+      --warning-foreground: #ffffff;
+
+      --danger: #dc2626;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #f5dde3;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #ecd0d7;
+      --separator: #ecd0d7;
+      --focus: var(--accent);
+      --link: #be123c;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #22c55e;
+      --rainbow-1: #10b981;
+      --rainbow-2: #06b6d4;
+      --rainbow-3: #3b82f6;
+      --rainbow-4: #6366f1;
+      --rainbow-5: #8b5cf6;
+      --rainbow-6: #d946ef;
+      --rainbow-7: #ec4899;
+      --rainbow-8: #e11d48;
+      --rainbow-9: #dc2626;
+      --rainbow-10: #f97316;
+      --rainbow-11: #f59e0b;
+      --rainbow-12: #84cc16;
+      --rainbow-13: #22c55e;
+      --rainbow-14: #94a3b8;
+      --rainbow-15: #71717a;
+    }
+
+    @variant theme-crimson-pulse-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #0f0f11;
+      --foreground: #f4f4f5;
+
+      /* Surface */
+      --surface: #18181b;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #232326;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #313136;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #18181b;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #a1a1aa;
+
+      --default: #313136;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #ff2d55;
+      --accent-foreground: #0f0f11;
+
+      /* Fields */
+      --field-background: #141416;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #71717a;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #4ade80;
+      --success-foreground: #111111;
+
+      --warning: #fbbf24;
+      --warning-foreground: #111111;
+
+      --danger: #ff4d6d;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #313136;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #2c2c31;
+      --separator: #3b3b41;
+      --focus: var(--accent);
+      --link: #ff4d6d;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #4ade80;
+      --rainbow-1: #22c55e;
+      --rainbow-2: #14b8a6;
+      --rainbow-3: #06b6d4;
+      --rainbow-4: #3b82f6;
+      --rainbow-5: #6366f1;
+      --rainbow-6: #a855f7;
+      --rainbow-7: #d946ef;
+      --rainbow-8: #ff2d55;
+      --rainbow-9: #ff4d6d;
+      --rainbow-10: #fb7185;
+      --rainbow-11: #fb923c;
+      --rainbow-12: #fbbf24;
+      --rainbow-13: #84cc16;
+      --rainbow-14: #94a3b8;
+      --rainbow-15: #71717a;
+    }
+
+    @variant theme-banana-breeze-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #fffdf3;
+      --foreground: #58461c;
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #fff6cf;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ffefb5;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #ffffff;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #98845b;
+
+      --default: #fff6cf;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #facc15;
+      --accent-foreground: #4a3400;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #b29d74;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #65a30d;
+      --success-foreground: #ffffff;
+
+      --warning: #f59e0b;
+      --warning-foreground: #ffffff;
+
+      --danger: #ef4444;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #fff6cf;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #f0df9a;
+      --separator: #f0df9a;
+      --focus: var(--accent);
+      --link: #097776;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #65a30d;
+      --rainbow-1: #84cc16;
+      --rainbow-2: #22c55e;
+      --rainbow-3: #14b8a6;
+      --rainbow-4: #06b6d4;
+      --rainbow-5: #3b82f6;
+      --rainbow-6: #8b5cf6;
+      --rainbow-7: #ec4899;
+      --rainbow-8: #fb7185;
+      --rainbow-9: #f97316;
+      --rainbow-10: #facc15;
+      --rainbow-11: #fde047;
+      --rainbow-12: #fb923c;
+      --rainbow-13: #65a30d;
+      --rainbow-14: #0ea5a4;
+      --rainbow-15: #b29d74;
+    }
+
+    @variant theme-banana-breeze-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #241d0d;
+      --foreground: #fff6d5;
+
+      /* Surface */
+      --surface: #322812;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #433518;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #55441f;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #322812;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #c3b38a;
+
+      --default: #55441f;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #facc15;
+      --accent-foreground: #2d2208;
+
+      /* Fields */
+      --field-background: #2a210f;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #a99466;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #84cc16;
+      --success-foreground: #1b1607;
+
+      --warning: #fbbf24;
+      --warning-foreground: #1b1607;
+
+      --danger: #fb7185;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #55441f;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #665226;
+      --separator: #665226;
+      --focus: var(--accent);
+      --link: #2dd4bf;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #84cc16;
+      --rainbow-1: #4ade80;
+      --rainbow-2: #2dd4bf;
+      --rainbow-3: #22d3ee;
+      --rainbow-4: #38bdf8;
+      --rainbow-5: #60a5fa;
+      --rainbow-6: #a78bfa;
+      --rainbow-7: #f472b6;
+      --rainbow-8: #fb7185;
+      --rainbow-9: #fb923c;
+      --rainbow-10: #facc15;
+      --rainbow-11: #fde047;
+      --rainbow-12: #fbbf24;
+      --rainbow-13: #84cc16;
+      --rainbow-14: #2dd4bf;
+      --rainbow-15: #b8a77d;
+    }
+
+    @variant theme-candy-pop-light {
+      --radius: 0.5rem;
+
+      --surface-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.06);
+
+      --overlay-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.02), 0 -6px 12px rgba(0, 0, 0, 0.01),
+        0 14px 28px rgba(0, 0, 0, 0.03);
+
+      --field-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.06);
+
+      /* Base */
+      --background: #fff8fc;
+      --foreground: #5b4d63;
+
+      /* Surface */
+      --surface: #ffffff;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #ffeef7;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #ffe3f1;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #ffffff;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 20%);
+
+      --muted: #9c8aa2;
+
+      --default: #ffeef7;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #ff6fb5;
+      --accent-foreground: #1c1322;
+
+      /* Fields */
+      --field-background: #ffffff;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #b3a2bb;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #6ee7b7;
+      --success-foreground: #ffffff;
+
+      --warning: #ffd54f;
+      --warning-foreground: #5c4600;
+
+      --danger: #ff7a9c;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #ffeef7;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #f8dbe9;
+      --separator: #f8dbe9;
+      --focus: var(--accent);
+      --link: #2072be;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #6ee7b7;
+      --rainbow-1: #5eead4;
+      --rainbow-2: #8fdcff;
+      --rainbow-3: #6bbcff;
+      --rainbow-4: #9aa8ff;
+      --rainbow-5: #c7a6ff;
+      --rainbow-6: #e9a8ff;
+      --rainbow-7: #ff8fd8;
+      --rainbow-8: #ff6fb5;
+      --rainbow-9: #ff7a9c;
+      --rainbow-10: #ff9b73;
+      --rainbow-11: #ffd54f;
+      --rainbow-12: #ffe680;
+      --rainbow-13: #b8e986;
+      --rainbow-14: #6ee7b7;
+      --rainbow-15: #b8a8be;
+    }
+
+    @variant theme-candy-pop-dark {
+      --radius: 0.5rem;
+
+      --surface-shadow: 0 0 0 0 transparent inset;
+      --overlay-shadow: 0 0 1px rgba(255, 255, 255, 0.08) inset;
+      --field-shadow: 0 0 0 0 transparent inset;
+
+      /* Base */
+      --background: #211828;
+      --foreground: #ffeef8;
+
+      /* Surface */
+      --surface: #2b2034;
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: #382a43;
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: #473454;
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay */
+      --overlay: #2b2034;
+      --overlay-foreground: var(--foreground);
+      --backdrop: rgb(0 0 0 / 30%);
+
+      --muted: #b6a2bf;
+
+      --default: #473454;
+      --default-foreground: var(--foreground);
+
+      /* Accent */
+      --accent: #ff6fb5;
+      --accent-foreground: #211828;
+
+      /* Fields */
+      --field-background: #241b2c;
+      --field-foreground: var(--foreground);
+      --field-placeholder: #9b8aa5;
+      --field-border: transparent;
+
+      /* Status */
+      --success: #6ee7b7;
+      --success-foreground: #1b1421;
+
+      --warning: #ffd54f;
+      --warning-foreground: #3b2f00;
+
+      --danger: #ff7a9c;
+      --danger-foreground: #ffffff;
+
+      /* Components */
+      --segment: #473454;
+      --segment-foreground: var(--foreground);
+
+      /* Misc */
+      --border: #584364;
+      --separator: #584364;
+      --focus: var(--accent);
+      --link: #8fdcff;
+
+      /* Compatibility */
+      --color-background: var(--background);
+      --color-foreground: var(--foreground);
+      --color-default: var(--default);
+      --color-muted: var(--muted);
+      --color-accent: var(--accent);
+      --color-border: var(--border);
+      --color-link: var(--link);
+
+      /* Rainbow */
+      --rainbow-0: #6ee7b7;
+      --rainbow-1: #5eead4;
+      --rainbow-2: #8fdcff;
+      --rainbow-3: #6bbcff;
+      --rainbow-4: #9aa8ff;
+      --rainbow-5: #c7a6ff;
+      --rainbow-6: #e9a8ff;
+      --rainbow-7: #ff8fd8;
+      --rainbow-8: #ff6fb5;
+      --rainbow-9: #ff7a9c;
+      --rainbow-10: #ff9b73;
+      --rainbow-11: #ffd54f;
+      --rainbow-12: #ffe680;
+      --rainbow-13: #b8e986;
+      --rainbow-14: #6ee7b7;
+      --rainbow-15: #b6a2bf;
+    }
+  }
+}
+
+@theme inline static {
+  /* Primitive Colors (Do not change between light and dark) */
+  --white: oklch(100% 0 0);
+  --black: oklch(0% 0 0);
+  --snow: oklch(0.9911 0 0);
+  --eclipse: oklch(0.2103 0.0059 285.89);
+
+  /* Border */
+  --border-width: 1px;
+  --field-border-width: 0px;
+
+  /* Base radius */
+  --radius: 0.5rem;
+  --field-radius: calc(var(--radius) * 1.5);
+
+  /* Opacity */
+  --opacity-disabled: 0.5;
+}

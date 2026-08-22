@@ -7,7 +7,7 @@ export default {
     local: loadLocalCollection("src/assets/icons"),
   },
   plugins: [
-    clean({ patterns: ["src/modules/shared/components/icons"] }),
-    reactNative({ outputPath: "src/modules/shared/components/icons" }),
+    clean({ patterns: ["src/components/icons"] }),
+    reactNative({ outputPath: "src/components/icons" }),
   ],
 } satisfies MoniconConfig
