@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, "..")
 const CSS_PATH = resolve(ROOT, "src/global.css")
-const OUT_PATH = resolve(ROOT, "src/modules/ui/static-themes.ts")
+const OUT_PATH = resolve(ROOT, "src/core/theme/static-themes.ts")
 
 // --- oklch → hex conversion ---
 
@@ -186,7 +186,7 @@ function generate() {
   for (const token of THEME_TOKENS) {
     lines.push(`  ${toCamelCase(token)}: string`)
   }
-  lines.push('  rainbow: string[]')
+  lines.push("  rainbow: string[]")
   lines.push("}")
   lines.push("")
 
@@ -197,7 +197,9 @@ function generate() {
     return a.localeCompare(b)
   })
 
-  lines.push(`export const STATIC_THEMES: Record<string, { light: ThemeColors; dark: ThemeColors }> = {`)
+  lines.push(
+    `export const STATIC_THEMES: Record<string, { light: ThemeColors; dark: ThemeColors }> = {`
+  )
 
   for (const id of themeIds) {
     const modes = themes[id]
