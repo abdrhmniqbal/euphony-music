@@ -104,3 +104,12 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Duplicates merged**: `languageCode` (settings store) + `language` (preference store) → single `language`; `minSeconds` folded into `countAsPlayedConfig.minimumSeconds`; `themeId` moved into the main store.
 - **Renames for clarity**: `theme` → `themeMode`, `listAllow`/`listBlock` removed, `LoggingConfig{level}` flattened to `loggingLevel`.
 - Existing users' old kv-store keys (`startune::preference-store`, `startune::settings::*`) are not migrated; new key is `startune::preferences`. Prefs reset to defaults on upgrade — acceptable per rewrite direction; add a migration later only if requested.
+
+### P3 — Indexing
+
+- **Config access unified**: legacy's `ensure*ConfigLoaded()` per-setting loaders replaced by direct reads from the single preference store; scan pipeline reads all filters/split config once at run start.
+- **Filters are pure predicates** under `scan/folder-filter.ts` / `scan/duration-filter.ts` (unit-testable, no store or i18n coupling). Content-URI → path conversion ported for scoped-storage whitelist/blacklist matching.
+- **Metadata module split**: `metadata/extract.ts` (retriever + embedded ID3/MP4 lyrics + sidecar lookup), `metadata/artwork-cache.ts` (cache dir + DB bookkeeping), `metadata/normalize.ts` (pure normalization).
+- **Deezer artwork refresh deferred** to P13 (integrations); service no longer triggers it inline.
+- **`refreshIndexedMediaState`** now only invalidates react-query keys from a central `domains/library/query-keys.ts`; player cache reload (`loadTracks`) moves into P4 playback wiring.
+- Scan progress notification ported with throttled updates (visible 120ms / notification 750ms) and pause/resume/cancel actions.
