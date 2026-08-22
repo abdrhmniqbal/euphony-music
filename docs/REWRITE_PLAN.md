@@ -76,7 +76,7 @@ From legacy README + routes/modules:
 | P9  | Search          | search tab, search index, recent searches, recently added                                                                                                   | parser/index tests            |
 | P10 | Lyrics          | parsers (TTML/lrc/embedded), LRCLib fetch, player lyrics view                                                                                               | parser tests                  |
 | P11 | Onboarding      | first-run permission flow, restore entry                                                                                                                    | manual boot                   |
-| P12 | Settings        | hub + all sub-screens, backup/restore, auto-backup                                                                                                          | backup round-trip test        |
+| P12 | Settings        | hub + all sub-screens, backup/restore (settings + play history), auto-backup                                                                                | backup round-trip test        |
 | P13 | Integrations    | Last.fm scrobble/bio/artwork, Deezer artwork cache, Cast, widget, updates, about/licenses/whats-new, notification click routing polish                      | version-compare tests         |
 
 Phases may be split further while implementing; each commit stays revertable.
@@ -86,3 +86,13 @@ Phases may be split further while implementing; each commit stays revertable.
 - Port logic feature-by-feature from `src_dep/` but rewrite it against the new architecture; do not copy-paste modules wholesale.
 - When legacy behavior looks like a bug, flag it before porting it.
 - Old tests in `src_dep/**/__tests__` are reference material; re-add relevant ones per phase under the new paths.
+
+## Decisions log
+
+### P1 — Foundation
+
+- **i18n starts from scratch**: single fresh `en.json`, keys added only as features land. Legacy resources had duplicate/mergeable keys. `crowdin.yml` repointed to the new resources dir; other locales return via crowdin once the key set stabilizes.
+- **DB schema recreated as fresh migration 0000** from the legacy entity model with dead columns removed (`albums.total_tracks`, `albums.disc_count`, `artwork_cache.width/height/size`). Entity model otherwise kept 1:1 — it maps cleanly to features.
+- **DB file renamed** `emp_music_v2.db` → `startune.db`. Existing installs start a clean DB; the old file is left untouched on device (rollback-safe). A one-time legacy import can be added later if upgrade data preservation becomes a requirement.
+- Client pragmas: WAL mode + foreign keys ON.
+- Theme CSS tokens copied verbatim to `src/global.css` (interface parity); static theme generator output moved to `src/core/theme/static-themes.ts`.
