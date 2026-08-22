@@ -127,6 +127,7 @@ export interface PreferenceState {
 
   // Indexing
   rescanOnLaunch: boolean
+  folderFilterConfig: FolderFilterConfig
   optimizedImageSave: boolean
   downsamplingProcessor: boolean
 

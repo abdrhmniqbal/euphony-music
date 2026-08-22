@@ -131,6 +131,7 @@ export function getDefaultPreferenceState(): PreferenceState {
     queueAwareNext: false,
 
     rescanOnLaunch: true,
+    folderFilterConfig: DEFAULT_FOLDER_FILTER_CONFIG,
     optimizedImageSave: true,
     downsamplingProcessor: true,
 
