@@ -96,3 +96,11 @@ Phases may be split further while implementing; each commit stays revertable.
 - **DB file renamed** `emp_music_v2.db` → `startune.db`. Existing installs start a clean DB; the old file is left untouched on device (rollback-safe). A one-time legacy import can be added later if upgrade data preservation becomes a requirement.
 - Client pragmas: WAL mode + foreign keys ON.
 - Theme CSS tokens copied verbatim to `src/global.css` (interface parity); static theme generator output moved to `src/core/theme/static-themes.ts`.
+
+### P2 — Preferences
+
+- **Unified store**: legacy split preferences across three systems (persisted `preferenceStore`, persisted `viewPreferenceStore`, in-memory `settingsStore` hydrated by a 13-entry registry of per-setting loader files). Replaced with two persisted zustand stores under `src/core/preferences/`: one app-preferences store (all configs merged in) and one view-preferences store. The registry and per-setting loader files are gone; zustand persist + a defaults-hydrating merge handles loading and corruption recovery.
+- **Dead preference fields dropped** after confirming zero consumers: `separators`, `rcNotification`, `checkForUpdates`, `listAllow`/`listBlock` (indexer actually uses `folderFilterConfig`), `activeCustomTheme*` (unfinished custom-theme feature).
+- **Duplicates merged**: `languageCode` (settings store) + `language` (preference store) → single `language`; `minSeconds` folded into `countAsPlayedConfig.minimumSeconds`; `themeId` moved into the main store.
+- **Renames for clarity**: `theme` → `themeMode`, `listAllow`/`listBlock` removed, `LoggingConfig{level}` flattened to `loggingLevel`.
+- Existing users' old kv-store keys (`startune::preference-store`, `startune::settings::*`) are not migrated; new key is `startune::preferences`. Prefs reset to defaults on upgrade — acceptable per rewrite direction; add a migration later only if requested.
