@@ -8,5 +8,6 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "exclude": ["node_modules", "src_dep", "android", "vitest.config.mts"]
 }

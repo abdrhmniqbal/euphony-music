@@ -2,7 +2,6 @@
   "name": "startune-music",
   "version": "1.0.5",
   "private": true,
-  "packageManager": "pnpm@11.22.0",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
@@ -16,9 +15,10 @@
     "lint:fix": "oxlint . --fix",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "oxlint . && vitest run"
+    "check": "oxlint . && tsc --noEmit && vitest run"
   },
   "dependencies": {
     "@animatereactnative/marquee": "^0.5.2",
@@ -96,6 +96,7 @@
     "typescript": "~6.0.3",
     "vitest": "^4.1.9"
   },
+  "packageManager": "pnpm@11.22.0",
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
