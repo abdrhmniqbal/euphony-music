@@ -113,3 +113,16 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Deezer artwork refresh deferred** to P13 (integrations); service no longer triggers it inline.
 - **`refreshIndexedMediaState`** now only invalidates react-query keys from a central `domains/library/query-keys.ts`; player cache reload (`loadTracks`) moves into P4 playback wiring.
 - Scan progress notification ported with throttled updates (visible 120ms / notification 750ms) and pause/resume/cancel actions.
+
+### P4 — Playback engine
+
+- **Dual-store pattern preserved**: persisted `playback/playback-store.ts` (queue, active track, position, shuffle/repeat) holds source of truth; in-memory `playback/player-store.ts` is the UI read-model. The subscriber that projects persisted state into the read-model lands with P5/P6 (no UI consumers yet).
+- **Queue re-resolution stays lazy**: `getTrack` resolves from DB on demand; queue arrays store keys (`trackId` or `trackId__uniqueId` for duplicates), so stale rows self-heal on access.
+- **Pure queue math extracted** to `actions/queue-state.ts` (move/remove/insert calculations) with unit tests; remove semantics match legacy — the active track is never dropped from the queue, `activeTrackRemoved` only flags a native-player reload of the same slot.
+- **Crossfade ported verbatim** (`crossfade.ts` + `crossfade-math.ts`, legacy tests included); config now read from the unified preference store.
+- **Sleep timer ported** with all five modes (minutes/playCount/trackEnd/clock/off); state lives in the player store.
+- **`applyReplayGainToTrack` simplified**: `native-track.ts` maps tracks with `replayGain: 0`; real gain analysis deferred to P13.
+- **Mixes return empty** until P8; widget revalidation and colors extraction stubbed out until P13/P6; intents (`playExternalFileUri`) deferred to P11.
+- **Scrobbler hook point kept**: `service.playTrack` calls `activity.handleTrackActivated` (placeholder); play-count + history writes happen in `listeners.ts` after the count-as-played threshold, invalidating tracks/history query keys.
+- **Startup wiring**: `playback/runtime.ts` (setupPlayer → registerPlaybackListeners → restoreActiveTrack → restoreCurrentTrackForStartup) invoked from the root layout after the DB gate; last-position restore honors the `restoreLastPosition` preference.
+- **New domains support**: `domains/tracks/repository.ts` (toDataTrack with artist split display, maybeGetTrack, addPlayedTrack) and `domains/library/queue-sources.ts` (album/artist/genre/folder/playlist/favorites id resolution; playlist keyed by ID now instead of name).
