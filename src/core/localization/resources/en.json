@@ -10,5 +10,32 @@
     "library": "Library",
     "search": "Search",
     "settings": "Settings"
+  },
+  "indexing": {
+    "scanning": "Scanning files...",
+    "preparing": "Preparing...",
+    "processing": "Processing tracks...",
+    "cleanup": "Cleaning up...",
+    "complete": "Library Updated",
+    "paused": "Paused",
+    "tracksIndexed": "{{count}} tracks indexed",
+    "tracksIndexed_one": "{{count}} track indexed",
+    "notification": {
+      "channelName": "Library Indexing",
+      "channelDescription": "Shows music library indexing progress",
+      "pause": "Pause",
+      "resume": "Resume",
+      "cancel": "Cancel",
+      "indexingLibrary": "Indexing music library",
+      "preparingScan": "Preparing your library scan...",
+      "scanningFiles": "Scanning music files",
+      "processingMetadata": "Processing music metadata",
+      "complete": "Library indexing complete",
+      "tracksUpdated": "{{count}} tracks updated",
+      "tracksUpdated_one": "{{count}} track updated",
+      "failed": "Library indexing failed",
+      "tapToReopen": "Tap to reopen the app and try again",
+      "paused": "Library indexing paused"
+    }
   }
 }
