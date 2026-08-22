@@ -10,7 +10,7 @@ This guide does not cover Play Store publishing.
 ## Prerequisites
 
 1. Node.js `20.x`
-2. Bun `1.2.x`
+2. pnpm (latest)
 3. JDK `17`
 4. Android SDK configured (`ANDROID_HOME` / `ANDROID_SDK_ROOT`)
 5. Android device or emulator (for debug install)
@@ -20,13 +20,13 @@ This guide does not cover Play Store publishing.
 ### 1. Install dependencies
 
 ```bash
-bun install --frozen-lockfile
+pnpm install --frozen-lockfile
 ```
 
 ### 2. Run debug build on device/emulator
 
 ```bash
-bun run android
+pnpm run android
 ```
 
 ### 3. Build release APK (local)

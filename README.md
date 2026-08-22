@@ -44,26 +44,26 @@ Download the latest APK from:
 
 ### Requirements
 
-- `bun` package manager
+- `pnpm` package manager
 - Node.js
 - Expo / Android Studio for local Android builds
 
 ### Local setup
 
 ```bash
-bun install
-bun run start
+pnpm install
+pnpm run start
 ```
 
 Useful commands:
 
 ```bash
-bun run android      # Build and run on Android
-bun run lint         # Lint using oxlint
-bun run format       # Format files using oxfmt
-bun run format:check # Validate file formatting
-bun run test         # Run unit tests via vitest
-bun run check        # Run lint + tests
+pnpm run android    # Build and run on Android
+pnpm run lint       # Lint using oxlint
+pnpm run format     # Format files using oxfmt
+pnpm run format:check # Validate file formatting
+pnpm run test       # Run unit tests via vitest
+pnpm run check      # Run lint + tests
 ```
 
 ## Tech Stack

@@ -1,0 +1,8 @@
+# hoisted keeps node_modules flat so Gradle/Metro/native codegen behave like a
+# standard install; switch to isolated only after verifying the native toolchain.
+nodeLinker: hoisted
+
+# react-native-audio-browser is git-hosted; its prepare script must be allowed to run.
+allowBuilds:
+  esbuild: set this to true or false
+  react-native-audio-browser@https://codeload.github.com/MissingCore/react-native-audio-browser/tar.gz/05f7af440edc29222d12a0acc58234f5cb51433d: true

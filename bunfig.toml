@@ -1,8 +1,0 @@
-[install]
-# Match the previously-hoisted pnpm layout the app expects.
-linker = "hoisted"
-
-# esbuild needs its postinstall to fetch the platform binary (used by Metro + vitest).
-trust = [
-  "esbuild",
-]

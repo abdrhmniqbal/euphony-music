@@ -1,6 +1,6 @@
 # Purpose: Builds signed Android release APKs, creates a draft GitHub Release, and delegates release note attachment.
 # Caller: GitHub tag pushes and manual workflow_dispatch runs.
-# Dependencies: actions/checkout, oven-sh/setup-bun, setup-java, Gradle cache, Android Gradle project, release signing secrets.
+# Dependencies: actions/checkout, pnpm/action-setup, setup-node, setup-java, Gradle cache, Android Gradle project, release signing secrets.
 # Main Functions: Resolve release tag, derive app version, build universal and ABI APKs, upload artifacts, create draft release.
 # Side Effects: Generates signed APK files, uploads workflow artifacts, creates or updates a draft GitHub Release.
 
@@ -37,15 +37,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+          cache: pnpm
 
       - name: Setup JDK 18
         uses: actions/setup-java@v4
@@ -57,7 +56,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Generate native bindings
         run: |
@@ -79,7 +78,7 @@ jobs:
 
       - name: Derive app version from tag
         run: |
-          bun <<'NODE'
+          node <<'NODE'
           const tag = process.env.RELEASE_TAG || ''
           const match = tag.match(/^v(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?$/)
 
@@ -113,7 +112,7 @@ jobs:
 
       - name: Apply version to app config
         run: |
-          bun <<'NODE'
+          node <<'NODE'
           const fs = require('node:fs')
 
           const versionName = process.env.APP_VERSION_NAME
