@@ -3,7 +3,10 @@
     "appName": "Startune",
     "ok": "OK",
     "cancel": "Cancel",
-    "retry": "Retry"
+    "retry": "Retry",
+    "feedback": {
+      "addedToQueue": "Added to queue: {{name}}"
+    }
   },
   "navigation": {
     "home": "Home",
@@ -37,5 +40,9 @@
       "tapToReopen": "Tap to reopen the app and try again",
       "paused": "Library indexing paused"
     }
+  },
+  "term": {
+    "allTracks": "Tracks",
+    "favoritesLabel": "Favorites"
   }
 }
