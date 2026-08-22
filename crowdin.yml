@@ -4,8 +4,8 @@ base_path: .
 preserve_hierarchy: false
 
 files:
-  - source: /src/modules/localization/resources/en.json
-    translation: /src/modules/localization/resources/%two_letters_code%.json
+  - source: /src/core/localization/resources/en.json
+    translation: /src/core/localization/resources/%two_letters_code%.json
     languages_mapping:
       two_letters_code:
         pt-BR: pt

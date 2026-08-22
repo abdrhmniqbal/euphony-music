@@ -1,0 +1,14 @@
+{
+  "common": {
+    "appName": "Startune",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "retry": "Retry"
+  },
+  "navigation": {
+    "home": "Home",
+    "library": "Library",
+    "search": "Search",
+    "settings": "Settings"
+  }
+}
