@@ -276,6 +276,8 @@
   "settings": {
     "appearance": {
       "title": "Appearance",
+      "systemSuffix": "(system default)",
+      "languageDescription": "{{language}}",
       "options": {
         "light": "Light",
         "dark": "Dark",
@@ -293,6 +295,116 @@
     "advanced": {
       "disableBatteryOptimization": "Battery optimization",
       "disableBatteryOptimizationAndroid": "Allow background scanning without interruptions."
+    },
+    "routes": {
+      "index": {
+        "title": "Settings"
+      },
+      "appearance": {
+        "title": "Appearance",
+        "description": "Theme and language"
+      },
+      "audio": {
+        "title": "Audio",
+        "description": "Playback and crossfade"
+      },
+      "library": {
+        "title": "Library",
+        "description": "Folders, filters and indexing"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Indexing and playback notifications"
+      },
+      "integrations": {
+        "title": "Integrations",
+        "description": "Connect external services"
+      },
+      "backup": {
+        "title": "Backup & restore",
+        "description": "Back up settings and history"
+      },
+      "advanced": {
+        "title": "Advanced",
+        "description": "Power-user options"
+      },
+      "about": {
+        "title": "About",
+        "description": "Version, licenses and links"
+      },
+      "language": {
+        "title": "Language"
+      },
+      "folderFilters": {
+        "title": "Folder filters"
+      },
+      "splitMultipleValues": {
+        "title": "Split multiple values"
+      },
+      "trackDurationFilter": {
+        "title": "Track duration filter"
+      },
+      "logLevel": {
+        "title": "Log level"
+      },
+      "artistSplitMode": {
+        "title": "Artist split mode"
+      },
+      "whatsNew": {
+        "title": "What's new"
+      },
+      "themeMode": {
+        "title": "Theme mode",
+        "description": "Light, dark or follow the system"
+      },
+      "theme": {
+        "title": "Theme",
+        "description": "Current theme: {{theme}}"
+      },
+      "onboarding": {
+        "title": "Run onboarding again"
+      },
+      "libraryTabs": {
+        "title": "Library tabs"
+      },
+      "autoBackup": {
+        "title": "Automatic backups"
+      }
+    },
+    "search": {
+      "placeholder": "Search settings",
+      "resultCount": "{{count}} matching settings",
+      "noResults": "No settings found"
+    },
+    "language": {
+      "english": "English",
+      "englishNative": "English",
+      "indonesian": "Indonesian",
+      "indonesianNative": "Bahasa Indonesia",
+      "hindi": "Hindi",
+      "hindiNative": "हिन्दी",
+      "chineseSimplified": "Chinese (Simplified)",
+      "chineseSimplifiedNative": "简体中文",
+      "chineseTraditional": "Chinese (Traditional)",
+      "chineseTraditionalNative": "繁體中文",
+      "japanese": "Japanese",
+      "japaneseNative": "日本語",
+      "russian": "Russian",
+      "russianNative": "Русский",
+      "german": "German",
+      "germanNative": "Deutsch",
+      "french": "French",
+      "frenchNative": "Français",
+      "korean": "Korean",
+      "koreanNative": "한국어",
+      "italian": "Italian",
+      "italianNative": "Italiano",
+      "spanish": "Spanish",
+      "spanishNative": "Español",
+      "dutch": "Dutch",
+      "dutchNative": "Nederlands",
+      "portugueseBrazil": "Portuguese (Brazil)",
+      "portugueseBrazilNative": "Português (Brasil)"
     }
   }
 }
