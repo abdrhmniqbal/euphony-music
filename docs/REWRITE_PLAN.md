@@ -174,3 +174,10 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Mix detail** (`(search)/mix/[id]`): header artwork collage, generated-at/duration meta, play/shuffle actions, TrackList, save-to-playlist.
 - **Interactive search**: auto-focused input, recent searches list (type badges, per-row remove, clear all), tabbed results (All/Tracks/Albums/Artists/Playlists) in one LegendList with section headers and empty state; rows navigate to artist/album/playlist details or play tracks through the search queue context; long-press opens TrackActionSheet/CollectionActionSheet; result presses record recent searches.
 - **Player menu navigation**: goToArtist (ValueNavigationSheet chooser when raw artist splits to multiple names) and goToAlbum entries wired in both the player action sheet and TrackActionSheet.
+
+### P10 — Lyrics
+
+- **Parser** (`domains/lyrics/parser.ts`): ported verbatim with tightened timestamp types — TTML/JSON-timed/synced JSON/LRC/plain-text detection, word-level timing (span + angle-tag forms), word-group splitting for karaoke rendering; 15 parser tests re-added under `__tests__/parser.test.ts`.
+- **Source resolution** (`domains/lyrics/source.ts`): embedded metadata → DB column → LRCLib fetch (persisted back to `tracks.lyrics`, negative-cache on 404), in-memory query cache keyed by track id/uri/hash/scanTime.
+- **Hook** (`domains/lyrics/use-lyrics.ts`): mode resolution honoring the session karaoke toggle, binary-search active-line index over playback time, auto-scroll with measured offsets, user-scroll suppression and resume delay.
+- **Player lyrics view** (`blocks/player/lyrics/*`): static/synced/timed renderers, word-level karaoke progress via animated width clip driven by an interpolated shared value, tap-to-seek lines, karaoke toggle + font-scale cycle pills; replaces the placeholder in the full player's expanded view. Karaoke/font-scale state added to `core/ui/store`.
