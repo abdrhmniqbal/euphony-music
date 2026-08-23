@@ -88,3 +88,18 @@ export function isAssetAllowedByFolderFilters(
 
   return true
 }
+
+export function getFolderNameFromPath(path: string): string {
+  const normalized = normalizePath(path)
+  if (!normalized) {
+    return ""
+  }
+
+  const parts = normalized.split("/").filter(Boolean)
+  const segment = parts[parts.length - 1] || normalized
+  try {
+    return decodeURIComponent(segment)
+  } catch {
+    return segment
+  }
+}

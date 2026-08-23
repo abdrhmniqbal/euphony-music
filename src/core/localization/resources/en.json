@@ -18,11 +18,13 @@
       "failedToUpdatePlaylist": "Failed to update playlist",
       "failedToCreatePlaylist": "Failed to create playlist",
       "addedToPlaylist": "Added to playlist",
-      "failedToAddToPlaylist": "Failed to add to playlist"
+      "failedToAddToPlaylist": "Failed to add to playlist",
+      "folderAdded": "Folder added"
     },
     "playAll": "Play",
     "shuffle": "Shuffle",
-    "goBack": "Go back"
+    "goBack": "Go back",
+    "next": "Next"
   },
   "navigation": {
     "home": "Home",
@@ -251,6 +253,46 @@
       "album": "Albums",
       "artist": "Artists",
       "playlist": "Playlists"
+    }
+  },
+  "onboarding": {
+    "welcomePrefix": "Welcome to",
+    "welcomeDescription": "Let's set up your music library in a few quick steps.",
+    "folders": {
+      "title": "Library folders"
+    },
+    "permissions": {
+      "title": "Permissions",
+      "fileAccess": "Media library access",
+      "fileAccessDescription": "Needed to scan and play the music stored on your device.",
+      "notifications": "Playback notifications",
+      "notificationsDescription": "Shows media controls for background playback.",
+      "grant": "Grant",
+      "granted": "Granted",
+      "disable": "Disable",
+      "disabled": "Disabled"
+    }
+  },
+  "settings": {
+    "appearance": {
+      "title": "Appearance",
+      "options": {
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System default"
+      }
+    },
+    "library": {
+      "filterMode": "Folder filtering",
+      "filterModeDescription": "Choose whether added folders include or exclude music from your library.",
+      "folders": "Folders",
+      "addNewFolder": "Add folder",
+      "noFoldersAdded": "No folders added",
+      "noFoldersAddedMessage": "Without filters every folder on your device is scanned."
+    },
+    "advanced": {
+      "disableBatteryOptimization": "Battery optimization",
+      "disableBatteryOptimizationAndroid": "Allow background scanning without interruptions."
     }
   }
 }
