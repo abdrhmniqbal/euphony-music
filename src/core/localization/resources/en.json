@@ -92,7 +92,11 @@
       "numberOfTracks": "Number of tracks",
       "type": "Type",
       "addedToFavorites": "Date favorited"
-    }
+    },
+    "genre": "Genre",
+    "featuredOn": "Featured on",
+    "allTracks": "All tracks",
+    "artistInfo": "About"
   },
   "player": {
     "upNext": "Up Next",
@@ -154,6 +158,11 @@
       "format": "Format",
       "quality": "Quality",
       "playCount": "Plays"
+    }
+  },
+  "home": {
+    "empty": {
+      "topTracksTitle": "No top tracks yet"
     }
   }
 }
