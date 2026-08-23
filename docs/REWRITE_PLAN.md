@@ -196,3 +196,12 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Backup format** (`domains/backup/backup.ts`): `{version:1, preferences, playHistory}` — preferences are whitelisted slices restored by key match (folder filters re-sanitized), play history rows chunk-inserted with `onConflictDoNothing`. Auto-backup runs from `domains/indexer/bootstrap.ts` post-startup work alongside the auto-scan gate (`canStartIndexingNow`, media-library permission aware).
 - **File logging** now live: `core/log/service.ts` appends to `crash-logs.txt` (1MB cap) and `shareCrashLogs` opens the share sheet.
 - **Deferred to P13**: Last.fm screen content, app-update check/whats-new/release-notes (updates module not yet ported; integrations row disabled).
+
+### P13 — Integrations
+
+- **Deezer** (`domains/deezer/`): pure artist-candidate matching (exact → normalized → top fan, with tests) + rate-limited artwork refresh (50 req/5s sliding window) that downloads missing artist art into the artwork cache and bumps `updatedAt`; kicked off after each indexing run completes.
+- **Last.fm** (`domains/lastfm/`): SecureStore-backed credential auth through the Startune companion service, scrobble engine (now-playing on track start, scrobble at configurable % of duration with minimum-duration gate) wired into playback listeners, full settings screen (connect sheet, scrobble toggle, sliders, clear credentials) under `/settings/lastfm` (integrations row enabled).
+- **Cast**: `useCastAwarePlayback` ported for controls/progress bar; CastButton restored to the player header. Remote play/pause/seek/queue commands route through `react-native-google-cast`.
+- **Updates + What's New** (`domains/updates/`): GitHub releases check (draft/prerelease filtering via `includePrereleases`, APK asset resolution), update prompt bottom sheet with release-notes markdown and download-and-install via native AppUpdater module, startup check deferred 8s, notification channel + scheduled update notifications with `lastNotifiedVersion` dedupe, `/settings/whats-new` rendering CHANGELOG.md notes up to the current version.
+- **Notification routing** (`core/notifications/`): response-key dedupe, cold-launch replay guard (ignore responses older than process start), indexer pause/resume/cancel action dispatch, app-update tap opens prompt, route data pushes through a registered router handler.
+- **Widget**: remains a no-op stub as in legacy (`revalidateWidgets`/`resetWidgets`).
