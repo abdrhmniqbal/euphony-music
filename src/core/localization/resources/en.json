@@ -19,7 +19,10 @@
       "failedToCreatePlaylist": "Failed to create playlist",
       "addedToPlaylist": "Added to playlist",
       "failedToAddToPlaylist": "Failed to add to playlist",
-      "folderAdded": "Folder added"
+      "folderAdded": "Folder added",
+      "trackDurationUpdated": "Track duration filter updated",
+      "libraryReindexStarted": "Library re-index started",
+      "folderFiltersApplied": "Folder filters applied — rescanning"
     },
     "playAll": "Play",
     "shuffle": "Shuffle",
@@ -285,12 +288,39 @@
       }
     },
     "library": {
+      "sections": {
+        "content": "Content & Filters",
+        "interface": "Library Interface",
+        "indexing": "Indexing & Scanning"
+      },
       "filterMode": "Folder filtering",
       "filterModeDescription": "Choose whether added folders include or exclude music from your library.",
       "folders": "Folders",
       "addNewFolder": "Add folder",
       "noFoldersAdded": "No folders added",
-      "noFoldersAddedMessage": "Without filters every folder on your device is scanned."
+      "noFoldersAddedMessage": "Without filters every folder on your device is scanned.",
+      "folderFiltersDescription": "Include or exclude folders from your library",
+      "trackDurationFilter": "Track duration filter",
+      "countAsPlayed": "Count as played",
+      "countAsPlayedValue": "After {{value}}% played",
+      "countAsPlayedDescription": "Minimum progress before a track counts as played",
+      "splitMultipleValues": "Split multiple values",
+      "artistCharDelimitersDescription": "Characters used to split artist and album names",
+      "libraryTabsDescription": "Reorder and show or hide library tabs",
+      "autoScan": "Automatic scanning",
+      "autoScanDescription": "Scan for new music automatically",
+      "initialScan": "Scan on first launch",
+      "initialScanDescription": "Index your library the first time the app starts",
+      "rescanImmediately": "Rescan immediately after changes",
+      "rescanImmediatelyDescription": "Start a scan as soon as folders change",
+      "reindexLibrary": "Re-index library",
+      "reindexInProgress": "Re-index in progress…",
+      "reindexDescription": "Rebuild the entire library from storage",
+      "reindexDialogTitle": "Re-index library?",
+      "reindexDialogDescription": "Your library is rebuilt from scratch. This can take a while.",
+      "reindexLaterAction": "Later",
+      "reindexAction": "Re-index",
+      "applyFilters": "Apply filters"
     },
     "advanced": {
       "disableBatteryOptimization": "Battery optimization",
@@ -405,6 +435,21 @@
       "dutchNative": "Nederlands",
       "portugueseBrazil": "Portuguese (Brazil)",
       "portugueseBrazilNative": "Português (Brasil)"
+    },
+    "trackDuration": {
+      "noFilter": "No filter",
+      "noFilterDescription": "Keep every track regardless of duration",
+      "min30": "Longer than 30 seconds",
+      "min30Description": "Hide tracks shorter than 30 seconds",
+      "min60": "Longer than 1 minute",
+      "min60Description": "Hide tracks shorter than 1 minute",
+      "min120": "Longer than 2 minutes",
+      "min120Description": "Hide tracks shorter than 2 minutes",
+      "custom": "Custom minimum",
+      "customDescription": "Pick a custom minimum duration",
+      "customValue": "At least {{value}}",
+      "minimumDuration": "Minimum duration",
+      "changesHint": "Changes rescan your library when you release the slider."
     }
   }
 }
