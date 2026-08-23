@@ -11,6 +11,8 @@ import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalNextIcon from "@/components/icons/local/next"
 import LocalCancel01Icon from "@/components/icons/local/cancel-01"
+import LocalUserIcon from "@/components/icons/local/user"
+import LocalVynil02Icon from "@/components/icons/local/vynil-02"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { MenuRow } from "@/components/ui/menu-row"
 import { ICON_SIZES } from "@/lib/layout"
@@ -21,6 +23,10 @@ import { addToQueue, queueTrackNext } from "@/playback/queue-actions"
 import type { PlayerTrack } from "@/playback/types"
 import { TrackMetadataSheet } from "./track-metadata-sheet"
 import { PlaylistPickerSheet } from "./playlist-picker-sheet"
+import { ValueNavigationSheet } from "./value-navigation-sheet"
+import { useGuardedRouter } from "@/core/navigation"
+import { getPreferenceState } from "@/core/preferences/store"
+import { splitArtistsValue } from "@/domains/tracks/split-engine"
 import { useRemoveTrackFromPlaylist } from "@/domains/playlists/queries"
 import { showAppToast } from "@/core/ui/toast"
 
@@ -41,8 +47,10 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const theme = useThemeColors()
   const toggleFavoriteMutation = useToggleFavorite()
   const removeTrackFromPlaylistMutation = useRemoveTrackFromPlaylist()
+  const router = useGuardedRouter()
   const [isMetadataSheetOpen, setIsMetadataSheetOpen] = React.useState(false)
   const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = React.useState(false)
+  const [isArtistSelectionOpen, setIsArtistSelectionOpen] = React.useState(false)
 
   const { data: isFavoriteData = false } = useIsFavorite("track", track?.id ?? "")
 
@@ -157,6 +165,34 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 }}
               />
             ) : null}
+            <MenuRow
+              icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("player.menu.goToArtist")}
+              onPress={() => {
+                onClose()
+                const source = track.rawArtistName || track.artistName || track.artist || ""
+                const names = Array.from(
+                  new Set(splitArtistsValue(source, getPreferenceState().splitMultipleValueConfig))
+                ).filter((name) => name.trim().length > 0)
+                if (names.length === 1) {
+                  router.push({ pathname: "/artist/[name]", params: { name: names[0].trim() } })
+                } else if (names.length > 1) {
+                  setIsArtistSelectionOpen(true)
+                }
+              }}
+            />
+            <MenuRow
+              icon={<LocalVynil02Icon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("player.menu.goToAlbum")}
+              onPress={() => {
+                const albumName = track.album?.trim()
+                if (!albumName) {
+                  return
+                }
+                onClose()
+                router.push({ pathname: "/album/[name]", params: { name: albumName } })
+              }}
+            />
             <MenuRow
               icon={<LocalInfoIcon fill="none" width={22} height={22} color={theme.muted} />}
               label={t("track.viewMetadata")}

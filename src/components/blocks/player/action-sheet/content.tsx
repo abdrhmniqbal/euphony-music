@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import type { PlayerTrack } from "@/playback/types"
@@ -11,7 +11,10 @@ import { PlayerActionMenu } from "./menu"
 import { SleepTimerSection } from "./sleep-timer-section"
 import { useSleepTimerDraft } from "./use-sleep-timer-draft"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
+import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
+import { splitArtistsValue } from "@/domains/tracks/split-engine"
+import { getPreferenceState } from "@/core/preferences/store"
 import { useGuardedRouter } from "@/core/navigation"
 
 interface PlayerActionSheetProps {
@@ -27,6 +30,7 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
   const queueTracks = usePlayerTracks()
   const [isSleepTimerOpen, setIsSleepTimerOpen] = useState(false)
   const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = useState(false)
+  const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const sleepTimerDraft = useSleepTimerDraft(t)
 
   if (!track) {
@@ -55,6 +59,47 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
     router.push("/playlist/form")
   }
 
+  const artistNames = useMemo(() => {
+    if (!track?.artist) {
+      return [] as string[]
+    }
+    const source = track.rawArtistName || track.artistName || track.artist
+    return Array.from(
+      new Set(splitArtistsValue(source, getPreferenceState().splitMultipleValueConfig))
+    )
+  }, [track])
+
+  const handleOpenArtist = (name: string) => {
+    const normalized = name.trim()
+    if (!normalized) {
+      return
+    }
+    setIsArtistSelectionOpen(false)
+    router.push({ pathname: "/artist/[name]", params: { name: normalized } })
+  }
+
+  const handleOpenArtistChooser = () => {
+    const normalized = artistNames.map((name) => name.trim()).filter((name) => name.length > 0)
+    if (normalized.length === 0) {
+      return
+    }
+
+    if (normalized.length === 1) {
+      handleOpenArtist(normalized[0])
+      return
+    }
+    onOpenChange(false)
+    setIsArtistSelectionOpen(true)
+  }
+
+  const handleOpenAlbum = () => {
+    const albumName = track?.album?.trim()
+    if (!albumName) {
+      return
+    }
+    router.push({ pathname: "/album/[name]", params: { name: albumName } })
+  }
+
   return (
     <>
       <ActionSheet.Root isOpen={visible} onOpenChange={onOpenChange}>
@@ -62,10 +107,14 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
           sleepTimerSummary={sleepTimerDraft.summary}
           labels={{
             sleepTimer: t("player.sleepTimer.title"),
+            goToArtist: t("player.menu.goToArtist"),
+            goToAlbum: t("player.menu.goToAlbum"),
             addToPlaylist: t("track.addToPlaylist"),
             saveQueueToPlaylist: t("playlist.saveQueueToPlaylist"),
           }}
           onOpenSleepTimer={handleOpenSleepTimerSheet}
+          onOpenArtistChooser={handleOpenArtistChooser}
+          onOpenAlbum={handleOpenAlbum}
           onAddToPlaylist={handleAddToPlaylist}
           onSaveQueueToPlaylist={handleSaveQueueToPlaylist}
         />
@@ -75,6 +124,13 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
         isOpen={isPlaylistPickerOpen}
         onClose={() => setIsPlaylistPickerOpen(false)}
         trackIds={currentTrackId ? [currentTrackId] : []}
+      />
+      <ValueNavigationSheet
+        isOpen={isArtistSelectionOpen}
+        title={t("player.menu.goToArtist")}
+        values={artistNames}
+        onOpenChange={setIsArtistSelectionOpen}
+        onSelectValue={handleOpenArtist}
       />
 
       <SleepTimerSection
