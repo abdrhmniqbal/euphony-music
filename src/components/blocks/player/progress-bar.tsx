@@ -12,7 +12,8 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { usePlaybackProgressState } from "@/playback/selectors"
-import { seekTo } from "@/playback/actions/controls"
+import { seekTo as localSeekTo } from "@/playback/actions/controls"
+import { useCastAwarePlayback } from "./use-cast-aware-playback"
 
 type AnimatedTimeInputProps = TextInputProps & { text?: string }
 
@@ -27,6 +28,8 @@ interface ProgressBarProps {
 }
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({ compact = false }) => {
+  const cast = useCastAwarePlayback(false)
+  const seekTo = cast.seek
   const { currentTime, duration } = usePlaybackProgressState()
   const seekProgress = useSharedValue(0)
   const isSeeking = useSharedValue(false)

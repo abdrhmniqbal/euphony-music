@@ -2,6 +2,7 @@ import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
 import type { SharedValue } from "react-native-reanimated"
+import { CastButton } from "react-native-google-cast"
 
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 
@@ -24,7 +25,9 @@ export const PlayerHeader: React.FC<PlayerHeaderProps> = ({
 }) => {
   return (
     <View className="relative mt-2 min-h-16 justify-center">
-      {/* Cast button lands with the integrations phase; the layout slot is kept. */}
+      <View pointerEvents="box-none" className="absolute left-0 z-20 flex-row items-center">
+        <CastButton style={{ width: 24, height: 24, tintColor: "white" }} />
+      </View>
 
       <PlayerDragHandle dragY={dragY} onClose={onClose} />
 

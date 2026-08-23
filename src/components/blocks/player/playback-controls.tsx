@@ -11,7 +11,8 @@ import LocalPreviousSolidIcon from "@/components/icons/local/previous-solid"
 import LocalRepeatIcon from "@/components/icons/local/repeat"
 import LocalRepeatOne01Icon from "@/components/icons/local/repeat-one-01"
 import LocalShuffleIcon from "@/components/icons/local/shuffle"
-import { toggleRepeatMode, togglePlayback, playNext, playPrevious } from "@/playback/controls"
+import { toggleRepeatMode, togglePlayback as localTogglePlayback, playNext as localPlayNext, playPrevious as localPlayPrevious } from "@/playback/controls"
+import { useCastAwarePlayback } from "./use-cast-aware-playback"
 import { useIsShuffled, usePlaybackRepeatMode } from "@/playback/selectors"
 import { toggleShuffleMode } from "@/playback/queue-actions"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
@@ -33,6 +34,10 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   const gapClass = compact ? "gap-6" : "gap-8"
   const repeatMode = usePlaybackRepeatMode()
   const isShuffled = useIsShuffled()
+  const cast = useCastAwarePlayback(isPlaying)
+  const togglePlayback = cast.togglePlayback
+  const playNext = cast.playNext
+  const playPrevious = cast.playPrevious
 
   const getRepeatColor = (mode: RepeatModeType) => {
     return mode === "off" ? "white" : theme.accent
