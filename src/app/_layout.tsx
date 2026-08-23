@@ -2,7 +2,7 @@ import "../global.css"
 import "../core/localization/i18n"
 
 import { QueryClientProvider } from "@tanstack/react-query"
-import { Stack } from "expo-router"
+import { Stack, useRouter } from "expo-router"
 import { HeroUINativeProvider } from "heroui-native"
 import { useEffect } from "react"
 
@@ -14,6 +14,11 @@ import { startPlaybackRuntime } from "@/playback/runtime"
 import { startPostStartupWork } from "@/domains/indexer/bootstrap"
 import { AppUpdateSheet } from "@/domains/updates/ui/app-update-sheet"
 import { checkStartupAppUpdate } from "@/domains/updates/app-update-runtime"
+import {
+  ensureNotificationRuntimeStarted,
+  markRouterReady,
+  setNotificationRouteHandler,
+} from "@/core/notifications/notification-runtime"
 
 export default function RootLayout() {
   return (
@@ -47,7 +52,18 @@ export default function RootLayout() {
 }
 
 function StartupEffects() {
+  const router = useRouter()
+
   useEffect(() => {
+    setNotificationRouteHandler((route) => {
+      if (!router.canGoBack() && route !== "/(main)/(home)") {
+        router.replace("/(main)/(home)")
+      }
+      router.push(route as never)
+    })
+    ensureNotificationRuntimeStarted()
+    markRouterReady()
+
     void startPlaybackRuntime()
     startPostStartupWork()
     const timer = setTimeout(() => {
