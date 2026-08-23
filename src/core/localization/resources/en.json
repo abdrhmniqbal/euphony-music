@@ -185,8 +185,18 @@
     }
   },
   "home": {
+    "recentlyPlayed": "Recently played",
+    "topTracks": "Top tracks",
+    "topTracksToday": "Today",
+    "topTracksThisWeek": "This week",
+    "topTracksThisMonth": "This month",
+    "topTracksAllTime": "All time",
     "empty": {
-      "topTracksTitle": "No top tracks yet"
+      "recentlyPlayedTitle": "Nothing played yet",
+      "recentlyPlayedMessage": "Play something and it will show up here.",
+      "recentlyPlayedLongMessage": "Play some tracks and your history will appear here.",
+      "topTracksTitle": "No top tracks yet",
+      "topTracksMessage": "Your most played tracks will appear here."
     }
   },
   "playlist": {

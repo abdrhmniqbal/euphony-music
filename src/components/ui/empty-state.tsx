@@ -2,6 +2,12 @@ import type { ReactNode } from "react"
 import { Text, View } from "react-native"
 import { cn } from "tailwind-variants"
 
+export interface EmptyStateConfig {
+  icon?: ReactNode
+  title: string
+  message: string
+}
+
 interface EmptyStateProps {
   icon?: ReactNode
   title: string
