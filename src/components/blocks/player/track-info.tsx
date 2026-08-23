@@ -4,18 +4,30 @@ import { View } from "react-native"
 import { useTranslation } from "react-i18next"
 import Animated, { Layout } from "react-native-reanimated"
 
+import { PressableFeedback } from "heroui-native"
 import { cn } from "tailwind-variants"
 import { MarqueeText } from "@/components/ui/marquee-text"
+import LocalFavouriteIcon from "@/components/icons/local/favourite"
+import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
+import { useThemeColors } from "@/core/theme/use-theme-colors"
+import { useIsFavorite } from "@/domains/favorites/queries"
+import { useToggleFavorite } from "@/domains/favorites/mutations"
 
 interface TrackInfoProps {
   track: PlayerTrack
   compact?: boolean
 }
 
-// Favorite toggle lands with the detail screens phase (P7); the artist press
-// hook point is added there too.
 export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false }) => {
   const { t } = useTranslation()
+  const theme = useThemeColors()
+  const canFavoriteTrack = track.isExternal !== true
+  const { data: isFavoriteQuery = false } = useIsFavorite(
+    "track",
+    canFavoriteTrack ? track.id : ""
+  )
+  const toggleFavoriteMutation = useToggleFavorite()
+  const isFavorite = Boolean(isFavoriteQuery)
   const titleClassName = cn("mb-1 font-bold text-white", compact ? "text-xl" : "text-2xl")
   const artistClassName = cn("text-white/60", compact ? "text-base" : "text-lg")
   const artistName = track.artist?.trim() || t("library.unknownArtist")
@@ -29,6 +41,26 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false }) 
         <MarqueeText text={track.title} className={titleClassName} />
         <MarqueeText text={artistName} className={artistClassName} />
       </View>
+      {canFavoriteTrack ? (
+        <PressableFeedback
+          onPress={() => {
+            void toggleFavoriteMutation.mutateAsync({
+              type: "track",
+              itemId: track.id,
+              isCurrentlyFavorite: isFavorite,
+              name: track.title,
+              subtitle: track.artist,
+              image: track.image,
+            })
+          }}
+        >
+          {isFavorite ? (
+            <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+          ) : (
+            <LocalFavouriteIcon fill="none" width={24} height={24} color="#ffffff" />
+          )}
+        </PressableFeedback>
+      ) : null}
     </Animated.View>
   )
 }
