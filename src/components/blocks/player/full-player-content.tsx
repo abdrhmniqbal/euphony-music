@@ -1,17 +1,15 @@
 import { LinearGradient } from "expo-linear-gradient"
-import { useTranslation } from "react-i18next"
 import { StyleSheet, View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import LocalMic01Icon from "@/components/icons/local/mic-01"
-import { EmptyState } from "@/components/ui/empty-state"
 import type { PlayerTrack } from "@/playback/types"
 import type { PlayerExpandedView } from "@/core/ui/store"
 import { usePlayerColorsStore } from "@/playback/colors-store"
 
 import { AlbumArtView } from "./album-art-view"
 import { PlaybackControls } from "./playback-controls"
+import { LyricsView } from "./lyrics/lyrics-view"
 import { PlayerFooter } from "./footer"
 import { PlayerHeader } from "./header"
 import { ProgressBar } from "./progress-bar"
@@ -19,19 +17,6 @@ import { QueueView } from "./queue-view"
 import { TrackInfo } from "./track-info"
 
 const BACKGROUND_DARKEN_OVERLAY = "rgba(0, 0, 0, 0.15)"
-
-function LyricsPlaceholder() {
-  const { t } = useTranslation()
-  return (
-    <View className="my-8 flex-1 items-center justify-center">
-      <EmptyState
-        icon={<LocalMic01Icon fill="none" width={48} height={48} color="rgba(255,255,255,0.4)" />}
-        title={t("player.lyrics.comingSoonTitle")}
-        message={t("player.lyrics.comingSoonMessage")}
-      />
-    </View>
-  )
-}
 
 interface FullPlayerContentProps {
   currentTrack: PlayerTrack
@@ -91,7 +76,7 @@ export function FullPlayerContent({
         {playerExpandedView === "queue" ? (
           <QueueView />
         ) : playerExpandedView === "lyrics" ? (
-          <LyricsPlaceholder />
+          <LyricsView />
         ) : (
           <AlbumArtView currentTrack={currentTrack} />
         )}

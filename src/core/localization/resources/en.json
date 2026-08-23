@@ -172,7 +172,9 @@
     "menu": {
       "goToArtist": "Go to artist",
       "goToAlbum": "Go to album"
-    }
+    },
+    "karaokeOn": "Karaoke on",
+    "karaokeOff": "Karaoke off"
   },
   "track": {
     "addToFavorites": "Add to favorites",
