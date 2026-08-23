@@ -166,3 +166,11 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Mixes** (`domains/mixes/`): pure mix-algo port (deterministic shuffle, day/week seeds, profile build/scoring) with tests; repository persists Daily Mix (day expiry) / For You Mix (week expiry) into `mixes`/`mix_tracks` with visual identity from `domains/visuals/shared`; queries `useDailyMix`/`useForYouMix`. UI surfacing lands with the P9 search tab.
 - **Add-to-playlist**: shared `PlaylistPickerSheet` block used by both TrackActionSheet (single track, plus remove-from-this-playlist when inside a playlist detail) and the player action sheet (current track); "save queue to playlist" seeds the playlist form draft with the current queue.
 - Deferred: track-file delete dialog (lands with settings/files phase), player-menu goToArtist/goToAlbum (P9 value-navigation).
+
+### P9 — Search
+
+- **Search domain** (`domains/search/`): `searchLibrary` repository (LIKE matching across artists/albums/playlists/tracks incl. featured-artist joins, relation-expanded track pool merged into top 20), recent-searches persisted in `app_settings` JSON with hydration + dedupe (max 30), debounced `useSearch` (react-pacer) plus recent-search mutations that write through to the query cache.
+- **Search landing tab**: fake input pushes the interactive route; Daily Mix / For You Mix MixCards (patterned footer, rainbow palette, long-press → CollectionActionSheet save-to-playlist via form draft); recently-added horizontal preview + full drill-down route.
+- **Mix detail** (`(search)/mix/[id]`): header artwork collage, generated-at/duration meta, play/shuffle actions, TrackList, save-to-playlist.
+- **Interactive search**: auto-focused input, recent searches list (type badges, per-row remove, clear all), tabbed results (All/Tracks/Albums/Artists/Playlists) in one LegendList with section headers and empty state; rows navigate to artist/album/playlist details or play tracks through the search queue context; long-press opens TrackActionSheet/CollectionActionSheet; result presses record recent searches.
+- **Player menu navigation**: goToArtist (ValueNavigationSheet chooser when raw artist splits to multiple names) and goToAlbum entries wired in both the player action sheet and TrackActionSheet.
