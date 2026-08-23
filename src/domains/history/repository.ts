@@ -89,6 +89,10 @@ function fetchRecentEntries(limit: number) {
   })
 }
 
+export async function clearPlayHistory(): Promise<void> {
+  await db.delete(playHistory)
+}
+
 export async function getTrackHistory(limit = 50): Promise<PlayerTrack[]> {
   try {
     const entries = await fetchRecentEntries(limit)

@@ -27,7 +27,8 @@
     "playAll": "Play",
     "shuffle": "Shuffle",
     "goBack": "Go back",
-    "next": "Next"
+    "next": "Next",
+    "confirm": "Confirm"
   },
   "navigation": {
     "home": "Home",
@@ -320,11 +321,63 @@
       "reindexDialogDescription": "Your library is rebuilt from scratch. This can take a while.",
       "reindexLaterAction": "Later",
       "reindexAction": "Re-index",
-      "applyFilters": "Apply filters"
+      "applyFilters": "Apply filters",
+      "artistCharDelimiters": "Artist character delimiters",
+      "artistWordDelimiters": "Artist word delimiters",
+      "artistWordDelimitersDescription": "Whole words that separate multiple artists",
+      "extractArtistFromTitle": "Extract artist from title",
+      "extractArtistFromTitleDescription": "Detect \"feat.\" style artists from track titles",
+      "unsplitArtists": "Artists to never split",
+      "unsplitArtistsDescription": "Names that should always stay as one artist",
+      "genreSplitSymbols": "Genre split symbols",
+      "genreSplitSymbolsDescription": "Characters used to split genre tags",
+      "splitSymbolsPlaceholder": "e.g. ; , /",
+      "addSplitSymbol": "Add symbol",
+      "removeSplitSymbol": "Remove symbol",
+      "addUnsplitArtist": "Add artist",
+      "removeUnsplitArtist": "Remove artist",
+      "artistSplitModeSplit": "Split into multiple artists",
+      "artistSplitModeOriginal": "Keep original tag",
+      "artistSplitModeSplitDescription": "Each listed artist becomes its own library entry",
+      "artistSplitModeOriginalDescription": "The raw artist tag is shown as-is"
     },
     "advanced": {
+      "sections": {
+        "logs": "Logs",
+        "history": "History & mixes",
+        "background": "Background playback",
+        "onboarding": "Onboarding"
+      },
+      "shareCrashLogs": "Share logs",
+      "shareCrashLogsDescription": "Export recent app logs for bug reports",
+      "logsReadyTitle": "Logs ready",
+      "logsReadyDescription": "Choose where to share your logs",
+      "logsUnableTitle": "Unable to share logs",
+      "resetListeningHistory": "Reset listening history",
+      "resetListeningHistoryDescription": "Clear every play history entry",
+      "resetListeningHistoryTitle": "Reset listening history?",
+      "resetListeningHistoryDialogDescription": "All plays are forgotten. Favorites and playlists are kept.",
+      "historyResetTitle": "History reset",
+      "historyResetDescription": "Your listening history was cleared",
+      "historyResetUnableTitle": "Unable to reset history",
+      "resetSearchHistory": "Reset search history",
+      "resetSearchHistoryDescription": "Remove all recent searches",
+      "searchHistoryResetTitle": "Search history cleared",
+      "searchHistoryResetDescription": "Recent searches were removed",
+      "searchHistoryResetUnableTitle": "Unable to clear search history",
+      "forceUpdateMixes": "Force update mixes",
+      "forceUpdateMixesDescription": "Discard and regenerate Daily Mix and For You Mix immediately.",
+      "mixesUpdatedTitle": "Mixes updated",
+      "mixesUpdatedDescription": "Daily Mix and For You Mix were regenerated",
+      "mixesUnableTitle": "Unable to update mixes",
       "disableBatteryOptimization": "Battery optimization",
-      "disableBatteryOptimizationAndroid": "Allow background scanning without interruptions."
+      "disableBatteryOptimizationAndroid": "Allow background scanning without interruptions.",
+      "openSystemSettings": "Open system settings",
+      "dontKillMyApp": "Don't kill my app",
+      "dontKillMyAppDescription": "Tips to prevent the system from stopping Startune",
+      "unableToOpenLinkTitle": "Unable to open link",
+      "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
+      "tryAgainDescription": "Please try again"
     },
     "routes": {
       "index": {
@@ -375,7 +428,8 @@
         "title": "Track duration filter"
       },
       "logLevel": {
-        "title": "Log level"
+        "title": "Log level",
+        "description": "How much detail is captured in logs"
       },
       "artistSplitMode": {
         "title": "Artist split mode"
@@ -450,6 +504,47 @@
       "customValue": "At least {{value}}",
       "minimumDuration": "Minimum duration",
       "changesHint": "Changes rescan your library when you release the slider."
+    },
+    "audio": {
+      "sections": {
+        "transitions": "Volume transitions",
+        "resume": "Resume behavior",
+        "audioFocus": "Audio focus",
+        "crossfade": "Crossfade"
+      },
+      "fadePlayPauseStop": "Fade play, pause and stop",
+      "fadePlayPauseStopDescription": "Smoothly fade volume on transport changes",
+      "fadeOnSeek": "Fade on seek",
+      "fadeOnSeekDescription": "Fade volume while seeking",
+      "resumeAfterCall": "Resume after a call ends",
+      "resumeAfterCallDescription": "Continue playback once phone calls finish",
+      "resumeOnStart": "Resume when the app starts",
+      "resumeOnStartDescription": "Restore the last session on launch",
+      "resumeOnReopen": "Resume when reopened",
+      "resumeOnReopenDescription": "Pick up where you left off when reopening the app",
+      "resumeOnFocusGain": "Resume on focus gain",
+      "resumeOnFocusGainDescription": "Continue playback after other apps release audio focus",
+      "shortAudioFocusChange": "Ignore short focus losses",
+      "shortAudioFocusChangeDescription": "Keep playing through brief interruptions like notifications",
+      "pauseInCall": "Pause during calls",
+      "pauseInCallDescription": "Pause playback while a phone call is active",
+      "duckVolume": "Duck volume",
+      "duckVolumeDescription": "Lower volume instead of pausing for other audio",
+      "permanentAudioFocusChange": "Respect permanent focus loss",
+      "permanentAudioFocusChangeDescription": "Stay paused when another app takes over playback",
+      "crossfade": "Crossfade between tracks",
+      "crossfadeEnabled": "Enabled",
+      "crossfadeDisabled": "Disabled",
+      "duration": "Duration",
+      "durationHint": "How long the overlap between tracks lasts."
+    },
+    "notifications": {
+      "appUpdateNotifications": "Update notifications",
+      "appUpdateNotificationsEnabled": "Notify when a new version is available",
+      "appUpdateNotificationsDisabled": "Updates are discovered silently",
+      "indexerNotifications": "Indexing notifications",
+      "indexerNotificationsEnabled": "Show scan progress in the notification shade",
+      "indexerNotificationsDisabled": "Scans run without notifications"
     }
   }
 }
