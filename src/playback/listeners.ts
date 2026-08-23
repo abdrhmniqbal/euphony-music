@@ -16,6 +16,8 @@ import {
   handleSleepTimerTrackChanged,
 } from "./sleep-timer"
 import { playbackStore, setPlaybackLastPosition } from "./playback-store"
+import { toPlayerTrack } from "./player-track"
+import { handleTrackChanged, handlePlaybackProgress } from "@/domains/lastfm/scrobbler"
 
 let playCountTimeout: ReturnType<typeof setTimeout> | null = null
 let lastAutoAdvanceAt = 0
@@ -42,6 +44,7 @@ function onActiveTrackChanged(e: {
 
   handleSleepTimerTrackChanged(lastSleepTimerTrackId, currentTrackId)
   lastSleepTimerTrackId = currentTrackId
+  void handleTrackChanged(toPlayerTrack(playbackStore.getState().activeTrack, getPreferenceState().splitMultipleValueConfig) ?? undefined)
 
   if (playCountTimeout !== null) clearTimeout(playCountTimeout)
 
@@ -64,6 +67,7 @@ function onProgressUpdated(e: { position: number; duration: number }) {
   if (e.duration === 0) return
   setPlaybackLastPosition(e.position)
   evaluateSleepTimerOnProgress(e.position, e.duration)
+  void handlePlaybackProgress(e.position, e.duration)
   void handleCrossfadeProgress(e.position, e.duration)
 }
 
