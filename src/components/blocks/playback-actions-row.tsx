@@ -10,10 +10,16 @@ import { useThemeColors } from "@/core/theme/use-theme-colors"
 interface PlaybackActionsRowProps {
   onPlay: () => void
   onShuffle: () => void
+  isDisabled?: boolean
   className?: string
 }
 
-export function PlaybackActionsRow({ onPlay, onShuffle, className }: PlaybackActionsRowProps) {
+export function PlaybackActionsRow({
+  onPlay,
+  onShuffle,
+  isDisabled,
+  className,
+}: PlaybackActionsRowProps) {
   const { t } = useTranslation()
   const theme = useThemeColors()
 
@@ -23,6 +29,7 @@ export function PlaybackActionsRow({ onPlay, onShuffle, className }: PlaybackAct
         className="flex-1 rounded-[22px] border border-border/60 bg-default/65"
         variant="secondary"
         size="lg"
+        isDisabled={isDisabled}
         onPress={onPlay}
       >
         <LocalPlaySolidIcon fill="none" width={20} height={20} color={theme.foreground} />
@@ -34,6 +41,7 @@ export function PlaybackActionsRow({ onPlay, onShuffle, className }: PlaybackAct
         className="flex-1 rounded-[22px] border border-border/60 bg-default/45"
         variant="secondary"
         size="lg"
+        isDisabled={isDisabled}
         onPress={onShuffle}
       >
         <LocalShuffleSolidIcon fill="none" width={24} height={24} color={theme.foreground} />

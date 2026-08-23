@@ -86,7 +86,9 @@
       "playlistsTitle": "No playlists yet",
       "playlistsMessage": "Create a playlist to group your favorite tracks.",
       "favoritesTitle": "No favorites yet",
-      "favoritesMessage": "Tap the heart on any track, album, artist or playlist."
+      "favoritesMessage": "Tap the heart on any track, album, artist or playlist.",
+      "noTracksTitle": "No tracks yet",
+      "noTracksMessage": "This mix could not be built because there isn't enough library data."
     },
     "count": {
       "track": "{{count}} track",
@@ -225,6 +227,16 @@
     "saveQueueToPlaylist": "Save queue to playlist"
   },
   "search": {
-    "tryDifferentKeyword": "Try a different keyword"
+    "landingPlaceholder": "Search music",
+    "openSearch": "Open search",
+    "dailyMix": "Daily Mix",
+    "dailyMixDesc": "Fresh from your recent listening",
+    "forYouMix": "For You Mix",
+    "forYouMixDesc": "Built from your longer-term taste",
+    "recentlyAdded": "Recently added",
+    "empty": {
+      "recentlyAddedTitle": "Nothing added yet",
+      "recentlyAddedMessage": "New tracks from your library will appear here."
+    }
   }
 }
