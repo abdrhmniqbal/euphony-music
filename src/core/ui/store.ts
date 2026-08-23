@@ -3,14 +3,20 @@ import { create } from "zustand"
 
 export type PlayerExpandedView = "artwork" | "lyrics" | "queue"
 
+export type PlayerLyricsFontScale = 1 | 1.2 | 1.4
+
 interface UIState {
   barsVisible: boolean
   playerExpandedView: PlayerExpandedView
+  playerLyricsKaraokeEnabled: boolean
+  playerLyricsFontScale: PlayerLyricsFontScale
 }
 
 export const useUIStore = create<UIState>()(() => ({
   barsVisible: true,
   playerExpandedView: "artwork",
+  playerLyricsKaraokeEnabled: false,
+  playerLyricsFontScale: 1,
 }))
 
 function setBarsVisible(value: boolean) {
@@ -44,4 +50,12 @@ export function togglePlayerExpandedView(value: PlayerExpandedView) {
   useUIStore.setState({
     playerExpandedView: currentView === value ? "artwork" : value,
   })
+}
+
+export function setPlayerLyricsKaraokeEnabled(value: boolean) {
+  useUIStore.setState({ playerLyricsKaraokeEnabled: value })
+}
+
+export function setPlayerLyricsFontScale(value: PlayerLyricsFontScale) {
+  useUIStore.setState({ playerLyricsFontScale: value })
 }
