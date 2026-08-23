@@ -11,6 +11,7 @@ import { queryClient } from "@/core/query/query-client"
 import { AppToastRuntime } from "@/core/ui/app-toast-runtime"
 import { getHiddenPlayerScreenOptions } from "@/core/navigation"
 import { startPlaybackRuntime } from "@/playback/runtime"
+import { startPostStartupWork } from "@/domains/indexer/bootstrap"
 
 export default function RootLayout() {
   return (
@@ -45,6 +46,7 @@ export default function RootLayout() {
 function StartupEffects() {
   useEffect(() => {
     void startPlaybackRuntime()
+    startPostStartupWork()
   }, [])
   return null
 }
