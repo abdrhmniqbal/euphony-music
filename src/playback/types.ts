@@ -58,6 +58,10 @@ export interface PlayerTrack {
   uri: string
   image?: string
   albumArtwork?: string
+  artists?: string[]
+  artistName?: string | null
+  rawArtistName?: string | null
+  albumName?: string | null
   audioBitrate?: number
   audioSampleRate?: number
   audioCodec?: string

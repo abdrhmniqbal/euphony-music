@@ -4,11 +4,13 @@ import { registerPlaybackListeners } from "./listeners"
 import { restoreCurrentTrackForStartup } from "./actions/controls"
 import { setupPlayer } from "./service"
 import { playbackStore } from "./playback-store"
+import { subscribePlaybackStoreToPlayerStore } from "./subscriber"
 
 export async function startPlaybackRuntime() {
   try {
     await setupPlayer()
     registerPlaybackListeners()
+    subscribePlaybackStoreToPlayerStore()
 
     await playbackStore.getState().restoreActiveTrack()
     await restoreCurrentTrackForStartup()
