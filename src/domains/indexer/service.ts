@@ -34,6 +34,7 @@ import {
 } from "./progress/progress"
 import { logError, logInfo } from "@/core/log/service"
 import { measurePerfTrace } from "@/core/log/perf-trace"
+import { refreshDeezerArtistImages } from "@/domains/deezer/repository"
 import type { SplitMultipleValueConfig } from "@/core/preferences/types"
 
 const INCREMENTAL_REFRESH_INTERVAL_MS = 1500
@@ -108,6 +109,16 @@ export async function startIndexing(forceFullScan = false, showProgress = true) 
 
     scheduleIndexerCompletePhaseReset(currentRunToken, () => {
       hideIndexerProgress({ keepNotification: showProgress })
+    })
+
+    // Refresh missing artist artwork in the background after indexing completes
+    void measurePerfTrace("indexer.refreshDeezerArtistImages", async () => {
+      try {
+        await refreshDeezerArtistImages(forceFullScan)
+        await refreshIndexedMediaState()
+      } catch (error) {
+        logError("Background Deezer artwork refresh failed", error)
+      }
     })
   } catch (error) {
     if (isIndexerRunStale(controller, currentRunToken)) {
