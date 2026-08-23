@@ -68,14 +68,31 @@
     "comingSoonMessage": "This section is on its way.",
     "empty": {
       "tracksTitle": "No tracks found",
-      "tracksMessage": "Add music to your device and pull to refresh."
+      "tracksMessage": "Add music to your device and pull to refresh.",
+      "tracksFoundTitle": "No tracks found",
+      "albumsFoundTitle": "No albums found"
     },
     "count": {
       "track": "{{count}} track",
       "track_one": "{{count}} track",
       "track_other": "{{count}} tracks"
     },
-    "sortBy": "Sort by"
+    "sortBy": "Sort by",
+    "unknownAlbum": "Unknown album",
+    "sortOption": {
+      "title": "Title",
+      "artist": "Artist",
+      "album": "Album",
+      "year": "Year",
+      "name": "Name",
+      "playCount": "Play count",
+      "dateAdded": "Date added",
+      "filename": "Filename",
+      "trackNumber": "Track number",
+      "numberOfTracks": "Number of tracks",
+      "type": "Type",
+      "addedToFavorites": "Date favorited"
+    }
   },
   "player": {
     "upNext": "Up Next",
