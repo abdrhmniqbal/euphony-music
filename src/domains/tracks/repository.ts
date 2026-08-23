@@ -120,3 +120,11 @@ export async function getAllTrackIds(): Promise<Array<{ id: string }>> {
   })
   return rows.map((r) => ({ id: r.id }))
 }
+
+export async function getAllTracks(): Promise<DataTrack[]> {
+  const rows = await db.query.tracks.findMany({
+    where: eq(tracks.isDeleted, 0),
+    with: trackWithRelations,
+  })
+  return rows.map((row) => toDataTrack(toTrackRow(row)))
+}
