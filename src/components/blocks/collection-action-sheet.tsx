@@ -25,6 +25,7 @@ interface CollectionActionSheetProps {
   name: string
   subtitle?: string
   image?: string
+  images?: string[]
   trackCount?: number
   favoriteId?: string
   hideFavoriteAction?: boolean
@@ -39,6 +40,7 @@ export function CollectionActionSheet({
   name,
   subtitle,
   image,
+  images: _images,
   trackCount = 0,
   favoriteId,
   hideFavoriteAction = false,

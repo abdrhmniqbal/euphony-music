@@ -35,6 +35,7 @@ import { ArtistDetailHeader } from "./header"
 import { ArtistHeroSection } from "./hero-section"
 import { ArtistInfoSection } from "./info-section"
 import { useArtistDetailData, type ArtistView } from "./use-artist-detail-data"
+import type { DetailSortField } from "@/domains/tracks/detail-sort"
 import { screenEnterTransition, screenExitTransition } from "@/lib/animations"
 import { setSortConfig } from "@/domains/library/sort-store"
 import {
@@ -127,7 +128,7 @@ export function ArtistDetailScreen() {
     )
   }
 
-  function handleSortSelect(field: (typeof ARTIST_TRACK_SORT_OPTIONS)[number]["field"], order?: "asc" | "desc") {
+  function handleSortSelect(field: DetailSortField, order?: "asc" | "desc") {
     setSortConfig(currentTab, field, order)
   }
 

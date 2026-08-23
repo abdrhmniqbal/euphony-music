@@ -97,7 +97,7 @@ export function AlbumDetailScreen() {
   const totalDurationLabel = formatAlbumDuration(totalDuration)
   const hasMultipleDiscs = new Set(sortedTracks.map((track) => track.discNumber || 1)).size > 1
 
-  function handleSortSelect(field: (typeof ALBUM_TRACK_SORT_OPTIONS)[number]["field"], order?: "asc" | "desc") {
+  function handleSortSelect(field: DetailSortField, order?: "asc" | "desc") {
     setSortConfig("AlbumTracks", field, order)
   }
 
