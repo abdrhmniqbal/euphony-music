@@ -21,7 +21,8 @@
       "failedToAddToPlaylist": "Failed to add to playlist"
     },
     "playAll": "Play",
-    "shuffle": "Shuffle"
+    "shuffle": "Shuffle",
+    "goBack": "Go back"
   },
   "navigation": {
     "home": "Home",
@@ -237,6 +238,17 @@
     "empty": {
       "recentlyAddedTitle": "Nothing added yet",
       "recentlyAddedMessage": "New tracks from your library will appear here."
+    },
+    "searchPlaceholder": "Search tracks, albums, artists",
+    "recentTitle": "Recent searches",
+    "clearAll": "Clear all",
+    "noResultsTitle": "No results found",
+    "tabs": {
+      "all": "All",
+      "track": "Tracks",
+      "album": "Albums",
+      "artist": "Artists",
+      "playlist": "Playlists"
     }
   }
 }
