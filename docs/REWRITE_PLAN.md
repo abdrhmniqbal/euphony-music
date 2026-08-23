@@ -135,3 +135,12 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Projection subscriber landed early** (`playback/subscriber.ts`): persisted playback store → in-memory player read-model so track rows can highlight the active queue item; queue re-resolution still keyed on queue-array identity. Colors extraction remains stubbed until P6.
 - **Playback entry points**: `playback/track-list-actions.ts` (playTrackList / shuffleTrackList / playSingleTrackFromList) maps DataTracks to PlayerTracks via `playback/player-track.ts` and starts context-aware playback; no UI imports of engine internals.
 - Home and search tabs are placeholder screens pending P8/P9.
+
+### P6 — Player surfaces
+
+- **MiniPlayer + full player ported** into `components/blocks/player/`: mini player (artwork, marquee meta, play/next/queue controls, progress strip) slides in above the tab bar and pushes `/player` with a screen-transitions boundary id; full player renders ambient gradient from the image-colors palette (`playback/colors.ts`, wired into the projection subscriber), drag-to-dismiss handle, queue-context label, seekable progress bar (animated text inputs for live timestamps), repeat/shuffle/prev/play/next controls, and artwork/lyrics/queue expanded views.
+- **Queue view** uses `react-native-reorderable-list` with drag handles, per-row removal, played-track dimming, current-track ScaleLoader overlay, and tap-to-play via `skipToQueueItem`.
+- **Sleep timer UI ported fully** (minutes slider, play-count slider, end-of-track switch, custom clock time via DateTimePicker) with the draft-state hook; the player action sheet is reduced to the sleep-timer entry — artist/album/playlist menu items land in P7/P8.
+- **Cast deferred**: CastButton removed from the header slot, `useCastAwarePlayback` wrapper dropped (controls call local playback directly), ProgressBar seeks locally only. Reintroduce with P13 integrations.
+- **Favorites toggle on TrackInfo deferred** to P7 (needs favorites queries/mutations); lyrics view shows a localized placeholder until P10.
+- **Toast runtime landed**: `HeroUINativeProvider` + `AppToastRuntime` in the root layout so `showAppToast` calls (e.g. added-to-queue) render; root stack now registers the `/player` route with boundary-transition options.
