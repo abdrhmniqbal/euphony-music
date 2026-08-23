@@ -28,7 +28,8 @@
     "shuffle": "Shuffle",
     "goBack": "Go back",
     "next": "Next",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "unknown": "Unknown"
   },
   "navigation": {
     "home": "Home",
@@ -286,6 +287,73 @@
         "light": "Light",
         "dark": "Dark",
         "system": "System default"
+      },
+      "theme": {
+        "search": {
+          "placeholder": "Search themes"
+        },
+        "options": {
+          "default": {
+            "title": "Default",
+            "description": "The original Startune look"
+          },
+          "nord": {
+            "title": "Nord",
+            "description": "Cool arctic blues inspired by Nord"
+          },
+          "dracula": {
+            "title": "Dracula",
+            "description": "Dark purples and pinks from Dracula"
+          },
+          "catppuccin": {
+            "title": "Catppuccin",
+            "description": "Soothing pastel theme"
+          },
+          "tokyo": {
+            "title": "Tokyo Night",
+            "description": "Neon Tokyo after dark"
+          },
+          "gruvbox": {
+            "title": "Gruvbox",
+            "description": "Retro groove colors"
+          },
+          "everforest": {
+            "title": "Everforest",
+            "description": "Warm greens of a forest"
+          },
+          "rose-pine": {
+            "title": "Rosé Pine",
+            "description": "All natural pine, faux rosé"
+          },
+          "solarized": {
+            "title": "Solarized",
+            "description": "Precision colors for readability"
+          },
+          "ayu": {
+            "title": "Ayu",
+            "description": "Elegant modern theme in light and dark"
+          },
+          "monochrome": {
+            "title": "Monochrome",
+            "description": "Pure black and white minimalism"
+          },
+          "aquamarine": {
+            "title": "Aquamarine",
+            "description": "Fresh ocean blue accents"
+          },
+          "crimson-pulse": {
+            "title": "Crimson Pulse",
+            "description": "Bold red accents with high energy"
+          },
+          "banana-breeze": {
+            "title": "Banana Breeze",
+            "description": "Playful yellow and warm breezes"
+          },
+          "candy-pop": {
+            "title": "Candy Pop",
+            "description": "Sweet candy colors that pop"
+          }
+        }
       }
     },
     "library": {
@@ -453,6 +521,10 @@
       },
       "autoBackup": {
         "title": "Automatic backups"
+      },
+      "lastfm": {
+        "title": "Last.fm scrobbling",
+        "description": "Scrobble your plays to Last.fm"
       }
     },
     "search": {
@@ -579,6 +651,22 @@
       "every24Hours": "Every 24 hours",
       "every3Days": "Every 3 days",
       "everyWeek": "Every week"
+    },
+    "about": {
+      "sections": {
+        "project": "Project & Legal"
+      },
+      "github": "GitHub",
+      "repositoryDescription": "Source code, issues and releases",
+      "helpTranslate": "Help translate",
+      "helpTranslateDescription": "Contribute translations on Crowdin",
+      "openSourceLicenses": "Open source licenses",
+      "openSourceLicensesDescription": "Third-party packages and license texts.",
+      "openSourceLicensesEmpty": "No generated licenses yet. Run generate:licenses script.",
+      "licenseRepository": "Repository",
+      "viewRepository": "View on repository",
+      "licenseText": "License Text",
+      "licenseTextUnavailable": "License text unavailable."
     }
   }
 }
