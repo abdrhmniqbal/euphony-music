@@ -82,7 +82,9 @@
       "genresFoundTitle": "No genres found",
       "genresFoundMessage": "Genres will appear after indexing your music.",
       "playlistsTitle": "No playlists yet",
-      "playlistsMessage": "Create a playlist to group your favorite tracks."
+      "playlistsMessage": "Create a playlist to group your favorite tracks.",
+      "favoritesTitle": "No favorites yet",
+      "favoritesMessage": "Tap the heart on any track, album, artist or playlist."
     },
     "count": {
       "track": "{{count}} track",
@@ -112,7 +114,13 @@
     "allTracks": "All tracks",
     "artistInfo": "About",
     "playlistNotFound": "Playlist not found",
-    "playlistRemovedMessage": "It may have been deleted."
+    "playlistRemovedMessage": "It may have been deleted.",
+    "favoriteType": {
+      "track": "Tracks",
+      "artist": "Artists",
+      "album": "Albums",
+      "playlist": "Playlists"
+    }
   },
   "player": {
     "upNext": "Up Next",

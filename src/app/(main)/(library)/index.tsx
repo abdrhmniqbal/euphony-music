@@ -3,6 +3,7 @@ import { View } from "react-native"
 
 import { AlbumsTab } from "@/components/blocks/albums-tab"
 import { PlaylistList } from "@/components/blocks/playlist-list"
+import { FavoritesList } from "@/components/blocks/favorites-list"
 import { ArtistsTab } from "@/components/blocks/artists-tab"
 import { LibraryGenresSection } from "@/components/blocks/library-genres-section"
 import { LibraryTabBar } from "@/components/blocks/library-tab-bar"
@@ -12,6 +13,8 @@ import { getVisibleLibraryTabs, type LibraryTab } from "@/core/preferences/libra
 import { usePreferenceStore } from "@/core/preferences/store"
 import { useHasCurrentTrack } from "@/playback/selectors"
 import { usePlaylistsWithOptions } from "@/domains/playlists/queries"
+import { useFavorites } from "@/domains/favorites/queries"
+import type { FavoriteType } from "@/domains/favorites/types"
 import { MINI_PLAYER_HEIGHT } from "@/lib/layout"
 
 export default function LibraryScreen() {
@@ -63,6 +66,8 @@ export default function LibraryScreen() {
             onCreatePlaylist={() => router.push("/playlist/form")}
           />
         )
+      case "Favorites":
+        return <FavoritesTabContent />
       case "Genres":
         return (
           <LibraryGenresSection
@@ -93,6 +98,33 @@ function PlaylistsTabContent(props: {
   return (
     <View className="flex-1 px-4">
       <PlaylistList data={playlists} {...props} contentContainerStyle={{ paddingBottom: 200 }} />
+    </View>
+  )
+}
+
+const FAVORITE_TYPE_FILTERS: FavoriteType[] = ["track", "album", "artist", "playlist"]
+
+function FavoritesTabContent() {
+  const [selectedTypes, setSelectedTypes] = React.useState<FavoriteType[]>([])
+  const { data: favorites = [] } = useFavorites(undefined)
+  const availableTypes = React.useMemo(() => {
+    const present = new Set(favorites.map((entry) => entry.type))
+    return FAVORITE_TYPE_FILTERS.filter((type) => present.has(type))
+  }, [favorites])
+  const filtered = React.useMemo(
+    () => (selectedTypes.length > 0 ? favorites.filter((f) => selectedTypes.includes(f.type)) : favorites),
+    [favorites, selectedTypes]
+  )
+
+  return (
+    <View className="flex-1 px-4 pt-4">
+      <FavoritesList
+        data={filtered}
+        availableTypes={availableTypes}
+        selectedTypes={selectedTypes}
+        onSelectedTypesChange={setSelectedTypes}
+        contentContainerStyle={{ paddingBottom: 200 }}
+      />
     </View>
   )
 }
