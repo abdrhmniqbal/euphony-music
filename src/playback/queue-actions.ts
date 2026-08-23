@@ -26,3 +26,11 @@ export function moveInQueue(fromIndex: number, toIndex: number) {
 export function toggleShuffleMode() {
   return toggleShuffle()
 }
+
+export function queueCollectionNext(trackIds: string[], name: string) {
+  add({ id: trackIds, name })
+}
+
+export function addCollectionToQueue(trackIds: string[], name: string) {
+  addToEnd({ id: trackIds, name })
+}
