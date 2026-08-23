@@ -2,10 +2,17 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import type { PlayerTrack } from "@/playback/types"
+import {
+  useCurrentTrackId,
+  usePlayerTracks,
+} from "@/playback/selectors"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { PlayerActionMenu } from "./menu"
 import { SleepTimerSection } from "./sleep-timer-section"
 import { useSleepTimerDraft } from "./use-sleep-timer-draft"
+import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
+import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
+import { useGuardedRouter } from "@/core/navigation"
 
 interface PlayerActionSheetProps {
   visible: boolean
@@ -15,7 +22,11 @@ interface PlayerActionSheetProps {
 
 export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerActionSheetProps) {
   const { t } = useTranslation()
+  const router = useGuardedRouter()
+  const currentTrackId = useCurrentTrackId()
+  const queueTracks = usePlayerTracks()
   const [isSleepTimerOpen, setIsSleepTimerOpen] = useState(false)
+  const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = useState(false)
   const sleepTimerDraft = useSleepTimerDraft(t)
 
   if (!track) {
@@ -27,6 +38,23 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
     setIsSleepTimerOpen(true)
   }
 
+  const handleAddToPlaylist = () => {
+    if (!track) {
+      return
+    }
+    onOpenChange(false)
+    setIsPlaylistPickerOpen(true)
+  }
+
+  const handleSaveQueueToPlaylist = () => {
+    onOpenChange(false)
+    setPlaylistFormDraft(
+      queueTracks.map((queueTrack) => queueTrack.id),
+      "queue"
+    )
+    router.push("/playlist/form")
+  }
+
   return (
     <>
       <ActionSheet.Root isOpen={visible} onOpenChange={onOpenChange}>
@@ -34,10 +62,20 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
           sleepTimerSummary={sleepTimerDraft.summary}
           labels={{
             sleepTimer: t("player.sleepTimer.title"),
+            addToPlaylist: t("track.addToPlaylist"),
+            saveQueueToPlaylist: t("playlist.saveQueueToPlaylist"),
           }}
           onOpenSleepTimer={handleOpenSleepTimerSheet}
+          onAddToPlaylist={handleAddToPlaylist}
+          onSaveQueueToPlaylist={handleSaveQueueToPlaylist}
         />
       </ActionSheet.Root>
+
+      <PlaylistPickerSheet
+        isOpen={isPlaylistPickerOpen}
+        onClose={() => setIsPlaylistPickerOpen(false)}
+        trackIds={currentTrackId ? [currentTrackId] : []}
+      />
 
       <SleepTimerSection
         isOpen={isSleepTimerOpen}

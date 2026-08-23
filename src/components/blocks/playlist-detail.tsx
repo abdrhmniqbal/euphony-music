@@ -266,6 +266,7 @@ export function PlaylistDetailScreen() {
         />
 
         <TrackList
+          playlistId={playlistId}
           data={sortedTracks}
           queueContext={{ type: "playlist", title: playlist.name }}
           contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}

@@ -41,6 +41,7 @@ interface TrackListProps {
   refreshControl?: React.ReactElement<import("react-native").RefreshControlProps> | null
   currentTrackId?: string
   queueContext?: PlaybackQueueContext | null
+  playlistId?: string
 }
 
 interface TrackListItemProps {
@@ -134,6 +135,7 @@ export const TrackList: React.FC<TrackListProps> = ({
   refreshControl,
   currentTrackId,
   queueContext,
+  playlistId,
 }) => {
   const theme = useThemeColors()
   const { t } = useTranslation()
@@ -226,7 +228,12 @@ export const TrackList: React.FC<TrackListProps> = ({
         drawDistance={200}
         estimatedItemSize={84}
       />
-      <TrackActionSheet track={selectedTrack} isOpen={isSheetOpen} onClose={handleSheetClose} />
+      <TrackActionSheet
+        track={selectedTrack}
+        isOpen={isSheetOpen}
+        onClose={handleSheetClose}
+        playlistId={playlistId}
+      />
     </View>
   )
 }

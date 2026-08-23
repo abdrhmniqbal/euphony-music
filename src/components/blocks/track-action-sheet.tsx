@@ -7,8 +7,10 @@ import LocalAddCircleIcon from "@/components/icons/local/add-circle"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalInfoIcon from "@/components/icons/local/info"
+import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalNextIcon from "@/components/icons/local/next"
+import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { MenuRow } from "@/components/ui/menu-row"
 import { ICON_SIZES } from "@/lib/layout"
@@ -18,22 +20,29 @@ import { useToggleFavorite } from "@/domains/favorites/mutations"
 import { addToQueue, queueTrackNext } from "@/playback/queue-actions"
 import type { PlayerTrack } from "@/playback/types"
 import { TrackMetadataSheet } from "./track-metadata-sheet"
+import { PlaylistPickerSheet } from "./playlist-picker-sheet"
+import { useRemoveTrackFromPlaylist } from "@/domains/playlists/queries"
+import { showAppToast } from "@/core/ui/toast"
 
 interface TrackActionSheetProps {
   track: PlayerTrack | null
   isOpen: boolean
   onClose: () => void
+  playlistId?: string
 }
 
 export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   track,
   isOpen,
   onClose,
+  playlistId,
 }) => {
   const { t } = useTranslation()
   const theme = useThemeColors()
   const toggleFavoriteMutation = useToggleFavorite()
+  const removeTrackFromPlaylistMutation = useRemoveTrackFromPlaylist()
   const [isMetadataSheetOpen, setIsMetadataSheetOpen] = React.useState(false)
+  const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = React.useState(false)
 
   const { data: isFavoriteData = false } = useIsFavorite("track", track?.id ?? "")
 
@@ -130,6 +139,25 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               }}
             />
             <MenuRow
+              icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />}
+              label={t("track.addToPlaylist")}
+              onPress={() => setIsPlaylistPickerOpen(true)}
+            />
+            {playlistId ? (
+              <MenuRow
+                icon={<LocalCancel01Icon fill="none" width={22} height={22} color={theme.danger} />}
+                label={t("track.removeFromThisPlaylist")}
+                onPress={() => {
+                  void removeTrackFromPlaylistMutation.mutateAsync({
+                    playlistId,
+                    trackId: track.id,
+                  })
+                  showAppToast(t("common.feedback.removedFromPlaylist"))
+                  onClose()
+                }}
+              />
+            ) : null}
+            <MenuRow
               icon={<LocalInfoIcon fill="none" width={22} height={22} color={theme.muted} />}
               label={t("track.viewMetadata")}
               onPress={() => setIsMetadataSheetOpen(true)}
@@ -139,6 +167,11 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
       </ActionSheet.Root>
 
       <TrackMetadataSheet track={track} isOpen={isMetadataSheetOpen} onOpenChange={setIsMetadataSheetOpen} />
+      <PlaylistPickerSheet
+        isOpen={isPlaylistPickerOpen}
+        onClose={() => setIsPlaylistPickerOpen(false)}
+        trackIds={[track.id]}
+      />
     </>
   )
 }

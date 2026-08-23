@@ -16,7 +16,9 @@
       "playlistUpdated": "Playlist updated",
       "playlistCreated": "Playlist created",
       "failedToUpdatePlaylist": "Failed to update playlist",
-      "failedToCreatePlaylist": "Failed to create playlist"
+      "failedToCreatePlaylist": "Failed to create playlist",
+      "addedToPlaylist": "Added to playlist",
+      "failedToAddToPlaylist": "Failed to add to playlist"
     },
     "playAll": "Play",
     "shuffle": "Shuffle"
@@ -182,7 +184,9 @@
       "format": "Format",
       "quality": "Quality",
       "playCount": "Plays"
-    }
+    },
+    "addToPlaylist": "Add to playlist",
+    "removeFromThisPlaylist": "Remove from this playlist"
   },
   "home": {
     "recentlyPlayed": "Recently played",
@@ -217,7 +221,8 @@
     "selected": "{{count}} selected",
     "clearSelection": "Clear",
     "apply": "Apply",
-    "applyWithCount": "Apply ({{count}})"
+    "applyWithCount": "Apply ({{count}})",
+    "saveQueueToPlaylist": "Save queue to playlist"
   },
   "search": {
     "tryDifferentKeyword": "Try a different keyword"
