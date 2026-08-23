@@ -126,3 +126,12 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Scrobbler hook point kept**: `service.playTrack` calls `activity.handleTrackActivated` (placeholder); play-count + history writes happen in `listeners.ts` after the count-as-played threshold, invalidating tracks/history query keys.
 - **Startup wiring**: `playback/runtime.ts` (setupPlayer → registerPlaybackListeners → restoreActiveTrack → restoreCurrentTrackForStartup) invoked from the root layout after the DB gate; last-position restore honors the `restoreLastPosition` preference.
 - **New domains support**: `domains/tracks/repository.ts` (toDataTrack with artist split display, maybeGetTrack, addPlayedTrack) and `domains/library/queue-sources.ts` (album/artist/genre/folder/playlist/favorites id resolution; playlist keyed by ID now instead of name).
+
+### P5 — App shell
+
+- **Tabs shell ported** (`app/(main)/_layout.tsx`): three tabs (home/search/library) with animated bottom-bar hide driven by a session-only `core/ui/store.ts` `barsVisible` flag; `useAutoHideHeaderScroll` hides bars while scrolling and restores them after 200ms idle (or when the list is non-scrollable). MiniPlayer slot intentionally omitted until P6 — the hidden offset accounts for tab bar only for now.
+- **Local icons generated**: `scripts/generate-icons.mjs` renders `src/assets/icons/*.svg` into `src/components/icons/local/*.tsx` (SvgXml wrappers, same shape as legacy monicon output); regenerate after adding SVGs.
+- **Library hub staged**: LibraryTabBar (heroui-native Tabs, visible tabs from the preferences store), TracksTab fully functional (react-query `useTracks` → pure `sortTracks` using view-preference order/asc → LegendList rows via `patterns/track-row` + `ui/media-item`), Play/Shuffle wired through the playback engine. Albums/Artists/Genres/Playlists/Folders/Favorites render a "coming soon" empty state until P7/P8.
+- **Projection subscriber landed early** (`playback/subscriber.ts`): persisted playback store → in-memory player read-model so track rows can highlight the active queue item; queue re-resolution still keyed on queue-array identity. Colors extraction remains stubbed until P6.
+- **Playback entry points**: `playback/track-list-actions.ts` (playTrackList / shuffleTrackList / playSingleTrackFromList) maps DataTracks to PlayerTracks via `playback/player-track.ts` and starts context-aware playback; no UI imports of engine internals.
+- Home and search tabs are placeholder screens pending P8/P9.
