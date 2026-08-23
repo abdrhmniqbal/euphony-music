@@ -54,10 +54,10 @@ export function parseTimedMarkupTimestamp(raw: string): number {
 
   const parts = raw.split(":")
   if (parts.length === 3) {
-    return Number(parts[0] || 0) * 3600 + Number(parts[1] || 0) * 60 + Number.parseFloat(parts[2] || 0)
+    return Number(parts[0]) * 3600 + Number(parts[1]) * 60 + Number.parseFloat(parts[2])
   }
   if (parts.length === 2) {
-    return Number(parts[0] || 0) * 60 + Number.parseFloat(parts[1] || 0)
+    return Number(parts[0]) * 60 + Number.parseFloat(parts[1])
   }
   return Number.parseFloat(raw) || 0
 }
