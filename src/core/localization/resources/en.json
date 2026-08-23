@@ -545,6 +545,40 @@
       "indexerNotifications": "Indexing notifications",
       "indexerNotificationsEnabled": "Show scan progress in the notification shade",
       "indexerNotificationsDisabled": "Scans run without notifications"
+    },
+    "backup": {
+      "sections": {
+        "storage": "Storage location",
+        "manual": "Manual backup",
+        "automatic": "Automatic backup"
+      },
+      "backup": "Back up",
+      "backupDescription": "Save your settings and play history to a file",
+      "backupDialogDescription": "Your settings and listening history are exported as JSON.",
+      "backupSavedToFolder": "Backup saved to folder.",
+      "backupFailed": "Backup failed",
+      "restore": "Restore",
+      "restoreDescription": "Import settings and history from a backup file",
+      "restoreDialogDescription": "Pick a Startune backup file. Settings are applied immediately; play history entries are added back.",
+      "restoreSuccessful": "Restore complete",
+      "restoreSuccessfulDescription": "Settings and play history were restored",
+      "restoreFailed": "Restore failed",
+      "restoreFailedDescription": "The selected file is not a valid backup"
+    },
+    "autoBackup": {
+      "title": "Automatic backups",
+      "enabledDescription": "Scheduled backups are on",
+      "disabledDescription": "No backup has run yet",
+      "folderUnset": "No folder chosen",
+      "targetFolder": "Backup folder",
+      "lastBackup": "Last backup",
+      "neverRun": "Never backed up",
+      "hint": "Backups run while the app is open and write into the chosen folder.",
+      "off": "Off",
+      "every12Hours": "Every 12 hours",
+      "every24Hours": "Every 24 hours",
+      "every3Days": "Every 3 days",
+      "everyWeek": "Every week"
     }
   }
 }
