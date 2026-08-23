@@ -13,7 +13,8 @@ import LocalSearch01Icon from "@/components/icons/local/search-01"
 import LocalSearch01SolidIcon from "@/components/icons/local/search-01-solid"
 import { useUIStore } from "@/core/ui/store"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
-import { getTabBarBottomPadding, getTabBarHeight } from "@/lib/layout"
+import { getTabBarBottomPadding, getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/lib/layout"
+import { MiniPlayer } from "@/components/blocks/player/mini-player"
 
 const TAB_HIDE_DURATION_MS = 250
 const TAB_HIDE_EXTRA_OFFSET = 16
@@ -25,7 +26,7 @@ export default function MainLayout() {
   const barsVisible = useUIStore((state) => state.barsVisible)
   const tabBarBottomPadding = getTabBarBottomPadding(insets.bottom)
   const tabBarHeight = getTabBarHeight(insets.bottom)
-  const hiddenOffset = tabBarHeight + TAB_HIDE_EXTRA_OFFSET
+  const hiddenOffset = tabBarHeight + MINI_PLAYER_HEIGHT + TAB_HIDE_EXTRA_OFFSET
   const translateY = useDerivedValue(() => {
     return withTiming(barsVisible ? 0 : hiddenOffset, {
       duration: TAB_HIDE_DURATION_MS,
@@ -57,6 +58,7 @@ export default function MainLayout() {
             },
           ]}
         >
+          <MiniPlayer bottomOffset={tabBarHeight} />
           <BottomTabBar {...props} />
         </Animated.View>
       )}

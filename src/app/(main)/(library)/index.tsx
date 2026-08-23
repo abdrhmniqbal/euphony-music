@@ -8,11 +8,14 @@ import { TracksTab } from "@/components/blocks/tracks-tab"
 import { EmptyState } from "@/components/ui/empty-state"
 import { getVisibleLibraryTabs, type LibraryTab } from "@/core/preferences/library-tabs"
 import { usePreferenceStore } from "@/core/preferences/store"
+import { useHasCurrentTrack } from "@/playback/selectors"
+import { MINI_PLAYER_HEIGHT } from "@/lib/layout"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export default function LibraryScreen() {
   const { t } = useTranslation()
   const theme = useThemeColors()
+  const hasMiniPlayer = useHasCurrentTrack()
 
   const libraryTabsConfig = usePreferenceStore((state) => state.libraryTabsConfig)
   const visibleTabs = React.useMemo(
@@ -30,7 +33,7 @@ export default function LibraryScreen() {
       <LibraryTabBar tabs={visibleTabs} activeTab={activeTab} onActiveTabChange={setActiveTab} />
       <View className="flex-1 px-0">
         {activeTab === "Tracks" ? (
-          <TracksTab contentBottomPadding={32} />
+          <TracksTab contentBottomPadding={32 + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0)} />
         ) : (
           <EmptyState
             icon={

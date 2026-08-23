@@ -66,6 +66,54 @@
     "empty": {
       "tracksTitle": "No tracks found",
       "tracksMessage": "Add music to your device and pull to refresh."
+    },
+    "count": {
+      "track": "{{count}} track",
+      "track_one": "{{count}} track",
+      "track_other": "{{count}} tracks"
+    }
+  },
+  "player": {
+    "upNext": "Up Next",
+    "queue": {
+      "emptyTitle": "No queue",
+      "emptyMessage": "Start playback to see upcoming tracks here."
+    },
+    "playingFrom": {
+      "default": "Playing from",
+      "album": "Playing from Album",
+      "artist": "Playing from Artist",
+      "playlist": "Playing from Playlist",
+      "genre": "Playing from Genre",
+      "search": "Playing from Search",
+      "favorites": "Playing from Favorites",
+      "folder": "Playing from Folder",
+      "trackList": "Playing from Tracks",
+      "external": "Playing from File"
+    },
+    "lyrics": {
+      "comingSoonTitle": "Lyrics coming soon",
+      "comingSoonMessage": "Synced lyrics will appear here."
+    },
+    "sleepTimer": {
+      "title": "Sleep Timer",
+      "off": "Off",
+      "timer": "Timer",
+      "timerDescription": "Automatically stop playback after a set number of minutes.",
+      "timerValue": "Minutes",
+      "timerValueMinutes": "{{count}} min",
+      "playCount": "Play Count",
+      "playCountDescription": "Automatically stop playback after this many tracks finish playing.",
+      "playCountValueLabel": "Tracks",
+      "playCountValue": "{{count}} tracks",
+      "endOfCurrentTrack": "End of Current Track",
+      "endOfCurrentTrackDescription": "Automatically stop playback when the current track finishes.",
+      "customTime": "Custom Time",
+      "customTimeDescription": "Pick an exact clock time to stop playback.",
+      "customTimeDescriptionUntil": "Stop playback at {{value}}.",
+      "customTimeValueLabel": "Time",
+      "customTimeValue": "{{value}}",
+      "cancelTimer": "Cancel Timer"
     }
   }
 }
