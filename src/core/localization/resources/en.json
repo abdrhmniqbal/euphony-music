@@ -8,7 +8,15 @@
       "addedToQueue": "Added to queue: {{name}}",
       "addedToFavorites": "Added to favorites",
       "removedFromFavorites": "Removed from favorites",
-      "failedToUpdateFavorite": "Failed to update favorite"
+      "failedToUpdateFavorite": "Failed to update favorite",
+      "playlistDeleted": "Playlist deleted",
+      "failedToDeletePlaylist": "Failed to delete playlist",
+      "removedFromPlaylist": "Removed from playlist",
+      "failedToRemoveFromPlaylist": "Failed to remove from playlist",
+      "playlistUpdated": "Playlist updated",
+      "playlistCreated": "Playlist created",
+      "failedToUpdatePlaylist": "Failed to update playlist",
+      "failedToCreatePlaylist": "Failed to create playlist"
     },
     "playAll": "Play",
     "shuffle": "Shuffle"
@@ -72,7 +80,9 @@
       "tracksFoundTitle": "No tracks found",
       "albumsFoundTitle": "No albums found",
       "genresFoundTitle": "No genres found",
-      "genresFoundMessage": "Genres will appear after indexing your music."
+      "genresFoundMessage": "Genres will appear after indexing your music.",
+      "playlistsTitle": "No playlists yet",
+      "playlistsMessage": "Create a playlist to group your favorite tracks."
     },
     "count": {
       "track": "{{count}} track",
@@ -93,12 +103,16 @@
       "trackNumber": "Track number",
       "numberOfTracks": "Number of tracks",
       "type": "Type",
-      "addedToFavorites": "Date favorited"
+      "addedToFavorites": "Date favorited",
+      "customOrder": "Custom order",
+      "addedToPlaylist": "Date added to playlist"
     },
     "genre": "Genre",
     "featuredOn": "Featured on",
     "allTracks": "All tracks",
-    "artistInfo": "About"
+    "artistInfo": "About",
+    "playlistNotFound": "Playlist not found",
+    "playlistRemovedMessage": "It may have been deleted."
   },
   "player": {
     "upNext": "Up Next",
@@ -166,5 +180,28 @@
     "empty": {
       "topTracksTitle": "No top tracks yet"
     }
+  },
+  "playlist": {
+    "newPlaylist": "New playlist",
+    "createPlaylist": "Create playlist",
+    "editPlaylist": "Edit playlist",
+    "deletePlaylist": "Delete playlist",
+    "deleteTitle": "Delete playlist?",
+    "deleteDescription": "This playlist will be permanently removed. Your tracks stay in your library.",
+    "deleteAction": "Delete",
+    "name": "Name",
+    "namePlaceholder": "My playlist",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "addTracks": "Add tracks",
+    "searchTracksPlaceholder": "Search tracks",
+    "selectTrack": "Select {{title}}",
+    "selected": "{{count}} selected",
+    "clearSelection": "Clear",
+    "apply": "Apply",
+    "applyWithCount": "Apply ({{count}})"
+  },
+  "search": {
+    "tryDifferentKeyword": "Try a different keyword"
   }
 }

@@ -2,6 +2,7 @@ import * as React from "react"
 import { View } from "react-native"
 
 import { AlbumsTab } from "@/components/blocks/albums-tab"
+import { PlaylistList } from "@/components/blocks/playlist-list"
 import { ArtistsTab } from "@/components/blocks/artists-tab"
 import { LibraryGenresSection } from "@/components/blocks/library-genres-section"
 import { LibraryTabBar } from "@/components/blocks/library-tab-bar"
@@ -10,6 +11,7 @@ import { useGuardedRouter } from "@/core/navigation"
 import { getVisibleLibraryTabs, type LibraryTab } from "@/core/preferences/library-tabs"
 import { usePreferenceStore } from "@/core/preferences/store"
 import { useHasCurrentTrack } from "@/playback/selectors"
+import { usePlaylistsWithOptions } from "@/domains/playlists/queries"
 import { MINI_PLAYER_HEIGHT } from "@/lib/layout"
 
 export default function LibraryScreen() {
@@ -52,6 +54,15 @@ export default function LibraryScreen() {
             }
           />
         )
+      case "Playlists":
+        return (
+          <PlaylistsTabContent
+            onPlaylistPress={(playlist) =>
+              router.push({ pathname: "/playlist/[id]", params: { id: playlist.id } })
+            }
+            onCreatePlaylist={() => router.push("/playlist/form")}
+          />
+        )
       case "Genres":
         return (
           <LibraryGenresSection
@@ -70,6 +81,18 @@ export default function LibraryScreen() {
     <View className="flex-1 bg-background">
       <LibraryTabBar tabs={visibleTabs} activeTab={activeTab} onActiveTabChange={setActiveTab} />
       <View className="flex-1 px-0">{renderTabContent()}</View>
+    </View>
+  )
+}
+
+function PlaylistsTabContent(props: {
+  onPlaylistPress?: (playlist: { id: string; name: string; trackCount: number; image?: string; images?: string[] }) => void
+  onCreatePlaylist?: () => void
+}) {
+  const { data: playlists = [] } = usePlaylistsWithOptions(true)
+  return (
+    <View className="flex-1 px-4">
+      <PlaylistList data={playlists} {...props} contentContainerStyle={{ paddingBottom: 200 }} />
     </View>
   )
 }
