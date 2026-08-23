@@ -5,7 +5,10 @@
     "cancel": "Cancel",
     "retry": "Retry",
     "feedback": {
-      "addedToQueue": "Added to queue: {{name}}"
+      "addedToQueue": "Added to queue: {{name}}",
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "failedToUpdateFavorite": "Failed to update favorite"
     },
     "playAll": "Play",
     "shuffle": "Shuffle"
@@ -71,7 +74,8 @@
       "track": "{{count}} track",
       "track_one": "{{count}} track",
       "track_other": "{{count}} tracks"
-    }
+    },
+    "sortBy": "Sort by"
   },
   "player": {
     "upNext": "Up Next",
@@ -114,6 +118,25 @@
       "customTimeValueLabel": "Time",
       "customTimeValue": "{{value}}",
       "cancelTimer": "Cancel Timer"
+    },
+    "menu": {
+      "goToArtist": "Go to artist",
+      "goToAlbum": "Go to album"
+    }
+  },
+  "track": {
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "playNext": "Play next",
+    "addToQueue": "Add to queue",
+    "viewMetadata": "View metadata",
+    "metadata": {
+      "duration": "Duration",
+      "year": "Year",
+      "codec": "Codec",
+      "format": "Format",
+      "quality": "Quality",
+      "playCount": "Plays"
     }
   }
 }
