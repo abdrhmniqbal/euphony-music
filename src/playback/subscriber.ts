@@ -3,6 +3,7 @@ import type { SplitMultipleValueConfig } from "@/core/preferences/types"
 import { maybeGetTrack } from "@/domains/tracks/repository"
 
 import { extractTrackId, playbackStore } from "./playback-store"
+import { updateColorsForImage } from "./colors"
 import { playerStore } from "./player-store"
 import { toPlayerTrack } from "./player-track"
 
@@ -26,6 +27,8 @@ function project() {
     originalQueueTrackIds: state.orderSnapshot.map(extractTrackId),
     queueContext: state.queueContext,
   })
+
+  void updateColorsForImage(state.activeTrack?.artwork ?? undefined)
 
   if (state.queue !== lastQueue) {
     lastQueue = state.queue
