@@ -181,3 +181,9 @@ Phases may be split further while implementing; each commit stays revertable.
 - **Source resolution** (`domains/lyrics/source.ts`): embedded metadata → DB column → LRCLib fetch (persisted back to `tracks.lyrics`, negative-cache on 404), in-memory query cache keyed by track id/uri/hash/scanTime.
 - **Hook** (`domains/lyrics/use-lyrics.ts`): mode resolution honoring the session karaoke toggle, binary-search active-line index over playback time, auto-scroll with measured offsets, user-scroll suppression and resume delay.
 - **Player lyrics view** (`blocks/player/lyrics/*`): static/synced/timed renderers, word-level karaoke progress via animated width clip driven by an interpolated shared value, tap-to-seek lines, karaoke toggle + font-scale cycle pills; replaces the placeholder in the full player's expanded view. Karaoke/font-scale state added to `core/ui/store`.
+
+### P11 — Onboarding
+
+- **Gate**: root index redirects to `/onboarding` until `completedOnboarding` flips in the preferences store; finish commits folder filters, sets the flag and kicks off indexing before replacing to `(main)`.
+- **Flow**: 3 steps — theme (Uniwind + `themeMode` preference), folder filters (pick directories via expo-file-system `pickDirectoryAsync`, whitelist/blacklist unification, persisted into the preferences store instead of legacy sidecar JSON), permissions (media library, notifications, battery optimization via the ported `core/device/battery-optimization` native-module wrapper).
+- **Restore entry deferred** to P12: onboarding backup restore depends on the settings backup/restore module landing with its phase (legacy restored every settings slice via setters that don't exist yet).
