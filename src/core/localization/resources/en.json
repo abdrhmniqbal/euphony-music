@@ -6,13 +6,20 @@
     "retry": "Retry",
     "feedback": {
       "addedToQueue": "Added to queue: {{name}}"
-    }
+    },
+    "playAll": "Play",
+    "shuffle": "Shuffle"
   },
   "navigation": {
     "home": "Home",
     "library": "Library",
     "search": "Search",
-    "settings": "Settings"
+    "settings": "Settings",
+    "tabs": {
+      "home": "Home",
+      "search": "Search",
+      "library": "Library"
+    }
   },
   "indexing": {
     "scanning": "Scanning files...",
@@ -44,5 +51,21 @@
   "term": {
     "allTracks": "Tracks",
     "favoritesLabel": "Favorites"
+  },
+  "library": {
+    "tracks": "tracks",
+    "albums": "albums",
+    "artists": "artists",
+    "genres": "genres",
+    "playlists": "playlists",
+    "folders": "folders",
+    "favorites": "favorites",
+    "unknownArtist": "Unknown artist",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonMessage": "This section is on its way.",
+    "empty": {
+      "tracksTitle": "No tracks found",
+      "tracksMessage": "Add music to your device and pull to refresh."
+    }
   }
 }

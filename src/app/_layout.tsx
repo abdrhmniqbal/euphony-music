@@ -13,7 +13,10 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <DatabaseGate>
-        <Stack />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(main)" />
+        </Stack>
         <StartupEffects />
       </DatabaseGate>
     </QueryClientProvider>
