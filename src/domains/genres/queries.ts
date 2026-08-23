@@ -119,3 +119,33 @@ export function useGenreDetails(genreName: string) {
     queryFn: () => getGenreDetails(normalized),
   })
 }
+
+export interface GenreListItem {
+  id: string
+  title: string
+  trackCount: number
+  color: string
+  shape: string
+}
+
+export function useGenres() {
+  return useQuery<GenreListItem[]>({
+    queryKey: [GENRES_KEY],
+    placeholderData: (previousData) => previousData,
+    queryFn: async () => {
+      const rows = await db.query.genres.findMany({
+        columns: { id: true, name: true, trackCount: true, color: true, shape: true },
+      })
+      return rows
+        .filter((row) => (row.trackCount ?? 0) > 0)
+        .map((row) => ({
+          id: row.id,
+          title: row.name,
+          trackCount: row.trackCount ?? 0,
+          color: row.color,
+          shape: row.shape,
+        }))
+        .sort((a, b) => a.title.localeCompare(b.title))
+    },
+  })
+}

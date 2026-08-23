@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm"
+import { eq, gt } from "drizzle-orm"
 import { useQuery } from "@tanstack/react-query"
 
 import { db } from "@/core/db"
@@ -28,5 +28,27 @@ export function useArtistByName(name: string) {
     enabled: normalizedName.length > 0,
     placeholderData: (previousData) => previousData,
     queryFn: () => getArtistByName(normalizedName),
+  })
+}
+
+export interface ArtistListItem {
+  id: string
+  name: string
+  artwork: string | null
+  trackCount: number
+}
+
+export function useArtists() {
+  return useQuery<ArtistListItem[]>({
+    queryKey: [ARTISTS_KEY],
+    placeholderData: (previousData) => previousData,
+    queryFn: async () => {
+      const rows = await db.query.artists.findMany({
+        where: gt(artists.trackCount, 0),
+        columns: { id: true, name: true, artwork: true, trackCount: true },
+        orderBy: (table, { asc }) => asc(table.name),
+      })
+      return rows.map((row) => ({ ...row, trackCount: row.trackCount ?? 0 }))
+    },
   })
 }

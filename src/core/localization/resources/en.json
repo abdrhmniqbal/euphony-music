@@ -70,7 +70,9 @@
       "tracksTitle": "No tracks found",
       "tracksMessage": "Add music to your device and pull to refresh.",
       "tracksFoundTitle": "No tracks found",
-      "albumsFoundTitle": "No albums found"
+      "albumsFoundTitle": "No albums found",
+      "genresFoundTitle": "No genres found",
+      "genresFoundMessage": "Genres will appear after indexing your music."
     },
     "count": {
       "track": "{{count}} track",
