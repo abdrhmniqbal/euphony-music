@@ -445,7 +445,10 @@
       "dontKillMyAppDescription": "Tips to prevent the system from stopping Startune",
       "unableToOpenLinkTitle": "Unable to open link",
       "restartOnboardingDescription": "Run theme, folder, permission, and battery setup again.",
-      "tryAgainDescription": "Please try again"
+      "tryAgainDescription": "Please try again",
+      "joinPreviewReleases": "Join preview releases",
+      "joinPreviewReleasesEnabled": "Pre-release versions are offered to you",
+      "joinPreviewReleasesDisabled": "Only stable releases are offered"
     },
     "routes": {
       "index": {
@@ -654,7 +657,8 @@
     },
     "about": {
       "sections": {
-        "project": "Project & Legal"
+        "project": "Project & Legal",
+        "updates": "Updates"
       },
       "github": "GitHub",
       "repositoryDescription": "Source code, issues and releases",
@@ -666,7 +670,35 @@
       "licenseRepository": "Repository",
       "viewRepository": "View on repository",
       "licenseText": "License Text",
-      "licenseTextUnavailable": "License text unavailable."
+      "licenseTextUnavailable": "License text unavailable.",
+      "checkForUpdates": "Check for updates",
+      "checkingForUpdates": "Checking…",
+      "checkForUpdatesDescription": "Look for a newer release on GitHub",
+      "updateCheckUpToDateTitle": "You're up to date",
+      "updateCheckUpToDateDescription": "You are running the latest version",
+      "updateCheckFailedTitle": "Update check failed",
+      "updateCheckFailedDescription": "Could not reach GitHub releases",
+      "joinPreviewReleases": "Preview releases",
+      "whatsNew": "What's new",
+      "whatsNewDescription": "Recent changes and release notes",
+      "whatsNewCurrentVersion": "Release notes up to v{{version}}",
+      "whatsNewLoading": "Loading release notes…",
+      "whatsNewEmpty": "No release notes found for your version."
+    }
+  },
+  "updates": {
+    "sheetTitle": "Update available",
+    "versionChange": "{{currentVersion}} → {{newVersion}}",
+    "previewRelease": "Preview release",
+    "whatsNew": "What's new",
+    "noReleaseNotes": "No release notes for this version.",
+    "downloadAndInstall": "Download and install",
+    "dontRemind": "Don't remind me again",
+    "notification": {
+      "channelName": "App updates",
+      "channelDescription": "Notifies when a new app version is available",
+      "title": "Startune Music update available",
+      "body": "Version {{newVersion}} is available (you have {{currentVersion}})."
     }
   }
 }

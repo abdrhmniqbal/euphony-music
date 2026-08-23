@@ -12,6 +12,8 @@ import { AppToastRuntime } from "@/core/ui/app-toast-runtime"
 import { getHiddenPlayerScreenOptions } from "@/core/navigation"
 import { startPlaybackRuntime } from "@/playback/runtime"
 import { startPostStartupWork } from "@/domains/indexer/bootstrap"
+import { AppUpdateSheet } from "@/domains/updates/ui/app-update-sheet"
+import { checkStartupAppUpdate } from "@/domains/updates/app-update-runtime"
 
 export default function RootLayout() {
   return (
@@ -36,6 +38,7 @@ export default function RootLayout() {
             />
           </Stack>
           <StartupEffects />
+          <AppUpdateSheet />
           <AppToastRuntime />
         </DatabaseGate>
       </HeroUINativeProvider>
@@ -47,6 +50,10 @@ function StartupEffects() {
   useEffect(() => {
     void startPlaybackRuntime()
     startPostStartupWork()
+    const timer = setTimeout(() => {
+      void checkStartupAppUpdate()
+    }, 8000)
+    return () => clearTimeout(timer)
   }, [])
   return null
 }

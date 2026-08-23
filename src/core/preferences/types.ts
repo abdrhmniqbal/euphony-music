@@ -68,6 +68,7 @@ export interface AudioPlaybackConfig {
 export interface AppUpdateConfig {
   notificationsEnabled: boolean
   includePrereleases: boolean
+  lastNotifiedVersion?: string
 }
 
 export interface SplitMultipleValueConfig {
