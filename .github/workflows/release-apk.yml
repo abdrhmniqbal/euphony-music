@@ -63,12 +63,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate native bindings
-        run: |
-          cd node_modules/react-native-audio-browser
-          node codegen/index.js --logLevel="debug"
-          node post-script.cjs
-
       - name: Resolve release tag
         id: resolve_release_tag
         run: |
