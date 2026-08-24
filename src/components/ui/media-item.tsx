@@ -16,6 +16,8 @@ import Animated, { isSharedValue, type SharedValue } from "react-native-reanimat
 import Transition from "react-native-screen-transitions"
 import { cn, tv, type VariantProps } from "tailwind-variants"
 
+const DEFAULT_LONG_PRESS_DELAY_MS = 500
+
 const mediaItemStyles = tv({
   slots: {
     base: "border-none bg-transparent",
@@ -57,10 +59,99 @@ const MediaItemContext = createContext<MediaItemContextValue>({
 
 const BoundaryPressableFeedback = Transition.createBoundaryComponent(PressableFeedback)
 
-type MediaItemProps = React.ComponentProps<typeof PressableFeedback> &
-  MediaItemVariant & {
-    boundaryId?: string
-  }
+type MaybeShared<T> = T | SharedValue<T | null | undefined> | null | undefined
+
+// SAFETY: heroui accepts SharedValue handlers; only plain functions can be re-emitted through our own wrapper
+function resolvePlainHandler<T>(handler: MaybeShared<T>): T | undefined {
+  if (!handler || isSharedValue(handler)) return undefined
+  // SAFETY: isSharedValue guard above excludes the SharedValue branch of MaybeShared
+  return handler as T
+}
+
+/**
+ * Deterministic long-press activation layered on top of PressableFeedback.
+ * A timer armed on press-in fires onLongPress even when native gesture
+ * detection is swallowed by ripple/boundary wrappers; onPress is suppressed
+ * for the press that activated it.
+ */
+function useMediaItemInteraction(
+  handlers: {
+    onPress?: MaybeShared<(event: GestureResponderEvent) => void>
+    onLongPress?: MaybeShared<(event: GestureResponderEvent) => void>
+    onPressIn?: MaybeShared<(event: GestureResponderEvent) => void>
+    onPressOut?: MaybeShared<(event: GestureResponderEvent) => void>
+  },
+  delayLongPressMs: number
+) {
+  const onPress = resolvePlainHandler(handlers.onPress)
+  const onLongPress = resolvePlainHandler(handlers.onLongPress)
+  const onPressIn = resolvePlainHandler(handlers.onPressIn)
+  const onPressOut = resolvePlainHandler(handlers.onPressOut)
+
+  const didActivateRef = React.useRef(false)
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const stopTimer = React.useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }, [])
+
+  React.useEffect(() => stopTimer, [stopTimer])
+
+  const handlePressIn = React.useCallback(
+    (event: GestureResponderEvent) => {
+      didActivateRef.current = false
+      onPressIn?.(event)
+      if (!onLongPress) return
+      stopTimer()
+      timerRef.current = setTimeout(() => {
+        timerRef.current = null
+        if (didActivateRef.current) return
+        didActivateRef.current = true
+        onLongPress(event)
+      }, delayLongPressMs)
+    },
+    [delayLongPressMs, onLongPress, onPressIn, stopTimer]
+  )
+
+  const handlePressOut = React.useCallback(
+    (event: GestureResponderEvent) => {
+      stopTimer()
+      onPressOut?.(event)
+    },
+    [onPressOut, stopTimer]
+  )
+
+  const handlePress = React.useCallback(
+    (event: GestureResponderEvent) => {
+      if (didActivateRef.current) {
+        didActivateRef.current = false
+        return
+      }
+      onPress?.(event)
+    },
+    [onPress]
+  )
+
+  const handleNativeLongPress = React.useCallback(
+    (event: GestureResponderEvent) => {
+      if (didActivateRef.current || !onLongPress) return
+      stopTimer()
+      didActivateRef.current = true
+      onLongPress(event)
+    },
+    [onLongPress, stopTimer]
+  )
+
+  return { handlePress, handleNativeLongPress, handlePressIn, handlePressOut }
+}
+
+interface MediaItemRootProps
+  extends React.ComponentProps<typeof PressableFeedback>, MediaItemVariant {
+  boundaryId?: string
+}
 
 function MediaItemRoot({
   className,
@@ -72,106 +163,26 @@ function MediaItemRoot({
   onPress,
   onPressIn,
   onPressOut,
-  delayLongPress = 500,
+  delayLongPress = DEFAULT_LONG_PRESS_DELAY_MS,
   ...props
-}: MediaItemProps) {
+}: MediaItemRootProps) {
   const { base } = mediaItemStyles({ variant })
-  const didLongPressRef = React.useRef(false)
-  const longPressTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
-  // SAFETY: heroui accepts SharedValue handlers; only the plain-function branch is callable here
-  const pressHandler = <T,>(handler: T | SharedValue<T> | null | undefined): T | undefined =>
-    handler && !isSharedValue<T>(handler) ? handler : undefined
-  const longPressHandler = pressHandler(onLongPress)
-  const pressInHandler = pressHandler(onPressIn)
-  const pressOutHandler = pressHandler(onPressOut)
-  const pressOutOnlyHandler = pressHandler(onPress)
-  const resolvedDelayLongPress =
+  const resolvedDelay =
     delayLongPress && !isSharedValue<number | null | undefined>(delayLongPress)
       ? delayLongPress
-      : 500
+      : DEFAULT_LONG_PRESS_DELAY_MS
 
-  const clearLongPressTimer = React.useCallback(() => {
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current)
-      longPressTimerRef.current = null
-    }
-  }, [])
-
-  const triggerLongPress = React.useCallback(
-    (event: GestureResponderEvent) => {
-      if (didLongPressRef.current) {
-        return
-      }
-      didLongPressRef.current = true
-      if (longPressHandler) {
-        longPressHandler(event)
-      }
-    },
-    [longPressHandler]
+  const interaction = useMediaItemInteraction(
+    { onPress, onLongPress, onPressIn, onPressOut },
+    resolvedDelay
   )
-
-  const handlePressIn = React.useCallback(
-    (event: GestureResponderEvent) => {
-      didLongPressRef.current = false
-      if (pressInHandler) {
-        pressInHandler(event)
-      }
-      if (!longPressHandler) {
-        return
-      }
-      clearLongPressTimer()
-      longPressTimerRef.current = setTimeout(() => {
-        triggerLongPress(event)
-      }, resolvedDelayLongPress)
-    },
-    [
-      clearLongPressTimer,
-      longPressHandler,
-      pressInHandler,
-      resolvedDelayLongPress,
-      triggerLongPress,
-    ]
-  )
-
-  const handlePressOut = React.useCallback(
-    (event: GestureResponderEvent) => {
-      clearLongPressTimer()
-      if (pressOutHandler) {
-        pressOutHandler(event)
-      }
-    },
-    [clearLongPressTimer, pressOutHandler]
-  )
-
-  const handlePress = React.useCallback(
-    (event: GestureResponderEvent) => {
-      if (didLongPressRef.current) {
-        didLongPressRef.current = false
-        return
-      }
-      if (pressOutOnlyHandler) {
-        pressOutOnlyHandler(event)
-      }
-    },
-    [pressOutOnlyHandler]
-  )
-
-  const handleLongPress = React.useCallback(
-    (event: GestureResponderEvent) => {
-      clearLongPressTimer()
-      triggerLongPress(event)
-    },
-    [clearLongPressTimer, triggerLongPress]
-  )
-
-  React.useEffect(() => clearLongPressTimer, [clearLongPressTimer])
 
   const interactionProps = {
     ...props,
-    onPress: handlePress,
-    onLongPress: handleLongPress,
-    onPressIn: handlePressIn,
-    onPressOut: handlePressOut,
+    onPress: interaction.handlePress,
+    onLongPress: interaction.handleNativeLongPress,
+    onPressIn: interaction.handlePressIn,
+    onPressOut: interaction.handlePressOut,
   }
 
   if (boundaryId) {
@@ -198,7 +209,7 @@ function MediaItemRoot({
   )
 }
 
-type MediaItemImageProps = ViewProps & {
+interface MediaItemImageProps extends ViewProps {
   icon?: ReactNode
   image?: string
   overlay?: ReactNode
@@ -290,9 +301,13 @@ function MediaItemAction({
   testID,
   ...props
 }: React.ComponentProps<typeof PressableFeedback>) {
-  const isInteractive = Boolean(onPress || onLongPress || onPressIn || onPressOut)
+  const hasPlainHandlers =
+    !!resolvePlainHandler(onPress) ||
+    !!resolvePlainHandler(onLongPress) ||
+    !!resolvePlainHandler(onPressIn) ||
+    !!resolvePlainHandler(onPressOut)
 
-  if (!isInteractive) {
+  if (!hasPlainHandlers) {
     return (
       <Animated.View
         accessibilityHint={accessibilityHint}

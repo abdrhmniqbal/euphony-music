@@ -3,7 +3,6 @@ import { Text, View } from "react-native"
 import { cn } from "tailwind-variants"
 
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface SectionHeaderProps {
   title: string
@@ -12,8 +11,6 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, className, onViewMore }: SectionHeaderProps) {
-  const theme = useThemeColors()
-
   return (
     <View className={cn("mb-5", className)}>
       <View className="flex-row items-center justify-between gap-3">
@@ -28,7 +25,7 @@ export function SectionHeader({ title, className, onViewMore }: SectionHeaderPro
             className="h-9 w-9 rounded-full border border-border/70 bg-default/55"
             isIconOnly
           >
-            <LocalChevronRightIcon fill="none" width={20} height={20} color={theme.muted} />
+            <LocalChevronRightIcon fill="none" width={20} height={20} className="text-muted" />
           </Button>
         ) : null}
       </View>

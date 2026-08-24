@@ -2,25 +2,17 @@ import "../global.css"
 import "../core/localization/i18n"
 
 import { QueryClientProvider } from "@tanstack/react-query"
-import { Stack, useRouter } from "expo-router"
+import { Stack } from "expo-router"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { HeroUINativeProvider } from "heroui-native"
-import { useEffect } from "react"
 
+import { StartupEffects } from "@/core/bootstrap/startup-effects"
 import { DatabaseGate } from "@/core/db/runtime"
-import { queryClient } from "@/core/query/query-client"
-import { AppToastRuntime } from "@/core/ui/app-toast-runtime"
 import { getHiddenPlayerScreenOptions } from "@/core/navigation"
-import { startPlaybackRuntime } from "@/playback/runtime"
-import { usePlayerWidgetSync } from "@/widgets/use-player-widget-sync"
-import { startPostStartupWork } from "@/domains/indexer/bootstrap"
+import { queryClient } from "@/core/query/query-client"
+import { ThemeRuntime } from "@/core/theme/theme-runtime"
+import { AppToastRuntime } from "@/core/ui/app-toast-runtime"
 import { AppUpdateSheet } from "@/domains/updates/ui/app-update-sheet"
-import { checkStartupAppUpdate } from "@/domains/updates/app-update-runtime"
-import {
-  ensureNotificationRuntimeStarted,
-  markRouterReady,
-  setNotificationRouteHandler,
-} from "@/core/notifications/notification-runtime"
 
 export default function RootLayout() {
   return (
@@ -36,6 +28,7 @@ export default function RootLayout() {
             },
           }}
         >
+          <ThemeRuntime />
           <DatabaseGate>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
@@ -58,30 +51,4 @@ export default function RootLayout() {
       </QueryClientProvider>
     </GestureHandlerRootView>
   )
-}
-
-function StartupEffects() {
-  const router = useRouter()
-
-  usePlayerWidgetSync()
-
-  useEffect(() => {
-    setNotificationRouteHandler((route) => {
-      if (!router.canGoBack() && route !== "/(main)/(home)") {
-        router.replace("/(main)/(home)")
-      }
-      // SAFETY: route strings originate from our own notification payloads and always name a registered screen
-      router.push(route as never)
-    })
-    ensureNotificationRuntimeStarted()
-    markRouterReady()
-
-    void startPlaybackRuntime()
-    startPostStartupWork()
-    const timer = setTimeout(() => {
-      void checkStartupAppUpdate()
-    }, 8000)
-    return () => clearTimeout(timer)
-  }, [router])
-  return null
 }

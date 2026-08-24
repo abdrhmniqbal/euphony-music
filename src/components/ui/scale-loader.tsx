@@ -1,4 +1,5 @@
 /* oxlint-disable react/immutability -- reanimated shared values are intentionally mutated via .value inside effects */
+import { useThemeColor } from "heroui-native"
 import { useEffect } from "react"
 import { View } from "react-native"
 import Animated, {
@@ -9,8 +10,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 
-import { useThemeColors } from "@/core/theme/use-theme-colors"
-
 const BAR_COUNT = 3
 const BAR_DURATION = 1000
 const BAR_MIN = 0.3
@@ -19,8 +18,17 @@ interface ScaleLoaderProps {
   size?: number
 }
 
-function Bar({ phase, maxHeight, width }: { phase: number; maxHeight: number; width: number }) {
-  const theme = useThemeColors()
+function Bar({
+  phase,
+  maxHeight,
+  width,
+  color,
+}: {
+  phase: number
+  maxHeight: number
+  width: number
+  color: string
+}) {
   const progress = useSharedValue(phase)
 
   useEffect(() => {
@@ -44,7 +52,7 @@ function Bar({ phase, maxHeight, width }: { phase: number; maxHeight: number; wi
         {
           width,
           borderRadius: width / 2,
-          backgroundColor: theme.accent,
+          backgroundColor: color,
         },
         animatedStyle,
       ]}
@@ -53,15 +61,12 @@ function Bar({ phase, maxHeight, width }: { phase: number; maxHeight: number; wi
 }
 
 export function ScaleLoader({ size = 28 }: ScaleLoaderProps) {
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const barWidth = Math.max(3, Math.round(size * 0.24))
   const gap = Math.round(barWidth * 0.8)
 
   return (
-    <View
-      className="absolute inset-0 items-center justify-center rounded-lg"
-      style={{ backgroundColor: theme.backdrop }}
-    >
+    <View className="absolute inset-0 items-center justify-center rounded-lg bg-backdrop">
       <View
         style={{
           flexDirection: "row",
@@ -71,7 +76,13 @@ export function ScaleLoader({ size = 28 }: ScaleLoaderProps) {
         }}
       >
         {Array.from({ length: BAR_COUNT }, (_, index) => (
-          <Bar key={index} phase={index / BAR_COUNT} maxHeight={size} width={barWidth} />
+          <Bar
+            key={index}
+            phase={index / BAR_COUNT}
+            maxHeight={size}
+            width={barWidth}
+            color={accent}
+          />
         ))}
       </View>
     </View>
