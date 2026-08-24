@@ -39,7 +39,11 @@ export default function RootLayout() {
           <DatabaseGate>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
-              <Stack.Screen name="(main)" />
+              <Stack.Screen
+                name="(main)"
+                // SAFETY: enableTransitions is a react-native-screen-transitions option read through the stack adapter; the (main) subtree hosts boundary components (mini player) that require its descriptors provider
+                options={{ enableTransitions: true } as never}
+              />
               <Stack.Screen
                 name="player"
                 // SAFETY: options come from our own boundary helper and are accepted by expo-router at runtime despite looser static types
