@@ -33,7 +33,6 @@ interface HeaderSearchInputProps {
   onChangeText: (text: string) => void
   onSubmit: () => void
   onBack: () => void
-  focusWhenReady: boolean
 }
 
 function HeaderSearchInput({
@@ -41,7 +40,6 @@ function HeaderSearchInput({
   onChangeText,
   onSubmit,
   onBack,
-  focusWhenReady,
 }: HeaderSearchInputProps) {
   const { t } = useTranslation()
   const [accent, foreground, muted] = useThemeColor(["accent", "foreground", "muted"])
@@ -80,7 +78,7 @@ function HeaderSearchInput({
           className="pl-12 pr-10"
           selectionColor={accent}
           returnKeyType="search"
-          autoFocus={focusWhenReady && initialValue.trim().length === 0}
+          autoFocus={initialValue.trim().length === 0}
         />
         {inputValue.length > 0 ? (
           <PressableFeedback
@@ -104,7 +102,6 @@ export function SearchInteractionScreen() {
   const [activeSearchTab, setActiveSearchTab] = useState<
     "All" | "Track" | "Album" | "Artist" | "Playlist"
   >("All")
-  const [canAutoFocusInput] = useState(true)
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const [actionSheetConfig, setActionSheetConfig] = useState<{
@@ -283,7 +280,6 @@ export function SearchInteractionScreen() {
             dismissKeyboard()
             router.back()
           }}
-          focusWhenReady={canAutoFocusInput}
         />
       </View>
       {isSearching ? (
