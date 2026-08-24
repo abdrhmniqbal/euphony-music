@@ -115,9 +115,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 **knip:** `pnpm run knip` reports a backlog of pre-existing unused files, exports, and dependencies (e.g. `ts-morph` is an unused `devDependency`, several `scripts/audit-*.mjs` files, and many exported domain types). These are known exceptions pending separate cleanup and are out of scope for config-only drift fixes; they do not reflect regressions.
 
-**typecheck:** There is intentionally no `typecheck` script. `tsc --noEmit` has pre-existing errors (e.g. missing `react-native-audio-browser` type declarations, `ThemeColors.surface`). The project gates on `oxlint` (`.oxlintrc.json`, `import/no-cycle: error`), not on `tsc`.
+**typecheck:** ALWAYS run `pnpm run typecheck` (`tsc --noEmit`) before committing — it must pass clean. Type errors block commits just like lint failures.
 
-**Checks:** `pnpm run lint` (oxlint), `pnpm run format:check` (oxfmt), `pnpm run test` (vitest), and `pnpm run check` (lint + test).
+**Checks:** `pnpm run lint` (oxlint), `pnpm run format:check` (oxfmt), `pnpm run test` (vitest), and `pnpm run check` (lint + typecheck + tests).
 
 ## 6. Component Architecture
 
