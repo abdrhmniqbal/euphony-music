@@ -1,3 +1,4 @@
 <resources>
   <string name="app_name">Startune Music</string>
+  <string name="widget_player_description" translatable="false">Now playing with playback controls</string>
 </resources>

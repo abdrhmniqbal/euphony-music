@@ -59,5 +59,13 @@
         <data android:scheme="file" android:mimeType="audio/*"/>
       </intent-filter>
     </activity>
+    <receiver android:name="com.startune.music.widget.Player" android:exported="false" android:label="Player">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="com.startune.music.WIDGET_CLICK"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_player"/>
+    </receiver>
+    <service android:name="com.reactnativeandroidwidget.RNWidgetCollectionService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
   </application>
 </manifest>

@@ -2,7 +2,7 @@
   "name": "startune-music",
   "version": "1.0.5",
   "private": true,
-  "main": "expo-router/entry",
+  "main": "./index",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -60,6 +60,7 @@
     "react-dom": "19.2.3",
     "react-i18next": "17.0.8",
     "react-native": "0.86.0",
+    "react-native-android-widget": "0.22.1",
     "react-native-audio-browser": "github:MissingCore/react-native-audio-browser#05f7af440edc29222d12a0acc58234f5cb51433d",
     "react-native-enriched-markdown": "^0.5.0",
     "react-native-file-viewer-turbo": "^0.7.4",

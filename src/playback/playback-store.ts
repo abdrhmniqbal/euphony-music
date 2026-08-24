@@ -37,6 +37,8 @@ export interface PlaybackStore {
   numQueuedNext: number
 }
 
+export const PLAYBACK_STORE_PERSIST_KEY = "startune::playback-store"
+
 export const PersistedFields: string[] = [
   "_restoredTrackKey",
   "lastPosition",
@@ -144,7 +146,7 @@ export const playbackStore = createPersistedStore<PlaybackStore>(
     numQueuedNext: 0,
   }),
   {
-    name: "startune::playback-store",
+    name: PLAYBACK_STORE_PERSIST_KEY,
     partialize: (state) =>
       Object.fromEntries(Object.entries(state).filter(([key]) => PersistedFields.includes(key))),
     onRehydrateStorage: () => {

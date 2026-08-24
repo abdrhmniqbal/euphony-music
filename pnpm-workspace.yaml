@@ -6,3 +6,6 @@ nodeLinker: hoisted
 allowBuilds:
   esbuild: true
   react-native-audio-browser@https://codeload.github.com/MissingCore/react-native-audio-browser/tar.gz/05f7af440edc29222d12a0acc58234f5cb51433d: true
+
+patchedDependencies:
+  react-native-android-widget: patches/react-native-android-widget.patch

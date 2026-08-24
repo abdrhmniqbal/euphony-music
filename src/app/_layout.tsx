@@ -11,6 +11,7 @@ import { queryClient } from "@/core/query/query-client"
 import { AppToastRuntime } from "@/core/ui/app-toast-runtime"
 import { getHiddenPlayerScreenOptions } from "@/core/navigation"
 import { startPlaybackRuntime } from "@/playback/runtime"
+import { usePlayerWidgetSync } from "@/widgets/use-player-widget-sync"
 import { startPostStartupWork } from "@/domains/indexer/bootstrap"
 import { AppUpdateSheet } from "@/domains/updates/ui/app-update-sheet"
 import { checkStartupAppUpdate } from "@/domains/updates/app-update-runtime"
@@ -54,6 +55,8 @@ export default function RootLayout() {
 
 function StartupEffects() {
   const router = useRouter()
+
+  usePlayerWidgetSync()
 
   useEffect(() => {
     setNotificationRouteHandler((route) => {

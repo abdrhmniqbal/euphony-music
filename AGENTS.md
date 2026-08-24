@@ -140,6 +140,8 @@ _Note: Editing (`codedb_edit`) is a fallback; continue using your primary native
 
 ## 6. Tooling & Build Notes
 
+**NEVER run Gradle (`./gradlew`, `gradle`) builds or tasks on this machine** — they make the user's laptop unusable. Verify Android changes statically (file review, XML validation) and let CI/the user run builds.
+
 **Package manager:** Always use `pnpm`. Do not call `yarn`/`npm`/`bun` directly for installs; use `pnpm install` and `pnpm run <script>`.
 
 **Lockfile:** `pnpm-lock.yaml` is pnpm's managed lockfile (commit it). pnpm settings live in `pnpm-workspace.yaml` (e.g. `nodeLinker`, `patchedDependencies`).

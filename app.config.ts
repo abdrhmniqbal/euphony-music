@@ -66,6 +66,24 @@ export default (): ExpoConfig => ({
     "expo-router",
     "expo-media-library",
     [
+      "react-native-android-widget",
+      {
+        widgets: [
+          {
+            name: "Player",
+            label: "Player",
+            description: "Now playing with playback controls",
+            minWidth: "250dp",
+            minHeight: "40dp",
+            targetCellWidth: 4,
+            targetCellHeight: 1,
+            maxResizeHeight: "110dp",
+            resizeMode: "horizontal|vertical",
+          },
+        ],
+      },
+    ],
+    [
       "expo-notifications",
       {
         icon: "./src/assets/notification-icon.png",
