@@ -27,6 +27,8 @@ Before implementing:
 - If multiple interpretations exist, present them - don't pick silently.
 - If a simpler approach exists, say so. Push back when warranted.
 - If something is unclear, stop. Name what's confusing. Ask.
+- For repeat bugs or repeated wrong fixes, stop and trace actual runtime flow first; do not stack assumptions on previous assumptions.
+- For device-only issues, do not claim SQL/query verification unless validated through app logs, repository code, or reproducible device behavior.
 
 ## 2. Simplicity First
 
@@ -96,49 +98,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-## 5. Tool Selection (MCP over CLI)
-
-**Always prefer MCP tools over traditional shell commands (`ls`, `grep`, `rg`, `find`, `cat`) for exploring and understanding the codebase.**
-
-The available `codedb_*` MCP tools are specifically designed to give structural context faster and with lower token overhead than raw shell outputs.
-
-**Core Rules:**
-
-- Do not use `grep` or `rg` for searching codebase content — use `codedb_search` or `codedb_word`.
-- Do not use `find` or `ls` for locating files — use `codedb_find`, `codedb_ls`, `codedb_glob`, or `codedb_tree`.
-- Do not use `grep` for finding usages or definitions — use `codedb_symbol`, `codedb_callers`, or `codedb_outline`.
-- For initial orientation on a complex task, prefer `codedb_context`.
-- For dependency tracing, use `codedb_deps` instead of manual searches.
-- When calling `codedb_search`, pass the exact parameter object: `query` (required string), `max_results` (integer), `scope` (boolean), `compact` (boolean), `paths_only` (boolean), `regex` (boolean), `path_glob` (string), and optional `project` only when a valid `codedb.snapshot` project path is known. Do not invent parameters, omit `query`, or use malformed `project` values.
-- If a `codedb_*` call fails from invalid parameters, correct the parameter object and retry once before using any other tool.
-- For repeat bugs or repeated wrong fixes, stop and trace actual runtime flow first; do not stack assumptions on previous assumptions.
-- For device-only issues, do not claim SQL/query verification unless validated through app logs, repository code, or reproducible device behavior.
-
-**Available MCP Tools (`codedb`):**
-| Tool | Description |
-|------|-------------|
-| `codedb_tree` | Full file tree with language, line counts, symbol counts |
-| `codedb_outline` | Symbols in a file: functions, structs, imports, with line numbers |
-| `codedb_symbol` | Find where a symbol is defined across the codebase |
-| `codedb_search` | Trigram-accelerated full-text search (supports regex, scoped results) |
-| `codedb_word` | O(1) inverted index word lookup |
-| `codedb_callers` | Every call site of a symbol — word index ∩ outline scope, in one round-trip |
-| `codedb_context` | Task-shaped composer — pass a NL task, get keywords + symbol defs + ranked files + top snippets in one block |
-| `codedb_hot` | Most recently modified files |
-| `codedb_deps` | Dependency graph: `imported_by` (default) or `depends_on`; `transitive=true` for full BFS |
-| `codedb_read` | Read file content (line ranges, `compact` mode) |
-| `codedb_changes` | Changed files since a sequence number |
-| `codedb_status` | Index status (file count, current sequence, scan phase) |
-| `codedb_projects` | List all locally indexed projects on this machine |
-| `codedb_index` | Index a local folder and write `codedb.snapshot` |
-| `codedb_find` | Fuzzy **file-name** search (typo-tolerant subsequence match against indexed paths) |
-| `codedb_glob` | Match indexed paths against a glob pattern (`src/**/*.ts`, `*.md`, …) |
-| `codedb_ls` | List immediate children of a directory — dirs first, then files with language + counts |
-| `codedb_query` | Composable pipeline — chain `find`, `search`, `filter`, `deps`, `outline`, `read`, `sort`, `limit` in one request |
-
-_Note: Editing (`codedb_edit`) is a fallback; continue using your primary native edit capability for code modifications. The above tools are strictly for reading, exploring, and building context._
-
-## 6. Tooling & Build Notes
+## 5. Tooling & Build Notes
 
 **NEVER run Gradle (`./gradlew`, `gradle`) builds or tasks on this machine** — they make the user's laptop unusable. Verify Android changes statically (file review, XML validation) and let CI/the user run builds.
 
@@ -159,7 +119,7 @@ _Note: Editing (`codedb_edit`) is a fallback; continue using your primary native
 
 **Checks:** `pnpm run lint` (oxlint), `pnpm run format:check` (oxfmt), `pnpm run test` (vitest), and `pnpm run check` (lint + test).
 
-## 7. Component Architecture
+## 6. Component Architecture
 
 Three component categories under `src/components/`:
 
