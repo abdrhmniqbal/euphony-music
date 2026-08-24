@@ -80,7 +80,7 @@ export function OnboardingScreen() {
   async function pickFolder() {
     try {
       const { Directory } = await import("expo-file-system")
-      if (typeof Directory?.pickDirectoryAsync !== "function") {
+      if (!Directory?.pickDirectoryAsync) {
         return
       }
 
@@ -126,6 +126,7 @@ export function OnboardingScreen() {
 
   function nextStep() {
     if (step < STEP_COUNT - 1) {
+      // SAFETY: step < STEP_COUNT - 1 keeps step + 1 inside the Step union
       setStep((step + 1) as Step)
       return
     }
@@ -135,6 +136,7 @@ export function OnboardingScreen() {
 
   function previousStep() {
     if (step > 0) {
+      // SAFETY: step > 0 keeps step - 1 inside the Step union
       setStep((step - 1) as Step)
     }
   }

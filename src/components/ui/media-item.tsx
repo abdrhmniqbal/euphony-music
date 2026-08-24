@@ -12,7 +12,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native"
-import Animated from "react-native-reanimated"
+import Animated, { isSharedValue, type SharedValue } from "react-native-reanimated"
 import Transition from "react-native-screen-transitions"
 import { cn, tv, type VariantProps } from "tailwind-variants"
 
@@ -78,7 +78,17 @@ function MediaItemRoot({
   const { base } = mediaItemStyles({ variant })
   const didLongPressRef = React.useRef(false)
   const longPressTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
-  const resolvedDelayLongPress = typeof delayLongPress === "number" ? delayLongPress : 500
+  // SAFETY: heroui accepts SharedValue handlers; only the plain-function branch is callable here
+  const pressHandler = <T,>(handler: T | SharedValue<T> | null | undefined): T | undefined =>
+    handler && !isSharedValue<T>(handler) ? handler : undefined
+  const longPressHandler = pressHandler(onLongPress)
+  const pressInHandler = pressHandler(onPressIn)
+  const pressOutHandler = pressHandler(onPressOut)
+  const pressOutOnlyHandler = pressHandler(onPress)
+  const resolvedDelayLongPress =
+    delayLongPress && !isSharedValue<number | null | undefined>(delayLongPress)
+      ? delayLongPress
+      : 500
 
   const clearLongPressTimer = React.useCallback(() => {
     if (longPressTimerRef.current) {
@@ -93,20 +103,20 @@ function MediaItemRoot({
         return
       }
       didLongPressRef.current = true
-      if (typeof onLongPress === "function") {
-        onLongPress(event)
+      if (longPressHandler) {
+        longPressHandler(event)
       }
     },
-    [onLongPress]
+    [longPressHandler]
   )
 
   const handlePressIn = React.useCallback(
     (event: GestureResponderEvent) => {
       didLongPressRef.current = false
-      if (typeof onPressIn === "function") {
-        onPressIn(event)
+      if (pressInHandler) {
+        pressInHandler(event)
       }
-      if (typeof onLongPress !== "function") {
+      if (!longPressHandler) {
         return
       }
       clearLongPressTimer()
@@ -114,17 +124,23 @@ function MediaItemRoot({
         triggerLongPress(event)
       }, resolvedDelayLongPress)
     },
-    [clearLongPressTimer, onLongPress, onPressIn, resolvedDelayLongPress, triggerLongPress]
+    [
+      clearLongPressTimer,
+      longPressHandler,
+      pressInHandler,
+      resolvedDelayLongPress,
+      triggerLongPress,
+    ]
   )
 
   const handlePressOut = React.useCallback(
     (event: GestureResponderEvent) => {
       clearLongPressTimer()
-      if (typeof onPressOut === "function") {
-        onPressOut(event)
+      if (pressOutHandler) {
+        pressOutHandler(event)
       }
     },
-    [clearLongPressTimer, onPressOut]
+    [clearLongPressTimer, pressOutHandler]
   )
 
   const handlePress = React.useCallback(
@@ -133,11 +149,11 @@ function MediaItemRoot({
         didLongPressRef.current = false
         return
       }
-      if (typeof onPress === "function") {
-        onPress(event)
+      if (pressOutOnlyHandler) {
+        pressOutOnlyHandler(event)
       }
     },
-    [onPress]
+    [pressOutOnlyHandler]
   )
 
   const handleLongPress = React.useCallback(
@@ -162,6 +178,7 @@ function MediaItemRoot({
     return (
       <MediaItemContext value={{ variant }}>
         <BoundaryPressableFeedback
+          // SAFETY: boundary ids are caller-supplied strings used to match transition boundaries
           id={id as string}
           className={cn(base(), className)}
           {...interactionProps}
@@ -274,7 +291,6 @@ function MediaItemAction({
   ...props
 }: React.ComponentProps<typeof PressableFeedback>) {
   const isInteractive = Boolean(onPress || onLongPress || onPressIn || onPressOut)
-  const staticStyle = typeof style === "function" ? undefined : (style as StyleProp<ViewStyle>)
 
   if (!isInteractive) {
     return (
@@ -283,7 +299,8 @@ function MediaItemAction({
         accessibilityLabel={accessibilityLabel}
         accessibilityRole={accessibilityRole}
         className={className}
-        style={staticStyle}
+        // SAFETY: with no press handlers a press-state style callback can never fire, so the prop is effectively static
+        style={style as StyleProp<ViewStyle>}
         testID={testID}
       >
         {children}
@@ -314,6 +331,7 @@ type MediaItemCompoundComponent = typeof MediaItemRoot & {
   Action: typeof MediaItemAction
 }
 
+// SAFETY: subcomponents are attached immediately below; MediaItemCompoundComponent mirrors that exact shape
 const MediaItem = MediaItemRoot as MediaItemCompoundComponent
 MediaItem.Image = MediaItemImage
 MediaItem.Content = MediaItemContent

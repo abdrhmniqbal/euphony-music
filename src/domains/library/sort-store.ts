@@ -13,11 +13,11 @@ interface LibrarySortState {
   sortConfig: Record<string, DetailSortConfig>
 }
 
-const DEFAULT_SORT_CONFIG: Record<string, DetailSortConfig> = {
+const DEFAULT_SORT_CONFIG = {
   AlbumTracks: { field: "trackNumber", order: "asc" },
   ArtistTracks: { field: "title", order: "asc" },
   ArtistAlbums: { field: "year", order: "desc" },
-}
+} satisfies Record<string, DetailSortConfig>
 
 export const useLibrarySortStore = create<LibrarySortState>(() => ({
   sortConfig: DEFAULT_SORT_CONFIG,

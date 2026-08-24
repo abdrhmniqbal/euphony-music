@@ -23,7 +23,6 @@ import { addToQueue, queueTrackNext } from "@/playback/queue-actions"
 import type { PlayerTrack } from "@/playback/types"
 import { TrackMetadataSheet } from "./track-metadata-sheet"
 import { PlaylistPickerSheet } from "./playlist-picker-sheet"
-import { ValueNavigationSheet } from "./value-navigation-sheet"
 import { useGuardedRouter } from "@/core/navigation"
 import { getPreferenceState } from "@/core/preferences/store"
 import { splitArtistsValue } from "@/domains/tracks/split-engine"
@@ -50,7 +49,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   const router = useGuardedRouter()
   const [isMetadataSheetOpen, setIsMetadataSheetOpen] = React.useState(false)
   const [isPlaylistPickerOpen, setIsPlaylistPickerOpen] = React.useState(false)
-  const [isArtistSelectionOpen, setIsArtistSelectionOpen] = React.useState(false)
 
   const { data: isFavoriteData = false } = useIsFavorite("track", track?.id ?? "")
 
@@ -176,8 +174,6 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
                 ).filter((name) => name.trim().length > 0)
                 if (names.length === 1) {
                   router.push({ pathname: "/artist/[name]", params: { name: names[0].trim() } })
-                } else if (names.length > 1) {
-                  setIsArtistSelectionOpen(true)
                 }
               }}
             />

@@ -99,7 +99,7 @@ export function ArtistGrid({ data, onArtistPress }: ArtistGridProps) {
             message={t("library.empty.artistsMessage")}
           />
         }
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 200 } as never}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 200 }}
         style={{ flex: 1, minHeight: 1 }}
         recycleItems
         estimatedItemSize={160}

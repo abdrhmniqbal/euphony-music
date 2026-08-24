@@ -1,4 +1,3 @@
-import { albums } from "@/core/db/schema"
 import { useQuery } from "@tanstack/react-query"
 
 import { db } from "@/core/db"

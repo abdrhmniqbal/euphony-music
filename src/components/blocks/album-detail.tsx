@@ -21,7 +21,6 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { screenEnterTransition } from "@/lib/animations"
 import { mergeText } from "@/lib/merge-text"
-import { resolveAlbumTransitionId } from "@/lib/transition-ids"
 import { formatAlbumDuration } from "@/domains/albums/utils"
 import { useToggleFavorite } from "@/domains/favorites/mutations"
 import { useIsFavorite } from "@/domains/favorites/queries"
@@ -37,8 +36,6 @@ import { getPreferenceState } from "@/core/preferences/store"
 import { handleScroll } from "@/core/ui/store"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { toPlayerTrack } from "@/playback/player-track"
-import type { PlayerTrack } from "@/playback/types"
-import { playTrack } from "@/playback/service"
 import { usePlaybackActions, decodeRouteParam } from "@/domains/library/detail-actions"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
@@ -46,7 +43,7 @@ const HEADER_COLLAPSE_THRESHOLD = 120
 export function AlbumDetailScreen() {
   const { t } = useTranslation()
   const theme = useThemeColors()
-  const { name, transitionId } = useLocalSearchParams<{
+  const { name } = useLocalSearchParams<{
     name: string
     transitionId?: string
   }>()
@@ -66,8 +63,10 @@ export function AlbumDetailScreen() {
     () =>
       dbTracks
         .filter((track) => (track.albumName || "").trim().toLowerCase() === normalizedAlbumName)
-        .map((track) => toPlayerTrack(track, splitConfig)!)
-        .filter(Boolean) as PlayerTrack[],
+        .flatMap((track) => {
+          const mapped = toPlayerTrack(track, splitConfig)
+          return mapped ? [mapped] : []
+        }),
     [dbTracks, normalizedAlbumName, splitConfig]
   )
 
@@ -87,11 +86,6 @@ export function AlbumDetailScreen() {
   }
   const sortedTracks = sortPlayerTracks(albumTracks, sortConfig)
   const albumId = albumTracks[0]?.albumId
-  const albumTransitionId = resolveAlbumTransitionId({
-    transitionId,
-    id: albumId,
-    title: albumInfo?.title || albumName,
-  })
   const { data: isAlbumFavorite = false } = useIsFavorite("album", albumId ?? "")
   const isLoading = isAlbumTracksLoading && albumTracks.length === 0
   const totalDurationLabel = formatAlbumDuration(totalDuration)
@@ -122,10 +116,6 @@ export function AlbumDetailScreen() {
 
   const activeAlbumInfo = albumInfo
 
-  function playSelectedTrack(track: PlayerTrack) {
-    void playTrack(track, sortedTracks, { type: "album", title: activeAlbumInfo.title })
-  }
-
   const { playAll: playAllTracks, shuffle: shuffleTracks } = usePlaybackActions(
     sortedTracks,
     activeAlbumInfo.title,
@@ -133,7 +123,7 @@ export function AlbumDetailScreen() {
   )
 
   function getSortLabel() {
-    return t(resolveSortLabel(ALBUM_TRACK_SORT_OPTIONS, sortConfig.field, t) || "library.sortBy")
+    return t(resolveSortLabel(ALBUM_TRACK_SORT_OPTIONS, sortConfig.field) || "library.sortBy")
   }
 
   return (

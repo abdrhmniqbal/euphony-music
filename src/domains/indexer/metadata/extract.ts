@@ -421,40 +421,12 @@ export function extractMp4Lyrics(bytes: Uint8Array): string | undefined {
 
 // --- Metadata extraction ----------------------------------------------------
 
-function parseMetadataYear(value: unknown): number | undefined {
-  if (typeof value === "number" && Number.isInteger(value)) {
-    return normalizeMetadataYear(value)
-  }
-
-  const text = String(value || "").trim()
-  if (!text) {
+function parseMetadataYear(value: number | null | undefined): number | undefined {
+  if (value === null || value === undefined || !Number.isInteger(value)) {
     return undefined
   }
 
-  const fourDigitMatch = text.match(/\b(\d{4})\b/)
-  if (fourDigitMatch?.[1]) {
-    return normalizeMetadataYear(Number.parseInt(fourDigitMatch[1], 10))
-  }
-
-  const parts = text.split(/[-/.]/)
-  if (parts.length >= 2) {
-    const numeric = Number.parseInt(parts[parts.length - 1].trim(), 10)
-    if (!Number.isNaN(numeric)) {
-      return normalizeMetadataYear(numeric)
-    }
-  }
-
-  const twoDigitMatch = text.match(/\b(\d{2})\b/)
-  if (twoDigitMatch?.[1]) {
-    return normalizeMetadataYear(Number.parseInt(twoDigitMatch[1], 10))
-  }
-
-  const rawParsed = Number.parseInt(text, 10)
-  if (!Number.isNaN(rawParsed)) {
-    return normalizeMetadataYear(rawParsed)
-  }
-
-  return undefined
+  return normalizeMetadataYear(value)
 }
 
 function normalizeMetadataYear(value: number): number | undefined {

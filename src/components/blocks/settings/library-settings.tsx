@@ -14,11 +14,9 @@ import type {
   IndexerScanConfig,
   TrackDurationFilterConfig,
 } from "@/core/preferences/types"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGuardedRouter } from "@/core/navigation"
 import {
   forceReindexLibrary,
-  startIndexing,
 } from "@/domains/indexer/service"
 import { useIndexerStore } from "@/domains/indexer/progress/store"
 
@@ -28,7 +26,7 @@ function getSliderNumericValue(value: number | number[]): number {
 
 function getTrackDurationFilterLabel(
   config: TrackDurationFilterConfig,
-  t: (key: string, opts?: Record<string, unknown>) => string
+  t: (key: string, opts?: Record<string, string | number>) => string
 ): string {
   switch (config.mode) {
     case "off":
@@ -50,7 +48,6 @@ function getTrackDurationFilterLabel(
 export function LibrarySettings() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
-  const theme = useThemeColors()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const indexerScanConfig = usePreferenceStore((state) => state.indexerScanConfig)
   const countAsPlayedConfig = usePreferenceStore((state) => state.countAsPlayedConfig)
@@ -98,12 +95,12 @@ export function LibrarySettings() {
             <SettingsNavigationRow
               title={t("settings.routes.folderFilters.title")}
               description={t("settings.library.folderFiltersDescription")}
-              onPress={() => router.push("/settings/folder-filters" as never)}
+              onPress={() => router.push("/settings/folder-filters")}
             />
             <SettingsNavigationRow
               title={t("settings.routes.trackDurationFilter.title")}
               description={getTrackDurationFilterLabel(trackDurationFilterConfig, t)}
-              onPress={() => router.push("/settings/track-duration-filter" as never)}
+              onPress={() => router.push("/settings/track-duration-filter")}
             />
             <ListGroup.Item>
               <ListGroup.ItemContent>
@@ -148,12 +145,12 @@ export function LibrarySettings() {
             <SettingsNavigationRow
               title={t("settings.library.splitMultipleValues")}
               description={t("settings.library.artistCharDelimitersDescription")}
-              onPress={() => router.push("/settings/split-multiple-values" as never)}
+              onPress={() => router.push("/settings/split-multiple-values")}
             />
             <SettingsNavigationRow
               title={t("settings.routes.libraryTabs.title")}
               description={t("settings.library.libraryTabsDescription")}
-              onPress={() => router.push("/settings/library-tabs" as never)}
+              onPress={() => router.push("/settings/library-tabs")}
             />
           </SettingsListGroup>
         </View>

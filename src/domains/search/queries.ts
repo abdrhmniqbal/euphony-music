@@ -1,5 +1,5 @@
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 
 import { queryClient } from "@/core/query/query-client"
 import {

@@ -1,3 +1,4 @@
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is this app's domain vocabulary for genre/mix visual patterns */
 import { and, eq } from "drizzle-orm"
 import { db } from "@/core/db"
 import { albums, artists, genres, trackArtists, trackGenres, tracks } from "@/core/db/schema"
@@ -54,10 +55,12 @@ function registerGenreVisual(visualLookup: GenreVisualLookup, color: string, sha
   visualLookup.shapeUsage.set(shape, (visualLookup.shapeUsage.get(shape) ?? 0) + 1)
 }
 
-function selectGenreVisuals(
-  name: string,
-  visualLookup?: GenreVisualLookup
-): { color: string; shape: GenreShape } {
+export interface GenreVisual {
+  color: string
+  shape: GenreShape
+}
+
+function selectGenreVisuals(name: string, visualLookup?: GenreVisualLookup): GenreVisual {
   const color = getGenreRainbowColor(name)
 
   if (!visualLookup?.supportsVisualColumns) {
@@ -97,6 +100,7 @@ export async function preloadIndexingLookupCache(): Promise<IndexingLookupCache>
     })
     for (const genre of genreRows) {
       genreIdsByName.set(genre.name, genre.id)
+      // SAFETY: genres.shape rows are only written by this module from GENRE_SHAPES members
       registerGenreVisual(genreVisuals, genre.color, genre.shape as GenreShape)
     }
   } catch {
@@ -107,13 +111,14 @@ export async function preloadIndexingLookupCache(): Promise<IndexingLookupCache>
     }
   }
 
+  // SAFETY: the preceding filter keeps only album rows where artistId is set
+  const albumIdEntries = albumRows
+    .filter((album) => album.artistId)
+    .map((album) => [getAlbumLookupKey(album.artistId as string, album.title), album.id] as const)
+
   return {
     artistIdsByName: new Map(artistRows.map((artist) => [artist.name, artist.id])),
-    albumIdsByArtistAndTitle: new Map(
-      albumRows
-        .filter((album) => album.artistId)
-        .map((album) => [getAlbumLookupKey(album.artistId as string, album.title), album.id])
-    ),
+    albumIdsByArtistAndTitle: new Map(albumIdEntries),
     genreIdsByName,
     genreVisuals,
   }

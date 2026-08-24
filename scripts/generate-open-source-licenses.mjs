@@ -1,3 +1,5 @@
+/* oxlint-disable anti-slop/no-runtime-typeof -- plain-node build script validating untrusted npm metadata; no TS type guards available */
+
 /**
  * Purpose: Generates bundled open-source license metadata JSON from direct runtime dependencies only.
  * Caller: Manual development script via package.json.

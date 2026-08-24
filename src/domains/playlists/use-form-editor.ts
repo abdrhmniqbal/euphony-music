@@ -1,7 +1,6 @@
 import * as React from "react"
 import { useDebouncedValue } from "@tanstack/react-pacer"
 
-import type { PlayerTrack } from "@/playback/types"
 import { useTracks } from "@/domains/tracks/queries"
 import { toPlayerTracks } from "@/playback/player-track"
 import { getPreferenceState } from "@/core/preferences/store"
@@ -14,7 +13,7 @@ import {
   toggleTrackSelection,
   reorderTrackIds,
 } from "./utils"
-import { usePlaylist, useSavePlaylist } from "./queries"
+import { useSavePlaylist } from "./queries"
 
 const SEARCH_DEBOUNCE_MS = 140
 

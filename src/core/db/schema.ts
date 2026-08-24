@@ -1,3 +1,4 @@
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is this app's domain vocabulary for genre/mix visual patterns */
 import { relations } from "drizzle-orm"
 import { index, integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
 

@@ -36,6 +36,7 @@ export function LibraryTabBar({ tabs, activeTab, onActiveTabChange }: LibraryTab
   return (
     <Tabs
       value={activeTab}
+      // SAFETY: the only rendered triggers come from tabs: LibraryTab[], so emitted values are always LibraryTab values
       onValueChange={(value) => onActiveTabChange(value as LibraryTab)}
       variant="secondary"
       className="gap-1.5 px-4 py-4"

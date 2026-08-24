@@ -9,14 +9,20 @@ import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { ArtistSplitMode } from "@/core/preferences/types"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
 
-const SPLIT_MODE_OPTIONS = [
+interface SplitModeOption {
+  value: ArtistSplitMode
+  titleKey: string
+  descriptionKey: string
+}
+
+const SPLIT_MODE_OPTIONS: SplitModeOption[] = [
   {
-    value: "split" as ArtistSplitMode,
+    value: "split",
     titleKey: "settings.library.artistSplitModeSplit",
     descriptionKey: "settings.library.artistSplitModeSplitDescription",
   },
   {
-    value: "original" as ArtistSplitMode,
+    value: "original",
     titleKey: "settings.library.artistSplitModeOriginal",
     descriptionKey: "settings.library.artistSplitModeOriginalDescription",
   },

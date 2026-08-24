@@ -30,6 +30,7 @@ export async function getLastIndexerRunSnapshot(): Promise<IndexerRunSnapshot | 
   }
 
   try {
+    // SAFETY: value is only ever written by saveIndexerRunSnapshot as a stringified IndexerRunSnapshot
     return JSON.parse(row.value) as IndexerRunSnapshot
   } catch {
     return null

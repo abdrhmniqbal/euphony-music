@@ -8,14 +8,16 @@ export type TrackSortField =
   | "discoverTime"
   | "modificationTime"
 
-function getFieldValue(track: DataTrack, field: TrackSortField): string | number {
+type NumericSortField = "duration" | "discoverTime" | "modificationTime"
+
+type TextSortField = Exclude<TrackSortField, NumericSortField>
+
+function isNumericField(field: TrackSortField): field is NumericSortField {
+  return field === "duration" || field === "discoverTime" || field === "modificationTime"
+}
+
+function getNumericValue(track: DataTrack, field: NumericSortField): number {
   switch (field) {
-    case "name":
-      return track.name ?? ""
-    case "artistName":
-      return track.artistName ?? ""
-    case "albumName":
-      return track.albumName ?? ""
     case "duration":
       return track.duration ?? 0
     case "discoverTime":
@@ -25,20 +27,30 @@ function getFieldValue(track: DataTrack, field: TrackSortField): string | number
   }
 }
 
+function getTextValue(track: DataTrack, field: TextSortField): string {
+  switch (field) {
+    case "name":
+      return track.name ?? ""
+    case "artistName":
+      return track.artistName ?? ""
+    case "albumName":
+      return track.albumName ?? ""
+  }
+}
+
 export function sortTracks(
   tracks: DataTrack[],
   field: TrackSortField,
   isAsc: boolean
 ): DataTrack[] {
   const sorted = [...tracks].sort((a, b) => {
-    const left = getFieldValue(a, field)
-    const right = getFieldValue(b, field)
-
-    if (typeof left === "number" && typeof right === "number") {
-      return left - right
+    if (isNumericField(field)) {
+      return getNumericValue(a, field) - getNumericValue(b, field)
     }
 
-    return String(left).localeCompare(String(right), undefined, { sensitivity: "base" })
+    return getTextValue(a, field).localeCompare(getTextValue(b, field), undefined, {
+      sensitivity: "base",
+    })
   })
 
   return isAsc ? sorted : sorted.reverse()

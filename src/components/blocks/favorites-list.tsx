@@ -6,7 +6,7 @@ import type { TFunction } from "i18next"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { StyleSheet, Text, View } from "react-native"
+import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from "react-native"
 
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
@@ -164,7 +164,7 @@ const MemoizedFavoriteRow = React.memo(FavoriteRow)
 interface FavoritesListProps {
   data: FavoriteEntry[]
   availableTypes?: FavoriteType[]
-  contentContainerStyle?: Record<string, unknown>
+  contentContainerStyle?: StyleProp<ViewStyle>
   selectedTypes: FavoriteType[]
   onSelectedTypesChange: (types: FavoriteType[]) => void
 }
@@ -192,7 +192,7 @@ export function FavoritesList({
   ]
   const listContentContainerStyle = StyleSheet.flatten([
     { gap: 8 },
-    contentContainerStyle as never,
+    contentContainerStyle,
   ])
 
   const toggleTypeFilter = useCallback(
@@ -212,11 +212,6 @@ export function FavoritesList({
     } else {
       setIsTrackSheetOpen(true)
     }
-  }, [])
-
-  const closeSheets = useCallback(() => {
-    setIsCollectionSheetOpen(false)
-    setIsTrackSheetOpen(false)
   }, [])
 
   const handleRemoveFavorite = useCallback(

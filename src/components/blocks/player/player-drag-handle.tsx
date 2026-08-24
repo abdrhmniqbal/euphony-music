@@ -1,3 +1,4 @@
+/* oxlint-disable react/immutability -- reanimated SharedValue props are intentionally mutated via .value inside gesture worklets */
 import * as React from "react"
 import { View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"

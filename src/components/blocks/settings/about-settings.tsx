@@ -99,7 +99,7 @@ export function AboutSettings() {
           <SettingsNavigationRow
             title={t("settings.about.whatsNew")}
             description={t("settings.about.whatsNewDescription")}
-            onPress={() => router.push("/settings/whats-new" as never)}
+            onPress={() => router.push("/settings/whats-new")}
           />
         </SettingsListGroup>
       </View>
@@ -122,7 +122,7 @@ export function AboutSettings() {
           <SettingsNavigationRow
             title={t("settings.about.openSourceLicenses")}
             description={t("settings.about.openSourceLicensesDescription")}
-            onPress={() => router.push("/settings/open-source-licenses" as never)}
+            onPress={() => router.push("/settings/open-source-licenses")}
           />
         </SettingsListGroup>
       </View>

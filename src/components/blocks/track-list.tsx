@@ -8,8 +8,10 @@ import type { PlaybackQueueContext, PlayerTrack } from "@/playback/types"
 import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
+  type StyleProp,
   StyleSheet,
   View,
+  type ViewStyle,
 } from "react-native"
 import { PressableFeedback } from "heroui-native"
 
@@ -34,7 +36,7 @@ interface TrackListProps {
   scrollEnabled?: boolean
   listHeader?: React.ReactElement | null
   listFooter?: React.ReactElement | null
-  contentContainerStyle?: Record<string, unknown>
+  contentContainerStyle?: StyleProp<ViewStyle>
   showsVerticalScrollIndicator?: boolean
   scrollEventThrottle?: number
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
@@ -219,7 +221,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         }
         contentContainerStyle={StyleSheet.flatten([
           { gap: isCompactNumberedList ? 0 : 8 },
-          contentContainerStyle as never,
+          contentContainerStyle,
         ])}
         onScroll={onScroll}
         scrollEventThrottle={scrollEventThrottle}

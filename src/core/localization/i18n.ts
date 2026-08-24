@@ -7,20 +7,28 @@ import { initReactI18next } from "react-i18next"
 import en from "./resources/en.json"
 import { DEFAULT_LANGUAGE_CODE, isSupportedLanguageCode, type LanguageCode } from "./types"
 
-export function getDeviceLanguageCode(): LanguageCode {
-  const locale = Localization.getLocales()[0]
+export interface DeviceLocale {
+  languageCode?: string | null
+  regionCode?: string | null
+  scriptCode?: string | null
+}
+
+export function getDeviceLanguageCode(
+  deviceLocales: readonly DeviceLocale[] = Localization.getLocales()
+): LanguageCode {
+  const locale = deviceLocales[0]
   const languageCode = locale?.languageCode
 
   if (languageCode === "zh") {
-    const scriptCode = (locale as typeof locale & { scriptCode?: string }).scriptCode?.toLowerCase()
-    const regionCode = locale.regionCode?.toUpperCase()
+    const scriptCode = locale?.scriptCode?.toLowerCase()
+    const regionCode = locale?.regionCode?.toUpperCase()
     return scriptCode === "hant" || ["HK", "MO", "TW"].includes(regionCode ?? "")
       ? "zh-Hant"
       : "zh-Hans"
   }
 
   if (languageCode === "pt") {
-    return locale.regionCode?.toUpperCase() === "BR" ? "pt-BR" : DEFAULT_LANGUAGE_CODE
+    return locale?.regionCode?.toUpperCase() === "BR" ? "pt-BR" : DEFAULT_LANGUAGE_CODE
   }
 
   return isSupportedLanguageCode(languageCode) ? languageCode : DEFAULT_LANGUAGE_CODE

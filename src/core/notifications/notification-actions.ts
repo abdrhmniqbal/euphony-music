@@ -7,14 +7,20 @@ import {
 } from "@/domains/indexer/progress/notification"
 import { cancelIndexing, pauseIndexing, resumeIndexing } from "@/domains/indexer/service"
 import { openLatestAppUpdatePrompt } from "@/domains/updates/app-update-runtime"
+import { isNonEmptyString } from "@/lib/guards"
 
-const INDEXER_ACTIONS: Record<string, () => void> = {
+interface IndexerNotificationActions {
+  [actionId: string]: () => void
+}
+
+const INDEXER_ACTIONS: IndexerNotificationActions = {
   [INDEXER_NOTIFICATION_ACTION_PAUSE]: pauseIndexing,
   [INDEXER_NOTIFICATION_ACTION_RESUME]: resumeIndexing,
   [INDEXER_NOTIFICATION_ACTION_CANCEL]: cancelIndexing,
 }
 
 export function handleNotificationAction(response: Notifications.NotificationResponse): boolean {
+  // SAFETY: notification data originates from our own scheduled payloads; both keys are optional
   const { source } = (response.notification.request.content.data ?? {}) as {
     source?: string
     route?: string
@@ -45,10 +51,8 @@ export function handleNotificationAction(response: Notifications.NotificationRes
 }
 
 export function getNotificationRoute(response: Notifications.NotificationResponse) {
-  const route = (
-    response.notification.request.content.data as { route?: unknown } | undefined
-  )?.route
-  if (typeof route !== "string" || route.length === 0) {
+  const route = response.notification.request.content.data?.route
+  if (!isNonEmptyString(route)) {
     return null
   }
 

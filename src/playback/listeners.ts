@@ -106,6 +106,7 @@ function onPlaybackChanged(e: { state: string }) {
     })
   }
 
+  // SAFETY: state is checked against KNOWN_STATES in the same expression; foreign values fall back to "none"
   const state = e.state as PlaybackState
   void handleCrossfadePlaybackState(KNOWN_STATES.has(state) ? state : "none")
 }

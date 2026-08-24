@@ -3,7 +3,14 @@ import { LegendList } from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { View } from "react-native"
+import {
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewStyle,
+} from "react-native"
 
 import LocalVynil02SolidIcon from "@/components/icons/local/vynil-02-solid"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
@@ -36,10 +43,10 @@ interface AlbumGridProps {
   horizontal?: boolean
   containerClassName?: string
   listHeader?: React.ReactElement | null
-  contentContainerStyle?: Record<string, unknown>
+  contentContainerStyle?: StyleProp<ViewStyle>
   showsVerticalScrollIndicator?: boolean
   scrollEventThrottle?: number
-  onScroll?: (event: { nativeEvent: { contentOffset: { y: number } } }) => void
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
 }
 
 const HORIZONTAL_ROW_HEIGHT = 208
@@ -200,7 +207,7 @@ export function AlbumGrid({
         numColumns={2}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         scrollEventThrottle={scrollEventThrottle}
-        onScroll={onScroll as never}
+        onScroll={onScroll}
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <EmptyState
@@ -211,7 +218,10 @@ export function AlbumGrid({
             message={t("library.empty.albumsMessage")}
           />
         }
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 200, ...contentContainerStyle } as never}
+        contentContainerStyle={StyleSheet.flatten([
+          { paddingHorizontal: 16, paddingBottom: 200 },
+          contentContainerStyle,
+        ])}
         style={{ flex: 1, minHeight: 1 }}
         className={containerClassName}
         recycleItems

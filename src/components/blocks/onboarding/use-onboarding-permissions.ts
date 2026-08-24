@@ -15,22 +15,22 @@ export function useOnboardingPermissions() {
   const [notificationPermissionGranted, setNotificationPermissionGranted] = useState(false)
   const [batteryOptimizationDisabled, setBatteryOptimizationDisabled] = useState(false)
 
-  async function checkPermissionStatus() {
-    const { status } = await MediaLibrary.getPermissionsAsync()
-    setMediaPermission(status === "granted")
-
-    const notificationPermissions = await Notifications.getPermissionsAsync()
-    setNotificationPermissionGranted(notificationPermissions.granted)
-
-    if (Platform.OS === "android") {
-      const appPackage = Application.applicationId || "com.startune.music"
-      const isIgnoring = await isIgnoringBatteryOptimizations(appPackage)
-      setBatteryOptimizationDisabled(isIgnoring)
-    }
-  }
-
   useEffect(() => {
-    void checkPermissionStatus()
+    MediaLibrary.getPermissionsAsync()
+      .then(({ status }) => {
+        setMediaPermission(status === "granted")
+        return Notifications.getPermissionsAsync()
+      })
+      .then((notificationPermissions) => {
+        setNotificationPermissionGranted(notificationPermissions.granted)
+        if (Platform.OS !== "android") {
+          return
+        }
+        const appPackage = Application.applicationId || "com.startune.music"
+        return isIgnoringBatteryOptimizations(appPackage).then((isIgnoring) => {
+          setBatteryOptimizationDisabled(isIgnoring)
+        })
+      })
   }, [])
 
   async function requestMediaPermission() {

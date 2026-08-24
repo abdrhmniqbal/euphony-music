@@ -30,13 +30,10 @@ export async function toggleShuffle() {
     const played = queue.slice(0, newQueuePosition + 1)
     const remaining = queue.slice(newQueuePosition + 1)
 
-    const remainingCounts = remaining.reduce(
-      (acc, id) => {
-        acc[id] = (acc[id] || 0) + 1
-        return acc
-      },
-      {} as Record<string, number>
-    )
+    const remainingCounts = remaining.reduce<Record<string, number>>((acc, id) => {
+      acc[id] = (acc[id] || 0) + 1
+      return acc
+    }, {})
 
     const orderedRemaining: string[] = []
     for (const id of orderSnapshot) {

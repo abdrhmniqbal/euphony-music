@@ -40,7 +40,7 @@ interface UseSleepTimerDraftReturn {
 }
 
 export function useSleepTimerDraft(
-  t: (key: string, options?: Record<string, unknown>) => string
+  t: (key: string, options?: Record<string, string | number>) => string
 ): UseSleepTimerDraftReturn {
   const sleepTimer = useSleepTimerState()
   const [draft, setDraft] = useState<SleepTimerDraft>(() => createSleepTimerDraft(sleepTimer))

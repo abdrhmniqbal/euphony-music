@@ -5,9 +5,17 @@ import { db } from "@/core/db"
 import { artists } from "@/core/db/schema"
 import { logError } from "@/core/log/service"
 import { saveArtworkToCache } from "@/domains/indexer/metadata/artwork-cache"
+import { isNumber, isRecord, isString } from "@/lib/guards"
 import { selectArtistCandidate } from "./artist-match"
 
 const DEEZER_API_URL = "https://api.deezer.com"
+
+interface DeezerArtistMatch {
+  id: number
+  name: string
+  picture_xl?: string
+  nb_fan?: number
+}
 
 async function resolveArtistImage(artistName: string): Promise<string | null> {
   const searchUrl = `${DEEZER_API_URL}/search/artist?q=${encodeURIComponent(artistName)}&limit=10`
@@ -20,13 +28,15 @@ async function resolveArtistImage(artistName: string): Promise<string | null> {
     return null
   }
 
-  const searchData = (await searchRes.json()) as {
-    data?: Array<{ id: number; name: string; picture_xl?: string; nb_fan?: number }>
+  const searchData = await searchRes.json()
+  if (!isRecord(searchData) || !Array.isArray(searchData.data)) {
+    return null
   }
-  const candidates = (searchData.data ?? [])
+
+  const candidates = searchData.data
     .filter(
-      (c): c is { id: number; name: string; picture_xl?: string; nb_fan?: number } =>
-        !!c && typeof c.id === "number" && typeof c.name === "string"
+      (entry): entry is DeezerArtistMatch =>
+        isRecord(entry) && isNumber(entry.id) && isString(entry.name)
     )
     .sort((a, b) => (b.nb_fan ?? 0) - (a.nb_fan ?? 0))
 
@@ -39,8 +49,8 @@ async function resolveArtistImage(artistName: string): Promise<string | null> {
 
   const detailRes = await fetch(`${DEEZER_API_URL}/artist/${chosen.id}`)
   if (!detailRes.ok) return null
-  const detail = (await detailRes.json()) as { picture_xl?: string }
-  return detail.picture_xl ?? null
+  const detail = await detailRes.json()
+  return isRecord(detail) && isString(detail.picture_xl) ? detail.picture_xl : null
 }
 
 const deezerCache = new Map<string, string | null>()
@@ -112,14 +122,11 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
     orderBy: sql`lower(coalesce(${artists.name}, ''))`,
   })
 
-  const rateLimiter = new AsyncRateLimiter(
-    async (name: string) => fetchDeezerArtistImage(name),
-    {
-      limit: 50,
-      window: 5000,
-      windowType: "sliding",
-    }
-  )
+  const rateLimiter = new AsyncRateLimiter(async (name: string) => fetchDeezerArtistImage(name), {
+    limit: 50,
+    window: 5000,
+    windowType: "sliding",
+  })
 
   for (const artist of rows) {
     if (signal?.aborted) return
@@ -144,7 +151,10 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
         const localPath = await saveArtworkToCache(cachedImage)
         if (localPath) cachedImage = localPath
       } catch (err) {
-        logError("Failed to cache artist image", err instanceof Error ? err : new Error(String(err)))
+        logError(
+          "Failed to cache artist image",
+          err instanceof Error ? err : new Error(String(err))
+        )
       }
     }
 

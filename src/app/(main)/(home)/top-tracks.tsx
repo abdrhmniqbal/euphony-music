@@ -110,6 +110,7 @@ export default function TopTracksScreen() {
               <View>
                 <Tabs
                   value={period}
+                  // SAFETY: the only rendered triggers are PERIOD_OPTIONS entries, so emitted values are always valid periods
                   onValueChange={(value) => setPeriod(value as HistoryTopTracksPeriod)}
                   className="mb-4"
                 >

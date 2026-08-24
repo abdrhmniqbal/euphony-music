@@ -14,6 +14,7 @@ import {
 import { getPreferenceState } from "@/core/preferences/store"
 import { logError } from "@/core/log/service"
 import { toDataTrack } from "@/domains/tracks/repository"
+import { isNumber, isRecord, isString } from "@/lib/guards"
 import { toPlayerTrack } from "@/playback/player-track"
 import type { PlayerTrack } from "@/playback/types"
 import type {
@@ -27,6 +28,7 @@ import type {
 
 const RECENT_SEARCHES_SETTINGS_KEY = "library:recent-searches"
 const MAX_RECENT_SEARCHES = 30
+const RECENT_SEARCH_TYPES: readonly RecentSearchType[] = ["track", "album", "artist", "playlist"]
 
 function normalizeLookup(value: string | null | undefined) {
   return (value || "").trim().toLowerCase()
@@ -57,6 +59,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
       .innerJoin(artists, eq(artists.id, trackArtists.artistId))
       .where(like(artists.name, pattern))
 
+    // SAFETY: title-match rows come from this app's own SQLite schema with artist/album relations registered on the db client, so every joined row matches TrackRowWithRelations
     const [artistRows, albumRows, playlistRows, titleTrackRows] = await Promise.all([
       db.query.artists.findMany({
         where: and(like(artists.name, pattern), gt(artists.trackCount, 0)),
@@ -127,7 +130,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
         },
         orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
         limit: 20,
-      }) as unknown as Promise<TrackRowWithRelations[]>,
+      }) as Promise<TrackRowWithRelations[]>,
     ])
 
     const matchedArtistIds = Array.from(new Set(artistRows.map((artist) => artist.id)))
@@ -161,6 +164,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
             ? inArray(tracks.albumId, matchedAlbumIds)
             : null
 
+    // SAFETY: relation rows come from the same app-managed tracks schema, so joined artist/album relations match TrackRowWithRelations
     const relationTrackRows = relationTrackFilter
       ? ((await db.query.tracks.findMany({
           where: and(eq(tracks.isDeleted, 0), relationTrackFilter),
@@ -170,7 +174,7 @@ export async function searchLibrary(query: string): Promise<SearchResults> {
           },
           orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
           limit: 40,
-        })) as unknown as TrackRowWithRelations[])
+        })) as TrackRowWithRelations[])
       : []
 
     const mergedTrackRows = [...titleTrackRows]
@@ -258,7 +262,9 @@ type PlaylistRowWithTracks = {
   name: string
   trackCount: number | null
   artwork: string | null
-  tracks: Array<{ track: { artwork: string | null; album: { artwork: string | null } | null } | null }>
+  tracks: Array<{
+    track: { artwork: string | null; album: { artwork: string | null } | null } | null
+  }>
 }
 
 function collectPlaylistImages(playlist: PlaylistRowWithTracks) {
@@ -279,42 +285,43 @@ function normalizeRecentSearch(value: string | null | undefined) {
   return (value || "").trim()
 }
 
-function isRecentSearchType(value: unknown): value is RecentSearchType {
-  return value === "track" || value === "album" || value === "artist" || value === "playlist"
+interface RawRecentSearchEntry {
+  query?: unknown
+  title?: unknown
+  subtitle?: unknown
+  id?: unknown
+  targetId?: unknown
+  image?: unknown
+  images?: unknown
+  createdAt?: unknown
+  type?: unknown
 }
 
-function normalizeRecentSearchEntry(value: unknown): RecentSearchEntry | null {
-  if (!value || typeof value !== "object") {
-    return null
-  }
-
-  const entry = value as Partial<RecentSearchEntry>
-  const query = normalizeRecentSearch(entry.query)
+function normalizeRecentSearchEntry(value: RawRecentSearchEntry): RecentSearchEntry | null {
+  const query = isString(value.query) ? value.query.trim() : ""
   if (!query) {
     return null
   }
 
-  const title = normalizeRecentSearch(entry.title) || query
-  const subtitle = normalizeRecentSearch(entry.subtitle) || "Search"
-  const id = normalizeRecentSearch(entry.id) || createId()
-  const targetId = normalizeRecentSearch(entry.targetId) || undefined
-  const image = normalizeRecentSearch(entry.image) || undefined
-  const images = Array.isArray(entry.images)
-    ? entry.images
-        .map((candidate) => normalizeRecentSearch(candidate))
-        .filter((candidate): candidate is string => Boolean(candidate))
+  const title = (isString(value.title) ? value.title.trim() : "") || query
+  const subtitle = (isString(value.subtitle) ? value.subtitle.trim() : "") || "Search"
+  const id = (isString(value.id) ? value.id.trim() : "") || createId()
+  const targetId = (isString(value.targetId) ? value.targetId.trim() : "") || undefined
+  const image = (isString(value.image) ? value.image.trim() : "") || undefined
+  const images = Array.isArray(value.images)
+    ? value.images
+        .map((candidate) => (isString(candidate) ? candidate.trim() : ""))
+        .filter((candidate) => candidate.length > 0)
     : undefined
   const createdAt =
-    typeof entry.createdAt === "number" && Number.isFinite(entry.createdAt)
-      ? entry.createdAt
-      : Date.now()
+    isNumber(value.createdAt) && Number.isFinite(value.createdAt) ? value.createdAt : Date.now()
 
   return {
     id,
     query,
     title,
     subtitle,
-    type: isRecentSearchType(entry.type) ? entry.type : undefined,
+    type: RECENT_SEARCH_TYPES.find((candidate) => candidate === value.type),
     targetId,
     image,
     images,
@@ -343,6 +350,7 @@ function parseRecentSearches(raw: string): RecentSearchEntry[] {
     }
 
     const normalized = parsed
+      .filter(isRecord)
       .map(normalizeRecentSearchEntry)
       .filter((item): item is RecentSearchEntry => item !== null)
       .sort((left, right) => right.createdAt - left.createdAt)

@@ -143,7 +143,7 @@ function ThemePreviewSwatch({
 export function ThemeSettings() {
   const theme = useThemeColors()
   const { theme: themeMode } = useUniwind()
-  const isDarkMode = typeof themeMode === "string" && themeMode.endsWith("-dark")
+  const isDarkMode = themeMode === "dark"
   const { t } = useTranslation()
   const selectedThemeId = usePreferenceStore((state) => state.themeId)
 

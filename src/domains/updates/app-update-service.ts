@@ -2,6 +2,7 @@ import * as Notifications from "expo-notifications"
 import { Platform } from "react-native"
 
 import { i18n } from "@/core/localization/i18n"
+import { isRecord, isString } from "@/lib/guards"
 import { logError, logInfo } from "@/core/log/service"
 import { preferenceStore } from "@/core/preferences/store"
 import type { AppUpdateConfig } from "@/core/preferences/types"
@@ -35,11 +36,6 @@ export interface AppUpdateInfo {
   prerelease: boolean
 }
 
-interface GitHubReleaseAsset {
-  browser_download_url?: unknown
-  name?: unknown
-}
-
 interface GitHubRelease {
   tag_name?: unknown
   name?: unknown
@@ -51,29 +47,29 @@ interface GitHubRelease {
   published_at?: unknown
 }
 
-function asString(value: unknown) {
-  return typeof value === "string" ? value : ""
+function getReleaseVersion(release: GitHubRelease) {
+  return isString(release.tag_name) ? release.tag_name : ""
 }
 
-function getReleaseVersion(release: GitHubRelease) {
-  return asString(release.tag_name)
+function getReleaseName(release: GitHubRelease) {
+  return isString(release.name) ? release.name : ""
 }
 
 function compareGitHubReleases(left: GitHubRelease, right: GitHubRelease) {
-  const versionComparison = compareVersions(asString(right.tag_name), asString(left.tag_name))
+  const versionComparison = compareVersions(getReleaseVersion(right), getReleaseVersion(left))
 
   if (versionComparison !== 0) {
     return versionComparison
   }
 
-  const leftPublishedAt = Date.parse(asString(left.published_at))
-  const rightPublishedAt = Date.parse(asString(right.published_at))
+  const leftPublishedAt = Date.parse(isString(left.published_at) ? left.published_at : "")
+  const rightPublishedAt = Date.parse(isString(right.published_at) ? right.published_at : "")
 
   if (Number.isFinite(leftPublishedAt) && Number.isFinite(rightPublishedAt)) {
     return rightPublishedAt - leftPublishedAt
   }
 
-  return asString(right.name).localeCompare(asString(left.name))
+  return getReleaseName(right).localeCompare(getReleaseName(left))
 }
 
 function getSortedGitHubReleases(releases: GitHubRelease[]) {
@@ -81,18 +77,26 @@ function getSortedGitHubReleases(releases: GitHubRelease[]) {
 }
 
 function resolveReleaseDownloadUrl(release: GitHubRelease) {
-  const assets = Array.isArray(release.assets) ? (release.assets as GitHubReleaseAsset[]) : []
+  const assets = Array.isArray(release.assets) ? release.assets : []
   const apkAsset = assets.find((asset) => {
-    const name = asString(asset.name)
-    const url = asString(asset.browser_download_url)
+    if (!isRecord(asset)) {
+      return false
+    }
+    const name = isString(asset.name) ? asset.name : ""
+    const url = isString(asset.browser_download_url) ? asset.browser_download_url : ""
     return APK_ASSET_PATTERN.test(name) || APK_ASSET_PATTERN.test(url)
   })
 
-  return asString(apkAsset?.browser_download_url) || asString(release.html_url)
+  const apkDownloadUrl =
+    isRecord(apkAsset) && isString(apkAsset.browser_download_url)
+      ? apkAsset.browser_download_url
+      : ""
+
+  return apkDownloadUrl || (isString(release.html_url) ? release.html_url : "")
 }
 
 function toUpdateInfo(release: GitHubRelease, currentVersion: string): AppUpdateInfo | null {
-  const tagName = asString(release.tag_name)
+  const tagName = getReleaseVersion(release)
   if (!tagName || !isNewerVersion(tagName, currentVersion)) {
     return null
   }
@@ -100,9 +104,9 @@ function toUpdateInfo(release: GitHubRelease, currentVersion: string): AppUpdate
   return {
     currentVersion,
     newVersion: tagName,
-    releaseName: asString(release.name) || tagName,
-    body: asString(release.body),
-    htmlUrl: asString(release.html_url),
+    releaseName: getReleaseName(release) || tagName,
+    body: isString(release.body) ? release.body : "",
+    htmlUrl: isString(release.html_url) ? release.html_url : "",
     downloadUrl: resolveReleaseDownloadUrl(release),
     prerelease: release.prerelease === true,
   }
@@ -119,8 +123,8 @@ async function fetchGitHubReleases(): Promise<GitHubRelease[]> {
     throw new Error(`GitHub releases request failed: ${response.status}`)
   }
 
-  const parsed = (await response.json()) as unknown
-  return Array.isArray(parsed) ? (parsed as GitHubRelease[]) : []
+  const parsed = await response.json()
+  return Array.isArray(parsed) ? parsed.filter(isRecord) : []
 }
 
 async function fetchRepositoryChangelog(): Promise<string> {

@@ -1,3 +1,4 @@
+/* oxlint-disable react/immutability -- reanimated shared values are intentionally mutated via .value inside effects */
 import { useEffect } from "react"
 import { View } from "react-native"
 import Animated, {

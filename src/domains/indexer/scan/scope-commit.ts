@@ -9,7 +9,7 @@ const COMMIT_SCOPE_RETRY_DELAY_MS = 160
 export const COMMIT_SCOPE_SIZE = 24
 
 export async function runWithScopeCommit(work: () => Promise<void>): Promise<void> {
-  let lastError: unknown = null
+  let lastError: Error | null = null
 
   for (let attempt = 1; attempt <= COMMIT_SCOPE_MAX_ATTEMPTS; attempt += 1) {
     try {
@@ -28,7 +28,7 @@ export async function runWithScopeCommit(work: () => Promise<void>): Promise<voi
         throw error
       }
     } catch (error) {
-      lastError = error
+      lastError = error instanceof Error ? error : new Error("Failed to commit indexing scope")
 
       if (!isTransientCommitError(error) || attempt >= COMMIT_SCOPE_MAX_ATTEMPTS) {
         break
@@ -38,11 +38,11 @@ export async function runWithScopeCommit(work: () => Promise<void>): Promise<voi
     }
   }
 
-  throw lastError instanceof Error ? lastError : new Error("Failed to commit indexing scope")
+  throw lastError ?? new Error("Failed to commit indexing scope")
 }
 
-function isTransientCommitError(error: unknown): boolean {
-  const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase()
+function isTransientCommitError(cause: unknown): boolean {
+  const message = cause instanceof Error ? cause.message.toLowerCase() : String(cause).toLowerCase()
 
   return (
     message.includes("database is locked") ||

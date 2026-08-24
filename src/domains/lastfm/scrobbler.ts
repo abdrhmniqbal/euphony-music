@@ -22,6 +22,22 @@ interface CurrentScrobble {
   sessionKey: string
 }
 
+interface LastFmNowPlayingPayload {
+  sessionKey: string
+  artist: string
+  track: string
+  album?: string
+  duration?: number
+}
+
+interface LastFmScrobblePayload {
+  sessionKey: string
+  artist: string
+  track: string
+  timestamp: number
+  album?: string
+}
+
 let current: CurrentScrobble | null = null
 
 export async function handleTrackChanged(track: PlayerTrack | undefined) {
@@ -111,12 +127,16 @@ async function sendNowPlaying() {
   const { artist, title, album, duration, sessionKey } = current
 
   try {
-    const payload = {
+    const payload: LastFmNowPlayingPayload = {
       sessionKey,
       artist,
       track: title,
-      ...(album ? { album } : {}),
-      ...(duration > 0 ? { duration } : {}),
+    }
+    if (album) {
+      payload.album = album
+    }
+    if (duration > 0) {
+      payload.duration = duration
     }
 
     const response = await fetch(`${LASTFM_SERVICE_URL}/api/lastfm/now-playing`, {
@@ -146,12 +166,14 @@ async function sendScrobble() {
   const { artist, title, album, startedAt, sessionKey } = current
 
   try {
-    const payload = {
+    const payload: LastFmScrobblePayload = {
       sessionKey,
       artist,
       track: title,
       timestamp: startedAt,
-      ...(album ? { album } : {}),
+    }
+    if (album) {
+      payload.album = album
     }
 
     const response = await fetch(`${LASTFM_SERVICE_URL}/api/lastfm/scrobble`, {

@@ -15,7 +15,11 @@ export function resolveRainbowColor(rainbow: readonly string[], colorToken: stri
   return rainbow[index % rainbow.length] ?? rainbow[0]
 }
 
-const PATTERN_ELEMENTS: Record<string, ReactNode> = {
+interface PatternElements {
+  [pattern: string]: ReactNode
+}
+
+const PATTERN_ELEMENTS: PatternElements = {
   circles: (
     <>
       <View className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/15" />

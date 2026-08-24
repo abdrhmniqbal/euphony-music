@@ -93,7 +93,7 @@ export default function RecentlyPlayedScreen() {
         {...autoHideScrollProps}
         refreshControl={
           <ThemedRefreshControl
-            refreshing={isLoading || isFetching}
+            refreshing={isLoading || isFetching || isRefreshing}
             onRefresh={() => void refresh()}
           />
         }

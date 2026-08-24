@@ -5,9 +5,12 @@ const CRASH_LOG_FILE = new File(Paths.document, "crash-logs.txt")
 const MAX_LOG_FILE_BYTES = 1_000_000
 const MAX_SHARED_LOG_CHARS = 30_000
 
+// oxlint-disable-next-line anti-slop/no-unsafe-dictionary-type -- log context arrives from many call sites and is only serialized verbatim, never inspected
+export type LogContext = Record<string, unknown> | string | Record<never, never>
+
 let writeQueue: Promise<void> = Promise.resolve()
 
-function formatLogEntry(severity: string, message: string, context?: unknown) {
+function formatLogEntry(severity: string, message: string, context?: LogContext) {
   const timestamp = new Date().toISOString()
   const contextSuffix = context === undefined ? "" : ` ${JSON.stringify(context)}`
   return `${timestamp} [${severity}] ${message}${contextSuffix}\n`
@@ -36,7 +39,7 @@ async function appendToLogFile(content: string) {
   CRASH_LOG_FILE.write(next, { encoding: "utf8" })
 }
 
-export function enqueueFileLog(severity: string, message: string, context?: unknown) {
+export function enqueueFileLog(severity: string, message: string, context?: LogContext) {
   const entry = formatLogEntry(severity, message, context)
   writeQueue = writeQueue
     .then(() => appendToLogFile(entry))

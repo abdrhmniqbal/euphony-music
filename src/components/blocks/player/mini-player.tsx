@@ -93,6 +93,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
   const [lastTrack, setLastTrack] = React.useState<PlayerTrack | null>(null)
   React.useEffect(() => {
     if (currentTrack) {
+      // oxlint-disable-next-line react/set-state-in-effect -- retains the last track so the mini player animates out instead of unmounting instantly
       setLastTrack(currentTrack)
     }
   }, [currentTrack])

@@ -19,7 +19,9 @@ export function useGuardedRouter() {
         if (guardKey === key && guardExpires > now) return
         guardKey = key
         guardExpires = now + 900
-        ;(router[method] as (...a: unknown[]) => void)(href, ...args)
+        // SAFETY: method is constrained to "push" | "replace", whose router signatures accept (href, ...args)
+        const callRouterMethod = router[method] as (...a: unknown[]) => void
+        callRouterMethod(href, ...args)
       }
     return { ...router, push: make("push"), replace: make("replace") }
   }, [router])
@@ -53,7 +55,7 @@ export function getHiddenBoundaryScreenOptions(p?: TransitionRouteParams) {
       bounds,
     }: {
       bounds: (opts: { id: string; scaleMode: string }) => {
-        navigation: { zoom: () => Record<string, unknown> }
+        navigation: { zoom: () => Record<string, string | number | boolean | null> }
       }
     }) => {
       "worklet"

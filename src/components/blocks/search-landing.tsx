@@ -1,3 +1,4 @@
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- genre/mix visual shape is domain vocabulary */
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { ScrollView, View } from "react-native"
@@ -77,8 +78,10 @@ export function SearchLandingScreen() {
   const dailyMixTracks = useMemo(() => dailyMix?.tracks ?? [], [dailyMix])
   const forYouMixTracks = useMemo(() => forYouMix?.tracks ?? [], [forYouMix])
 
-  const activeMixTracks =
-    activeMixType === "daily" ? dailyMixTracks : activeMixType === "foryou" ? forYouMixTracks : []
+  const activeMixTracks = useMemo(
+    () => (activeMixType === "daily" ? dailyMixTracks : activeMixType === "foryou" ? forYouMixTracks : []),
+    [activeMixType, dailyMixTracks, forYouMixTracks]
+  )
   const activeMixTitle =
     activeMixType === "daily" ? t("search.dailyMix") : t("search.forYouMix")
   const activeMixDesc =
@@ -146,6 +149,7 @@ export function SearchLandingScreen() {
             title={t("search.dailyMix")}
             images={dailyMixImages}
             color={dailyMixColor}
+
             pattern={dailyMix?.shape ?? "circles"}
             onPress={() => router.push("/(main)/(search)/mix/daily")}
             onLongPress={() => {
@@ -157,6 +161,7 @@ export function SearchLandingScreen() {
             title={t("search.forYouMix")}
             images={forYouMixImages}
             color={forYouMixColor}
+
             pattern={forYouMix?.shape ?? "circles"}
             onPress={() => router.push("/(main)/(search)/mix/foryou")}
             onLongPress={() => {

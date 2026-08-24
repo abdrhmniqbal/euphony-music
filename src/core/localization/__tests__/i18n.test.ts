@@ -1,24 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 
-const mocks = vi.hoisted(() => ({
-  locales: [] as Array<Record<string, string | undefined>>,
-}))
+import { getDeviceLanguageCode, type DeviceLocale } from "../i18n"
 
-vi.mock("expo-localization", () => ({
-  getLocales: () => mocks.locales,
-}))
-
-import { getDeviceLanguageCode } from "../i18n"
-
-function deviceLocale(languageTag: Record<string, string | undefined>) {
-  mocks.locales = [languageTag]
+function code(locale: DeviceLocale) {
+  return getDeviceLanguageCode([locale])
 }
 
 describe("getDeviceLanguageCode", () => {
-  beforeEach(() => {
-    deviceLocale({ languageCode: "en", regionCode: "US" })
-  })
-
   it.each([
     [{ languageCode: "en", regionCode: "US" }, "en"],
     [{ languageCode: "id", regionCode: "ID" }, "id"],
@@ -32,42 +20,27 @@ describe("getDeviceLanguageCode", () => {
     [{ languageCode: "es", regionCode: "ES" }, "es"],
     [{ languageCode: "nl", regionCode: "NL" }, "nl"],
   ])("maps %s to %s", (locale, expected) => {
-    deviceLocale(locale)
-    expect(getDeviceLanguageCode()).toBe(expected)
+    expect(code(locale)).toBe(expected)
   })
 
   it("maps Chinese by script code", () => {
-    deviceLocale({ languageCode: "zh", scriptCode: "Hans", regionCode: "CN" })
-    expect(getDeviceLanguageCode()).toBe("zh-Hans")
-
-    deviceLocale({ languageCode: "zh", scriptCode: "Hant", regionCode: "TW" })
-    expect(getDeviceLanguageCode()).toBe("zh-Hant")
+    expect(code({ languageCode: "zh", scriptCode: "Hans", regionCode: "CN" })).toBe("zh-Hans")
+    expect(code({ languageCode: "zh", scriptCode: "Hant", regionCode: "TW" })).toBe("zh-Hant")
   })
 
   it("maps Chinese regions without script code", () => {
-    deviceLocale({ languageCode: "zh", regionCode: "HK" })
-    expect(getDeviceLanguageCode()).toBe("zh-Hant")
-
-    deviceLocale({ languageCode: "zh", regionCode: "MO" })
-    expect(getDeviceLanguageCode()).toBe("zh-Hant")
-
-    deviceLocale({ languageCode: "zh", regionCode: "CN" })
-    expect(getDeviceLanguageCode()).toBe("zh-Hans")
+    expect(code({ languageCode: "zh", regionCode: "HK" })).toBe("zh-Hant")
+    expect(code({ languageCode: "zh", regionCode: "MO" })).toBe("zh-Hant")
+    expect(code({ languageCode: "zh", regionCode: "CN" })).toBe("zh-Hans")
   })
 
   it("maps Portuguese to pt-BR only for Brazil", () => {
-    deviceLocale({ languageCode: "pt", regionCode: "BR" })
-    expect(getDeviceLanguageCode()).toBe("pt-BR")
-
-    deviceLocale({ languageCode: "pt", regionCode: "PT" })
-    expect(getDeviceLanguageCode()).toBe("en")
+    expect(code({ languageCode: "pt", regionCode: "BR" })).toBe("pt-BR")
+    expect(code({ languageCode: "pt", regionCode: "PT" })).toBe("en")
   })
 
   it("falls back to English for unsupported or missing locales", () => {
-    deviceLocale({ languageCode: "xx", regionCode: "XX" })
-    expect(getDeviceLanguageCode()).toBe("en")
-
-    mocks.locales = []
-    expect(getDeviceLanguageCode()).toBe("en")
+    expect(code({ languageCode: "xx", regionCode: "XX" })).toBe("en")
+    expect(getDeviceLanguageCode([])).toBe("en")
   })
 })

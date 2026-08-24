@@ -1,3 +1,6 @@
+/* oxlint-disable anti-slop/no-unknown-parameters -- stored-preference boundary: config arrives unparsed from persistence */
+import { isRecord } from "@/lib/guards"
+
 export const LIBRARY_TABS = [
   "Tracks",
   "Albums",
@@ -23,19 +26,22 @@ export function getDefaultLibraryTabsConfig(): LibraryTabsConfig {
   return { tabs: LIBRARY_TABS.map((id) => ({ id, visible: true })) }
 }
 
+function isLibraryTabId(value: unknown): value is LibraryTab {
+  return LIBRARY_TABS.some((tab) => tab === value)
+}
+
 export function sanitizeLibraryTabsConfig(config: unknown): LibraryTabsConfig {
-  const source = config && typeof config === "object" ? (config as Record<string, unknown>) : {}
+  const source = isRecord(config) ? config : {}
   const rawTabs = Array.isArray(source.tabs) ? source.tabs : []
   const seen = new Set<LibraryTab>()
   const tabs: LibraryTabSettingsItem[] = []
 
   for (const entry of rawTabs) {
-    if (!entry || typeof entry !== "object") continue
-    const item = entry as { id?: unknown; visible?: unknown }
-    if (!LIBRARY_TABS.includes(item.id as LibraryTab)) continue
-    const id = item.id as LibraryTab
+    if (!isRecord(entry)) continue
+    if (!isLibraryTabId(entry.id)) continue
+    const id = entry.id
     if (seen.has(id)) continue
-    tabs.push({ id, visible: item.visible !== false })
+    tabs.push({ id, visible: entry.visible !== false })
     seen.add(id)
   }
 

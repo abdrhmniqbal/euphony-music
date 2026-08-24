@@ -1,3 +1,4 @@
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is this app's domain vocabulary for genre/mix visual patterns */
 import { COLORS, SHAPES, COLOR_COUNT, type Shape } from "@/domains/visuals/shared"
 
 export type GenreShape = Shape
@@ -6,7 +7,11 @@ export const GENRE_COLORS = COLORS
 
 export const GENRE_SHAPES: readonly GenreShape[] = SHAPES
 
-export const ID3V1_GENRES: Record<string, string> = {
+interface Id3V1GenreNames {
+  [code: string]: string
+}
+
+export const ID3V1_GENRES: Id3V1GenreNames = {
   "0": "Blues",
   "1": "Classic Rock",
   "2": "Country",

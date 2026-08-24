@@ -24,17 +24,17 @@ export function AppearanceSettings() {
         <SettingsNavigationRow
           title={t("settings.routes.theme.title")}
           description={t("settings.routes.theme.description", { theme: themeLabel })}
-          onPress={() => router.push("/settings/theme" as never)}
+          onPress={() => router.push("/settings/theme")}
         />
         <SettingsNavigationRow
           title={t("settings.routes.themeMode.title")}
           description={t("settings.routes.themeMode.description")}
-          onPress={() => router.push("/settings/theme-mode" as never)}
+          onPress={() => router.push("/settings/theme-mode")}
         />
         <SettingsNavigationRow
           title={t("settings.routes.language.title")}
           description={t("settings.appearance.languageDescription", { language: languageLabel })}
-          onPress={() => router.push("/settings/language" as never)}
+          onPress={() => router.push("/settings/language")}
         />
       </SettingsListGroup>
     </SettingsScrollView>

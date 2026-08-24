@@ -17,6 +17,7 @@ interface BatteryOptimizationNativeModule {
 let batteryOptimizationModule: BatteryOptimizationNativeModule | null = null
 
 if (Platform.OS === "android") {
+  // SAFETY: NativeModules is an untyped registry; this app ships a BatteryOptimization native module with exactly this interface
   batteryOptimizationModule = NativeModules.BatteryOptimization as BatteryOptimizationNativeModule | null
   if (!batteryOptimizationModule) {
     logWarn("BatteryOptimization native module not available")

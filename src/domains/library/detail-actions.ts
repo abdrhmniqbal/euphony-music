@@ -23,7 +23,13 @@ export function usePlaybackActions(tracks: PlayerTrack[], contextTitle: string, 
   return { playAll, shuffle }
 }
 
-export function decodeRouteParam(raw: string | undefined): { value: string; raw: string; decodeFailed: boolean } {
+interface DecodedRouteParam {
+  value: string
+  raw: string
+  decodeFailed: boolean
+}
+
+export function decodeRouteParam(raw: string | undefined): DecodedRouteParam {
   const value = raw ?? ""
   try {
     return { value: decodeURIComponent(value), raw: value, decodeFailed: false }

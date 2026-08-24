@@ -1,3 +1,5 @@
+import { isNumber, isRecord, isString } from "@/lib/guards"
+
 export interface StaticLine {
   id: string
   text: string
@@ -76,7 +78,7 @@ function findActiveIndex<T>(lines: T[], time: number, getTime: (line: T) => numb
 
   while (low <= high) {
     const mid = Math.floor((low + high) / 2)
-    const lineTime = getTime(lines[mid] as T)
+    const lineTime = getTime(lines[mid])
     if (time >= lineTime) {
       active = mid
       low = mid + 1
@@ -198,11 +200,7 @@ function normalizeWords(words: TimedWord[], lineEnd: number): TimedWord[] {
 
     const next = normalized[index + 1]
     const inferred =
-      next && next.begin > word.begin
-        ? next.begin
-        : lineEnd > word.begin
-          ? lineEnd
-          : word.begin
+      next && next.begin > word.begin ? next.begin : lineEnd > word.begin ? lineEnd : word.begin
     return { ...word, end: inferred }
   })
 }
@@ -213,7 +211,9 @@ function extractSpans(content: string, fallbackBegin: number): TimedWord[] {
   let match: RegExpExecArray | null
 
   while ((match = regex.exec(content)) !== null) {
-    const begin = parseTimedMarkupTimestamp(readAttribute(match[1] || "", "begin") || String(fallbackBegin))
+    const begin = parseTimedMarkupTimestamp(
+      readAttribute(match[1] || "", "begin") || String(fallbackBegin)
+    )
     const end = readEnd(match[1] || "", begin)
     const text = decodeMarkupText(match[2] || "")
     if (text) {
@@ -326,7 +326,8 @@ function isTimedMarkup(raw: string): boolean {
     lower.includes("<text") ||
     lower.includes("<span") ||
     lower.includes("<div") ||
-    (TIMED_ANGLE_TAG_REGEX.lastIndex = 0) || TIMED_ANGLE_TAG_REGEX.test(raw)
+    (TIMED_ANGLE_TAG_REGEX.lastIndex = 0) ||
+    TIMED_ANGLE_TAG_REGEX.test(raw)
   )
 }
 
@@ -335,15 +336,12 @@ function hasTimedTiming(lines: TimedLine[]): boolean {
     return false
   }
 
-  const times = lines.flatMap((line) => [line.begin, line.end, ...line.words.flatMap((w) => [w.begin, w.end])])
+  const times = lines.flatMap((line) => [
+    line.begin,
+    line.end,
+    ...line.words.flatMap((w) => [w.begin, w.end]),
+  ])
   return times.some((t) => t > 0) || hasMoreThanOneDistinctTime(times)
-}
-
-interface JsonTimedEntry {
-  text?: unknown
-  time?: unknown
-  timestamp?: unknown
-  start?: unknown
 }
 
 function parseJsonSynced(raw: string): SyncedLine[] {
@@ -355,15 +353,11 @@ function parseJsonSynced(raw: string): SyncedLine[] {
 
     const lines = parsed
       .map((entry, index): SyncedLine | null => {
-        if (!entry || typeof entry !== "object") {
+        if (!isRecord(entry)) {
           return null
         }
-        const candidate = entry as JsonTimedEntry
-        const text = typeof candidate.text === "string" ? candidate.text.trim() : ""
-        const time = (
-          ["time", "timestamp", "start"] as const
-        ).map((key) => candidate[key])
-          .find((value): value is number => typeof value === "number")
+        const text = isString(entry.text) ? entry.text.trim() : ""
+        const time = ["time", "timestamp", "start"].map((key) => entry[key]).find(isNumber)
 
         if (!text || time === undefined || !Number.isFinite(time)) {
           return null
@@ -448,7 +442,10 @@ export function parseLyrics(raw: string | null | undefined): LyricsDoc {
   const jsonLines =
     trimmed.startsWith("[") || trimmed.startsWith("{") ? parseJsonSynced(trimmed) : []
   const synced = jsonLines.length > 0 ? jsonLines : parseLrc(trimmed)
-  if (synced.length > 0 && (synced.some((line) => line.time > 0) || hasMoreThanOneDistinctTime(synced.map((l) => l.time)))) {
+  if (
+    synced.length > 0 &&
+    (synced.some((line) => line.time > 0) || hasMoreThanOneDistinctTime(synced.map((l) => l.time)))
+  ) {
     return { kind: "synced", lines: synced }
   }
 

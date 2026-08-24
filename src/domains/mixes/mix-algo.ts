@@ -1,4 +1,5 @@
-import { SHAPES, pickVisual, type Shape, type VisualIdentity } from "@/domains/visuals/shared"
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is this app's domain vocabulary for genre/mix visual patterns */
+import { SHAPES, pickVisual, type Shape } from "@/domains/visuals/shared"
 
 export type MixShape = Shape
 export { SHAPES as MIX_SHAPES, pickVisual as getMixVisual }
@@ -53,6 +54,7 @@ export function getStartOfNextLocalWeek(now = new Date()) {
 }
 
 export function toMixShape(shape: string): MixShape {
+  // SAFETY: SHAPES enumerates every valid visual id, so membership proves the string is a Shape
   return SHAPES.includes(shape as MixShape) ? (shape as MixShape) : "circles"
 }
 

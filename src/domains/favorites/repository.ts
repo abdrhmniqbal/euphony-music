@@ -21,10 +21,16 @@ function getTableForType(type: FavoriteType) {
   }
 }
 
+interface FavoriteToggleValues {
+  isFavorite: number
+  favoritedAt: number | null
+  artwork?: string
+}
+
 export async function addFavorite(entry: FavoriteEntry): Promise<void> {
   const table = getTableForType(entry.type)
   const now = Date.now()
-  const nextValues: Record<string, unknown> = {
+  const nextValues: FavoriteToggleValues = {
     isFavorite: 1,
     favoritedAt: now,
   }
@@ -33,6 +39,7 @@ export async function addFavorite(entry: FavoriteEntry): Promise<void> {
     nextValues.artwork = entry.image
   }
 
+  // SAFETY: getTableForType only returns tracks/artists/albums/playlists, which all define these columns; drizzle cannot express a set payload for their union
   await db
     .update(table)
     .set(nextValues as never)
@@ -42,6 +49,7 @@ export async function addFavorite(entry: FavoriteEntry): Promise<void> {
 export async function removeFavorite(id: string, type: FavoriteType): Promise<void> {
   const table = getTableForType(type)
 
+  // SAFETY: every favorite-able table defines isFavorite and favoritedAt; drizzle cannot express a set payload for their union
   await db
     .update(table)
     .set({
@@ -52,7 +60,7 @@ export async function removeFavorite(id: string, type: FavoriteType): Promise<vo
 }
 
 export async function isFavorite(id: string, type: FavoriteType): Promise<boolean> {
-  let result: unknown = null
+  let result: { id: string } | undefined = undefined
   switch (type) {
     case "track":
       result = await db.query.tracks.findFirst({

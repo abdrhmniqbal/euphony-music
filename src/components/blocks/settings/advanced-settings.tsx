@@ -18,7 +18,6 @@ import {
 import { shareCrashLogs } from "@/core/log/service"
 import { showAppToast } from "@/core/ui/toast"
 import { preferenceStore } from "@/core/preferences/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGuardedRouter } from "@/core/navigation"
 import { clearPlayHistory } from "@/domains/history/repository"
 import {
@@ -35,7 +34,6 @@ const BATTERY_SETTINGS_ACTION = "android.settings.IGNORE_BATTERY_OPTIMIZATION_SE
 export function AdvancedSettings() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
-  const theme = useThemeColors()
 
   const resetHistoryMutation = useMutation({ mutationFn: clearPlayHistory })
   const [isResetHistoryDialogOpen, setIsResetHistoryDialogOpen] = React.useState(false)
@@ -184,7 +182,7 @@ export function AdvancedSettings() {
           {t("settings.advanced.sections.logs")}
         </Text>
         <SettingsListGroup>
-          <ListGroup.Item onPress={() => router.push("/settings/log-level" as never)}>
+          <ListGroup.Item onPress={() => router.push("/settings/log-level")}>
             <ListGroup.ItemContent>
               <ListGroup.ItemTitle>{t("settings.routes.logLevel.title")}</ListGroup.ItemTitle>
               <ListGroup.ItemDescription>

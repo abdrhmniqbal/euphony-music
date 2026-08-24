@@ -80,6 +80,7 @@ export function MixDetailScreen() {
   const autoHideScrollProps = useAutoHideHeaderScroll()
 
   function handleTrackScroll(offsetY: number) {
+    // SAFETY: only nativeEvent.contentOffset.y is read downstream; the rest of the scroll event is unused
     autoHideScrollProps.onScroll({ nativeEvent: { contentOffset: { y: offsetY } } } as never)
     const shouldShow = offsetY > HEADER_COLLAPSE_THRESHOLD
     if (shouldShow !== showHeaderTitle) {

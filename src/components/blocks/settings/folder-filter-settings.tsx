@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 
 import { FolderFilterStep } from "@/components/blocks/onboarding/folder-filter-step"
 import { showAppToast } from "@/core/ui/toast"
-import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
+import { usePreferenceStore } from "@/core/preferences/store"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGuardedRouter } from "@/core/navigation"
 import { startIndexing } from "@/domains/indexer/service"
@@ -53,7 +53,7 @@ export function FolderFilterSettings() {
   async function pickFolder() {
     try {
       const { Directory } = await import("expo-file-system")
-      if (typeof Directory?.pickDirectoryAsync !== "function") {
+      if (!Directory?.pickDirectoryAsync) {
         return
       }
 

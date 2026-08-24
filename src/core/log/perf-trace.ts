@@ -1,9 +1,9 @@
-import { logInfo } from "./service"
+import { logInfo, type LogContext } from "./service"
 
 export async function measurePerfTrace<T>(
   name: string,
   task: () => Promise<T>,
-  context?: unknown
+  context?: LogContext
 ): Promise<T> {
   const startedAt = Date.now()
   try {

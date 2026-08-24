@@ -21,6 +21,7 @@ function upsertFavoriteEntry(entry: FavoriteEntry) {
         return
       }
 
+      // SAFETY: favorites list queries are keyed [FAVORITES_KEY, FavoriteType?, itemId?] within this module
       const queriedType = queryKey[1] as FavoriteType | undefined
       if (queriedType && queriedType !== entry.type) {
         return
@@ -143,7 +144,7 @@ export function useToggleFavorite() {
         variables.name
       )
     },
-    onSettled: async (_result, _error, variables) => {
+    onSettled: async (_result, _error, _variables) => {
       await queryClient.invalidateQueries({ queryKey: [FAVORITES_KEY] })
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: [TRACKS_KEY] }),

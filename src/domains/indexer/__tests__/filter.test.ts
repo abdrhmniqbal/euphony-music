@@ -8,7 +8,17 @@ function asset(
   filename: string,
   uri = `file:///storage/emulated/0/Music/${filename}`
 ): MediaLibrary.Asset {
-  return { filename, uri } as MediaLibrary.Asset
+  return {
+    id: uri,
+    filename,
+    uri,
+    mediaType: "audio",
+    width: 0,
+    height: 0,
+    creationTime: 0,
+    modificationTime: 0,
+    duration: 0,
+  }
 }
 
 describe("isSupportedAssetByExtension", () => {
@@ -26,9 +36,8 @@ describe("isSupportedAssetByExtension", () => {
   })
 
   it("falls back to empty filename safely", () => {
-    expect(
-      isSupportedAssetByExtension({ filename: undefined } as unknown as MediaLibrary.Asset)
-    ).toBe(false)
+    const assetWithoutFilename = Object.assign(asset("song.mp3"), { filename: undefined })
+    expect(isSupportedAssetByExtension(assetWithoutFilename)).toBe(false)
   })
 })
 
@@ -64,7 +73,7 @@ describe("normalizeMetadata", () => {
   const base = {
     title: "  Raw Title  ",
     artist: "The Author",
-    artists: [] as string[],
+    artists: [],
     album: "  Album Name  ",
     albumArtist: "  ",
     genres: ["  Rock ", "rock", "  POP "],

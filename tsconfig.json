@@ -9,5 +9,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules", "src_dep", "android", "vitest.config.mts"]
+  "exclude": ["node_modules", "src_dep", "android", "vitest.config.mts", "tools"]
 }

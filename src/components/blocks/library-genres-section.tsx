@@ -1,3 +1,4 @@
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- genre/mix visual shape is domain vocabulary */
 import * as React from "react"
 import { useTranslation } from "react-i18next"
 import { ScrollView, View } from "react-native"

@@ -28,15 +28,6 @@ export function trackMatchesArtistName(
   )
 }
 
-function mergeArtistTracks(primary: PlayerTrack[], fallback: PlayerTrack[]) {
-  const tracksById = new Map(primary.map((track) => [track.id, track]))
-  for (const track of fallback) {
-    if (!tracksById.has(track.id)) {
-      tracksById.set(track.id, track)
-    }
-  }
-  return Array.from(tracksById.values())
-}
 
 function buildAlbumGridItems(
   artistAlbums: ReturnType<typeof buildArtistAlbums>,

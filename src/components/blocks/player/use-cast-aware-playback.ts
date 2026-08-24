@@ -27,7 +27,7 @@ async function runCastCommand(
   client: RemoteMediaClient,
   command: (client: RemoteMediaClient) => Promise<void>,
   label: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, number | boolean>
 ) {
   try {
     await command(client)

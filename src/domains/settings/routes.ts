@@ -66,7 +66,7 @@ export const SETTINGS_CATEGORY_ROUTES: SettingsRouteDefinition[] = [
   },
 ]
 
-export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
+export const SETTINGS_SCREEN_TITLE_KEYS = {
   index: "settings.routes.index.title",
   appearance: "settings.routes.appearance.title",
   language: "settings.routes.language.title",
@@ -89,7 +89,7 @@ export const SETTINGS_SCREEN_TITLE_KEYS: Record<string, string> = {
   integrations: "settings.routes.integrations.title",
   backup: "settings.routes.backup.title",
   "auto-backup": "settings.routes.autoBackup.title",
-}
+} satisfies Record<string, string>
 
 export const SETTINGS_SEARCH_ENTRIES: SettingsSearchEntry[] = [
   { id: "theme", route: "/settings/theme", titleKey: "settings.routes.theme.title", descriptionKey: "settings.routes.theme.description", sectionKey: "settings.routes.appearance.title" },

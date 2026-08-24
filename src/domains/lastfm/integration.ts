@@ -24,6 +24,11 @@ interface LastFmSessionResponse {
   message?: string
 }
 
+interface LastFmSessionBody {
+  username: string
+  password: string
+}
+
 export const LASTFM_SERVICE_URL =
   process.env.EXPO_PUBLIC_LASTFM_SERVICE_URL?.trim() || "https://app-services.startune.web.id"
 
@@ -108,7 +113,7 @@ export async function getLastFmIntegrationState(): Promise<LastFmIntegrationStat
   }
 }
 
-async function callLastFmService<T>(path: string, body: unknown): Promise<T> {
+async function callLastFmService<T>(path: string, body: LastFmSessionBody): Promise<T> {
   const response = await fetch(`${LASTFM_SERVICE_URL}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -125,6 +130,7 @@ async function callLastFmService<T>(path: string, body: unknown): Promise<T> {
     throw new Error(errorText || `Last.fm service request failed (${response.status})`)
   }
 
+  // SAFETY: the JSON comes from our own Last.fm proxy service and callers bind T to the documented payload for `path`
   return (await response.json()) as T
 }
 

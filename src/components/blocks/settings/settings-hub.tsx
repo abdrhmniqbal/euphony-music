@@ -53,7 +53,7 @@ export function SettingsHub() {
       return
     }
 
-    router.push(route as never)
+    router.push(route)
   }
 
   const isSearching = normalizedQuery.length > 0
@@ -124,7 +124,7 @@ export function SettingsHub() {
               key={category.name}
               title={t(category.titleKey)}
               description={category.descriptionKey ? t(category.descriptionKey) : null}
-              onPress={() => router.push(category.route as never)}
+              onPress={() => router.push(category.route)}
             />
           ))}
         </SettingsListGroup>

@@ -3,6 +3,7 @@ import * as React from "react"
 import { createContext, use } from "react"
 import { Text } from "react-native"
 import type { GestureResponderEvent } from "react-native"
+import { isSharedValue } from "react-native-reanimated"
 import { useTranslation } from "react-i18next"
 import { cn } from "tailwind-variants"
 
@@ -55,7 +56,9 @@ function useSortSheetContext<T extends string>() {
   if (!context) {
     throw new Error("SortSheet compound components must be used inside SortSheet.")
   }
-  return context as unknown as SortSheetContextValue<T>
+  const erased: unknown = context
+  // SAFETY: the root stores its payload erased to string keys; each compound consumer restores the T supplied by its Root
+  return erased as SortSheetContextValue<T>
 }
 
 function SortSheetRoot<T extends string>({
@@ -66,18 +69,18 @@ function SortSheetRoot<T extends string>({
   onSelect,
   children,
 }: SortSheetRootProps<T>) {
+  const value: SortSheetContextValue<string> = {
+    visible,
+    onOpenChange,
+    currentField,
+    currentOrder,
+    onSelect: (field: string, order?: SortOrder) =>
+      // SAFETY: option keys rendered from this Root's payload are always members of its T
+      onSelect(field as T, order),
+  }
+
   return (
-    <SortSheetContext
-      value={
-        {
-          visible,
-          onOpenChange,
-          currentField,
-          currentOrder,
-          onSelect,
-        } as unknown as SortSheetContextValue<string>
-      }
-    >
+    <SortSheetContext value={value}>
       {children}
     </SortSheetContext>
   )
@@ -93,10 +96,15 @@ function SortSheetTrigger({
 }: SortSheetTriggerProps) {
   const theme = useThemeColors()
   const { onOpenChange, currentOrder } = useSortSheetContext<string>()
+  // SAFETY: heroui accepts SharedValue handlers; only the plain-function branch is callable here
+  const onPressHandler =
+    onPress && !isSharedValue<((event: GestureResponderEvent) => void) | null | undefined>(onPress)
+      ? onPress
+      : undefined
 
   function handlePress(event: GestureResponderEvent) {
-    if (typeof onPress === "function") {
-      onPress(event)
+    if (onPressHandler) {
+      onPressHandler(event)
     }
     onOpenChange(true)
   }
@@ -183,6 +191,7 @@ type SortSheetComponent = typeof SortSheetRoot & {
   Content: typeof SortSheetContent
 }
 
+// SAFETY: Trigger and Content are attached immediately below; SortSheetComponent mirrors that exact shape
 const SortSheet = SortSheetRoot as SortSheetComponent
 SortSheet.Trigger = SortSheetTrigger
 SortSheet.Content = SortSheetContent

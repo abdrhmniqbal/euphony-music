@@ -42,6 +42,12 @@
       "skillPath": "skills/improve/SKILL.md",
       "computedHash": "7a0f09dd535fc84391dc63bea826d6aeab985b92423fa4dd93edacb5dfb82524"
     },
+    "install-anti-slop": {
+      "source": "dmmulroy/anti-slop",
+      "sourceType": "github",
+      "skillPath": "skills/install-anti-slop/SKILL.md",
+      "computedHash": "b903a7ac2c823d473a4b0046834fccbab0bc75ee4fda8be4f81efa895d475b01"
+    },
     "native-data-fetching": {
       "source": "expo/skills",
       "sourceType": "github",

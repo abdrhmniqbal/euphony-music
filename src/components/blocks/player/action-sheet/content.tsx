@@ -61,7 +61,7 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
 
   const artistNames = useMemo(() => {
     if (!track?.artist) {
-      return [] as string[]
+      return []
     }
     const source = track.rawArtistName || track.artistName || track.artist
     return Array.from(

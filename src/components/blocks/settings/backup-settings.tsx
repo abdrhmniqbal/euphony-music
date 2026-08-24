@@ -1,5 +1,5 @@
 import * as DocumentPicker from "expo-document-picker"
-import { Button, Dialog, ListGroup } from "heroui-native"
+import { Button, Dialog } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import * as Sharing from "expo-sharing"
@@ -160,7 +160,7 @@ export function BackupSettings() {
                   ? `${t("settings.autoBackup.enabledDescription")} · ${lastBackupDescription}`
                   : lastBackupDescription
               }
-              onPress={() => router.push("/settings/auto-backup" as never)}
+              onPress={() => router.push("/settings/auto-backup")}
             />
           </SettingsListGroup>
         </View>

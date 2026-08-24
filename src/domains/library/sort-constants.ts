@@ -33,10 +33,6 @@ export const ALBUM_SORT_OPTIONS: SortOption[] = [
   { label: "library.sortOption.numberOfTracks", field: "trackCount" },
 ]
 
-export function resolveSortLabel(
-  options: SortOption[],
-  field: SortOptionField,
-  t: (key: string) => string
-): string {
+export function resolveSortLabel(options: SortOption[], field: SortOptionField): string {
   return options.find((option) => option.field === field)?.label ?? ""
 }

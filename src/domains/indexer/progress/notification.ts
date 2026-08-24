@@ -34,6 +34,7 @@ let currentIndexerRunStartedAt: number | null = null
 let latestNotificationRequestVersion = 0
 
 function isIndexerNotification(notification: Notifications.Notification) {
+  // SAFETY: content.data is the payload this module itself schedules with source "indexer-progress"
   const payload = notification.request.content.data as { source?: unknown } | undefined
   return payload?.source === "indexer-progress"
 }

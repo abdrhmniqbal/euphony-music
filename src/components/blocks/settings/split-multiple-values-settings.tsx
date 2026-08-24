@@ -1,6 +1,6 @@
 import { BottomSheet, Button, Chip, Input, ListGroup, Separator, TagGroup } from "heroui-native"
 import * as React from "react"
-import { ScrollView, View } from "react-native"
+import { View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalAdd01Icon from "@/components/icons/local/add-01"
@@ -227,7 +227,7 @@ export function SplitMultipleValuesSettings() {
 
           <Separator className="mx-4" />
 
-          <ListGroup.Item onPress={() => router.push("/settings/artist-split-mode" as never)}>
+          <ListGroup.Item onPress={() => router.push("/settings/artist-split-mode")}>
             <ListGroup.ItemContent>
               <ListGroup.ItemTitle>{t("settings.library.artistSplitMode")}</ListGroup.ItemTitle>
               <ListGroup.ItemDescription>{currentModeLabel}</ListGroup.ItemDescription>

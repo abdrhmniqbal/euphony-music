@@ -20,7 +20,6 @@ import { useGuardedRouter } from "@/core/navigation"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
 import type { PlayerTrack } from "@/playback/types"
 import { createPlaybackQueueContext } from "@/playback/types"
-import { useCurrentTrackId } from "@/playback/selectors"
 import { playTrack } from "@/playback/service"
 import {
   useAddRecentSearch,
@@ -101,11 +100,10 @@ export function SearchInteractionScreen() {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const router = useGuardedRouter()
-  const currentTrackId = useCurrentTrackId()
 
   const [searchQuery, setSearchQuery] = useState("")
   const [activeSearchTab, setActiveSearchTab] = useState<"All" | "Track" | "Album" | "Artist" | "Playlist">("All")
-  const [canAutoFocusInput, setCanAutoFocusInput] = useState(true)
+  const [canAutoFocusInput] = useState(true)
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const [actionSheetConfig, setActionSheetConfig] = useState<{

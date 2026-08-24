@@ -1,4 +1,4 @@
-import { getColors } from "react-native-image-colors"
+import { getColors, type ImageColorsResult } from "react-native-image-colors"
 
 import { logWarn } from "@/core/log/service"
 
@@ -13,28 +13,30 @@ import {
 
 const colorCache = new Map<string, ColorPalette>()
 
-function getStringProperty(source: unknown, key: string): string | null {
-  if (!source || typeof source !== "object") {
-    return null
+function resolveAndroidColors(
+  result: ImageColorsResult,
+  fallbackColors: ColorPalette
+): ColorPalette {
+  if (result.platform !== "android") {
+    return fallbackColors
   }
 
-  const value = (source as Record<string, unknown>)[key]
-  return typeof value === "string" && value.length > 0 ? value : null
-}
-
-function resolveAndroidColors(result: unknown, fallbackColors: ColorPalette): ColorPalette {
   return {
-    bg: getStringProperty(result, "average") || fallbackColors.bg,
-    primary: getStringProperty(result, "dominant") || fallbackColors.primary,
-    secondary: getStringProperty(result, "darkVibrant") || fallbackColors.secondary,
+    bg: result.average || fallbackColors.bg,
+    primary: result.dominant || fallbackColors.primary,
+    secondary: result.darkVibrant || fallbackColors.secondary,
   }
 }
 
-function resolveIOSColors(result: unknown, fallbackColors: ColorPalette): ColorPalette {
+function resolveIOSColors(result: ImageColorsResult, fallbackColors: ColorPalette): ColorPalette {
+  if (result.platform !== "ios") {
+    return fallbackColors
+  }
+
   return {
-    bg: getStringProperty(result, "background") || fallbackColors.bg,
-    primary: getStringProperty(result, "primary") || fallbackColors.primary,
-    secondary: getStringProperty(result, "detail") || fallbackColors.secondary,
+    bg: result.background || fallbackColors.bg,
+    primary: result.primary || fallbackColors.primary,
+    secondary: result.detail || fallbackColors.secondary,
   }
 }
 

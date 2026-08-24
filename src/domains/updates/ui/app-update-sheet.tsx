@@ -15,11 +15,12 @@ export function AppUpdateSheet() {
   const updateInfo = useAppUpdatePromptStore((state) => state.updateInfo)
   const snapPoints = React.useMemo(() => ["48%", "88%"], [])
 
+  const downloadUrl = updateInfo?.downloadUrl
   const handleDownload = React.useCallback(() => {
-    if (!updateInfo?.downloadUrl) return
+    if (!downloadUrl) return
     closeAppUpdatePrompt()
-    downloadAndInstall(updateInfo.downloadUrl)
-  }, [updateInfo?.downloadUrl])
+    downloadAndInstall(downloadUrl)
+  }, [downloadUrl])
 
   const handleDontRemind = React.useCallback(() => {
     updateAppUpdateConfig({ notificationsEnabled: false })

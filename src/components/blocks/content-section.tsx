@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import { View } from "react-native"
-import { cn } from "tailwind-variants"
 
 import { SCREEN_SECTION_GAP } from "@/lib/layout"
 import { EmptyState, type EmptyStateConfig } from "@/components/ui/empty-state"

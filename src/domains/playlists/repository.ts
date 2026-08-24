@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, asc, desc, eq, sql } from "drizzle-orm"
 
 import { db } from "@/core/db"
 import { playlists, playlistTracks, tracks } from "@/core/db/schema"
@@ -100,7 +100,7 @@ export async function listPlaylistsForTrack(trackId: string | null) {
           .select({ playlistId: playlistTracks.playlistId })
           .from(playlistTracks)
           .where(eq(playlistTracks.trackId, trackId))
-      : Promise.resolve([] as Array<{ playlistId: string }>),
+      : Promise.resolve(new Array<{ playlistId: string }>()),
   ])
 
   const playlistIdsWithTrack = new Set(membershipRows.map((row) => row.playlistId))

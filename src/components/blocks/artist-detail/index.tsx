@@ -1,3 +1,4 @@
+/* oxlint-disable react/immutability -- reanimated shared values are intentionally mutated via .value inside scroll callbacks */
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
@@ -75,7 +76,6 @@ export function ArtistDetailScreen() {
     artistId,
     artistImage,
     artistBio,
-    artistTransitionId,
     artistTracks,
     sortedArtistTracks,
     popularTracks,
@@ -170,7 +170,7 @@ export function ArtistDetailScreen() {
 
   function getSortLabel() {
     const options = activeView === "tracks" ? ARTIST_TRACK_SORT_OPTIONS : ALBUM_SORT_OPTIONS
-    return t(resolveSortLabel(options, sortConfig.field, t) || "library.sortBy")
+    return t(resolveSortLabel(options, sortConfig.field) || "library.sortBy")
   }
 
   const renderHeroSection = () => (
@@ -271,7 +271,7 @@ export function ArtistDetailScreen() {
             data={sortedArtistTracks}
             queueContext={{ type: "artist", title: artistName }}
             contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 24 }}
-            onScroll={onScreenScroll as never}
+            onScroll={onScreenScroll}
             listHeader={
               <>
                 <View style={{ marginHorizontal: -24 }}>{renderHeroSection()}</View>
@@ -306,7 +306,7 @@ export function ArtistDetailScreen() {
           <AlbumGrid
             data={displayedAlbums}
             onAlbumPress={openAlbum}
-            onScroll={onScreenScroll as never}
+            onScroll={onScreenScroll}
             listHeader={
               <>
                 <View>{renderHeroSection()}</View>

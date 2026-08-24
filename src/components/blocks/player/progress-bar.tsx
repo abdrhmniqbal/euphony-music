@@ -1,3 +1,4 @@
+/* oxlint-disable react/immutability, react/refs -- reanimated shared values are intentionally mutated via .value from gesture worklets and JS callbacks */
 import * as React from "react"
 import { Text, TextInput, type TextInputProps, View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
@@ -12,11 +13,11 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { usePlaybackProgressState } from "@/playback/selectors"
-import { seekTo as localSeekTo } from "@/playback/actions/controls"
 import { useCastAwarePlayback } from "./use-cast-aware-playback"
 
 type AnimatedTimeInputProps = TextInputProps & { text?: string }
 
+// SAFETY: createAnimatedComponent extends the base props with animatedProps, which its returned type omits
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput) as React.ComponentType<
   AnimatedTimeInputProps & {
     animatedProps?: Partial<AnimatedTimeInputProps>

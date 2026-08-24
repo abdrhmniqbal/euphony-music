@@ -18,7 +18,11 @@ export interface ThemeColors {
   rainbow: string[]
 }
 
-export const STATIC_THEMES: Record<string, { light: ThemeColors; dark: ThemeColors }> = {
+export interface StaticThemeCollection {
+  [themeId: string]: { light: ThemeColors; dark: ThemeColors }
+}
+
+export const STATIC_THEMES: StaticThemeCollection = {
   default: {
     light: {
       background: "#ffffff",

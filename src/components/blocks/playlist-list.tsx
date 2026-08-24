@@ -4,7 +4,7 @@ import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import { View } from "react-native"
+import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native"
 
 import LocalAdd01Icon from "@/components/icons/local/add-01"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
@@ -37,7 +37,7 @@ interface PlaylistListProps {
   data: PlaylistListItem[]
   onPlaylistPress?: (playlist: PlaylistListItem) => void
   onCreatePlaylist?: () => void
-  contentContainerStyle?: Record<string, unknown>
+  contentContainerStyle?: StyleProp<ViewStyle>
 }
 
 export const PlaylistList: React.FC<PlaylistListProps> = ({
@@ -90,7 +90,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         </MediaItemAction>
       </MediaItem>
     ),
-    [handleLongPress, onPlaylistPress, t]
+    [handleLongPress, onPlaylistPress, t, theme.muted]
   )
 
   const listData: PlaylistListRow[] = useMemo(
@@ -119,7 +119,10 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         keyExtractor={(item) => item.id}
         getItemType={(item) => item.rowType}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 8, ...contentContainerStyle } as never}
+        contentContainerStyle={StyleSheet.flatten([
+          { paddingHorizontal: 16, gap: 8 },
+          contentContainerStyle,
+        ])}
         {...autoHideScrollProps}
         recycleItems
         estimatedItemSize={72}

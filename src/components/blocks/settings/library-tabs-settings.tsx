@@ -23,7 +23,7 @@ interface LibraryTabItemProps {
   onToggle: (id: LibraryTab, visible: boolean) => void
 }
 
-const TAB_LABEL_KEYS: Record<LibraryTab, string> = {
+const TAB_LABEL_KEYS = {
   Tracks: "settings.library.tabsTracks",
   Albums: "settings.library.tabsAlbums",
   Artists: "settings.library.tabsArtists",
@@ -31,7 +31,7 @@ const TAB_LABEL_KEYS: Record<LibraryTab, string> = {
   Playlists: "settings.library.tabsPlaylists",
   Folders: "settings.library.tabsFolders",
   Favorites: "settings.library.tabsFavorites",
-}
+} satisfies Record<LibraryTab, string>
 
 function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
   const { t } = useTranslation()

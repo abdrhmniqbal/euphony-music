@@ -1,3 +1,4 @@
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is this app's domain vocabulary for genre/mix visual patterns */
 import { createId } from "@paralleldrive/cuid2"
 import { asc, desc, eq } from "drizzle-orm"
 
@@ -96,12 +97,13 @@ function toMixPoolEntry(row: TrackRowWithRelations): MixPoolEntry | null {
 }
 
 async function listLibraryCandidates(): Promise<MixPoolEntry[]> {
+  // SAFETY: library rows come from this app's own SQLite schema with artist/album/genre relations registered on the db client, so every joined row matches TrackRowWithRelations
   const rows = (await db.query.tracks.findMany({
     where: eq(tracks.isDeleted, 0),
     orderBy: [desc(tracks.playCount), desc(tracks.lastPlayedAt)],
     with: trackRelations,
     limit: LIBRARY_POOL_LIMIT,
-  })) as unknown as TrackRowWithRelations[]
+  })) as TrackRowWithRelations[]
 
   return rows.map(toMixPoolEntry).filter((entry): entry is MixPoolEntry => entry !== null)
 }
@@ -130,11 +132,12 @@ async function generateMixCandidates(
 }
 
 async function loadPersistedMixTracks(mixId: string): Promise<PlayerTrack[]> {
+  // SAFETY: mixTracks rows reference tracks in the same app-managed schema, so the joined track relation resolves to TrackRowWithRelations or is absent
   const rows = (await db.query.mixTracks.findMany({
     where: eq(mixTracks.mixId, mixId),
     orderBy: [asc(mixTracks.position)],
     with: { track: { with: trackRelations } },
-  })) as unknown as Array<{ track: TrackRowWithRelations | null }>
+  })) as Array<{ track: TrackRowWithRelations | null }>
 
   return rows
     .map((row) => row.track)
@@ -233,11 +236,12 @@ async function getPersistedMixIfFresh(mixId: string) {
 }
 
 async function generateDailyMixTracks(seed: number): Promise<PlayerTrack[]> {
+  // SAFETY: playHistory rows reference tracks in the same app-managed schema, so the joined track relation resolves to TrackRowWithRelations or is absent
   const recent = (await db.query.playHistory.findMany({
     orderBy: [desc(playHistory.playedAt)],
     limit: 40,
     with: { track: { with: trackRelations } },
-  })) as unknown as Array<{ track: TrackRowWithRelations | null }>
+  })) as Array<{ track: TrackRowWithRelations | null }>
 
   const seedCandidates = recent
     .map((entry) => entry.track)

@@ -4,7 +4,11 @@ import { Text, View } from "react-native"
 
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 
-const PATTERN_ELEMENTS: Record<string, ReactNode> = {
+interface PatternElements {
+  [pattern: string]: ReactNode
+}
+
+const PATTERN_ELEMENTS: PatternElements = {
   circles: (
     <>
       <View className="absolute -top-4 -right-4 h-20 w-20 rounded-full bg-white/10" />

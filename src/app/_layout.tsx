@@ -39,6 +39,7 @@ export default function RootLayout() {
             <Stack.Screen name="(main)" />
             <Stack.Screen
               name="player"
+              // SAFETY: options come from our own boundary helper and are accepted by expo-router at runtime despite looser static types
               options={({ route }) => getHiddenPlayerScreenOptions(route) as never}
             />
           </Stack>
@@ -59,6 +60,7 @@ function StartupEffects() {
       if (!router.canGoBack() && route !== "/(main)/(home)") {
         router.replace("/(main)/(home)")
       }
+      // SAFETY: route strings originate from our own notification payloads and always name a registered screen
       router.push(route as never)
     })
     ensureNotificationRuntimeStarted()
@@ -70,6 +72,6 @@ function StartupEffects() {
       void checkStartupAppUpdate()
     }, 8000)
     return () => clearTimeout(timer)
-  }, [])
+  }, [router])
   return null
 }

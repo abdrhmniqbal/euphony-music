@@ -12,7 +12,7 @@ export function IntegrationsSettings() {
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="gap-5 px-4 py-4">
         <ListGroup>
-          <ListGroup.Item onPress={() => router.push("/settings/lastfm" as never)}>
+          <ListGroup.Item onPress={() => router.push("/settings/lastfm")}>
             <ListGroup.ItemContent>
               <ListGroup.ItemTitle>{t("settings.routes.lastfm.title")}</ListGroup.ItemTitle>
               <ListGroup.ItemDescription>

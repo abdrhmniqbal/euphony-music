@@ -36,7 +36,7 @@ export function formatClockValue(hour: number, minute: number) {
 }
 
 export function getSleepTimerSummary(
-  t: (key: string, options?: Record<string, unknown>) => string,
+  t: (key: string, options?: Record<string, string | number>) => string,
   mode: SleepTimerMode,
   minutes: number,
   playCount: number,

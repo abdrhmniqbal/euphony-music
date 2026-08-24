@@ -96,8 +96,10 @@ function PlaylistFormScreen() {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const { id } = useLocalSearchParams<{ id?: string }>()
-  const playlistId = typeof id === "string" ? id.trim() || undefined : undefined
+  const rawId = Array.isArray(id) ? id[0] : id
+  const playlistId = rawId?.trim() || undefined
   const isEditMode = Boolean(playlistId)
+  // SAFETY: the empty create-mode draft mirrors PlaylistFormDraftState returned by consumePlaylistFormDraft
   const [initialCreateDraft] = React.useState(() =>
     isEditMode ? { source: null as "queue" | null, trackIds: [] as string[] } : consumePlaylistFormDraft()
   )

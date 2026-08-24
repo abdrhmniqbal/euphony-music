@@ -159,7 +159,7 @@ async function prepareAssetForIndexing(
 
   const fileHash = precomputedHashMap?.get(asset.id) || generateAssetHash(asset)
   let metadata: Awaited<ReturnType<typeof extractMetadata>> | null = null
-  let lastError: unknown = null
+  let lastError: Error | null = null
 
   for (let attempt = 1; attempt <= METADATA_EXTRACTION_MAX_ATTEMPTS; attempt += 1) {
     if (signal?.aborted) {
@@ -174,7 +174,7 @@ async function prepareAssetForIndexing(
       )
       break
     } catch (error) {
-      lastError = error
+      lastError = error instanceof Error ? error : new Error("Metadata extraction failed")
       if (attempt < METADATA_EXTRACTION_MAX_ATTEMPTS) {
         await wait(METADATA_EXTRACTION_RETRY_DELAY_MS * attempt)
       }
@@ -182,7 +182,7 @@ async function prepareAssetForIndexing(
   }
 
   if (!metadata) {
-    throw lastError instanceof Error ? lastError : new Error("Metadata extraction failed")
+    throw lastError ?? new Error("Metadata extraction failed")
   }
 
   if (signal?.aborted) {

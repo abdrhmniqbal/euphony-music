@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
 
@@ -10,11 +10,7 @@ import { getPreferenceState } from "@/core/preferences/store"
 import { useViewPreferenceStore } from "@/core/preferences/view-store"
 import { sortTracks } from "@/domains/tracks/sort"
 import { toPlayerTracks } from "@/playback/player-track"
-import {
-  playSingleTrackFromList,
-  playTrackList,
-  shuffleTrackList,
-} from "@/playback/track-list-actions"
+import { playTrackList, shuffleTrackList } from "@/playback/track-list-actions"
 import { useTracks } from "@/domains/tracks/queries"
 
 interface TracksTabProps {
@@ -37,13 +33,6 @@ export function TracksTab({ contentBottomPadding = 0 }: TracksTabProps) {
   const playerTracks = useMemo(
     () => toPlayerTracks(sortedTracks, splitConfig),
     [sortedTracks, splitConfig]
-  )
-
-  const handleTrackPress = useCallback(
-    (track: (typeof playerTracks)[number]) => {
-      playSingleTrackFromList(track, playerTracks, t("library.tracks"))
-    },
-    [playerTracks, t]
   )
 
   return (

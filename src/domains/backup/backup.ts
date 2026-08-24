@@ -1,29 +1,76 @@
 import { File, Paths } from "expo-file-system"
 
-import { db } from "@/core/db"
-import { playHistory } from "@/core/db/schema"
 import { preferenceStore } from "@/core/preferences/store"
-import type { FolderFilterConfig } from "@/core/preferences/types"
+import type { FolderFilterConfig, PreferenceState } from "@/core/preferences/types"
+import { isNonEmptyString, isRecord, isString } from "@/lib/guards"
 import { normalizePath } from "@/domains/indexer/scan/folder-filter"
-import { startIndexing } from "@/domains/indexer/service"
 
 const BACKUP_VERSION = 1
+
+const PREFERENCE_BACKUP_KEYS = [
+  "themeMode",
+  "themeId",
+  "language",
+  "libraryTabsConfig",
+  "folderFilterConfig",
+  "indexerScanConfig",
+  "indexerNotificationsEnabled",
+  "appUpdateConfig",
+  "autoBackupConfig",
+  "crossfadeConfig",
+  "audioPlaybackConfig",
+  "trackDurationFilterConfig",
+  "countAsPlayedConfig",
+  "splitMultipleValueConfig",
+  "loggingLevel",
+] as const
+
+export type BackupPreferences = Pick<PreferenceState, (typeof PREFERENCE_BACKUP_KEYS)[number]>
+
+export type BackupPlayHistoryRow = {
+  id: string
+  trackId: string
+  playedAt: number
+  duration: number | null
+  completed: number | null
+}
 
 export interface BackupData {
   version: number
   timestamp: string
-  preferences: Record<string, unknown>
-  playHistory: Array<{
-    id: string
-    trackId: string
-    playedAt: number
-    duration: number | null
-    completed: number | null
-  }>
+  preferences: Partial<BackupPreferences>
+  playHistory: BackupPlayHistoryRow[]
 }
 
-function getBackupPreferences(): Record<string, unknown> {
-  const state = preferenceStore.getState() as unknown as Record<string, unknown>
+export interface PlayHistoryGateway {
+  readAll(): BackupPlayHistoryRow[]
+  insertIgnoringConflicts(rows: BackupPlayHistoryRow[]): Promise<void>
+}
+
+async function loadDrizzlePlayHistoryGateway(): Promise<PlayHistoryGateway> {
+  const [{ db }, { playHistory }] = await Promise.all([
+    import("@/core/db"),
+    import("@/core/db/schema"),
+  ])
+  return {
+    readAll: () => db.select().from(playHistory).all(),
+    insertIgnoringConflicts: async (rows) => {
+      for (let i = 0; i < rows.length; i += 100) {
+        await db
+          .insert(playHistory)
+          .values(rows.slice(i, i + 100))
+          .onConflictDoNothing()
+      }
+    },
+  }
+}
+
+function resolveGateway(injected?: PlayHistoryGateway) {
+  return injected ?? loadDrizzlePlayHistoryGateway()
+}
+
+function getBackupPreferences(): BackupPreferences {
+  const state = preferenceStore.getState()
   return {
     themeMode: state.themeMode,
     themeId: state.themeId,
@@ -43,16 +90,13 @@ function getBackupPreferences(): Record<string, unknown> {
   }
 }
 
-async function exportPlayHistory(): Promise<BackupData["playHistory"]> {
-  return db.select().from(playHistory).all()
-}
-
-export async function createBackupData(): Promise<BackupData> {
+export async function createBackupData(gateway?: PlayHistoryGateway): Promise<BackupData> {
+  const history = await resolveGateway(gateway)
   return {
     version: BACKUP_VERSION,
     timestamp: new Date().toISOString(),
     preferences: getBackupPreferences(),
-    playHistory: await exportPlayHistory(),
+    playHistory: history.readAll(),
   }
 }
 
@@ -69,72 +113,78 @@ export async function backupToFile(targetDirectoryUri?: string | null): Promise<
   return file.uri
 }
 
+// oxlint-disable-next-line anti-slop/no-unknown-parameters -- this function is the trust boundary that validates untrusted backup payloads
 export function isBackupData(value: unknown): value is BackupData {
-  if (!value || typeof value !== "object") {
-    return false
-  }
-
-  const data = value as Partial<BackupData>
-  return data.version === BACKUP_VERSION && typeof data.preferences === "object" && data.preferences !== null
+  return isRecord(value) && value.version === BACKUP_VERSION && isRecord(value.preferences)
 }
 
-function restorePreferenceSlice(key: string, value: unknown) {
-  const current = preferenceStore.getState()
-  switch (key) {
-    case "folderFilterConfig": {
-      const source = (value ?? {}) as Partial<FolderFilterConfig>
-      const whitelist = Array.from(
-        new Set((source.whitelist ?? []).map(normalizePath).filter(Boolean))
-      )
-      const blacklist = Array.from(
-        new Set(
-          (source.blacklist ?? [])
-            .map(normalizePath)
-            .filter((path) => path.length > 0 && !whitelist.includes(path))
-        )
-      )
-      return { folderFilterConfig: { whitelist, blacklist } as FolderFilterConfig }
-    }
-    default:
-      return null
-  }
+// oxlint-disable-next-line anti-slop/no-unknown-parameters -- sanitizes attacker-controlled folder filters from an untrusted backup payload
+function sanitizeFolderFilters(config: unknown): FolderFilterConfig {
+  const whitelist = Array.from(
+    new Set(
+      (isRecord(config) && Array.isArray(config.whitelist) ? config.whitelist : [])
+        .filter(isString)
+        .map(normalizePath)
+        .filter(isNonEmptyString)
+    )
+  )
+  const blacklist = Array.from(
+    new Set(
+      (isRecord(config) && Array.isArray(config.blacklist) ? config.blacklist : [])
+        .filter(isString)
+        .map(normalizePath)
+        .filter((path) => path.length > 0 && !whitelist.includes(path))
+    )
+  )
+  return { whitelist, blacklist }
 }
 
-export async function restoreFromBackup(data: BackupData): Promise<number> {
-  const updates: Partial<Record<string, unknown>> = {}
+export async function restoreFromBackup(
+  data: BackupData,
+  gateway?: PlayHistoryGateway
+): Promise<number> {
+  const source = data.preferences
+  const updates: Partial<BackupPreferences> = {}
 
-  for (const [key, value] of Object.entries(data.preferences)) {
-    const slice = restorePreferenceSlice(key, value)
-    if (slice) {
-      Object.assign(updates, slice)
-      continue
-    }
-
-    const current = preferenceStore.getState() as unknown as Record<string, unknown>
-    if (key in current) {
-      updates[key] = value
-    }
+  // Explicit per-key whitelist so unknown keys from an untrusted backup file never reach the store
+  if (source.themeMode !== undefined) updates.themeMode = source.themeMode
+  if (source.themeId !== undefined) updates.themeId = source.themeId
+  if (source.language !== undefined) updates.language = source.language
+  if (source.libraryTabsConfig !== undefined) updates.libraryTabsConfig = source.libraryTabsConfig
+  if (source.folderFilterConfig !== undefined) {
+    updates.folderFilterConfig = sanitizeFolderFilters(source.folderFilterConfig)
   }
+  if (source.indexerScanConfig !== undefined) updates.indexerScanConfig = source.indexerScanConfig
+  if (source.indexerNotificationsEnabled !== undefined) {
+    updates.indexerNotificationsEnabled = source.indexerNotificationsEnabled
+  }
+  if (source.appUpdateConfig !== undefined) updates.appUpdateConfig = source.appUpdateConfig
+  if (source.autoBackupConfig !== undefined) updates.autoBackupConfig = source.autoBackupConfig
+  if (source.crossfadeConfig !== undefined) updates.crossfadeConfig = source.crossfadeConfig
+  if (source.audioPlaybackConfig !== undefined) {
+    updates.audioPlaybackConfig = source.audioPlaybackConfig
+  }
+  if (source.trackDurationFilterConfig !== undefined) {
+    updates.trackDurationFilterConfig = source.trackDurationFilterConfig
+  }
+  if (source.countAsPlayedConfig !== undefined) {
+    updates.countAsPlayedConfig = source.countAsPlayedConfig
+  }
+  if (source.splitMultipleValueConfig !== undefined) {
+    updates.splitMultipleValueConfig = source.splitMultipleValueConfig
+  }
+  if (source.loggingLevel !== undefined) updates.loggingLevel = source.loggingLevel
 
   preferenceStore.setState(updates)
 
-  let restoredCount = 0
-  if (Array.isArray(data.playHistory)) {
-    const rows = data.playHistory.filter(
-      (entry): entry is BackupData["playHistory"][number] =>
-        !!entry && typeof entry.id === "string" && typeof entry.trackId === "string"
-    )
+  const rows = (Array.isArray(data.playHistory) ? data.playHistory : []).filter(
+    (entry): entry is BackupPlayHistoryRow =>
+      isRecord(entry) && isString(entry.id) && isString(entry.trackId)
+  )
+  const history = await resolveGateway(gateway)
+  await history.insertIgnoringConflicts(rows)
 
-    for (let i = 0; i < rows.length; i += 100) {
-      await db
-        .insert(playHistory)
-        .values(rows.slice(i, i + 100))
-        .onConflictDoNothing()
-    }
-    restoredCount = rows.length
-  }
-
-  return restoredCount
+  return rows.length
 }
 
 export async function parseBackupFile(uri: string): Promise<BackupData | null> {

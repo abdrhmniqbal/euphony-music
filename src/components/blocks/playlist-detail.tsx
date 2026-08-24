@@ -134,6 +134,7 @@ export function PlaylistDetailScreen() {
             },
             splitConfig
           )
+          // SAFETY: the fallback literal supplies every field the detail rows read below; optional playback metadata is filled explicitly
           const playerTrack = (base ?? {
             id: row.id,
             title: row.title,
@@ -166,7 +167,7 @@ export function PlaylistDetailScreen() {
     () => sortPlaylistTracks(tracks, sortField, sortOrder),
     [tracks, sortField, sortOrder]
   )
-  const sortLabel = resolveSortLabel(PLAYLIST_TRACK_SORT_OPTIONS, sortField, t)
+  const sortLabel = resolveSortLabel(PLAYLIST_TRACK_SORT_OPTIONS, sortField)
 
   async function handleDeleteConfirm() {
     if (!playlist) {

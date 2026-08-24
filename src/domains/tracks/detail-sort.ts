@@ -1,3 +1,5 @@
+import { isString } from "@/lib/guards"
+
 import type { PlayerTrack } from "@/playback/types"
 
 export type SortOrder = "asc" | "desc"
@@ -40,7 +42,7 @@ function compareValues(a: ComparableValue, b: ComparableValue, order: SortOrder)
   if (a === undefined || a === null) return 1
   if (b === undefined || b === null) return -1
 
-  if (typeof a === "string" && typeof b === "string") {
+  if (isString(a) && isString(b)) {
     return order === "asc"
       ? a.localeCompare(b, undefined, { sensitivity: "base" })
       : b.localeCompare(a, undefined, { sensitivity: "base" })
@@ -103,43 +105,36 @@ export function sortPlayerTracks(tracks: PlayerTrack[], config: DetailSortConfig
   })
 }
 
-interface AlbumSortableRow extends AlbumSortable {
-  [key: string]: unknown
-}
-
 export function sortAlbums<T extends AlbumSortable>(albums: T[], config: DetailSortConfig): T[] {
   const { field, order } = config
-  const rows = albums as unknown as AlbumSortableRow[]
-  return rows
-    .slice()
-    .sort((a, b) => {
-      const aVal =
-        field === "title" ||
-        field === "artist" ||
-        field === "year" ||
-        field === "dateAdded" ||
-        field === "trackCount"
-          ? a[field]
-          : undefined
-      const bVal =
-        field === "title" ||
-        field === "artist" ||
-        field === "year" ||
-        field === "dateAdded" ||
-        field === "trackCount"
-          ? b[field]
-          : undefined
+  return [...albums].sort((a, b) => {
+    const aVal =
+      field === "title" ||
+      field === "artist" ||
+      field === "year" ||
+      field === "dateAdded" ||
+      field === "trackCount"
+        ? a[field]
+        : undefined
+    const bVal =
+      field === "title" ||
+      field === "artist" ||
+      field === "year" ||
+      field === "dateAdded" ||
+      field === "trackCount"
+        ? b[field]
+        : undefined
 
-      if (field === "title" || field === "artist") {
-        return compareValues(
-          (aVal ?? "").toString().toLowerCase(),
-          (bVal ?? "").toString().toLowerCase(),
-          order
-        )
-      }
+    if (field === "title" || field === "artist") {
+      return compareValues(
+        (aVal ?? "").toString().toLowerCase(),
+        (bVal ?? "").toString().toLowerCase(),
+        order
+      )
+    }
 
-      return compareValues(aVal as ComparableValue, bVal as ComparableValue, order)
-    }) as unknown as T[]
+    return compareValues(aVal, bVal, order)
+  })
 }
 
 export function sortArtists<T extends ArtistSortable>(artists: T[], config: DetailSortConfig): T[] {

@@ -1,11 +1,10 @@
-import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import type { PlaybackQueueContext } from "@/playback/types"
 
-const PLAYER_QUEUE_CONTEXT_LABEL_KEYS: Record<PlaybackQueueContext["type"], string> = {
+const PLAYER_QUEUE_CONTEXT_LABEL_KEYS = {
   album: "player.playingFrom.album",
   artist: "player.playingFrom.artist",
   playlist: "player.playingFrom.playlist",
@@ -16,16 +15,20 @@ const PLAYER_QUEUE_CONTEXT_LABEL_KEYS: Record<PlaybackQueueContext["type"], stri
   mix: "player.playingFrom.default",
   trackList: "player.playingFrom.trackList",
   external: "player.playingFrom.external",
-}
+} satisfies Record<PlaybackQueueContext["type"], string>
 
-const PLAYER_QUEUE_CONTEXT_TITLE_KEYS: Partial<Record<PlaybackQueueContext["type"], string>> = {
+const PLAYER_QUEUE_CONTEXT_TITLE_KEYS = {
+  album: undefined,
+  artist: undefined,
+  playlist: "library.playlists",
+  genre: "library.genres",
+  search: "navigation.tabs.search",
   favorites: "library.favorites",
   folder: "library.folders",
-  genre: "library.genres",
-  playlist: "library.playlists",
-  search: "navigation.tabs.search",
+  mix: undefined,
   trackList: "library.tracks",
-}
+  external: undefined,
+} satisfies Record<PlaybackQueueContext["type"], string | undefined>
 
 function normalizeQueueContextText(value: string) {
   return value.trim().toLowerCase()
