@@ -3,6 +3,7 @@ import "../core/localization/i18n"
 
 import { QueryClientProvider } from "@tanstack/react-query"
 import { Stack, useRouter } from "expo-router"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { HeroUINativeProvider } from "heroui-native"
 import { useEffect } from "react"
 
@@ -23,33 +24,35 @@ import {
 
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <HeroUINativeProvider
-        config={{
-          devInfo: { stylingPrinciples: false },
-          toast: {
-            defaultProps: {
-              placement: "bottom",
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <HeroUINativeProvider
+          config={{
+            devInfo: { stylingPrinciples: false },
+            toast: {
+              defaultProps: {
+                placement: "bottom",
+              },
             },
-          },
-        }}
-      >
-        <DatabaseGate>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(main)" />
-            <Stack.Screen
-              name="player"
-              // SAFETY: options come from our own boundary helper and are accepted by expo-router at runtime despite looser static types
-              options={({ route }) => getHiddenPlayerScreenOptions(route) as never}
-            />
-          </Stack>
-          <StartupEffects />
-          <AppUpdateSheet />
-          <AppToastRuntime />
-        </DatabaseGate>
-      </HeroUINativeProvider>
-    </QueryClientProvider>
+          }}
+        >
+          <DatabaseGate>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(main)" />
+              <Stack.Screen
+                name="player"
+                // SAFETY: options come from our own boundary helper and are accepted by expo-router at runtime despite looser static types
+                options={({ route }) => getHiddenPlayerScreenOptions(route) as never}
+              />
+            </Stack>
+            <StartupEffects />
+            <AppUpdateSheet />
+            <AppToastRuntime />
+          </DatabaseGate>
+        </HeroUINativeProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   )
 }
 
