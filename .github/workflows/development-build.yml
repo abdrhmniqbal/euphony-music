@@ -41,8 +41,10 @@ jobs:
       - name: Setup Gradle cache
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Install yarn
-        run: npm install -g yarn
+      - name: Enable corepack
+        run: |
+          corepack enable || npm install -g corepack && corepack enable
+          corepack prepare yarn@4.12.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
