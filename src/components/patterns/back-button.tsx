@@ -1,10 +1,9 @@
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import type { ComponentProps } from "react"
 import { useRouter } from "expo-router"
 import type { Href } from "expo-router"
 
 import LocalArrowLeft02Icon from "@/components/icons/local/arrow-left-02"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface BackButtonProps {
   onPress?: () => void
@@ -21,7 +20,7 @@ export function BackButton({
   fallbackHref = "/",
   iconColor,
 }: BackButtonProps) {
-  const theme = useThemeColors()
+  const foreground = useThemeColor("foreground")
   const router = useRouter()
 
   function handlePress() {
@@ -40,12 +39,7 @@ export function BackButton({
 
   return (
     <Button onPress={handlePress} variant={variant} className={className} isIconOnly>
-      <LocalArrowLeft02Icon
-        fill="none"
-        width={24}
-        height={24}
-        color={iconColor ?? theme.foreground}
-      />
+      <LocalArrowLeft02Icon fill="none" width={24} height={24} color={iconColor ?? foreground} />
     </Button>
   )
 }

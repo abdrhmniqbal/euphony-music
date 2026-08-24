@@ -2,6 +2,7 @@ import { Image } from "expo-image"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import * as React from "react"
+import { useThemeColor } from "heroui-native"
 
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
@@ -15,7 +16,6 @@ import type { FavoriteType } from "@/domains/favorites/types"
 import { getQueueSourceTrackIds } from "@/domains/library/queue-sources"
 import { addCollectionToQueue, queueCollectionNext } from "@/playback/queue-actions"
 import { showAppToast } from "@/core/ui/toast"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface CollectionActionSheetProps {
   visible: boolean
@@ -47,7 +47,7 @@ export function CollectionActionSheet({
   children,
 }: CollectionActionSheetProps) {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [danger, muted] = useThemeColor(["danger", "muted"])
   const toggleFavoriteMutation = useToggleFavorite()
 
   const favoriteType: FavoriteType =
@@ -115,9 +115,9 @@ export function CollectionActionSheet({
             <MenuRow
               icon={
                 isFavorite ? (
-                  <LocalFavouriteSolidIcon fill="none" width={22} height={22} color={theme.danger} />
+                  <LocalFavouriteSolidIcon fill="none" width={22} height={22} color={danger} />
                 ) : (
-                  <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.muted} />
+                  <LocalFavouriteIcon fill="none" width={22} height={22} color={muted} />
                 )
               }
               label={isFavorite ? t("track.removeFromFavorites") : t("track.addToFavorites")}
@@ -127,14 +127,14 @@ export function CollectionActionSheet({
             />
           )}
           <MenuRow
-            icon={<LocalNextIcon fill="none" width={22} height={22} color={theme.muted} />}
+            icon={<LocalNextIcon fill="none" width={22} height={22} color={muted} />}
             label={t("track.playNext")}
             onPress={() => {
               void handlePlayNext()
             }}
           />
           <MenuRow
-            icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={theme.muted} />}
+            icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={muted} />}
             label={t("track.addToQueue")}
             onPress={() => {
               void handleAddQueue()

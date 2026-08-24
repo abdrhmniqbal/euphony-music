@@ -1,4 +1,4 @@
-import { Input, PressableFeedback } from "heroui-native"
+import { Input, PressableFeedback, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { useRef, useState } from "react"
 import { Keyboard, ScrollView, type TextInput, View } from "react-native"
@@ -17,7 +17,6 @@ import {
 import { RecentSearches, type RecentSearchItem } from "@/components/blocks/recent-searches"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { useGuardedRouter } from "@/core/navigation"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import type { PlayerTrack } from "@/playback/types"
 import { createPlaybackQueueContext } from "@/playback/types"
 import { playTrack } from "@/playback/service"
@@ -45,7 +44,7 @@ function HeaderSearchInput({
   focusWhenReady,
 }: HeaderSearchInputProps) {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [accent, foreground, muted] = useThemeColor(["accent", "foreground", "muted"])
   const [inputValue, setInputValue] = React.useState(initialValue)
   const inputRef = useRef<TextInput>(null)
 
@@ -68,18 +67,18 @@ function HeaderSearchInput({
           accessibilityRole="button"
           accessibilityLabel={t("common.goBack")}
         >
-          <LocalArrowLeft02Icon fill="none" width={24} height={24} color={theme.foreground} />
+          <LocalArrowLeft02Icon fill="none" width={24} height={24} color={foreground} />
         </PressableFeedback>
 
         <Input
           ref={inputRef}
           placeholder={t("search.searchPlaceholder")}
-          placeholderTextColor={theme.muted}
+          placeholderTextColor={muted}
           value={inputValue}
           onChangeText={handleChangeText}
           onSubmitEditing={onSubmit}
           className="pl-12 pr-10"
-          selectionColor={theme.accent}
+          selectionColor={accent}
           returnKeyType="search"
           autoFocus={focusWhenReady && initialValue.trim().length === 0}
         />
@@ -88,7 +87,7 @@ function HeaderSearchInput({
             onPress={handleClear}
             className="absolute inset-y-0 right-2.5 justify-center p-1"
           >
-            <LocalCancelCircleSolidIcon fill="none" width={20} height={20} color={theme.muted} />
+            <LocalCancelCircleSolidIcon fill="none" width={20} height={20} color={muted} />
           </PressableFeedback>
         ) : null}
       </View>
@@ -102,7 +101,9 @@ export function SearchInteractionScreen() {
   const router = useGuardedRouter()
 
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeSearchTab, setActiveSearchTab] = useState<"All" | "Track" | "Album" | "Artist" | "Playlist">("All")
+  const [activeSearchTab, setActiveSearchTab] = useState<
+    "All" | "Track" | "Album" | "Artist" | "Playlist"
+  >("All")
   const [canAutoFocusInput] = useState(true)
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)

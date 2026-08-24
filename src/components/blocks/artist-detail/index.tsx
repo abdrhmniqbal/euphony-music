@@ -1,5 +1,5 @@
 /* oxlint-disable react/immutability -- reanimated shared values are intentionally mutated via .value inside scroll callbacks */
-import { PressableFeedback } from "heroui-native"
+import { PressableFeedback, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
 import {
@@ -47,7 +47,6 @@ import {
 import { useToggleFavorite } from "@/domains/favorites/mutations"
 import { useIsFavorite } from "@/domains/favorites/queries"
 import { handleScroll } from "@/core/ui/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useCurrentTrack } from "@/playback/selectors"
 import { playTrack } from "@/playback/service"
 import { usePlaybackActions } from "@/domains/library/detail-actions"
@@ -56,7 +55,11 @@ const SCROLL_SYNC_DELTA = 12
 
 export function ArtistDetailScreen() {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [muted, backgroundColor, foregroundColor] = useThemeColor([
+    "muted",
+    "background",
+    "foreground",
+  ])
   const insets = useSafeAreaInsets()
   const { width: screenWidth } = useWindowDimensions()
   const toggleFavoriteMutation = useToggleFavorite()
@@ -92,6 +95,12 @@ export function ArtistDetailScreen() {
     activeView === "featuredOn" ? t("library.featuredOn") : t("library.albums")
 
   const smoothScrollY = useDerivedValue(() => withTiming(scrollY.value, { duration: 90 }))
+
+  const { playAll: playAllTracks, shuffle: shuffleTracks } = usePlaybackActions(
+    sortedArtistTracks,
+    artistName,
+    "artist"
+  )
 
   const onScreenScroll = React.useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -155,12 +164,6 @@ export function ArtistDetailScreen() {
     void playTrack(track, sortedArtistTracks, { type: "artist", title: artistName })
   }
 
-  const { playAll: playAllTracks, shuffle: shuffleTracks } = usePlaybackActions(
-    sortedArtistTracks,
-    artistName,
-    "artist"
-  )
-
   function openAlbum(album: Album) {
     router.push({
       pathname: "/album/[name]",
@@ -178,8 +181,9 @@ export function ArtistDetailScreen() {
       screenWidth={screenWidth}
       heroArtworkStyle={heroArtworkStyle}
       artistImage={artistImage}
-      mutedColor={theme.muted}
-      backgroundColor={theme.background}
+      mutedColor={muted}
+      backgroundColor={backgroundColor}
+      foregroundColor={foregroundColor}
       artistName={artistName}
       trackCountLabel={t("library.count.track", { count: artistTracks.length })}
     />
@@ -197,8 +201,8 @@ export function ArtistDetailScreen() {
         <ArtistDetailHeader
           topInset={insets.top}
           isHeaderSolid={isHeaderSolid}
-          backgroundColor={theme.background}
-          foregroundColor={theme.foreground}
+          backgroundColor={backgroundColor}
+          foregroundColor={foregroundColor}
           artistName={artistName}
           artistId={artistId}
           isArtistFavorite={isArtistFavorite}
@@ -225,7 +229,10 @@ export function ArtistDetailScreen() {
               style={{ paddingTop: 24 }}
             >
               <View className="px-6">
-                <SectionHeader title={t("library.tracks")} onViewMore={() => navigateTo("tracks")} />
+                <SectionHeader
+                  title={t("library.tracks")}
+                  onViewMore={() => navigateTo("tracks")}
+                />
                 <PlaybackActionsRow
                   onPlay={playAllTracks}
                   onShuffle={shuffleTracks}
@@ -248,7 +255,10 @@ export function ArtistDetailScreen() {
 
               {sortedAlbums.length > 0 && (
                 <View className="mt-8 px-6">
-                  <SectionHeader title={t("library.albums")} onViewMore={() => navigateTo("albums")} />
+                  <SectionHeader
+                    title={t("library.albums")}
+                    onViewMore={() => navigateTo("albums")}
+                  />
                   <AlbumGrid horizontal data={sortedAlbums} onAlbumPress={openAlbum} />
                 </View>
               )}
@@ -275,17 +285,14 @@ export function ArtistDetailScreen() {
             listHeader={
               <>
                 <View style={{ marginHorizontal: -24 }}>{renderHeroSection()}</View>
-                <Animated.View
-                  entering={screenEnterTransition()}
-                  style={{ paddingTop: 24 }}
-                >
+                <Animated.View entering={screenEnterTransition()} style={{ paddingTop: 24 }}>
                   <View className="mb-4 flex-row items-center justify-between">
                     <View className="flex-row items-center gap-3">
                       <PressableFeedback
                         onPress={() => navigateTo("overview")}
                         className="h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-default/55 active:opacity-50"
                       >
-                        <LocalChevronLeftIcon fill="none" width={20} height={20} color={theme.muted} />
+                        <LocalChevronLeftIcon fill="none" width={20} height={20} color={muted} />
                       </PressableFeedback>
                       <Text className="text-[22px] font-semibold tracking-[-0.6px] text-foreground">
                         {t("library.allTracks")}
@@ -310,14 +317,18 @@ export function ArtistDetailScreen() {
             listHeader={
               <>
                 <View>{renderHeroSection()}</View>
-                <Animated.View entering={screenEnterTransition()} style={{ paddingTop: 24 }} className="px-6">
+                <Animated.View
+                  entering={screenEnterTransition()}
+                  style={{ paddingTop: 24 }}
+                  className="px-6"
+                >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center gap-3">
                       <PressableFeedback
                         onPress={() => navigateTo("overview")}
                         className="h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-default/55 active:opacity-50"
                       >
-                        <LocalChevronLeftIcon fill="none" width={20} height={20} color={theme.muted} />
+                        <LocalChevronLeftIcon fill="none" width={20} height={20} color={muted} />
                       </PressableFeedback>
                       <Text className="text-[22px] font-semibold tracking-[-0.6px] text-foreground">
                         {displayedAlbumTitle}

@@ -4,6 +4,7 @@ import * as React from "react"
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { View } from "react-native"
+import { useThemeColor } from "heroui-native"
 
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/media-item"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ICON_SIZES } from "@/lib/layout"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export interface Artist {
   id: string
@@ -31,7 +31,7 @@ interface ArtistGridProps {
 }
 
 export function ArtistGrid({ data, onArtistPress }: ArtistGridProps) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { t } = useTranslation()
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -62,7 +62,7 @@ export function ArtistGrid({ data, onArtistPress }: ArtistGridProps) {
                 fill="none"
                 width={ICON_SIZES.gridFallback}
                 height={ICON_SIZES.gridFallback}
-                color={theme.muted}
+                color={muted}
               />
             }
             image={item.image}
@@ -79,7 +79,7 @@ export function ArtistGrid({ data, onArtistPress }: ArtistGridProps) {
         </MediaItem>
       </View>
     ),
-    [onArtistPress, t, theme.muted]
+    [onArtistPress, t, muted]
   )
 
   return (
@@ -92,9 +92,7 @@ export function ArtistGrid({ data, onArtistPress }: ArtistGridProps) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <EmptyState
-            icon={
-              <LocalUserSolidIcon fill="none" width={48} height={48} color={theme.muted} />
-            }
+            icon={<LocalUserSolidIcon fill="none" width={48} height={48} color={muted} />}
             title={t("library.empty.artistsTitle")}
             message={t("library.empty.artistsMessage")}
           />
@@ -115,7 +113,9 @@ export function ArtistGrid({ data, onArtistPress }: ArtistGridProps) {
         id={selectedArtist?.id ?? ""}
         name={selectedArtist?.name ?? ""}
         subtitle={
-          selectedArtist ? t("library.count.track", { count: selectedArtist.trackCount }) : undefined
+          selectedArtist
+            ? t("library.count.track", { count: selectedArtist.trackCount })
+            : undefined
         }
         image={selectedArtist?.image}
         trackCount={selectedArtist?.trackCount ?? 0}

@@ -1,4 +1,4 @@
-import { Input, ListGroup, PressableFeedback, Separator } from "heroui-native"
+import { Input, ListGroup, PressableFeedback, Separator, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -9,7 +9,6 @@ import LocalSearch01Icon from "@/components/icons/local/search-01"
 import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import { STATIC_THEMES, type ThemeColors } from "@/core/theme/colors"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { APP_THEMES, type AppThemeDefinition } from "@/core/theme/registry"
 
 function MockAppScreen({ colors }: { colors: ThemeColors }) {
@@ -141,7 +140,7 @@ function ThemePreviewSwatch({
 }
 
 export function ThemeSettings() {
-  const theme = useThemeColors()
+  const [accent, muted] = useThemeColor(["accent", "muted"])
   const { theme: themeMode } = useUniwind()
   const isDarkMode = themeMode === "dark"
   const { t } = useTranslation()
@@ -171,17 +170,17 @@ export function ThemeSettings() {
             pointerEvents="none"
             className="absolute inset-y-0 left-1 z-20 w-10 items-center justify-center"
           >
-            <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
+            <LocalSearch01Icon fill="none" width={24} height={24} color={muted} />
           </View>
           <Input
             value={query}
             onChangeText={setQuery}
             placeholder={t("settings.appearance.theme.search.placeholder")}
-            placeholderTextColor={theme.muted}
+            placeholderTextColor={muted}
             returnKeyType="search"
             autoCapitalize="none"
             autoCorrect={false}
-            selectionColor={theme.accent}
+            selectionColor={accent}
             className="pl-12 pr-10"
           />
           {query.length > 0 && (
@@ -189,12 +188,7 @@ export function ThemeSettings() {
               onPress={() => setQuery("")}
               className="absolute inset-y-0 right-2.5 justify-center p-1"
             >
-              <LocalCancelCircleSolidIcon
-                fill="none"
-                width={18}
-                height={18}
-                color={theme.muted}
-              />
+              <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={muted} />
             </PressableFeedback>
           )}
         </View>
@@ -202,17 +196,17 @@ export function ThemeSettings() {
           {filteredThemes.map((appTheme, index) => (
             <React.Fragment key={appTheme.id}>
               {index > 0 && <Separator className="mx-4" />}
-              <ListGroup.Item
-                onPress={() => preferenceStore.setState({ themeId: appTheme.id })}
-              >
+              <ListGroup.Item onPress={() => preferenceStore.setState({ themeId: appTheme.id })}>
                 <ThemePreviewSwatch themeDef={appTheme} isDarkMode={isDarkMode} />
                 <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>{t(appTheme.labelKey)}</ListGroup.ItemTitle>
-                  <ListGroup.ItemDescription>{t(appTheme.descriptionKey)}</ListGroup.ItemDescription>
+                  <ListGroup.ItemDescription>
+                    {t(appTheme.descriptionKey)}
+                  </ListGroup.ItemDescription>
                 </ListGroup.ItemContent>
                 {selectedThemeId === appTheme.id && (
                   <ListGroup.ItemSuffix>
-                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={accent} />
                   </ListGroup.ItemSuffix>
                 )}
               </ListGroup.Item>

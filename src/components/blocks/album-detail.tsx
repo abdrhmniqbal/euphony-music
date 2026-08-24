@@ -1,6 +1,6 @@
 import { Image } from "expo-image"
 import { useLocalSearchParams, Stack } from "expo-router"
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { useState } from "react"
 import { Text, View } from "react-native"
@@ -24,17 +24,13 @@ import { mergeText } from "@/lib/merge-text"
 import { formatAlbumDuration } from "@/domains/albums/utils"
 import { useToggleFavorite } from "@/domains/favorites/mutations"
 import { useIsFavorite } from "@/domains/favorites/queries"
-import {
-  ALBUM_TRACK_SORT_OPTIONS,
-  resolveSortLabel,
-} from "@/domains/library/sort-constants"
+import { ALBUM_TRACK_SORT_OPTIONS, resolveSortLabel } from "@/domains/library/sort-constants"
 import type { DetailSortConfig, DetailSortField } from "@/domains/tracks/detail-sort"
 import { setSortConfig, useLibrarySortStore } from "@/domains/library/sort-store"
 import { sortPlayerTracks } from "@/domains/tracks/detail-sort"
 import { useTracks } from "@/domains/tracks/queries"
 import { getPreferenceState } from "@/core/preferences/store"
 import { handleScroll } from "@/core/ui/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { toPlayerTrack } from "@/playback/player-track"
 import { usePlaybackActions, decodeRouteParam } from "@/domains/library/detail-actions"
 
@@ -42,7 +38,7 @@ const HEADER_COLLAPSE_THRESHOLD = 120
 
 export function AlbumDetailScreen() {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [muted, danger, foreground] = useThemeColor(["muted", "danger", "foreground"])
   const { name } = useLocalSearchParams<{
     name: string
     transitionId?: string
@@ -91,6 +87,12 @@ export function AlbumDetailScreen() {
   const totalDurationLabel = formatAlbumDuration(totalDuration)
   const hasMultipleDiscs = new Set(sortedTracks.map((track) => track.discNumber || 1)).size > 1
 
+  const { playAll: playAllTracks, shuffle: shuffleTracks } = usePlaybackActions(
+    sortedTracks,
+    albumInfo?.title ?? "",
+    "album"
+  )
+
   function handleSortSelect(field: DetailSortField, order?: "asc" | "desc") {
     setSortConfig("AlbumTracks", field, order)
   }
@@ -106,21 +108,15 @@ export function AlbumDetailScreen() {
 
     return (
       <EmptyState
-        icon={<LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+        icon={<LocalVynil02SolidIcon fill="none" width={48} height={48} color={muted} />}
         title={t("library.empty.albumsFoundTitle")}
-        message={t("library.empty.albumsFoundTitle")}
+        message={t("library.empty.albumsFoundMessage")}
         className="mt-12"
       />
     )
   }
 
   const activeAlbumInfo = albumInfo
-
-  const { playAll: playAllTracks, shuffle: shuffleTracks } = usePlaybackActions(
-    sortedTracks,
-    activeAlbumInfo.title,
-    "album"
-  )
 
   function getSortLabel() {
     return t(resolveSortLabel(ALBUM_TRACK_SORT_OPTIONS, sortConfig.field) || "library.sortBy")
@@ -164,13 +160,18 @@ export function AlbumDetailScreen() {
                     isIconOnly
                   >
                     {isAlbumFavorite ? (
-                      <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+                      <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={danger} />
                     ) : (
-                      <LocalFavouriteIcon fill="none" width={24} height={24} color={theme.foreground} />
+                      <LocalFavouriteIcon fill="none" width={24} height={24} color={foreground} />
                     )}
                   </Button>
                   <Button variant="ghost" isIconOnly onPress={() => setShowActionSheet(true)}>
-                    <LocalMoreHorizontalCircle01SolidIcon fill="none" width={24} height={24} color={theme.foreground} />
+                    <LocalMoreHorizontalCircle01SolidIcon
+                      fill="none"
+                      width={24}
+                      height={24}
+                      color={foreground}
+                    />
                   </Button>
                 </View>
               ) : null,
@@ -219,10 +220,14 @@ export function AlbumDetailScreen() {
                 <View className="flex-row gap-4">
                   <View className="h-36 w-36 overflow-hidden rounded-lg bg-surface-secondary">
                     {albumInfo.image ? (
-                      <Image source={{ uri: albumInfo.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+                      <Image
+                        source={{ uri: albumInfo.image }}
+                        style={{ width: "100%", height: "100%" }}
+                        contentFit="cover"
+                      />
                     ) : (
                       <View className="h-full w-full items-center justify-center">
-                        <LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+                        <LocalVynil02SolidIcon fill="none" width={48} height={48} color={muted} />
                       </View>
                     )}
                   </View>
@@ -234,13 +239,19 @@ export function AlbumDetailScreen() {
                     <Text className="mt-1 text-sm text-muted" numberOfLines={1}>
                       {albumInfo.artist}
                     </Text>
-                    <Text className="mt-2 text-sm text-muted">{mergeText([albumInfo?.year, totalDurationLabel])}</Text>
+                    <Text className="mt-2 text-sm text-muted">
+                      {mergeText([albumInfo?.year, totalDurationLabel])}
+                    </Text>
                   </View>
                 </View>
               </View>
 
               <Animated.View entering={screenEnterTransition()}>
-                <PlaybackActionsRow onPlay={playAllTracks} onShuffle={shuffleTracks} className="mb-4" />
+                <PlaybackActionsRow
+                  onPlay={playAllTracks}
+                  onShuffle={shuffleTracks}
+                  className="mb-4"
+                />
               </Animated.View>
 
               <View className="mb-2 flex-row items-center justify-between">

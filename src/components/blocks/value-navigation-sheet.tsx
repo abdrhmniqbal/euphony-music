@@ -41,7 +41,11 @@ export function ValueNavigationSheet({
             >
               <View className="h-10 w-10 overflow-hidden rounded-full bg-default">
                 {item.image ? (
-                  <Image source={{ uri: item.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+                  <Image
+                    source={{ uri: item.image }}
+                    style={{ width: "100%", height: "100%" }}
+                    contentFit="cover"
+                  />
                 ) : (
                   <View className="h-full w-full items-center justify-center bg-default">
                     <Text className="text-sm font-semibold text-muted">

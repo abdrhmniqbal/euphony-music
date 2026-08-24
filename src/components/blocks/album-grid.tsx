@@ -3,6 +3,7 @@ import { LegendList } from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
@@ -24,7 +25,6 @@ import {
 import { EmptyState } from "@/components/ui/empty-state"
 import { ICON_SIZES } from "@/lib/layout"
 import { mergeText } from "@/lib/merge-text"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export interface Album {
   id: string
@@ -78,19 +78,14 @@ function AlbumGridItem({
   onPress?: () => void
   onLongPress?: () => void
 }) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { t } = useTranslation()
 
   return (
     <MediaItem variant="grid" className="w-full" onPress={onPress} onLongPress={onLongPress}>
       <MediaItemImage
         icon={
-          <LocalVynil02SolidIcon
-            fill="none"
-            width={iconSize}
-            height={iconSize}
-            color={theme.muted}
-          />
+          <LocalVynil02SolidIcon fill="none" width={iconSize} height={iconSize} color={muted} />
         }
         image={item.image}
         className="aspect-square w-full rounded-md"
@@ -121,7 +116,7 @@ export function AlbumGrid({
   scrollEventThrottle = 16,
   onScroll,
 }: AlbumGridProps) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { t } = useTranslation()
   const { selectedAlbum, isSheetOpen, handleLongPress, closeSheet } = useAlbumActionSheet()
 
@@ -211,9 +206,7 @@ export function AlbumGrid({
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <EmptyState
-            icon={
-              <LocalVynil02SolidIcon fill="none" width={48} height={48} color={theme.muted} />
-            }
+            icon={<LocalVynil02SolidIcon fill="none" width={48} height={48} color={muted} />}
             title={t("library.empty.albumsTitle")}
             message={t("library.empty.albumsMessage")}
           />

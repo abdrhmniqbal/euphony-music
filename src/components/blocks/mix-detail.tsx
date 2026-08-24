@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router"
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import { useCallback, useMemo, useState } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -18,7 +18,6 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/lib/layout"
 import { formatDurationCompact } from "@/lib/format"
 import { useGuardedRouter } from "@/core/navigation"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
 import { useDailyMix, useForYouMix } from "@/domains/mixes/queries"
 import { collectTrackImages } from "@/domains/visuals/shared"
@@ -31,7 +30,7 @@ const HEADER_COLLAPSE_THRESHOLD = 120
 
 export function MixDetailScreen() {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [foreground, muted] = useThemeColor(["foreground", "muted"])
   const router = useGuardedRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
   const mixId = id ?? "daily"
@@ -51,9 +50,7 @@ export function MixDetailScreen() {
   const mixData = isDaily ? dailyMix : forYouMix
 
   const title = isDaily ? t("search.dailyMix") : t("search.forYouMix")
-  const description = isDaily
-    ? t("search.dailyMixDesc")
-    : t("search.forYouMixDesc")
+  const description = isDaily ? t("search.dailyMixDesc") : t("search.forYouMixDesc")
   const totalDuration = tracks.reduce((sum, track) => sum + (track.duration || 0), 0)
 
   const images = useMemo(() => collectTrackImages(tracks.map((t) => t.image)), [tracks])
@@ -97,13 +94,25 @@ export function MixDetailScreen() {
       <View className="flex-row items-center justify-between px-4 pt-14 pb-2">
         <BackButton className="-ml-2" fallbackHref="/(main)/(search)" />
         {tracks.length > 0 ? (
-          <Button variant="ghost" isIconOnly onPress={() => setShowActionSheet(true)} className="-mr-2">
-            <LocalMoreHorizontalCircle01SolidIcon fill="none" width={24} height={24} color={theme.foreground} />
+          <Button
+            variant="ghost"
+            isIconOnly
+            onPress={() => setShowActionSheet(true)}
+            className="-mr-2"
+          >
+            <LocalMoreHorizontalCircle01SolidIcon
+              fill="none"
+              width={24}
+              height={24}
+              color={foreground}
+            />
           </Button>
         ) : null}
       </View>
       {showHeaderTitle ? (
-        <Text className="px-5 pb-1 text-lg font-bold text-foreground" numberOfLines={1}>{title}</Text>
+        <Text className="px-5 pb-1 text-lg font-bold text-foreground" numberOfLines={1}>
+          {title}
+        </Text>
       ) : null}
       <TrackList
         data={tracks}
@@ -148,7 +157,11 @@ export function MixDetailScreen() {
         listFooter={
           tracks.length > 0 ? (
             <Animated.View entering={FadeIn}>
-              <PlaybackActionsRow onPlay={handlePlayMix} onShuffle={handleShuffleMix} className="mb-4 px-4" />
+              <PlaybackActionsRow
+                onPlay={handlePlayMix}
+                onShuffle={handleShuffleMix}
+                className="mb-4 px-4"
+              />
             </Animated.View>
           ) : null
         }
@@ -167,7 +180,7 @@ export function MixDetailScreen() {
         hideFavoriteAction
       >
         <MenuRow
-          icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />}
+          icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={muted} />}
           label={t("track.addToPlaylist")}
           onPress={handleSaveToPlaylist}
         />
@@ -177,7 +190,7 @@ export function MixDetailScreen() {
         <View className="px-4 pt-16">
           <BackButton className="-ml-2 mb-4" fallbackHref="/(main)/(search)" />
           <EmptyState
-            icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+            icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />}
             title={t("library.empty.noTracksTitle")}
             message={t("library.empty.noTracksMessage")}
           />

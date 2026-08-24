@@ -1,6 +1,15 @@
 import { useLocalSearchParams } from "expo-router"
 import { Stack } from "expo-router"
-import { BottomSheet, Button, Checkbox, Input, PressableFeedback, TextArea, TextField } from "heroui-native"
+import {
+  BottomSheet,
+  Button,
+  Checkbox,
+  Input,
+  PressableFeedback,
+  TextArea,
+  TextField,
+  useThemeColor,
+} from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -20,7 +29,6 @@ import { TrackRow } from "@/components/patterns/track-row"
 import { BackButton } from "@/components/patterns/back-button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useGuardedRouter } from "@/core/navigation"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import {
   MAX_PLAYLIST_DESCRIPTION_LENGTH,
   MAX_PLAYLIST_NAME_LENGTH,
@@ -44,14 +52,14 @@ function ReorderableSelectedTrackRow({
 }) {
   const drag = useReorderableDrag()
   const isActive = useIsActive()
-  const theme = useThemeColors()
+  const [border, muted] = useThemeColor(["border", "muted"])
   const { t } = useTranslation()
 
   return (
     <View
       className="flex-row items-center gap-3 p-4"
       style={{
-        backgroundColor: isActive ? theme.border : "transparent",
+        backgroundColor: isActive ? border : "transparent",
         opacity: isActive ? 0.9 : 1,
       }}
     >
@@ -62,14 +70,18 @@ function ReorderableSelectedTrackRow({
         }}
         className="p-1 opacity-60"
       >
-        <LocalDragDropVerticalIcon fill="none" width={20} height={20} color={theme.muted} />
+        <LocalDragDropVerticalIcon fill="none" width={20} height={20} color={muted} />
       </PressableFeedback>
       <View className="size-14 overflow-hidden rounded-xl bg-surface">
         {track.image ? (
-          <Image source={{ uri: track.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+          <Image
+            source={{ uri: track.image }}
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
+          />
         ) : (
           <View className="flex-1 items-center justify-center">
-            <LocalMusicNote04SolidIcon fill="none" width={22} height={22} color={theme.muted} />
+            <LocalMusicNote04SolidIcon fill="none" width={22} height={22} color={muted} />
           </View>
         )}
       </View>
@@ -84,7 +96,7 @@ function ReorderableSelectedTrackRow({
         }}
         className="p-1 opacity-60"
       >
-        <LocalCancel01Icon fill="none" width={20} height={20} color={theme.muted} />
+        <LocalCancel01Icon fill="none" width={20} height={20} color={muted} />
       </PressableFeedback>
     </View>
   )
@@ -92,7 +104,7 @@ function ReorderableSelectedTrackRow({
 
 function PlaylistFormScreen() {
   const router = useGuardedRouter()
-  const theme = useThemeColors()
+  const [accent, muted, foreground] = useThemeColor(["accent", "muted", "foreground"])
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const { id } = useLocalSearchParams<{ id?: string }>()
@@ -101,7 +113,9 @@ function PlaylistFormScreen() {
   const isEditMode = Boolean(playlistId)
   // SAFETY: the empty create-mode draft mirrors PlaylistFormDraftState returned by consumePlaylistFormDraft
   const [initialCreateDraft] = React.useState(() =>
-    isEditMode ? { source: null as "queue" | null, trackIds: [] as string[] } : consumePlaylistFormDraft()
+    isEditMode
+      ? { source: null as "queue" | null, trackIds: [] as string[] }
+      : consumePlaylistFormDraft()
   )
   const initialCreateTrackIds = initialCreateDraft.trackIds
   const isQueueDraft = initialCreateDraft.source === "queue"
@@ -166,7 +180,12 @@ function PlaylistFormScreen() {
               isIconOnly
               isDisabled={!canSave}
             >
-              <LocalTick02Icon fill="none" width={24} height={24} color={canSave ? theme.accent : theme.muted} />
+              <LocalTick02Icon
+                fill="none"
+                width={24}
+                height={24}
+                color={canSave ? accent : muted}
+              />
             </Button>
           ),
         }}
@@ -202,7 +221,9 @@ function PlaylistFormScreen() {
 
             <View className="gap-2">
               <View className="flex-row items-center justify-between">
-                <Text className="text-sm font-medium text-foreground">{t("playlist.description")}</Text>
+                <Text className="text-sm font-medium text-foreground">
+                  {t("playlist.description")}
+                </Text>
                 <Text className="text-xs text-muted">
                   {editor.description.length}/{MAX_PLAYLIST_DESCRIPTION_LENGTH}
                 </Text>
@@ -222,7 +243,7 @@ function PlaylistFormScreen() {
               </Text>
               <Button variant="ghost" onPress={editor.openTrackSheet}>
                 <View className="flex-row items-center gap-2">
-                  <LocalAdd01Icon fill="none" width={18} height={18} color={theme.foreground} />
+                  <LocalAdd01Icon fill="none" width={18} height={18} color={foreground} />
                   <Text className="font-semibold text-foreground">{t("playlist.addTracks")}</Text>
                 </View>
               </Button>
@@ -231,9 +252,7 @@ function PlaylistFormScreen() {
         }
         ListEmptyComponent={
           <EmptyState
-            icon={
-              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
-            }
+            icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />}
             title={t("library.empty.tracksFoundTitle")}
             message={t("library.empty.playlistsMessage")}
             className="py-8"
@@ -271,7 +290,7 @@ function PlaylistFormScreen() {
                   autoCorrect={false}
                 />
                 <View className="absolute left-3.5" pointerEvents="none">
-                  <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
+                  <LocalSearch01Icon fill="none" width={24} height={24} color={muted} />
                 </View>
                 {editor.searchQuery.length > 0 ? (
                   <PressableFeedback
@@ -279,7 +298,7 @@ function PlaylistFormScreen() {
                     onPress={() => editor.setSearchQuery("")}
                     hitSlop={12}
                   >
-                    <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={theme.muted} />
+                    <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={muted} />
                   </PressableFeedback>
                 ) : null}
               </View>
@@ -314,7 +333,7 @@ function PlaylistFormScreen() {
               ListEmptyComponent={() => (
                 <EmptyState
                   icon={
-                    <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+                    <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />
                   }
                   title={t("library.empty.tracksFoundTitle")}
                   message={t("search.tryDifferentKeyword")}
@@ -340,7 +359,11 @@ function PlaylistFormScreen() {
                   {t("playlist.clearSelection")}
                 </Button>
               </View>
-              <Button onPress={editor.applyTrackSheetSelection} variant="primary" className="w-full">
+              <Button
+                onPress={editor.applyTrackSheetSelection}
+                variant="primary"
+                className="w-full"
+              >
                 {selectedCount === 0
                   ? t("playlist.apply")
                   : t("playlist.applyWithCount", { count: selectedCount })}

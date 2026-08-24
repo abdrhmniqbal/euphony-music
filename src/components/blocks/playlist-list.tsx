@@ -3,6 +3,7 @@ import { LegendList } from "@legendapp/list/react-native"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 
 import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native"
 
@@ -21,7 +22,6 @@ import {
   MediaItemTitle,
 } from "@/components/ui/media-item"
 import { useAutoHideHeaderScroll } from "@/core/ui/use-auto-hide-header-scroll"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export interface PlaylistListItem {
   id: string
@@ -31,7 +31,9 @@ export interface PlaylistListItem {
   images?: string[]
 }
 
-type PlaylistListRow = { id: string; rowType: "create" } | (PlaylistListItem & { rowType: "playlist" })
+type PlaylistListRow =
+  | { id: string; rowType: "create" }
+  | (PlaylistListItem & { rowType: "playlist" })
 
 interface PlaylistListProps {
   data: PlaylistListItem[]
@@ -46,7 +48,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   onCreatePlaylist,
   contentContainerStyle,
 }) => {
-  const theme = useThemeColors()
+  const [foreground, muted] = useThemeColor(["foreground", "muted"])
   const { t } = useTranslation()
   const autoHideScrollProps = useAutoHideHeaderScroll()
   const [selectedPlaylist, setSelectedPlaylist] = useState<PlaylistListItem | null>(null)
@@ -65,14 +67,14 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
     () => (
       <MediaItem key="create" onPress={onCreatePlaylist}>
         <MediaItemImage className="items-center justify-center bg-surface">
-          <LocalAdd01Icon fill="none" width={24} height={24} color={theme.foreground} />
+          <LocalAdd01Icon fill="none" width={24} height={24} color={foreground} />
         </MediaItemImage>
         <MediaItemContent>
           <MediaItemTitle>{t("playlist.newPlaylist")}</MediaItemTitle>
         </MediaItemContent>
       </MediaItem>
     ),
-    [onCreatePlaylist, t, theme.foreground]
+    [onCreatePlaylist, t, foreground]
   )
 
   const renderPlaylistItem = useCallback(
@@ -83,14 +85,16 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         </MediaItemImage>
         <MediaItemContent>
           <MediaItemTitle>{item.name}</MediaItemTitle>
-          <MediaItemDescription>{t("library.count.track", { count: item.trackCount })}</MediaItemDescription>
+          <MediaItemDescription>
+            {t("library.count.track", { count: item.trackCount })}
+          </MediaItemDescription>
         </MediaItemContent>
         <MediaItemAction>
-          <LocalChevronRightIcon fill="none" width={24} height={24} color={theme.muted} />
+          <LocalChevronRightIcon fill="none" width={24} height={24} color={muted} />
         </MediaItemAction>
       </MediaItem>
     ),
-    [handleLongPress, onPlaylistPress, t, theme.muted]
+    [handleLongPress, onPlaylistPress, t, muted]
   )
 
   const listData: PlaylistListRow[] = useMemo(
@@ -126,15 +130,13 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         {...autoHideScrollProps}
         recycleItems
         estimatedItemSize={72}
-        ListEmptyComponent={
-          null
-        }
+        ListEmptyComponent={null}
         style={{ flex: 1, minHeight: 1 }}
       />
       {data.length === 0 ? (
         <View pointerEvents="none" className="absolute inset-0 items-center justify-center px-8">
           <EmptyState
-            icon={<LocalPlaylist02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+            icon={<LocalPlaylist02SolidIcon fill="none" width={48} height={48} color={muted} />}
             title={t("library.empty.playlistsTitle")}
             message={t("library.empty.playlistsMessage")}
           />
@@ -151,7 +153,9 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         id={selectedPlaylist?.id ?? ""}
         name={selectedPlaylist?.name ?? ""}
         subtitle={
-          selectedPlaylist ? t("library.count.track", { count: selectedPlaylist.trackCount }) : undefined
+          selectedPlaylist
+            ? t("library.count.track", { count: selectedPlaylist.trackCount })
+            : undefined
         }
         image={selectedPlaylist?.image}
         images={selectedPlaylist?.images}

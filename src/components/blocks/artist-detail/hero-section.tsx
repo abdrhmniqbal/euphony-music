@@ -5,7 +5,6 @@ import Animated from "react-native-reanimated"
 import { Text, View, type StyleProp, type ViewStyle } from "react-native"
 
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface ArtistHeroSectionProps {
   screenWidth: number
@@ -13,6 +12,7 @@ interface ArtistHeroSectionProps {
   artistImage?: string
   mutedColor: string
   backgroundColor: string
+  foregroundColor: string
   artistName: string
   trackCountLabel: string
 }
@@ -23,16 +23,21 @@ export function ArtistHeroSection({
   artistImage,
   mutedColor,
   backgroundColor,
+  foregroundColor,
   artistName,
   trackCountLabel,
 }: ArtistHeroSectionProps) {
-  const theme = useThemeColors()
-
   return (
     <View style={{ height: screenWidth }} className="relative overflow-hidden">
-      <Animated.View style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, heroArtworkStyle]}>
+      <Animated.View
+        style={[{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }, heroArtworkStyle]}
+      >
         {artistImage ? (
-          <Image source={{ uri: artistImage }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+          <Image
+            source={{ uri: artistImage }}
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
+          />
         ) : (
           <View className="h-full w-full items-center justify-center bg-surface-secondary">
             <LocalUserSolidIcon fill="none" width={120} height={120} color={mutedColor} />
@@ -47,10 +52,10 @@ export function ArtistHeroSection({
       />
 
       <View className="absolute right-6 bottom-8 left-6">
-        <Text style={{ color: theme.foreground }} className="mb-2 text-4xl font-bold">
+        <Text style={{ color: foregroundColor }} className="mb-2 text-4xl font-bold">
           {artistName}
         </Text>
-        <Text style={{ color: theme.foreground, opacity: 0.72 }} className="text-base">
+        <Text style={{ color: foregroundColor, opacity: 0.72 }} className="text-base">
           {trackCountLabel}
         </Text>
       </View>

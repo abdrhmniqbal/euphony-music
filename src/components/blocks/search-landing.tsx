@@ -79,15 +79,17 @@ export function SearchLandingScreen() {
   const forYouMixTracks = useMemo(() => forYouMix?.tracks ?? [], [forYouMix])
 
   const activeMixTracks = useMemo(
-    () => (activeMixType === "daily" ? dailyMixTracks : activeMixType === "foryou" ? forYouMixTracks : []),
+    () =>
+      activeMixType === "daily"
+        ? dailyMixTracks
+        : activeMixType === "foryou"
+          ? forYouMixTracks
+          : [],
     [activeMixType, dailyMixTracks, forYouMixTracks]
   )
-  const activeMixTitle =
-    activeMixType === "daily" ? t("search.dailyMix") : t("search.forYouMix")
+  const activeMixTitle = activeMixType === "daily" ? t("search.dailyMix") : t("search.forYouMix")
   const activeMixDesc =
-    activeMixType === "daily"
-      ? t("search.dailyMixDesc")
-      : t("search.forYouMixDesc")
+    activeMixType === "daily" ? t("search.dailyMixDesc") : t("search.forYouMixDesc")
 
   const handleSaveMixToPlaylist = useCallback(() => {
     if (!activeMixType) {
@@ -98,8 +100,14 @@ export function SearchLandingScreen() {
     router.push("/playlist/form")
   }, [activeMixTracks, activeMixType, router])
 
-  const dailyMixImages = useMemo(() => collectTrackImages(dailyMixTracks.map((t) => t.image)), [dailyMixTracks])
-  const forYouMixImages = useMemo(() => collectTrackImages(forYouMixTracks.map((t) => t.image)), [forYouMixTracks])
+  const dailyMixImages = useMemo(
+    () => collectTrackImages(dailyMixTracks.map((t) => t.image)),
+    [dailyMixTracks]
+  )
+  const forYouMixImages = useMemo(
+    () => collectTrackImages(forYouMixTracks.map((t) => t.image)),
+    [forYouMixTracks]
+  )
 
   const dailyMixColor = useMemo(() => {
     if (!theme.rainbow || theme.rainbow.length === 0) return "#3b82f6"
@@ -112,7 +120,9 @@ export function SearchLandingScreen() {
   }, [theme.rainbow, forYouMix])
 
   const activeMixImages =
-    activeMixType && activeMixTracks.length > 0 ? collectTrackImages(activeMixTracks.map((t) => t.image)) : []
+    activeMixType && activeMixTracks.length > 0
+      ? collectTrackImages(activeMixTracks.map((t) => t.image))
+      : []
 
   const autoHideScrollProps = useAutoHideHeaderScroll()
 
@@ -149,7 +159,6 @@ export function SearchLandingScreen() {
             title={t("search.dailyMix")}
             images={dailyMixImages}
             color={dailyMixColor}
-
             pattern={dailyMix?.shape ?? "circles"}
             onPress={() => router.push("/(main)/(search)/mix/daily")}
             onLongPress={() => {
@@ -161,7 +170,6 @@ export function SearchLandingScreen() {
             title={t("search.forYouMix")}
             images={forYouMixImages}
             color={forYouMixColor}
-
             pattern={forYouMix?.shape ?? "circles"}
             onPress={() => router.push("/(main)/(search)/mix/foryou")}
             onLongPress={() => {

@@ -26,9 +26,7 @@ const CROWDIN_URL = "https://crowdin.com/project/startune-music/"
 export function AboutSettings() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
-  const includePrereleases = usePreferenceStore(
-    (state) => state.appUpdateConfig.includePrereleases
-  )
+  const includePrereleases = usePreferenceStore((state) => state.appUpdateConfig.includePrereleases)
   const [isCheckingForUpdates, setIsCheckingForUpdates] = useState(false)
   const appName = Application.applicationName || t("common.appName")
   const version = getCurrentAppVersion()

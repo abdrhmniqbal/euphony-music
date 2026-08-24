@@ -1,4 +1,4 @@
-import { ListGroup, Separator } from "heroui-native"
+import { ListGroup, Separator, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -7,7 +7,6 @@ import { Uniwind } from "uniwind"
 import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { ThemeMode } from "@/core/preferences/types"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 type ThemeValue = ThemeMode
 
@@ -19,7 +18,7 @@ const APPEARANCE_OPTIONS: Array<{ labelKey: string; value: ThemeValue }> = [
 
 export function ThemeModeSettings() {
   const currentMode = usePreferenceStore((state) => state.themeMode)
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const { t } = useTranslation()
 
   function handleThemeChange(value: ThemeValue) {
@@ -40,7 +39,7 @@ export function ThemeModeSettings() {
                 </ListGroup.ItemContent>
                 {currentMode === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

@@ -31,7 +31,9 @@ export function OpenSourceLicensesSettings() {
           </Text>
 
           {entries.length === 0 ? (
-            <Text className="text-sm text-muted">{t("settings.about.openSourceLicensesEmpty")}</Text>
+            <Text className="text-sm text-muted">
+              {t("settings.about.openSourceLicensesEmpty")}
+            </Text>
           ) : (
             <ListGroup>
               {entries.map((entry) => (

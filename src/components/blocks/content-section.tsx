@@ -32,7 +32,12 @@ export function ContentSection<T>({
       {data.length > 0 ? (
         renderContent(data)
       ) : (
-        <EmptyState icon={emptyState.icon} title={emptyState.title} message={emptyState.message} className="px-4 py-8" />
+        <EmptyState
+          icon={emptyState.icon}
+          title={emptyState.title}
+          message={emptyState.message}
+          className="px-4 py-8"
+        />
       )}
     </View>
   )

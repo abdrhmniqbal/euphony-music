@@ -1,4 +1,4 @@
-import { BottomSheet, Button, PressableFeedback } from "heroui-native"
+import { BottomSheet, Button, PressableFeedback, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { createContext, use } from "react"
 import { Text } from "react-native"
@@ -9,7 +9,6 @@ import { cn } from "tailwind-variants"
 
 import LocalArrowDown02Icon from "@/components/icons/local/arrow-down-02"
 import LocalArrowUp02Icon from "@/components/icons/local/arrow-up-02"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export interface SortOption<T extends string> {
   field: T
@@ -35,8 +34,10 @@ interface SortSheetRootProps<T extends string> {
   children: React.ReactNode
 }
 
-interface SortSheetTriggerProps
-  extends Omit<React.ComponentProps<typeof PressableFeedback>, "children"> {
+interface SortSheetTriggerProps extends Omit<
+  React.ComponentProps<typeof PressableFeedback>,
+  "children"
+> {
   label: string
   iconSize?: number
   className?: string
@@ -79,11 +80,7 @@ function SortSheetRoot<T extends string>({
       onSelect(field as T, order),
   }
 
-  return (
-    <SortSheetContext value={value}>
-      {children}
-    </SortSheetContext>
-  )
+  return <SortSheetContext value={value}>{children}</SortSheetContext>
 }
 
 function SortSheetTrigger({
@@ -94,7 +91,7 @@ function SortSheetTrigger({
   onPress,
   ...props
 }: SortSheetTriggerProps) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { onOpenChange, currentOrder } = useSortSheetContext<string>()
   // SAFETY: heroui accepts SharedValue handlers; only the plain-function branch is callable here
   const onPressHandler =
@@ -117,9 +114,9 @@ function SortSheetTrigger({
     >
       <Text className={cn("text-sm font-medium text-muted", textClassName)}>{label}</Text>
       {currentOrder === "asc" ? (
-        <LocalArrowUp02Icon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
+        <LocalArrowUp02Icon fill="none" width={iconSize} height={iconSize} color={muted} />
       ) : (
-        <LocalArrowDown02Icon fill="none" width={iconSize} height={iconSize} color={theme.muted} />
+        <LocalArrowDown02Icon fill="none" width={iconSize} height={iconSize} color={muted} />
       )}
     </PressableFeedback>
   )
@@ -130,7 +127,7 @@ function SortSheetContent<T extends string>({
   title,
   className,
 }: SortSheetContentProps<T>) {
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const { t } = useTranslation()
   const { visible, onOpenChange, currentField, currentOrder, onSelect } = useSortSheetContext<T>()
 
@@ -172,9 +169,9 @@ function SortSheetContent<T extends string>({
               {currentField === option.field && (
                 <Button variant="ghost" isIconOnly>
                   {currentOrder === "asc" ? (
-                    <LocalArrowUp02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalArrowUp02Icon fill="none" width={24} height={24} color={accent} />
                   ) : (
-                    <LocalArrowDown02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalArrowDown02Icon fill="none" width={24} height={24} color={accent} />
                   )}
                 </Button>
               )}

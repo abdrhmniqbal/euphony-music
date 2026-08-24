@@ -1,11 +1,10 @@
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { cn } from "tailwind-variants"
 
 import LocalPlaySolidIcon from "@/components/icons/local/play-solid"
 import LocalShuffleSolidIcon from "@/components/icons/local/shuffle-solid"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface PlaybackActionsRowProps {
   onPlay: () => void
@@ -21,7 +20,7 @@ export function PlaybackActionsRow({
   className,
 }: PlaybackActionsRowProps) {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const foreground = useThemeColor("foreground")
 
   return (
     <View className={cn("mb-8 flex-row gap-3", className)}>
@@ -32,7 +31,7 @@ export function PlaybackActionsRow({
         isDisabled={isDisabled}
         onPress={onPlay}
       >
-        <LocalPlaySolidIcon fill="none" width={20} height={20} color={theme.foreground} />
+        <LocalPlaySolidIcon fill="none" width={20} height={20} color={foreground} />
         <Text className="text-base font-semibold tracking-[0.1px] text-foreground">
           {t("common.playAll")}
         </Text>
@@ -44,7 +43,7 @@ export function PlaybackActionsRow({
         isDisabled={isDisabled}
         onPress={onShuffle}
       >
-        <LocalShuffleSolidIcon fill="none" width={24} height={24} color={theme.foreground} />
+        <LocalShuffleSolidIcon fill="none" width={24} height={24} color={foreground} />
         <Text numberOfLines={1} className="text-base font-semibold text-foreground">
           {t("common.shuffle")}
         </Text>

@@ -1,4 +1,4 @@
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import { FolderFilterStep } from "@/components/blocks/onboarding/folder-filter-step"
 import { showAppToast } from "@/core/ui/toast"
 import { usePreferenceStore } from "@/core/preferences/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGuardedRouter } from "@/core/navigation"
 import { startIndexing } from "@/domains/indexer/service"
 import { normalizePath } from "@/domains/indexer/scan/folder-filter"
@@ -15,7 +14,7 @@ import { commitFolderFilterConfig, type FolderFilterMode } from "@/domains/libra
 export function FolderFilterSettings() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [accent, foreground, muted] = useThemeColor(["accent", "foreground", "muted"])
   const folderFilterConfig = usePreferenceStore((state) => state.folderFilterConfig)
 
   const [pendingConfig, setPendingConfig] = React.useState({
@@ -107,9 +106,9 @@ export function FolderFilterSettings() {
           <FolderFilterStep
             activeFolders={activeFolders}
             selectedMode={selectedMode}
-            foregroundColor={theme.foreground}
-            accentColor={theme.accent}
-            mutedColor={theme.muted}
+            foregroundColor={foreground}
+            accentColor={accent}
+            mutedColor={muted}
             onSetMode={setUnifiedMode}
             onPickFolder={() => void pickFolder()}
             onRemoveFolder={removeFolder}

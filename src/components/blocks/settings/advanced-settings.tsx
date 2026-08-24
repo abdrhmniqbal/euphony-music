@@ -5,10 +5,7 @@ import { Linking, Platform, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useMutation } from "@tanstack/react-query"
 
-import {
-  SettingsListGroup,
-  SettingsScrollView,
-} from "@/components/blocks/settings/ui"
+import { SettingsListGroup, SettingsScrollView } from "@/components/blocks/settings/ui"
 import { queryClient } from "@/core/query/query-client"
 import {
   isIgnoringBatteryOptimizations,
@@ -45,7 +42,9 @@ export function AdvancedSettings() {
   async function handleShareCrashLogs() {
     const result = await shareCrashLogs()
     showAppToast(
-      result.shared ? t("settings.advanced.logsReadyTitle") : t("settings.advanced.logsUnableTitle"),
+      result.shared
+        ? t("settings.advanced.logsReadyTitle")
+        : t("settings.advanced.logsUnableTitle"),
       result.shared
         ? t("settings.advanced.logsReadyDescription")
         : result.reason || t("settings.advanced.tryAgainDescription")
@@ -345,10 +344,7 @@ export function AdvancedSettings() {
         </Dialog.Portal>
       </Dialog>
 
-      <Dialog
-        isOpen={isForceUpdateMixesDialogOpen}
-        onOpenChange={setIsForceUpdateMixesDialogOpen}
-      >
+      <Dialog isOpen={isForceUpdateMixesDialogOpen} onOpenChange={setIsForceUpdateMixesDialogOpen}>
         <Dialog.Portal>
           <Dialog.Overlay isCloseOnPress />
           <Dialog.Content className="gap-4" isSwipeable>

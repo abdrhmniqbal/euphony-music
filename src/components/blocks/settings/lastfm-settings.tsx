@@ -1,4 +1,13 @@
-import { BottomSheet, Button, Input, ListGroup, Separator, Slider, Switch } from "heroui-native"
+import {
+  BottomSheet,
+  Button,
+  Input,
+  ListGroup,
+  Separator,
+  Slider,
+  Switch,
+  useThemeColor,
+} from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -12,14 +21,13 @@ import {
   type LastFmIntegrationState,
 } from "@/domains/lastfm/integration"
 import { showAppToast } from "@/core/ui/toast"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 function getSliderNumericValue(value: number | number[], fallback: number) {
   return Array.isArray(value) ? (value[0] ?? fallback) : value
 }
 
 export function LastFmSettings() {
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const { t } = useTranslation()
   const [state, setState] = React.useState<LastFmIntegrationState>({
     isConfigured: true,
@@ -104,7 +112,10 @@ export function LastFmSettings() {
       updateIntegrationState(newState)
       showAppToast(t("settings.lastfm.unlinked"), t("settings.lastfm.readyToScrobble"))
     } catch {
-      showAppToast(t("settings.lastfm.connectFailedTitle"), t("settings.advanced.tryAgainDescription"))
+      showAppToast(
+        t("settings.lastfm.connectFailedTitle"),
+        t("settings.advanced.tryAgainDescription")
+      )
     }
   }
 
@@ -116,7 +127,10 @@ export function LastFmSettings() {
       setPassword("")
       showAppToast(t("settings.lastfm.clearDataSuccessTitle"), t("settings.lastfm.readyToScrobble"))
     } catch {
-      showAppToast(t("settings.lastfm.connectFailedTitle"), t("settings.advanced.tryAgainDescription"))
+      showAppToast(
+        t("settings.lastfm.connectFailedTitle"),
+        t("settings.advanced.tryAgainDescription")
+      )
     }
   }
 
@@ -137,10 +151,7 @@ export function LastFmSettings() {
 
   return (
     <>
-      <ScrollView
-        className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: 40 }}
-      >
+      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="gap-5 px-4 py-4">
           <View className="gap-2">
             <Text className="px-1 text-xs font-semibold uppercase text-muted">
@@ -196,9 +207,7 @@ export function LastFmSettings() {
                         maxValue={100}
                         step={5}
                         value={delayPercentValue}
-                        onChange={(value) =>
-                          setDelayPercentValue(getSliderNumericValue(value, 30))
-                        }
+                        onChange={(value) => setDelayPercentValue(getSliderNumericValue(value, 30))}
                         onChangeEnd={(value) => {
                           void handleScrobbleDelayChangeEnd(getSliderNumericValue(value, 30))
                         }}
@@ -234,9 +243,7 @@ export function LastFmSettings() {
                           setDurationSecondsValue(getSliderNumericValue(value, 30))
                         }
                         onChangeEnd={(value) => {
-                          void handleMinimumDurationChangeEnd(
-                            getSliderNumericValue(value, 30)
-                          )
+                          void handleMinimumDurationChangeEnd(getSliderNumericValue(value, 30))
                         }}
                       >
                         <Slider.Track className="h-2 rounded-full bg-border">
@@ -306,7 +313,7 @@ export function LastFmSettings() {
                     placeholder={t("settings.lastfm.usernamePlaceholder")}
                     autoCapitalize="none"
                     autoCorrect={false}
-                    selectionColor={theme.accent}
+                    selectionColor={accent}
                   />
                 </View>
                 <View className="gap-2">
@@ -318,7 +325,7 @@ export function LastFmSettings() {
                     onChangeText={setPassword}
                     placeholder={t("settings.lastfm.passwordPlaceholder")}
                     secureTextEntry
-                    selectionColor={theme.accent}
+                    selectionColor={accent}
                   />
                 </View>
                 <Button onPress={() => void handleConnect()} isDisabled={isConnecting}>

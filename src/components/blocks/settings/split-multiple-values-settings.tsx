@@ -1,17 +1,22 @@
-import { BottomSheet, Button, Chip, Input, ListGroup, Separator, TagGroup } from "heroui-native"
+import {
+  BottomSheet,
+  Button,
+  Chip,
+  Input,
+  ListGroup,
+  Separator,
+  TagGroup,
+  useThemeColor,
+} from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalAdd01Icon from "@/components/icons/local/add-01"
-import {
-  SettingsScrollView,
-  SettingsSwitchRow,
-} from "@/components/blocks/settings/ui"
+import { SettingsScrollView, SettingsSwitchRow } from "@/components/blocks/settings/ui"
 import { rebuildSplitRelationsForConfig } from "@/domains/indexer/service"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { SplitMultipleValueConfig } from "@/core/preferences/types"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGuardedRouter } from "@/core/navigation"
 
 function normalizeValues(values: string[]) {
@@ -42,7 +47,7 @@ function TagEditorSheetContent({
   removeLabel,
   onChange,
 }: TagEditorSheetContentProps) {
-  const theme = useThemeColors()
+  const foreground = useThemeColor("foreground")
   const [inputValue, setInputValue] = React.useState("")
   const trimmedInput = inputValue.trim()
 
@@ -90,7 +95,7 @@ function TagEditorSheetContent({
           className="h-12 w-12"
           onPress={addValue}
         >
-          <LocalAdd01Icon fill="none" width={22} height={22} color={theme.foreground} />
+          <LocalAdd01Icon fill="none" width={22} height={22} color={foreground} />
         </Button>
       </View>
     </>
@@ -164,7 +169,9 @@ export function SplitMultipleValuesSettings() {
         <ListGroup>
           <ListGroup.Item onPress={() => setArtistCharOpen(true)}>
             <ListGroup.ItemContent>
-              <ListGroup.ItemTitle>{t("settings.library.artistCharDelimiters")}</ListGroup.ItemTitle>
+              <ListGroup.ItemTitle>
+                {t("settings.library.artistCharDelimiters")}
+              </ListGroup.ItemTitle>
               <ListGroup.ItemDescription>
                 {t("settings.library.artistCharDelimitersDescription")}
               </ListGroup.ItemDescription>

@@ -3,6 +3,7 @@ import * as React from "react"
 import { useMemo } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { AlbumGrid } from "@/components/blocks/album-grid"
@@ -11,7 +12,6 @@ import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { getPreferenceState } from "@/core/preferences/store"
 import { useGenreDetails } from "@/domains/genres/queries"
 import type { GenreAlbum } from "@/domains/genres/queries"
@@ -25,7 +25,7 @@ export function GenreDetailScreen() {
   const { t } = useTranslation()
   const [showActionSheet, setShowActionSheet] = React.useState(false)
   const { name } = useLocalSearchParams<{ name: string }>()
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const splitConfig = getPreferenceState().splitMultipleValueConfig
 
   const genreName = useMemo(() => {
@@ -42,25 +42,24 @@ export function GenreDetailScreen() {
     () =>
       (data?.topTracks ?? [])
         .slice(0, TOP_TRACKS_PREVIEW_LIMIT)
-        .map(
-          (row): PlayerTrack | null =>
-            toPlayerTrack(
-              {
-                id: row.id,
-                name: row.title,
-                artists: row.artistName ? [row.artistName] : null,
-                artwork: row.artwork,
-                albumId: row.albumId,
-                uri: "",
-                duration: row.duration,
-                discoverTime: row.dateAdded,
-                modificationTime: null,
-                rawArtistName: row.rawArtist,
-                albumName: row.albumTitle,
-                artistName: row.artistName,
-              },
-              splitConfig
-            )
+        .map((row): PlayerTrack | null =>
+          toPlayerTrack(
+            {
+              id: row.id,
+              name: row.title,
+              artists: row.artistName ? [row.artistName] : null,
+              artwork: row.artwork,
+              albumId: row.albumId,
+              uri: "",
+              duration: row.duration,
+              discoverTime: row.dateAdded,
+              modificationTime: null,
+              rawArtistName: row.rawArtist,
+              albumName: row.albumTitle,
+              artistName: row.artistName,
+            },
+            splitConfig
+          )
         )
         .filter((track): track is PlayerTrack => track !== null),
     [data?.topTracks, splitConfig]
@@ -71,7 +70,7 @@ export function GenreDetailScreen() {
   if (!genreName) {
     return (
       <EmptyState
-        icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+        icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />}
         title={t("library.genre")}
         message={t("home.empty.topTracksTitle")}
       />

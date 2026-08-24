@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next"
 
-import { SettingsListGroup, SettingsNavigationRow, SettingsScrollView } from "@/components/blocks/settings/ui"
+import {
+  SettingsListGroup,
+  SettingsNavigationRow,
+  SettingsScrollView,
+} from "@/components/blocks/settings/ui"
 import { useGuardedRouter } from "@/core/navigation"
 import { usePreferenceStore } from "@/core/preferences/store"
 import { getAppThemeDefinition } from "@/core/theme/registry"

@@ -1,4 +1,4 @@
-import { BottomSheet, Chip } from "heroui-native"
+import { BottomSheet, Chip, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -6,7 +6,6 @@ import { Image } from "expo-image"
 
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { ICON_SIZES } from "@/lib/layout"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { getPreferenceState } from "@/core/preferences/store"
 import type { SplitMultipleValueConfig } from "@/core/preferences/types"
 import { db } from "@/core/db"
@@ -41,7 +40,7 @@ export const TrackMetadataSheet: React.FC<{
   onOpenChange: (open: boolean) => void
 }> = ({ track, isOpen, onOpenChange }) => {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const splitConfig: SplitMultipleValueConfig = getPreferenceState().splitMultipleValueConfig
 
   const { data: row } = useQuery({
@@ -69,7 +68,10 @@ export const TrackMetadataSheet: React.FC<{
     if (row?.audioFormat)
       facts.push({ label: t("track.metadata.format"), value: row.audioFormat.toUpperCase() })
     if (row?.audioBitrate)
-      facts.push({ label: t("track.metadata.quality"), value: `${Math.round(row.audioBitrate / 1000)} kbps` })
+      facts.push({
+        label: t("track.metadata.quality"),
+        value: `${Math.round(row.audioBitrate / 1000)} kbps`,
+      })
     if ((row?.playCount ?? 0) > 0)
       facts.push({ label: t("track.metadata.playCount"), value: String(row?.playCount ?? 0) })
     return facts
@@ -88,14 +90,18 @@ export const TrackMetadataSheet: React.FC<{
           <View className="mb-5 flex-row items-center gap-4">
             <View className="h-18 w-18 overflow-hidden rounded-xl bg-default">
               {track.image ? (
-                <Image source={{ uri: track.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+                <Image
+                  source={{ uri: track.image }}
+                  style={{ width: "100%", height: "100%" }}
+                  contentFit="cover"
+                />
               ) : (
                 <View className="h-full w-full items-center justify-center bg-default">
                   <LocalMusicNote04SolidIcon
                     fill="none"
                     width={ICON_SIZES.sheetArtworkFallback}
                     height={ICON_SIZES.sheetArtworkFallback}
-                    color={theme.muted}
+                    color={muted}
                   />
                 </View>
               )}

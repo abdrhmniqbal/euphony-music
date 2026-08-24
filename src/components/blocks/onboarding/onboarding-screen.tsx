@@ -1,5 +1,5 @@
 import * as Application from "expo-application"
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -9,14 +9,10 @@ import { Uniwind } from "uniwind"
 import { showAppToast } from "@/core/ui/toast"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { ThemeMode } from "@/core/preferences/types"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { startIndexing } from "@/domains/indexer/service"
 import { normalizePath } from "@/domains/indexer/scan/folder-filter"
 import { useGuardedRouter } from "@/core/navigation"
-import {
-  commitFolderFilterConfig,
-  type FolderFilterMode,
-} from "@/domains/library/folder-filters"
+import { commitFolderFilterConfig, type FolderFilterMode } from "@/domains/library/folder-filters"
 import { OnboardingWelcome } from "./onboarding-welcome"
 import { ThemeStep } from "./theme-step"
 import { FolderFilterStep } from "./folder-filter-step"
@@ -32,7 +28,12 @@ export function OnboardingScreen() {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const currentMode = usePreferenceStore((state) => state.themeMode)
-  const theme = useThemeColors()
+  const [accent, background, foreground, muted] = useThemeColor([
+    "accent",
+    "background",
+    "foreground",
+    "muted",
+  ])
   const folderFilterConfig = usePreferenceStore((state) => state.folderFilterConfig)
   const [step, setStep] = React.useState<Step>(0)
 
@@ -149,7 +150,7 @@ export function OnboardingScreen() {
         : t("onboarding.permissions.title")
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }} edges={["top", "bottom"]}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: background }} edges={["top", "bottom"]}>
       <ScrollView
         className="flex-1 bg-background"
         contentContainerStyle={{ paddingBottom: 40, paddingTop: 32 }}
@@ -161,7 +162,7 @@ export function OnboardingScreen() {
             <ThemeStep
               stepTitle={stepTitle}
               currentMode={currentMode}
-              accentColor={theme.accent}
+              accentColor={accent}
               onThemeChange={handleThemeChange}
             />
           ) : null}
@@ -170,9 +171,9 @@ export function OnboardingScreen() {
             <FolderFilterStep
               activeFolders={activeFolders}
               selectedMode={selectedMode}
-              foregroundColor={theme.foreground}
-              accentColor={theme.accent}
-              mutedColor={theme.muted}
+              foregroundColor={foreground}
+              accentColor={accent}
+              mutedColor={muted}
               onSetMode={setUnifiedMode}
               onPickFolder={() => void pickFolder()}
               onRemoveFolder={removeFolder}

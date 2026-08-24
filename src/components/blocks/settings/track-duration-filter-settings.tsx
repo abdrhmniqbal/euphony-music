@@ -1,4 +1,4 @@
-import { ListGroup, Separator, Slider } from "heroui-native"
+import { ListGroup, Separator, Slider, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -7,7 +7,6 @@ import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { showAppToast } from "@/core/ui/toast"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { TrackDurationFilterMode } from "@/core/preferences/types"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { startIndexing } from "@/domains/indexer/service"
 import { useIndexerStore } from "@/domains/indexer/progress/store"
 
@@ -59,7 +58,7 @@ function getSliderNumericValue(value: number | number[]): number {
 }
 
 export function TrackDurationFilterSettings() {
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const { t } = useTranslation()
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const config = usePreferenceStore((state) => state.trackDurationFilterConfig)
@@ -106,12 +105,14 @@ export function TrackDurationFilterSettings() {
                 <ListGroup.ItemContent>
                   <ListGroup.ItemTitle>{t(option.labelKey)}</ListGroup.ItemTitle>
                   {option.descriptionKey ? (
-                    <ListGroup.ItemDescription>{t(option.descriptionKey)}</ListGroup.ItemDescription>
+                    <ListGroup.ItemDescription>
+                      {t(option.descriptionKey)}
+                    </ListGroup.ItemDescription>
                   ) : null}
                 </ListGroup.ItemContent>
                 {config.mode === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

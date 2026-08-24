@@ -1,5 +1,5 @@
 import { useLocalSearchParams, Stack } from "expo-router"
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import { useGuardedRouter } from "@/core/navigation"
 import * as React from "react"
 import { useMemo, useState } from "react"
@@ -26,7 +26,6 @@ import { ScaleLoader } from "@/components/ui/scale-loader"
 import { screenEnterTransition } from "@/lib/animations"
 import { formatDurationVerbose } from "@/lib/format"
 import { handleScroll } from "@/core/ui/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { getPreferenceState } from "@/core/preferences/store"
 import { useToggleFavorite } from "@/domains/favorites/mutations"
 import { useIsFavorite } from "@/domains/favorites/queries"
@@ -43,7 +42,6 @@ import type { PlayerTrack } from "@/playback/types"
 import { usePlaybackActions } from "@/domains/library/detail-actions"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
-
 
 const PLAYLIST_TRACK_SORT_OPTIONS: SortOption[] = [
   { label: "library.sortOption.customOrder", field: "playlistOrder" as const },
@@ -94,7 +92,7 @@ function sortPlaylistTracks(
 export function PlaylistDetailScreen() {
   const { t } = useTranslation()
   const router = useGuardedRouter()
-  const theme = useThemeColors()
+  const [muted, danger, foreground] = useThemeColor(["muted", "danger", "foreground"])
   const { id } = useLocalSearchParams<{ id: string }>()
   const playlistId = Array.isArray(id) ? (id[0] ?? "") : (id ?? "")
   const splitConfig = getPreferenceState().splitMultipleValueConfig
@@ -214,7 +212,7 @@ export function PlaylistDetailScreen() {
 
     return (
       <EmptyState
-        icon={<LocalPlaylist02SolidIcon fill="none" width={48} height={48} color={theme.muted} />}
+        icon={<LocalPlaylist02SolidIcon fill="none" width={48} height={48} color={muted} />}
         title={t("library.playlistNotFound")}
         message={t("library.playlistRemovedMessage")}
         className="mt-12"
@@ -253,13 +251,18 @@ export function PlaylistDetailScreen() {
               <View className="-mr-2 flex-row gap-4">
                 <Button onPress={toggleFavorite} variant="ghost" className="-mr-2" isIconOnly>
                   {isFavoriteData ? (
-                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+                    <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={danger} />
                   ) : (
-                    <LocalFavouriteIcon fill="none" width={24} height={24} color={theme.foreground} />
+                    <LocalFavouriteIcon fill="none" width={24} height={24} color={foreground} />
                   )}
                 </Button>
                 <Button variant="ghost" isIconOnly onPress={() => setShowActionSheet(true)}>
-                  <LocalMoreHorizontalCircle01SolidIcon fill="none" width={24} height={24} color={theme.foreground} />
+                  <LocalMoreHorizontalCircle01SolidIcon
+                    fill="none"
+                    width={24}
+                    height={24}
+                    color={foreground}
+                  />
                 </Button>
               </View>
             ),
@@ -287,7 +290,12 @@ export function PlaylistDetailScreen() {
                     <PlaylistArtwork
                       images={playlist.images}
                       fallback={
-                        <LocalPlaylist02SolidIcon fill="none" width={48} height={48} color={theme.muted} />
+                        <LocalPlaylist02SolidIcon
+                          fill="none"
+                          width={48}
+                          height={48}
+                          color={muted}
+                        />
                       }
                     />
                   </View>
@@ -340,7 +348,7 @@ export function PlaylistDetailScreen() {
               router.push({ pathname: "/playlist/form", params: { id: playlist.id } })
             }}
           >
-            <LocalEdit02Icon fill="none" width={22} height={22} color={theme.muted} />
+            <LocalEdit02Icon fill="none" width={22} height={22} color={muted} />
             <Text className="ml-3 text-base">{t("playlist.editPlaylist")}</Text>
           </Button>
           <Button
@@ -351,7 +359,7 @@ export function PlaylistDetailScreen() {
               setShowDeleteDialog(true)
             }}
           >
-            <LocalDelete02Icon fill="none" width={22} height={22} color={theme.danger} />
+            <LocalDelete02Icon fill="none" width={22} height={22} color={danger} />
             <Text className="ml-3 text-base text-danger">{t("playlist.deletePlaylist")}</Text>
           </Button>
         </CollectionActionSheet>

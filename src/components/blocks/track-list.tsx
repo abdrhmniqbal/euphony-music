@@ -13,7 +13,7 @@ import {
   View,
   type ViewStyle,
 } from "react-native"
-import { PressableFeedback } from "heroui-native"
+import { PressableFeedback, useThemeColor } from "heroui-native"
 
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
@@ -23,7 +23,6 @@ import { ScaleLoader } from "@/components/ui/scale-loader"
 import { TrackRow } from "@/components/patterns/track-row"
 import { useCurrentTrackId } from "@/playback/selectors"
 import { playTrack } from "@/playback/service"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface TrackListProps {
   data: PlayerTrack[]
@@ -139,7 +138,7 @@ export const TrackList: React.FC<TrackListProps> = ({
   queueContext,
   playlistId,
 }) => {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { t } = useTranslation()
   const [selectedTrack, setSelectedTrack] = React.useState<PlayerTrack | null>(null)
   const [isSheetOpen, setIsSheetOpen] = React.useState(false)
@@ -174,7 +173,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         track={item}
         index={index}
         data={data}
-        mutedColor={theme.muted}
+        mutedColor={muted}
         showNumbers={showNumbers}
         hideCover={hideCover}
         hideArtist={hideArtist}
@@ -194,7 +193,7 @@ export const TrackList: React.FC<TrackListProps> = ({
       hideCover,
       renderItemPrefix,
       showNumbers,
-      theme.muted,
+      muted,
       activeTrackId,
     ]
   )
@@ -212,9 +211,7 @@ export const TrackList: React.FC<TrackListProps> = ({
         ListFooterComponent={listFooter}
         ListEmptyComponent={
           <EmptyState
-            icon={
-              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
-            }
+            icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />}
             title={t("library.empty.tracksTitle")}
             message={t("library.empty.tracksMessage")}
           />

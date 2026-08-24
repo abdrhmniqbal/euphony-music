@@ -91,7 +91,13 @@ export default function LibraryScreen() {
 }
 
 function PlaylistsTabContent(props: {
-  onPlaylistPress?: (playlist: { id: string; name: string; trackCount: number; image?: string; images?: string[] }) => void
+  onPlaylistPress?: (playlist: {
+    id: string
+    name: string
+    trackCount: number
+    image?: string
+    images?: string[]
+  }) => void
   onCreatePlaylist?: () => void
 }) {
   const { data: playlists = [] } = usePlaylistsWithOptions(true)
@@ -112,7 +118,10 @@ function FavoritesTabContent() {
     return FAVORITE_TYPE_FILTERS.filter((type) => present.has(type))
   }, [favorites])
   const filtered = React.useMemo(
-    () => (selectedTypes.length > 0 ? favorites.filter((f) => selectedTypes.includes(f.type)) : favorites),
+    () =>
+      selectedTypes.length > 0
+        ? favorites.filter((f) => selectedTypes.includes(f.type))
+        : favorites,
     [favorites, selectedTypes]
   )
 

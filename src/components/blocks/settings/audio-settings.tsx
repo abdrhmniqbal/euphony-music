@@ -191,7 +191,9 @@ export function AudioSettings() {
                       <Slider.Thumb />
                     </Slider.Track>
                   </Slider>
-                  <Text className="mt-2 text-xs text-muted">{t("settings.audio.durationHint")}</Text>
+                  <Text className="mt-2 text-xs text-muted">
+                    {t("settings.audio.durationHint")}
+                  </Text>
                 </ListGroup.ItemContent>
               </ListGroup.Item>
             </>

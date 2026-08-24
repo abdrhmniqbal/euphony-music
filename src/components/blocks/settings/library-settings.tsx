@@ -10,14 +10,9 @@ import {
 } from "@/components/blocks/settings/ui"
 import { showAppToast } from "@/core/ui/toast"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
-import type {
-  IndexerScanConfig,
-  TrackDurationFilterConfig,
-} from "@/core/preferences/types"
+import type { IndexerScanConfig, TrackDurationFilterConfig } from "@/core/preferences/types"
 import { useGuardedRouter } from "@/core/navigation"
-import {
-  forceReindexLibrary,
-} from "@/domains/indexer/service"
+import { forceReindexLibrary } from "@/domains/indexer/service"
 import { useIndexerStore } from "@/domains/indexer/progress/store"
 
 function getSliderNumericValue(value: number | number[]): number {
@@ -51,9 +46,7 @@ export function LibrarySettings() {
   const isIndexing = useIndexerStore((state) => state.indexerState.isIndexing)
   const indexerScanConfig = usePreferenceStore((state) => state.indexerScanConfig)
   const countAsPlayedConfig = usePreferenceStore((state) => state.countAsPlayedConfig)
-  const trackDurationFilterConfig = usePreferenceStore(
-    (state) => state.trackDurationFilterConfig
-  )
+  const trackDurationFilterConfig = usePreferenceStore((state) => state.trackDurationFilterConfig)
   const [showReindexDialog, setShowReindexDialog] = React.useState(false)
   const [countAsPlayedSliderValue, setCountAsPlayedSliderValue] = React.useState<number | null>(
     null

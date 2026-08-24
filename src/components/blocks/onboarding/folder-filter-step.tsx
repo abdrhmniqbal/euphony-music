@@ -55,7 +55,10 @@ export function FolderFilterStep({
                   color={selectedMode === "whitelist" ? accentColor : mutedColor}
                 />
               </Button>
-              <Button variant="secondary" onPress={() => onSetMode(selectedMode === "whitelist" ? "blacklist" : "whitelist")}>
+              <Button
+                variant="secondary"
+                onPress={() => onSetMode(selectedMode === "whitelist" ? "blacklist" : "whitelist")}
+              >
                 {selectedMode === "whitelist"
                   ? t("settings.library.whitelist")
                   : t("settings.library.blacklist")}
@@ -96,7 +99,12 @@ export function FolderFilterStep({
                   <ListGroup.ItemDescription numberOfLines={2}>{path}</ListGroup.ItemDescription>
                 </ListGroup.ItemContent>
                 <ListGroup.ItemSuffix>
-                  <Button variant="ghost" onPress={() => onRemoveFolder(path)} isIconOnly hitSlop={8}>
+                  <Button
+                    variant="ghost"
+                    onPress={() => onRemoveFolder(path)}
+                    isIconOnly
+                    hitSlop={8}
+                  >
                     <LocalCancel01Icon fill="none" width={18} height={18} color={mutedColor} />
                   </Button>
                 </ListGroup.ItemSuffix>

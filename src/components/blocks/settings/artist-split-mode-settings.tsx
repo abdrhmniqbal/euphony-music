@@ -1,4 +1,4 @@
-import { ListGroup, Separator } from "heroui-native"
+import { ListGroup, Separator, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -7,7 +7,6 @@ import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { rebuildSplitRelationsForConfig } from "@/domains/indexer/service"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { ArtistSplitMode } from "@/core/preferences/types"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface SplitModeOption {
   value: ArtistSplitMode
@@ -30,7 +29,7 @@ const SPLIT_MODE_OPTIONS: SplitModeOption[] = [
 
 export function ArtistSplitModeSettings() {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const config = usePreferenceStore((state) => state.splitMultipleValueConfig)
 
   async function handleSelect(mode: ArtistSplitMode) {
@@ -57,7 +56,7 @@ export function ArtistSplitModeSettings() {
                 </ListGroup.ItemContent>
                 {config.artistSplitMode === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

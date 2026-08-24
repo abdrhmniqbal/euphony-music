@@ -1,4 +1,4 @@
-import { Checkbox, ListGroup, PressableFeedback, Separator } from "heroui-native"
+import { Checkbox, ListGroup, PressableFeedback, Separator, useThemeColor } from "heroui-native"
 import React, { useCallback, useMemo } from "react"
 import { View } from "react-native"
 import ReorderableList, {
@@ -11,11 +11,7 @@ import { useTranslation } from "react-i18next"
 
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
-import type {
-  LibraryTab,
-  LibraryTabSettingsItem,
-} from "@/core/preferences/library-tabs"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
+import type { LibraryTab, LibraryTabSettingsItem } from "@/core/preferences/library-tabs"
 
 interface LibraryTabItemProps {
   item: LibraryTabSettingsItem
@@ -35,7 +31,7 @@ const TAB_LABEL_KEYS = {
 
 function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [border, muted] = useThemeColor(["border", "muted"])
   const drag = useReorderableDrag()
   const isActive = useIsActive()
 
@@ -44,12 +40,12 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
       {index > 0 && <Separator className="mx-4" />}
       <ListGroup.Item
         style={{
-          backgroundColor: isActive ? theme.border : "transparent",
+          backgroundColor: isActive ? border : "transparent",
           opacity: isActive ? 0.9 : 1,
         }}
       >
         <PressableFeedback onPressIn={drag} hitSlop={15} className="p-1">
-          <LocalDragDropVerticalIcon fill="none" width={20} height={20} color={theme.muted} />
+          <LocalDragDropVerticalIcon fill="none" width={20} height={20} color={muted} />
         </PressableFeedback>
         <Checkbox
           isSelected={item.visible}

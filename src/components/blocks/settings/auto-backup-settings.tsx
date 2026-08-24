@@ -1,11 +1,10 @@
-import { ListGroup, Separator } from "heroui-native"
+import { ListGroup, Separator, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 const INTERVAL_OPTIONS = [
   { labelKey: "settings.autoBackup.off", value: 0 },
@@ -16,7 +15,7 @@ const INTERVAL_OPTIONS = [
 ]
 
 export function AutoBackupSettings() {
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const { t } = useTranslation()
   const config = usePreferenceStore((state) => state.autoBackupConfig)
 
@@ -45,7 +44,7 @@ export function AutoBackupSettings() {
                 </ListGroup.ItemContent>
                 {(config.enabled ? config.intervalHours : 0) === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>
@@ -55,7 +54,9 @@ export function AutoBackupSettings() {
           <ListGroup.Item>
             <ListGroup.ItemContent>
               <ListGroup.ItemTitle>
-                {config.enabled ? t("settings.autoBackup.lastBackup") : t("settings.autoBackup.neverRun")}
+                {config.enabled
+                  ? t("settings.autoBackup.lastBackup")
+                  : t("settings.autoBackup.neverRun")}
               </ListGroup.ItemTitle>
               <ListGroup.ItemDescription>
                 {config.lastBackupAt

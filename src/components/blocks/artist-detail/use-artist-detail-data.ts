@@ -28,7 +28,6 @@ export function trackMatchesArtistName(
   )
 }
 
-
 function buildAlbumGridItems(
   artistAlbums: ReturnType<typeof buildArtistAlbums>,
   unknownArtist: string
@@ -104,7 +103,11 @@ export function useArtistDetailData(activeView: ArtistView) {
   }, [artistTracks, normalizedArtistName, splitMultipleValueConfig])
 
   const sortedArtistTracks = React.useMemo(
-    () => sortPlayerTracks(artistTracks, allSortConfigs.ArtistTracks ?? { field: "title", order: "asc" }),
+    () =>
+      sortPlayerTracks(
+        artistTracks,
+        allSortConfigs.ArtistTracks ?? { field: "title", order: "asc" }
+      ),
     [artistTracks, allSortConfigs.ArtistTracks]
   )
   const sortedAlbums = React.useMemo(
@@ -130,8 +133,10 @@ export function useArtistDetailData(activeView: ArtistView) {
       : activeView === "albums" || activeView === "featuredOn"
         ? "ArtistAlbums"
         : "ArtistTracks"
-  const sortConfig: DetailSortConfig =
-    allSortConfigs[currentTab] ?? { field: "title", order: "asc" }
+  const sortConfig: DetailSortConfig = allSortConfigs[currentTab] ?? {
+    field: "title",
+    order: "asc",
+  }
 
   return {
     artistName,

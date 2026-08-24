@@ -1,3 +1,5 @@
+import { useThemeColor } from "heroui-native"
+
 /* oxlint-disable anti-slop/no-shape-in-symbol-names -- genre/mix visual shape is domain vocabulary */
 import * as React from "react"
 import { useTranslation } from "react-i18next"
@@ -7,7 +9,6 @@ import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-so
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { GenreCard } from "@/components/patterns/genre-card"
 import { EmptyState } from "@/components/ui/empty-state"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGenres, type GenreListItem } from "@/domains/genres/queries"
 
 interface LibraryGenresSectionProps {
@@ -15,8 +16,11 @@ interface LibraryGenresSectionProps {
   onGenrePress: (genreName: string) => void
 }
 
-export function LibraryGenresSection({ contentBottomPadding, onGenrePress }: LibraryGenresSectionProps) {
-  const theme = useThemeColors()
+export function LibraryGenresSection({
+  contentBottomPadding,
+  onGenrePress,
+}: LibraryGenresSectionProps) {
+  const muted = useThemeColor("muted")
   const { data: genres = [] } = useGenres()
   const { t } = useTranslation()
   const [selectedGenre, setSelectedGenre] = React.useState<GenreListItem | null>(null)
@@ -48,9 +52,7 @@ export function LibraryGenresSection({ contentBottomPadding, onGenrePress }: Lib
           </View>
         ) : (
           <EmptyState
-            icon={
-              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={theme.muted} />
-            }
+            icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />}
             title={t("library.empty.genresFoundTitle")}
             message={t("library.empty.genresFoundMessage")}
             className="mt-8"

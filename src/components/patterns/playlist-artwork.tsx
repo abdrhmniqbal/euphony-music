@@ -2,9 +2,9 @@ import type { ReactNode } from "react"
 import { Image } from "expo-image"
 import { View } from "react-native"
 import { cn } from "tailwind-variants"
+import { useThemeColor } from "heroui-native"
 
 import { ICON_SIZES } from "@/lib/layout"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 
@@ -55,7 +55,7 @@ interface PlaylistArtworkProps {
 }
 
 export function PlaylistArtwork({ images, className, fallback }: PlaylistArtworkProps) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const gridImages = prepareGridImages(images)
 
   if (gridImages.length === 0) {
@@ -66,7 +66,7 @@ export function PlaylistArtwork({ images, className, fallback }: PlaylistArtwork
             fill="none"
             width={ICON_SIZES.listFallback}
             height={ICON_SIZES.listFallback}
-            color={theme.muted}
+            color={muted}
           />
         )}
       </View>

@@ -1,7 +1,7 @@
 import { Image } from "expo-image"
 import type { LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { LegendList } from "@legendapp/list/react-native"
-import { Chip, PressableFeedback } from "heroui-native"
+import { Chip, PressableFeedback, useThemeColor } from "heroui-native"
 import type { TFunction } from "i18next"
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
@@ -23,10 +23,12 @@ import {
   MediaItemTitle,
 } from "@/components/ui/media-item"
 import { EmptyState } from "@/components/ui/empty-state"
-import { PlaylistArtwork, resolvePlaylistArtworkImages } from "@/components/patterns/playlist-artwork"
+import {
+  PlaylistArtwork,
+  resolvePlaylistArtworkImages,
+} from "@/components/patterns/playlist-artwork"
 import { ICON_SIZES } from "@/lib/layout"
 import { useAutoHideHeaderScroll } from "@/core/ui/use-auto-hide-header-scroll"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGuardedRouter } from "@/core/navigation"
 import type { FavoriteEntry, FavoriteType } from "@/domains/favorites/types"
 import { useToggleFavorite } from "@/domains/favorites/mutations"
@@ -59,18 +61,27 @@ function getFavoriteTypeLabel(type: FavoriteType, t: TFunction) {
 }
 
 function FavoriteItemImage({ favorite }: { favorite: FavoriteEntry }) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
 
   if (favorite.type === "artist") {
     return (
       <MediaItemImage className="overflow-hidden rounded-full">
         {favorite.image ? (
           <View className="h-full w-full overflow-hidden rounded-full">
-            <Image source={{ uri: favorite.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+            <Image
+              source={{ uri: favorite.image }}
+              style={{ width: "100%", height: "100%" }}
+              contentFit="cover"
+            />
           </View>
         ) : (
           <View className="h-full w-full items-center justify-center rounded-full bg-surface">
-            <LocalUserSolidIcon fill="none" width={ICON_SIZES.listFallback} height={ICON_SIZES.listFallback} color={theme.muted} />
+            <LocalUserSolidIcon
+              fill="none"
+              width={ICON_SIZES.listFallback}
+              height={ICON_SIZES.listFallback}
+              color={muted}
+            />
           </View>
         )}
       </MediaItemImage>
@@ -89,7 +100,12 @@ function FavoriteItemImage({ favorite }: { favorite: FavoriteEntry }) {
     return (
       <MediaItemImage
         icon={
-          <LocalVynil02SolidIcon fill="none" width={ICON_SIZES.listFallback} height={ICON_SIZES.listFallback} color={theme.muted} />
+          <LocalVynil02SolidIcon
+            fill="none"
+            width={ICON_SIZES.listFallback}
+            height={ICON_SIZES.listFallback}
+            color={muted}
+          />
         }
         image={favorite.image}
       />
@@ -101,10 +117,19 @@ function FavoriteItemImage({ favorite }: { favorite: FavoriteEntry }) {
       icon={
         favorite.image ? (
           <View className="h-full w-full overflow-hidden rounded-lg">
-            <Image source={{ uri: favorite.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+            <Image
+              source={{ uri: favorite.image }}
+              style={{ width: "100%", height: "100%" }}
+              contentFit="cover"
+            />
           </View>
         ) : (
-          <LocalMusicNote04SolidIcon fill="none" width={ICON_SIZES.listFallback} height={ICON_SIZES.listFallback} color={theme.muted} />
+          <LocalMusicNote04SolidIcon
+            fill="none"
+            width={ICON_SIZES.listFallback}
+            height={ICON_SIZES.listFallback}
+            color={muted}
+          />
         )
       }
     />
@@ -176,7 +201,7 @@ export function FavoritesList({
   selectedTypes,
   onSelectedTypesChange,
 }: FavoritesListProps) {
-  const theme = useThemeColors()
+  const danger = useThemeColor("danger")
   const { t } = useTranslation()
   const router = useGuardedRouter()
   const toggleFavoriteMutation = useToggleFavorite()
@@ -190,10 +215,7 @@ export function FavoritesList({
     ...selectedTypes.filter((type) => visibleFavoriteTypes.includes(type)),
     ...visibleFavoriteTypes.filter((type) => !selectedTypes.includes(type)),
   ]
-  const listContentContainerStyle = StyleSheet.flatten([
-    { gap: 8 },
-    contentContainerStyle,
-  ])
+  const listContentContainerStyle = StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])
 
   const toggleTypeFilter = useCallback(
     (type: FavoriteType) => {
@@ -234,14 +256,16 @@ export function FavoritesList({
         case "track": {
           const queue = data
             .filter((item): item is FavoriteEntry & { type: "track" } => item.type === "track")
-            .map((entry): PlayerTrack => ({
-              id: entry.id,
-              title: entry.name,
-              artist: entry.subtitle,
-              duration: 0,
-              uri: "",
-              image: entry.image,
-            }))
+            .map(
+              (entry): PlayerTrack => ({
+                id: entry.id,
+                title: entry.name,
+                artist: entry.subtitle,
+                duration: 0,
+                uri: "",
+                image: entry.image,
+              })
+            )
           const index = queue.findIndex((track) => track.id === favorite.id)
           const active = queue[index]
           if (active) {
@@ -333,7 +357,7 @@ export function FavoritesList({
                 fill="none"
                 width={ICON_SIZES.emptyState}
                 height={ICON_SIZES.emptyState}
-                color={theme.danger}
+                color={danger}
               />
             }
             title={t("library.empty.favoritesTitle")}

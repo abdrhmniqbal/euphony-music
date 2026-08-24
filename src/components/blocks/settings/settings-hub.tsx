@@ -1,16 +1,12 @@
-import { Input, PressableFeedback } from "heroui-native"
+import { Input, PressableFeedback, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import LocalSearch01Icon from "@/components/icons/local/search-01"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useGuardedRouter } from "@/core/navigation"
-import {
-  SETTINGS_CATEGORY_ROUTES,
-  SETTINGS_SEARCH_ENTRIES,
-} from "@/domains/settings/routes"
+import { SETTINGS_CATEGORY_ROUTES, SETTINGS_SEARCH_ENTRIES } from "@/domains/settings/routes"
 import {
   SettingsListGroup,
   SettingsNavigationRow,
@@ -24,7 +20,7 @@ function normalizeSearchText(value: string) {
 export function SettingsHub() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [accent, muted] = useThemeColor(["accent", "muted"])
   const [query, setQuery] = React.useState("")
   const normalizedQuery = normalizeSearchText(query)
 
@@ -66,17 +62,17 @@ export function SettingsHub() {
             pointerEvents="none"
             className="absolute inset-y-0 left-1 z-20 w-10 items-center justify-center"
           >
-            <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
+            <LocalSearch01Icon fill="none" width={24} height={24} color={muted} />
           </View>
           <Input
             value={query}
             onChangeText={setQuery}
             placeholder={t("settings.search.placeholder")}
-            placeholderTextColor={theme.muted}
+            placeholderTextColor={muted}
             returnKeyType="search"
             autoCapitalize="none"
             autoCorrect={false}
-            selectionColor={theme.accent}
+            selectionColor={accent}
             className="pl-12 pr-10"
           />
           {query.length > 0 && (
@@ -84,12 +80,7 @@ export function SettingsHub() {
               onPress={() => setQuery("")}
               className="absolute inset-y-0 right-2.5 justify-center p-1"
             >
-              <LocalCancelCircleSolidIcon
-                fill="none"
-                width={18}
-                height={18}
-                color={theme.muted}
-              />
+              <LocalCancelCircleSolidIcon fill="none" width={18} height={18} color={muted} />
             </PressableFeedback>
           )}
         </View>

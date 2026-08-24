@@ -15,10 +15,7 @@ import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import { useGuardedRouter } from "@/core/navigation"
 import { backupToFile, parseBackupFile, restoreFromBackup } from "@/domains/backup/backup"
 import { queryClient } from "@/core/query/query-client"
-import {
-  HISTORY_RECENTLY_PLAYED_KEY,
-  HISTORY_TOP_TRACKS_KEY,
-} from "@/domains/library/query-keys"
+import { HISTORY_RECENTLY_PLAYED_KEY, HISTORY_TOP_TRACKS_KEY } from "@/domains/library/query-keys"
 
 function getFolderNameFromPath(path: string) {
   try {
@@ -172,7 +169,9 @@ export function BackupSettings() {
           <Dialog.Content className="gap-4" isSwipeable>
             <View className="gap-1.5">
               <Dialog.Title>{t("settings.backup.backup")}</Dialog.Title>
-              <Dialog.Description>{t("settings.backup.backupDialogDescription")}</Dialog.Description>
+              <Dialog.Description>
+                {t("settings.backup.backupDialogDescription")}
+              </Dialog.Description>
             </View>
             <View className="flex-row justify-end gap-3">
               <Button variant="ghost" onPress={() => setIsBackupDialogOpen(false)}>
@@ -198,9 +197,7 @@ export function BackupSettings() {
               <Button variant="ghost" onPress={() => setIsRestoreDialogOpen(false)}>
                 {t("common.cancel")}
               </Button>
-              <Button onPress={() => void handleRestore()}>
-                {t("settings.backup.restore")}
-              </Button>
+              <Button onPress={() => void handleRestore()}>{t("settings.backup.restore")}</Button>
             </View>
           </Dialog.Content>
         </Dialog.Portal>

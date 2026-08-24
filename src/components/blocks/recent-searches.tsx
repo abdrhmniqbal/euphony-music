@@ -1,4 +1,4 @@
-import { Chip } from "heroui-native"
+import { Chip, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { useCallback } from "react"
 import { Text, View } from "react-native"
@@ -18,9 +18,11 @@ import {
   MediaItemImage,
   MediaItemTitle,
 } from "@/components/ui/media-item"
-import { PlaylistArtwork, resolvePlaylistArtworkImages } from "@/components/patterns/playlist-artwork"
+import {
+  PlaylistArtwork,
+  resolvePlaylistArtworkImages,
+} from "@/components/patterns/playlist-artwork"
 import { ICON_SIZES } from "@/lib/layout"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export interface RecentSearchItem {
   id: string
@@ -83,7 +85,11 @@ function RecentSearchRow({
           <PlaylistArtwork images={resolvePlaylistArtworkImages(item.images, item.image)} />
         </MediaItemImage>
       ) : (
-        <MediaItemImage icon={icon} image={item.image} className={item.type === "artist" ? "rounded-full" : "rounded-md"} />
+        <MediaItemImage
+          icon={icon}
+          image={item.image}
+          className={item.type === "artist" ? "rounded-full" : "rounded-md"}
+        />
       )}
       <MediaItemContent>
         <MediaItemTitle>{item.title}</MediaItemTitle>
@@ -105,23 +111,44 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
   onItemPress,
   onRemoveItem,
 }) => {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { t } = useTranslation()
 
   const getIconForType = useCallback(
     (type?: RecentSearchItem["type"]) => {
       switch (type) {
         case "artist":
-          return <LocalUserIcon fill="none" width={ICON_SIZES.listFallback} height={ICON_SIZES.listFallback} color={theme.muted} />
+          return (
+            <LocalUserIcon
+              fill="none"
+              width={ICON_SIZES.listFallback}
+              height={ICON_SIZES.listFallback}
+              color={muted}
+            />
+          )
         case "album":
-          return <LocalVynil02SolidIcon fill="none" width={ICON_SIZES.listFallback} height={ICON_SIZES.listFallback} color={theme.muted} />
+          return (
+            <LocalVynil02SolidIcon
+              fill="none"
+              width={ICON_SIZES.listFallback}
+              height={ICON_SIZES.listFallback}
+              color={muted}
+            />
+          )
         case "track":
-          return <LocalMusicNote04SolidIcon fill="none" width={ICON_SIZES.listFallback} height={ICON_SIZES.listFallback} color={theme.muted} />
+          return (
+            <LocalMusicNote04SolidIcon
+              fill="none"
+              width={ICON_SIZES.listFallback}
+              height={ICON_SIZES.listFallback}
+              color={muted}
+            />
+          )
         default:
-          return <LocalClock01SolidIcon fill="none" width={22} height={22} color={theme.muted} />
+          return <LocalClock01SolidIcon fill="none" width={22} height={22} color={muted} />
       }
     },
-    [theme.muted]
+    [muted]
   )
 
   if (searches.length === 0) {
@@ -142,7 +169,7 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
             key={item.id}
             item={item}
             icon={getIconForType(item.type)}
-            mutedColor={theme.muted}
+            mutedColor={muted}
             onPress={onItemPress}
             onRemove={onRemoveItem}
           />

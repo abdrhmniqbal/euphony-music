@@ -89,6 +89,7 @@
       "tracksMessage": "Add music to your device and pull to refresh.",
       "tracksFoundTitle": "No tracks found",
       "albumsFoundTitle": "No albums found",
+      "albumsFoundMessage": "Albums will appear after indexing your music.",
       "genresFoundTitle": "No genres found",
       "genresFoundMessage": "Genres will appear after indexing your music.",
       "playlistsTitle": "No playlists yet",

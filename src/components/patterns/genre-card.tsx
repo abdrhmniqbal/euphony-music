@@ -6,7 +6,11 @@ import { useTranslation } from "react-i18next"
 
 import { useThemeColors } from "@/core/theme/use-theme-colors"
 
-export function resolveRainbowColor(rainbow: readonly string[], colorToken: string, fallbackIndex = 0) {
+export function resolveRainbowColor(
+  rainbow: readonly string[],
+  colorToken: string,
+  fallbackIndex = 0
+) {
   if (rainbow.length === 0) return "#3b82f6"
 
   const parsedIndex = Number.parseInt(colorToken, 10)
@@ -107,17 +111,34 @@ interface GenreCardProps {
   onLongPress?: () => void
 }
 
-export function GenreCard({ title, trackCount, color, pattern, onPress, onLongPress }: GenreCardProps) {
+export function GenreCard({
+  title,
+  trackCount,
+  color,
+  pattern,
+  onPress,
+  onLongPress,
+}: GenreCardProps) {
   const { t } = useTranslation()
   const theme = useThemeColors()
-  const resolvedColor = React.useMemo(() => resolveRainbowColor(theme.rainbow ?? [], color), [color, theme.rainbow])
+  const resolvedColor = React.useMemo(
+    () => resolveRainbowColor(theme.rainbow ?? [], color),
+    [color, theme.rainbow]
+  )
 
   const normalizedTrackCount = Number.isFinite(trackCount) ? Math.max(0, Math.trunc(trackCount)) : 0
   const trackCountLabel = t("library.count.track", { count: normalizedTrackCount })
 
   return (
-    <PressableFeedback onPress={onPress} onLongPress={onLongPress} className="w-[47.5%] active:opacity-80">
-      <Card className="relative h-24 justify-between overflow-hidden border-none p-4" style={{ backgroundColor: resolvedColor }}>
+    <PressableFeedback
+      onPress={onPress}
+      onLongPress={onLongPress}
+      className="w-[47.5%] active:opacity-80"
+    >
+      <Card
+        className="relative h-24 justify-between overflow-hidden border-none p-4"
+        style={{ backgroundColor: resolvedColor }}
+      >
         <Text className="z-10 text-[17px] leading-tight font-bold text-white">{title}</Text>
         <Text className="z-10 text-xs font-medium text-white/80">{trackCountLabel}</Text>
         <View pointerEvents="none" className="absolute inset-0">

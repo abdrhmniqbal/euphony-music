@@ -1,4 +1,4 @@
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import { Text, View } from "react-native"
 import { cn } from "tailwind-variants"
 
@@ -6,7 +6,6 @@ import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 import { BackButton } from "@/components/patterns/back-button"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface ArtistDetailHeaderProps {
   topInset: number
@@ -35,7 +34,7 @@ export function ArtistDetailHeader({
   onToggleFavorite,
   onOpenActions,
 }: ArtistDetailHeaderProps) {
-  const theme = useThemeColors()
+  const danger = useThemeColor("danger")
 
   return (
     <View
@@ -70,7 +69,7 @@ export function ArtistDetailHeader({
             isIconOnly
           >
             {isArtistFavorite ? (
-              <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+              <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={danger} />
             ) : (
               <LocalFavouriteIcon
                 fill="none"

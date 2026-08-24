@@ -1,4 +1,4 @@
-import { ListGroup, Separator } from "heroui-native"
+import { ListGroup, Separator, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { AppLogLevel } from "@/core/preferences/types"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 const LOG_LEVEL_OPTIONS: Array<{ labelKey: string; descriptionKey: string; value: AppLogLevel }> = [
   {
@@ -22,7 +21,7 @@ const LOG_LEVEL_OPTIONS: Array<{ labelKey: string; descriptionKey: string; value
 ]
 
 export function LogLevelSettings() {
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const { t } = useTranslation()
   const loggingLevel = usePreferenceStore((state) => state.loggingLevel)
 
@@ -42,7 +41,7 @@ export function LogLevelSettings() {
                 </ListGroup.ItemContent>
                 {loggingLevel === option.value ? (
                   <ListGroup.ItemSuffix>
-                    <LocalTick02Icon fill="none" width={24} height={24} color={theme.accent} />
+                    <LocalTick02Icon fill="none" width={24} height={24} color={accent} />
                   </ListGroup.ItemSuffix>
                 ) : null}
               </ListGroup.Item>

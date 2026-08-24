@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalUserSolidIcon from "@/components/icons/local/user-solid"
@@ -11,9 +12,11 @@ import {
   MediaItemImage,
   MediaItemTitle,
 } from "@/components/ui/media-item"
-import { PlaylistArtwork, resolvePlaylistArtworkImages } from "@/components/patterns/playlist-artwork"
+import {
+  PlaylistArtwork,
+  resolvePlaylistArtworkImages,
+} from "@/components/patterns/playlist-artwork"
 import { ICON_SIZES } from "@/lib/layout"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import type { PlayerTrack } from "@/playback/types"
 import type {
   SearchAlbumResult,
@@ -34,7 +37,7 @@ interface SearchResultRowProps {
 }
 
 function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { t } = useTranslation()
 
   if (item.type === "artist") {
@@ -51,7 +54,7 @@ function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
               fill="none"
               width={ICON_SIZES.listFallback}
               height={ICON_SIZES.listFallback}
-              color={theme.muted}
+              color={muted}
             />
           }
           image={item.artist.image}
@@ -73,7 +76,7 @@ function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
               fill="none"
               width={ICON_SIZES.listFallback}
               height={ICON_SIZES.listFallback}
-              color={theme.muted}
+              color={muted}
             />
           }
           image={item.album.image}
@@ -81,7 +84,9 @@ function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
         />
         <MediaItemContent>
           <MediaItemTitle>{item.album.title || t("library.unknownAlbum")}</MediaItemTitle>
-          <MediaItemDescription>{item.album.artist || t("library.unknownArtist")}</MediaItemDescription>
+          <MediaItemDescription>
+            {item.album.artist || t("library.unknownArtist")}
+          </MediaItemDescription>
         </MediaItemContent>
       </MediaItem>
     )
@@ -113,7 +118,7 @@ function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
             fill="none"
             width={ICON_SIZES.listFallback}
             height={ICON_SIZES.listFallback}
-            color={theme.muted}
+            color={muted}
           />
         }
         image={item.track.image}
@@ -121,7 +126,9 @@ function SearchResultRow({ item, onPress, onLongPress }: SearchResultRowProps) {
       />
       <MediaItemContent>
         <MediaItemTitle>{item.track.title}</MediaItemTitle>
-        <MediaItemDescription>{item.track.artist || t("library.unknownArtist")}</MediaItemDescription>
+        <MediaItemDescription>
+          {item.track.artist || t("library.unknownArtist")}
+        </MediaItemDescription>
       </MediaItemContent>
     </MediaItem>
   )
