@@ -2,6 +2,7 @@ import type { BottomTabBarProps } from "expo-router/js-tabs"
 import { BottomTabBar } from "expo-router/js-tabs"
 import { Tabs } from "expo-router"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -12,7 +13,6 @@ import LocalLibrarySolidIcon from "@/components/icons/local/library-solid"
 import LocalSearch01Icon from "@/components/icons/local/search-01"
 import LocalSearch01SolidIcon from "@/components/icons/local/search-01-solid"
 import { useUIStore } from "@/core/ui/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { getTabBarBottomPadding, getTabBarHeight, MINI_PLAYER_HEIGHT } from "@/lib/layout"
 import { MiniPlayer } from "@/components/blocks/player/mini-player"
 
@@ -20,7 +20,12 @@ const TAB_HIDE_DURATION_MS = 250
 const TAB_HIDE_EXTRA_OFFSET = 16
 
 export default function MainLayout() {
-  const theme = useThemeColors()
+  const [foreground, mutedColor, background, borderColor] = useThemeColor([
+    "foreground",
+    "muted",
+    "background",
+    "border",
+  ])
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const barsVisible = useUIStore((state) => state.barsVisible)
@@ -65,17 +70,17 @@ export default function MainLayout() {
       detachInactiveScreens={false}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: theme.foreground,
-        tabBarInactiveTintColor: theme.muted,
+        tabBarActiveTintColor: foreground,
+        tabBarInactiveTintColor: mutedColor,
         tabBarHideOnKeyboard: true,
         freezeOnBlur: false,
         sceneStyle: {
-          backgroundColor: theme.background,
+          backgroundColor: background,
         },
         tabBarStyle: {
-          backgroundColor: theme.background,
+          backgroundColor: background,
           borderTopWidth: 1,
-          borderTopColor: theme.border,
+          borderTopColor: borderColor,
           height: tabBarHeight,
           paddingTop: 8,
           paddingBottom: tabBarBottomPadding,

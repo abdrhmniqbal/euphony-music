@@ -1,9 +1,9 @@
 import { Image } from "expo-image"
-import { useRouter } from "expo-router"
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useRouter } from "expo-router"
 import Animated, { useAnimatedStyle, withTiming, useDerivedValue } from "react-native-reanimated"
 import Transition from "react-native-screen-transitions"
 
@@ -17,20 +17,19 @@ import { playNext, togglePlayback } from "@/playback/controls"
 import { useCurrentTrack, useIsPlaying, usePlaybackProgressState } from "@/playback/selectors"
 import type { PlayerTrack } from "@/playback/types"
 import { setPlayerExpandedView } from "@/core/ui/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
+import { useThemeColor } from "heroui-native"
 
 const BoundaryPressableFeedback = Transition.createBoundaryComponent(PressableFeedback)
+
+const SHOW_HIDE_DURATION_MS = 300
 
 interface MiniPlayerProps {
   bottomOffset?: number
 }
 
-interface MiniPlayerArtworkProps {
-  image?: string
-  mutedColor: string
-}
+function MiniPlayerArtwork({ image }: { image?: string }) {
+  const muted = useThemeColor("muted")
 
-function MiniPlayerArtwork({ image, mutedColor }: MiniPlayerArtworkProps) {
   return (
     <View className="h-11 w-11 items-center justify-center overflow-hidden rounded-md bg-surface">
       {image ? (
@@ -40,19 +39,23 @@ function MiniPlayerArtwork({ image, mutedColor }: MiniPlayerArtworkProps) {
           contentFit="cover"
         />
       ) : (
-        <LocalMusicNote04SolidIcon fill="none" width={20} height={20} color={mutedColor} />
+        <LocalMusicNote04SolidIcon fill="none" width={20} height={20} color={muted} />
       )}
     </View>
   )
 }
 
-function MiniPlayerMeta({ title, artist }: { title: string; artist?: string | null }) {
+function MiniPlayerMeta({ track }: { track: PlayerTrack }) {
   const { t } = useTranslation()
-  const artistName = artist?.trim() || t("library.unknownArtist")
+  const artistName = track.artist?.trim() || t("library.unknownArtist")
 
   return (
     <View className="flex-1 overflow-hidden">
-      <MarqueeText text={title} className="text-[15px] font-bold text-foreground" speed={0.6} />
+      <MarqueeText
+        text={track.title}
+        className="text-[15px] font-bold text-foreground"
+        speed={0.6}
+      />
       <MarqueeText text={artistName} className="text-[13px] text-muted" speed={0.5} />
     </View>
   )
@@ -60,26 +63,38 @@ function MiniPlayerMeta({ title, artist }: { title: string; artist?: string | nu
 
 interface MiniPlayerControlsProps {
   isPlaying: boolean
-  foregroundColor: string
   onOpenQueue: () => void
 }
 
-function MiniPlayerControls({ isPlaying, foregroundColor, onOpenQueue }: MiniPlayerControlsProps) {
+function MiniPlayerControls({ isPlaying, onOpenQueue }: MiniPlayerControlsProps) {
+  const foreground = useThemeColor("foreground")
+
   return (
     <View className="flex-row items-center gap-3">
       <PressableFeedback onPress={() => void togglePlayback()} className="p-2 active:opacity-60">
         {isPlaying ? (
-          <LocalPauseSolidIcon fill="none" width={28} height={28} color={foregroundColor} />
+          <LocalPauseSolidIcon fill="none" width={28} height={28} color={foreground} />
         ) : (
-          <LocalPlaySolidIcon fill="none" width={28} height={28} color={foregroundColor} />
+          <LocalPlaySolidIcon fill="none" width={28} height={28} color={foreground} />
         )}
       </PressableFeedback>
       <PressableFeedback onPress={() => void playNext()} className="p-2 active:opacity-60">
-        <LocalNextSolidIcon fill="none" width={24} height={24} color={foregroundColor} />
+        <LocalNextSolidIcon fill="none" width={24} height={24} color={foreground} />
       </PressableFeedback>
       <PressableFeedback onPress={onOpenQueue} className="p-2 active:opacity-60">
-        <LocalPlaylist03Icon fill="none" width={22} height={22} color={foregroundColor} />
+        <LocalPlaylist03Icon fill="none" width={22} height={22} color={foreground} />
       </PressableFeedback>
+    </View>
+  )
+}
+
+function MiniPlayerProgress() {
+  const { currentTime, duration } = usePlaybackProgressState()
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
+
+  return (
+    <View className="absolute top-0 right-0 left-0 h-0.75 bg-surface-tertiary">
+      <View style={{ width: `${progressPercent}%`, height: "100%" }} className="bg-accent" />
     </View>
   )
 }
@@ -88,7 +103,6 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
   const router = useRouter()
   const currentTrack = useCurrentTrack()
   const isPlaying = useIsPlaying()
-  const theme = useThemeColors()
 
   const [lastTrack, setLastTrack] = React.useState<PlayerTrack | null>(null)
   React.useEffect(() => {
@@ -99,16 +113,16 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
   }, [currentTrack])
 
   const displayTrack = currentTrack || lastTrack
-
   const isVisible = !!currentTrack
+
   const translateY = useDerivedValue(() => {
-    return withTiming(isVisible ? 0 : 100, { duration: 300 })
+    return withTiming(isVisible ? 0 : 100, { duration: SHOW_HIDE_DURATION_MS })
   }, [isVisible])
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-      opacity: withTiming(isVisible ? 1 : 0, { duration: 300 }),
+      opacity: withTiming(isVisible ? 1 : 0, { duration: SHOW_HIDE_DURATION_MS }),
     }
   })
 
@@ -131,59 +145,24 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ bottomOffset = 90 }) => 
   return (
     <Animated.View
       pointerEvents={isVisible ? "auto" : "none"}
-      className="absolute right-0 left-0 h-17"
-      style={[
-        {
-          bottom: bottomOffset,
-        },
-        animatedStyle,
-      ]}
+      className="absolute right-0 left-0 h-17 border-t border-border bg-surface-secondary"
+      style={[{ bottom: bottomOffset }, animatedStyle]}
     >
-      <View
-        className="absolute inset-0 border-t border-border bg-surface-secondary"
-        style={{ borderTopColor: theme.border }}
-      />
-
-      <MiniPlayerProgress themeAccent={theme.accent} />
+      <MiniPlayerProgress />
 
       <View className="flex-1 flex-row items-center gap-3 px-4">
         <BoundaryPressableFeedback
           key={displayTrack.id}
           id={transitionId}
-          onPress={() => {
-            openFullPlayer("artwork")
-          }}
+          onPress={() => openFullPlayer("artwork")}
           className="flex-1 flex-row items-center gap-3 active:opacity-80"
         >
-          <MiniPlayerArtwork image={displayTrack.image} mutedColor={theme.muted} />
-          <MiniPlayerMeta title={displayTrack.title} artist={displayTrack.artist} />
+          <MiniPlayerArtwork image={displayTrack.image} />
+          <MiniPlayerMeta track={displayTrack} />
         </BoundaryPressableFeedback>
 
-        <MiniPlayerControls
-          isPlaying={isPlaying}
-          foregroundColor={theme.foreground}
-          onOpenQueue={() => {
-            openFullPlayer("queue")
-          }}
-        />
+        <MiniPlayerControls isPlaying={isPlaying} onOpenQueue={() => openFullPlayer("queue")} />
       </View>
     </Animated.View>
-  )
-}
-
-function MiniPlayerProgress({ themeAccent }: { themeAccent: string }) {
-  const { currentTime, duration } = usePlaybackProgressState()
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
-
-  return (
-    <View className="absolute top-0 right-0 left-0 h-0.75 bg-surface-tertiary">
-      <View
-        style={{
-          width: `${progressPercent}%`,
-          height: "100%",
-          backgroundColor: themeAccent,
-        }}
-      />
-    </View>
   )
 }

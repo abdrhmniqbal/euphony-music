@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native"
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
-import type { PlayerTrack } from "@/playback/types"
+import type { PlayerTrack, PlaybackQueueContext } from "@/playback/types"
 import type { PlayerExpandedView } from "@/core/ui/store"
 import { usePlayerColorsStore } from "@/playback/colors-store"
 
@@ -22,7 +22,7 @@ interface FullPlayerContentProps {
   currentTrack: PlayerTrack
   isPlaying: boolean
   playerExpandedView: PlayerExpandedView
-  queueContext: import("@/playback/types").PlaybackQueueContext | null
+  queueContext: PlaybackQueueContext | null
   onClose: () => void
   onOpenMore?: () => void
 }

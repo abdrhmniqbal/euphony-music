@@ -1,4 +1,4 @@
-import { Button } from "heroui-native"
+import { Button, useThemeColor } from "heroui-native"
 import { Text, View } from "react-native"
 import { cn } from "tailwind-variants"
 
@@ -11,6 +11,7 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, className, onViewMore }: SectionHeaderProps) {
+  const muted = useThemeColor("muted")
   return (
     <View className={cn("mb-5", className)}>
       <View className="flex-row items-center justify-between gap-3">
@@ -25,7 +26,7 @@ export function SectionHeader({ title, className, onViewMore }: SectionHeaderPro
             className="h-9 w-9 rounded-full border border-border/70 bg-default/55"
             isIconOnly
           >
-            <LocalChevronRightIcon fill="none" width={20} height={20} className="text-muted" />
+            <LocalChevronRightIcon fill="none" width={20} height={20} color={muted} />
           </Button>
         ) : null}
       </View>

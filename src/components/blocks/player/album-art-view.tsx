@@ -1,18 +1,18 @@
 import type { PlayerTrack } from "@/playback/types"
 import { Image } from "expo-image"
+import { useThemeColor } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
 
 import Animated, { Layout } from "react-native-reanimated"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 interface AlbumArtViewProps {
   currentTrack: PlayerTrack
 }
 
 export const AlbumArtView: React.FC<AlbumArtViewProps> = ({ currentTrack }) => {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   return (
     <Animated.View
       layout={Layout.duration(300)}
@@ -28,7 +28,7 @@ export const AlbumArtView: React.FC<AlbumArtViewProps> = ({ currentTrack }) => {
           />
         ) : (
           <View className="h-full w-full items-center justify-center bg-surface">
-            <LocalMusicNote04SolidIcon fill="none" width={120} height={120} color={theme.muted} />
+            <LocalMusicNote04SolidIcon fill="none" width={120} height={120} color={muted} />
           </View>
         )}
       </Animated.View>

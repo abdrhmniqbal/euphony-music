@@ -13,7 +13,7 @@ import Animated, {
 } from "react-native-reanimated"
 
 import { usePlaybackProgressState } from "@/playback/selectors"
-import { useCastAwarePlayback } from "./use-cast-aware-playback"
+import { useCastAwarePlayback } from "@/playback/cast-aware-playback"
 
 type AnimatedTimeInputProps = TextInputProps & { text?: string }
 

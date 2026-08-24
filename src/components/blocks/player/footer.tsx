@@ -1,4 +1,4 @@
-import { PressableFeedback } from "heroui-native"
+import { PressableFeedback, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
 import { cn } from "tailwind-variants"
@@ -8,11 +8,10 @@ import LocalPlaylist03Icon from "@/components/icons/local/playlist-03"
 import LocalMic01SolidIcon from "@/components/icons/local/mic-01-solid"
 import LocalPlaylist03SolidIcon from "@/components/icons/local/playlist-03-solid"
 import { togglePlayerExpandedView, useUIStore } from "@/core/ui/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export const PlayerFooter: React.FC = () => {
   const playerExpandedView = useUIStore((state) => state.playerExpandedView)
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
 
   return (
     <View className="flex-row items-center justify-between py-2">
@@ -21,9 +20,9 @@ export const PlayerFooter: React.FC = () => {
         className={cn(playerExpandedView !== "lyrics" && "opacity-60")}
       >
         {playerExpandedView === "lyrics" ? (
-          <LocalMic01SolidIcon fill="none" width={24} height={24} color={theme.accent} />
+          <LocalMic01SolidIcon fill="none" width={24} height={24} color={accent} />
         ) : (
-          <LocalMic01Icon fill="none" width={24} height={24} color="white" />
+          <LocalMic01Icon fill="none" width={24} height={24} color="#FFFFFF" />
         )}
       </PressableFeedback>
       <PressableFeedback
@@ -31,9 +30,9 @@ export const PlayerFooter: React.FC = () => {
         className={cn(playerExpandedView !== "queue" && "opacity-60")}
       >
         {playerExpandedView === "queue" ? (
-          <LocalPlaylist03SolidIcon fill="none" width={24} height={24} color={theme.accent} />
+          <LocalPlaylist03SolidIcon fill="none" width={24} height={24} color={accent} />
         ) : (
-          <LocalPlaylist03Icon fill="none" width={24} height={24} color="white" />
+          <LocalPlaylist03Icon fill="none" width={24} height={24} color="#FFFFFF" />
         )}
       </PressableFeedback>
     </View>

@@ -1,4 +1,4 @@
-import { PressableFeedback } from "heroui-native"
+import { PressableFeedback, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, Text, View, useWindowDimensions, type LayoutChangeEvent } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -19,7 +19,6 @@ import {
   setPlayerLyricsKaraokeEnabled,
   useUIStore,
 } from "@/core/ui/store"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import type { TimedLine } from "@/domains/lyrics/parser"
 import { useLyrics } from "@/domains/lyrics/use-lyrics"
 import { seekTo } from "@/playback/controls"
@@ -60,7 +59,7 @@ function getInterpolatedPlaybackTimeTarget(args: {
 }
 
 export const LyricsView: React.FC = () => {
-  const theme = useThemeColors()
+  const [muted, foreground] = useThemeColor(["muted", "foreground"])
   const { t } = useTranslation()
   const track = useCurrentTrack()
   const { height } = useWindowDimensions()
@@ -140,7 +139,7 @@ export const LyricsView: React.FC = () => {
           </View>
         ) : (
           <EmptyState
-            icon={<LocalMic01Icon fill="none" width={36} height={36} color={theme.muted} />}
+            icon={<LocalMic01Icon fill="none" width={36} height={36} color={muted} />}
             title={t("library.empty.lyricsTitle")}
             message={t("library.empty.lyricsMessage")}
             className="py-0"
@@ -200,7 +199,7 @@ export const LyricsView: React.FC = () => {
           onPress={handleToggleKaraoke}
           className="absolute bottom-3 left-2 rounded-full px-3 py-2 active:opacity-90"
           style={{
-            backgroundColor: karaokeEnabled ? theme.foreground : "rgba(255, 255, 255, 0.14)",
+            backgroundColor: karaokeEnabled ? foreground : "rgba(255, 255, 255, 0.14)",
           }}
         >
           <Text

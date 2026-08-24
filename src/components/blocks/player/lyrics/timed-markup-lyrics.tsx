@@ -41,7 +41,11 @@ const TimedMarkupWordSpan: React.FC<{
   const wordProgressSv = useDerivedValue(() => {
     const wordDuration = Math.max(end - begin, 0.001)
     const currentTime = currentTimeSv.value
-    return linePast ? 1 : lineActive ? Math.max(0, Math.min(1, (currentTime - begin) / wordDuration)) : 0
+    return linePast
+      ? 1
+      : lineActive
+        ? Math.max(0, Math.min(1, (currentTime - begin) / wordDuration))
+        : 0
   }, [begin, end, lineActive, linePast])
 
   const foregroundClipStyle = useAnimatedStyle(() => {

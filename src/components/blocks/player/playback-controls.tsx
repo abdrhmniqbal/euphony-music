@@ -1,5 +1,5 @@
 import type { RepeatModeType } from "@/playback/types"
-import { PressableFeedback } from "heroui-native"
+import { PressableFeedback, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { View } from "react-native"
 
@@ -12,10 +12,9 @@ import LocalRepeatIcon from "@/components/icons/local/repeat"
 import LocalRepeatOne01Icon from "@/components/icons/local/repeat-one-01"
 import LocalShuffleIcon from "@/components/icons/local/shuffle"
 import { toggleRepeatMode } from "@/playback/controls"
-import { useCastAwarePlayback } from "./use-cast-aware-playback"
+import { useCastAwarePlayback } from "@/playback/cast-aware-playback"
 import { useIsShuffled, usePlaybackRepeatMode } from "@/playback/selectors"
 import { toggleShuffleMode } from "@/playback/queue-actions"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { cn } from "tailwind-variants"
 
 interface PlaybackControlsProps {
@@ -27,7 +26,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   isPlaying,
   compact = false,
 }) => {
-  const theme = useThemeColors()
+  const accent = useThemeColor("accent")
   const iconSize = compact ? 32 : 36
   const playButtonSize = compact ? 64 : 80
   const containerClass = compact ? "w-16 h-16" : "w-20 h-20"
@@ -40,7 +39,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
   const playPrevious = cast.playPrevious
 
   const getRepeatColor = (mode: RepeatModeType) => {
-    return mode === "off" ? "white" : theme.accent
+    return mode === "off" ? "#FFFFFF" : accent
   }
 
   return (
@@ -70,7 +69,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
             void playPrevious()
           }}
         >
-          <LocalPreviousSolidIcon fill="none" width={iconSize} height={iconSize} color="white" />
+          <LocalPreviousSolidIcon fill="none" width={iconSize} height={iconSize} color="#FFFFFF" />
         </PressableFeedback>
 
         <PressableFeedback
@@ -84,14 +83,14 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
               fill="none"
               width={playButtonSize}
               height={playButtonSize}
-              color="white"
+              color="#FFFFFF"
             />
           ) : (
             <LocalPlayCircleSolidIcon
               fill="none"
               width={playButtonSize}
               height={playButtonSize}
-              color="white"
+              color="#FFFFFF"
             />
           )}
         </PressableFeedback>
@@ -101,7 +100,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
             void playNext()
           }}
         >
-          <LocalNextSolidIcon fill="none" width={iconSize} height={iconSize} color="white" />
+          <LocalNextSolidIcon fill="none" width={iconSize} height={iconSize} color="#FFFFFF" />
         </PressableFeedback>
       </View>
 
@@ -113,7 +112,7 @@ export const PlaybackControls: React.FC<PlaybackControlsProps> = ({
           fill="none"
           width={24}
           height={24}
-          color={isShuffled ? theme.accent : "white"}
+          color={isShuffled ? accent : "#FFFFFF"}
         />
       </PressableFeedback>
     </Animated.View>

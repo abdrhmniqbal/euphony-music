@@ -2,20 +2,17 @@ import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import type { PlayerTrack } from "@/playback/types"
-import {
-  useCurrentTrackId,
-  usePlayerTracks,
-} from "@/playback/selectors"
+import { useCurrentTrackId, usePlayerTracks } from "@/playback/selectors"
 import { ActionSheet } from "@/components/ui/action-sheet"
-import { PlayerActionMenu } from "./menu"
-import { SleepTimerSection } from "./sleep-timer-section"
-import { useSleepTimerDraft } from "./use-sleep-timer-draft"
 import { PlaylistPickerSheet } from "@/components/blocks/playlist-picker-sheet"
 import { ValueNavigationSheet } from "@/components/blocks/value-navigation-sheet"
 import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
 import { splitArtistsValue } from "@/domains/tracks/split-engine"
 import { getPreferenceState } from "@/core/preferences/store"
 import { useGuardedRouter } from "@/core/navigation"
+import { PlayerActionMenu } from "./menu"
+import { SleepTimerSection } from "./sleep-timer-section"
+import { useSleepTimerDraft } from "./use-sleep-timer-draft"
 
 interface PlayerActionSheetProps {
   visible: boolean
@@ -33,6 +30,16 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
   const [isArtistSelectionOpen, setIsArtistSelectionOpen] = useState(false)
   const sleepTimerDraft = useSleepTimerDraft(t)
 
+  const artistNames = useMemo(() => {
+    if (!track?.artist) {
+      return []
+    }
+    const source = track.rawArtistName || track.artistName || track.artist
+    return Array.from(
+      new Set(splitArtistsValue(source, getPreferenceState().splitMultipleValueConfig))
+    )
+  }, [track])
+
   if (!track) {
     return null
   }
@@ -43,9 +50,6 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
   }
 
   const handleAddToPlaylist = () => {
-    if (!track) {
-      return
-    }
     onOpenChange(false)
     setIsPlaylistPickerOpen(true)
   }
@@ -58,16 +62,6 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
     )
     router.push("/playlist/form")
   }
-
-  const artistNames = useMemo(() => {
-    if (!track?.artist) {
-      return []
-    }
-    const source = track.rawArtistName || track.artistName || track.artist
-    return Array.from(
-      new Set(splitArtistsValue(source, getPreferenceState().splitMultipleValueConfig))
-    )
-  }, [track])
 
   const handleOpenArtist = (name: string) => {
     const normalized = name.trim()
@@ -93,7 +87,7 @@ export function PlayerActionSheet({ visible, onOpenChange, track }: PlayerAction
   }
 
   const handleOpenAlbum = () => {
-    const albumName = track?.album?.trim()
+    const albumName = track.album?.trim()
     if (!albumName) {
       return
     }

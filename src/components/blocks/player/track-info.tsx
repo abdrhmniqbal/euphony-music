@@ -4,12 +4,11 @@ import { View } from "react-native"
 import { useTranslation } from "react-i18next"
 import Animated, { Layout } from "react-native-reanimated"
 
-import { PressableFeedback } from "heroui-native"
+import { PressableFeedback, useThemeColor } from "heroui-native"
 import { cn } from "tailwind-variants"
 import { MarqueeText } from "@/components/ui/marquee-text"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
 import LocalFavouriteSolidIcon from "@/components/icons/local/favourite-solid"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useIsFavorite } from "@/domains/favorites/queries"
 import { useToggleFavorite } from "@/domains/favorites/mutations"
 
@@ -20,12 +19,9 @@ interface TrackInfoProps {
 
 export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false }) => {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const danger = useThemeColor("danger")
   const canFavoriteTrack = track.isExternal !== true
-  const { data: isFavoriteQuery = false } = useIsFavorite(
-    "track",
-    canFavoriteTrack ? track.id : ""
-  )
+  const { data: isFavoriteQuery = false } = useIsFavorite("track", canFavoriteTrack ? track.id : "")
   const toggleFavoriteMutation = useToggleFavorite()
   const isFavorite = Boolean(isFavoriteQuery)
   const titleClassName = cn("mb-1 font-bold text-white", compact ? "text-xl" : "text-2xl")
@@ -55,7 +51,7 @@ export const TrackInfo: React.FC<TrackInfoProps> = ({ track, compact = false }) 
           }}
         >
           {isFavorite ? (
-            <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={theme.danger} />
+            <LocalFavouriteSolidIcon fill="none" width={24} height={24} color={danger} />
           ) : (
             <LocalFavouriteIcon fill="none" width={24} height={24} color="#ffffff" />
           )}
