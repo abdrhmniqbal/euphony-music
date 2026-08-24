@@ -2,6 +2,7 @@ import { Image } from "expo-image"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 
 import LocalAddCircleIcon from "@/components/icons/local/add-circle"
 import LocalFavouriteIcon from "@/components/icons/local/favourite"
@@ -16,7 +17,6 @@ import LocalVynil02Icon from "@/components/icons/local/vynil-02"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { MenuRow } from "@/components/ui/menu-row"
 import { ICON_SIZES } from "@/lib/layout"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { useIsFavorite } from "@/domains/favorites/queries"
 import { useToggleFavorite } from "@/domains/favorites/mutations"
 import { addToQueue, queueTrackNext } from "@/playback/queue-actions"
@@ -43,7 +43,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
   playlistId,
 }) => {
   const { t } = useTranslation()
-  const theme = useThemeColors()
+  const [muted, danger] = useThemeColor(["muted", "danger"])
   const toggleFavoriteMutation = useToggleFavorite()
   const removeTrackFromPlaylistMutation = useRemoveTrackFromPlaylist()
   const router = useGuardedRouter()
@@ -95,14 +95,18 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
           <View className="mb-5 flex-row items-center gap-4">
             <View className="h-18 w-18 overflow-hidden rounded-xl bg-default">
               {track.image ? (
-                <Image source={{ uri: track.image }} style={{ width: "100%", height: "100%" }} contentFit="cover" />
+                <Image
+                  source={{ uri: track.image }}
+                  style={{ width: "100%", height: "100%" }}
+                  contentFit="cover"
+                />
               ) : (
                 <View className="h-full w-full items-center justify-center bg-default">
                   <LocalMusicNote04SolidIcon
                     fill="none"
                     width={ICON_SIZES.sheetArtworkFallback}
                     height={ICON_SIZES.sheetArtworkFallback}
-                    color={theme.muted}
+                    color={muted}
                   />
                 </View>
               )}
@@ -120,16 +124,16 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
             <MenuRow
               icon={
                 isFavoriteData ? (
-                  <LocalFavouriteSolidIcon fill="none" width={22} height={22} color={theme.danger} />
+                  <LocalFavouriteSolidIcon fill="none" width={22} height={22} color={danger} />
                 ) : (
-                  <LocalFavouriteIcon fill="none" width={22} height={22} color={theme.muted} />
+                  <LocalFavouriteIcon fill="none" width={22} height={22} color={muted} />
                 )
               }
               label={isFavoriteData ? t("track.removeFromFavorites") : t("track.addToFavorites")}
               onPress={handleToggleFavorite}
             />
             <MenuRow
-              icon={<LocalNextIcon fill="none" width={22} height={22} color={theme.muted} />}
+              icon={<LocalNextIcon fill="none" width={22} height={22} color={muted} />}
               label={t("track.playNext")}
               onPress={() => {
                 queueTrackNext(track)
@@ -137,7 +141,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               }}
             />
             <MenuRow
-              icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={theme.muted} />}
+              icon={<LocalAddCircleIcon fill="none" width={22} height={22} color={muted} />}
               label={t("track.addToQueue")}
               onPress={() => {
                 addToQueue(track)
@@ -145,13 +149,13 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               }}
             />
             <MenuRow
-              icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={theme.muted} />}
+              icon={<LocalPlaylist02Icon fill="none" width={22} height={22} color={muted} />}
               label={t("track.addToPlaylist")}
               onPress={() => setIsPlaylistPickerOpen(true)}
             />
             {playlistId ? (
               <MenuRow
-                icon={<LocalCancel01Icon fill="none" width={22} height={22} color={theme.danger} />}
+                icon={<LocalCancel01Icon fill="none" width={22} height={22} color={danger} />}
                 label={t("track.removeFromThisPlaylist")}
                 onPress={() => {
                   void removeTrackFromPlaylistMutation.mutateAsync({
@@ -164,7 +168,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               />
             ) : null}
             <MenuRow
-              icon={<LocalUserIcon fill="none" width={22} height={22} color={theme.muted} />}
+              icon={<LocalUserIcon fill="none" width={22} height={22} color={muted} />}
               label={t("player.menu.goToArtist")}
               onPress={() => {
                 onClose()
@@ -178,7 +182,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               }}
             />
             <MenuRow
-              icon={<LocalVynil02Icon fill="none" width={22} height={22} color={theme.muted} />}
+              icon={<LocalVynil02Icon fill="none" width={22} height={22} color={muted} />}
               label={t("player.menu.goToAlbum")}
               onPress={() => {
                 const albumName = track.album?.trim()
@@ -190,7 +194,7 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
               }}
             />
             <MenuRow
-              icon={<LocalInfoIcon fill="none" width={22} height={22} color={theme.muted} />}
+              icon={<LocalInfoIcon fill="none" width={22} height={22} color={muted} />}
               label={t("track.viewMetadata")}
               onPress={() => setIsMetadataSheetOpen(true)}
             />
@@ -198,7 +202,11 @@ export const TrackActionSheet: React.FC<TrackActionSheetProps> = ({
         </ActionSheet.Content>
       </ActionSheet.Root>
 
-      <TrackMetadataSheet track={track} isOpen={isMetadataSheetOpen} onOpenChange={setIsMetadataSheetOpen} />
+      <TrackMetadataSheet
+        track={track}
+        isOpen={isMetadataSheetOpen}
+        onOpenChange={setIsMetadataSheetOpen}
+      />
       <PlaylistPickerSheet
         isOpen={isPlaylistPickerOpen}
         onClose={() => setIsPlaylistPickerOpen(false)}

@@ -1,13 +1,10 @@
-import { Tabs } from "heroui-native"
+import { Tabs, useThemeColor } from "heroui-native"
 import { useState } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { cn } from "tailwind-variants"
 
-import Animated, {
-  FadeIn,
-  FadeOut,
-} from "react-native-reanimated"
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
@@ -26,6 +23,7 @@ const PERIOD_OPTIONS: HistoryTopTracksPeriod[] = ["all", "day", "week", "month"]
 
 export default function TopTracksScreen() {
   const { t } = useTranslation()
+  const muted = useThemeColor("muted")
   const [period, setPeriod] = useState<HistoryTopTracksPeriod>("all")
   const {
     data: currentTracksData,
@@ -84,13 +82,16 @@ export default function TopTracksScreen() {
           {t("home.topTracks")}
         </Text>
       </View>
-      <Animated.View key={`content-${period}`} entering={FadeIn} exiting={FadeOut} className="flex-1">
+      <Animated.View
+        key={`content-${period}`}
+        entering={FadeIn}
+        exiting={FadeOut}
+        className="flex-1"
+      >
         {currentTracks.length === 0 ? (
           <View className="px-4">
             <EmptyState
-              icon={
-                <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color="#9ca3af" />
-              }
+              icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />}
               title={t("home.empty.topTracksTitle")}
               message={t("home.empty.topTracksMessage")}
               className="mt-12"
@@ -138,7 +139,11 @@ export default function TopTracksScreen() {
                     </Tabs.ScrollView>
                   </Tabs.List>
                 </Tabs>
-                <PlaybackActionsRow onPlay={playAll} onShuffle={shuffle} className="mb-2 px-0 py-0" />
+                <PlaybackActionsRow
+                  onPlay={playAll}
+                  onShuffle={shuffle}
+                  className="mb-2 px-0 py-0"
+                />
               </View>
             }
           />

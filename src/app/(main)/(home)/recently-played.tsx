@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
@@ -19,6 +20,7 @@ const RECENTLY_PLAYED_SCREEN_LIMIT = 50
 
 export default function RecentlyPlayedScreen() {
   const { t } = useTranslation()
+  const muted = useThemeColor("muted")
   const currentTrackId = useCurrentTrackId()
   const [isRefreshing, setIsRefreshing] = useState(false)
   const {
@@ -68,7 +70,7 @@ export default function RecentlyPlayedScreen() {
       <View className="flex-1 bg-background px-4 pt-16">
         <BackButton className="-ml-2" fallbackHref="/(main)/(home)" />
         <EmptyState
-          icon={<LocalClock01SolidIcon fill="none" width={48} height={48} color="#9ca3af" />}
+          icon={<LocalClock01SolidIcon fill="none" width={48} height={48} color={muted} />}
           title={t("home.empty.recentlyPlayedTitle")}
           message={t("home.empty.recentlyPlayedLongMessage")}
           className="mt-12 px-4"

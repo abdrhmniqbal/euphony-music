@@ -3,6 +3,7 @@ import * as React from "react"
 import { useState } from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 
 import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
@@ -14,10 +15,7 @@ import { ThemedRefreshControl } from "@/components/ui/themed-refresh-control"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { SCREEN_SECTION_TOP_SPACING } from "@/lib/layout"
-import {
-  useRecentlyPlayedTracks,
-  useTopTracksByPeriod,
-} from "@/domains/history/repository"
+import { useRecentlyPlayedTracks, useTopTracksByPeriod } from "@/domains/history/repository"
 import { startIndexing } from "@/domains/indexer/service"
 import { refreshIndexedMediaState } from "@/domains/indexer/utils/refresh"
 import { useCurrentTrackId } from "@/playback/selectors"
@@ -34,18 +32,17 @@ const TOP_TRACKS_QUEUE_LIMIT = 50
 export function HomeScreen() {
   const router = useRouter()
   const { t } = useTranslation()
+  const muted = useThemeColor("muted")
   const currentTrackId = useCurrentTrackId()
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const {
-    data: recentlyPlayedTracksData,
-    isLoading: isRecentlyPlayedLoading,
-  } = useRecentlyPlayedTracks(RECENTLY_PLAYED_QUEUE_LIMIT)
-  const {
-    data: topTracksData,
-    isLoading: isTopTracksLoading,
-  } = useTopTracksByPeriod("all", TOP_TRACKS_QUEUE_LIMIT)
+  const { data: recentlyPlayedTracksData, isLoading: isRecentlyPlayedLoading } =
+    useRecentlyPlayedTracks(RECENTLY_PLAYED_QUEUE_LIMIT)
+  const { data: topTracksData, isLoading: isTopTracksLoading } = useTopTracksByPeriod(
+    "all",
+    TOP_TRACKS_QUEUE_LIMIT
+  )
 
   const recentlyPlayedTracks = React.useMemo(
     () => (recentlyPlayedTracksData ?? []).filter((t) => t.uri !== ""),
@@ -57,8 +54,7 @@ export function HomeScreen() {
   )
   const recentlyPlayedPreviewTracks = recentlyPlayedTracks.slice(0, RECENTLY_PLAYED_PREVIEW_LIMIT)
   const topPreviewTracks = topTracks.slice(0, TOP_TRACKS_PREVIEW_LIMIT)
-  const isLoading =
-    isRecentlyPlayedLoading || isTopTracksLoading || isRefreshing
+  const isLoading = isRecentlyPlayedLoading || isTopTracksLoading || isRefreshing
 
   async function refresh() {
     try {
@@ -84,7 +80,7 @@ export function HomeScreen() {
           data={recentlyPlayedPreviewTracks}
           onViewMore={() => router.push("/(main)/(home)/recently-played")}
           emptyState={{
-            icon: <LocalClock01SolidIcon fill="none" width={48} height={48} color="#9ca3af" />,
+            icon: <LocalClock01SolidIcon fill="none" width={48} height={48} color={muted} />,
             title: t("home.empty.recentlyPlayedTitle"),
             message: t("home.empty.recentlyPlayedMessage"),
           }}
@@ -96,7 +92,11 @@ export function HomeScreen() {
                   track={item}
                   variant="grid"
                   onPress={() =>
-                    playTrack(item, recentlyPlayedTracks, createPlaybackQueueContext("trackList", t("home.recentlyPlayed")))
+                    playTrack(
+                      item,
+                      recentlyPlayedTracks,
+                      createPlaybackQueueContext("trackList", t("home.recentlyPlayed"))
+                    )
                   }
                   onLongPress={() => {
                     setSelectedTrack(item)
@@ -118,9 +118,7 @@ export function HomeScreen() {
           data={topPreviewTracks}
           onViewMore={() => router.push("/(main)/(home)/top-tracks")}
           emptyState={{
-            icon: (
-              <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color="#9ca3af" />
-            ),
+            icon: <LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />,
             title: t("home.empty.topTracksTitle"),
             message: t("home.empty.topTracksMessage"),
           }}

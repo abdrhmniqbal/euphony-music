@@ -2,10 +2,10 @@ import type { ReactNode } from "react"
 
 import { View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useThemeColor } from "heroui-native"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import { MediaItem } from "@/components/ui/media-item"
 import { ICON_SIZES } from "@/lib/layout"
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 import type { PlayerTrack } from "@/playback/types"
 
 interface TrackRowProps {
@@ -41,7 +41,7 @@ export function TrackRow({
   titleClassName,
   descriptionClassName,
 }: TrackRowProps) {
-  const theme = useThemeColors()
+  const muted = useThemeColor("muted")
   const { t } = useTranslation()
   const isCompactNoCoverRow = !showCover && rank !== undefined && rank !== null
   const fallbackIconSize = variant === "grid" ? ICON_SIZES.gridFallback : ICON_SIZES.listFallback
@@ -61,7 +61,7 @@ export function TrackRow({
               fill="none"
               width={fallbackIconSize}
               height={fallbackIconSize}
-              color={theme.muted}
+              color={muted}
             />
           }
           image={track.image}
