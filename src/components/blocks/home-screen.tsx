@@ -34,7 +34,6 @@ export function HomeScreen() {
   const router = useRouter()
   const { t } = useTranslation()
   const muted = useThemeColor("muted")
-  const insets = useSafeAreaInsets()
   const currentTrackId = useCurrentTrackId()
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
@@ -76,7 +75,7 @@ export function HomeScreen() {
         <ThemedRefreshControl refreshing={isLoading} onRefresh={() => void refresh()} />
       }
     >
-      <View style={{ paddingTop: insets.top + SCREEN_SECTION_TOP_SPACING }}>
+      <View className="pt-4">
         <ContentSection
           title={t("home.recentlyPlayed")}
           data={recentlyPlayedPreviewTracks}

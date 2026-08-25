@@ -3,7 +3,6 @@ import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { Input, PressableFeedback } from "heroui-native"
 
@@ -40,7 +39,6 @@ const RECENTLY_ADDED_LIMIT = 8
 export function SearchLandingScreen() {
   const theme = useThemeColors()
   const { t } = useTranslation()
-  const insets = useSafeAreaInsets()
   const router = useGuardedRouter()
   const currentTrackId = useCurrentTrackId()
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
@@ -137,12 +135,12 @@ export function SearchLandingScreen() {
     <>
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: 220, paddingTop: insets.top }}
+        contentContainerStyle={{ paddingBottom: 220 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         {...autoHideScrollProps}
       >
-        <View className="relative my-6 px-3">
+        <View className="relative mb-6 mt-4 px-3">
           <View className="absolute left-7 top-1/2 z-10 -translate-y-1/2">
             <LocalSearch01Icon fill="none" width={24} height={24} color={theme.muted} />
           </View>

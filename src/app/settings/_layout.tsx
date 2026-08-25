@@ -50,7 +50,9 @@ export default function SettingsLayout() {
         headerShown: true,
         animation: "fade_from_bottom",
         headerStyle: { backgroundColor: background },
+        headerTintColor: foreground,
         headerTitleStyle: { color: foreground },
+        headerTitleAlign: "center",
         headerShadowVisible: false,
         contentStyle: { backgroundColor: background },
       }}
@@ -61,7 +63,7 @@ export default function SettingsLayout() {
           title: t(SETTINGS_SCREEN_TITLE_KEYS.index),
           headerLeft: () => (
             <PressableFeedback onPress={handleClose} hitSlop={20}>
-              <LocalCancel01Icon fill="none" width={24} height={24} />
+              <LocalCancel01Icon fill="none" width={24} height={24} color={foreground} />
             </PressableFeedback>
           ),
         }}
