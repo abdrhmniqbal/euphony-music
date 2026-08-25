@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
+import LocalSettings01Icon from "@/components/icons/local/settings-01"
 import { MenuRow } from "@/components/ui/menu-row"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
@@ -21,11 +22,13 @@ import { formatDurationCompact } from "@/lib/format"
 import { useGuardedRouter } from "@/core/navigation"
 import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
 import { useDailyMix, useForYouMix } from "@/domains/mixes/queries"
+import { MixMaxItemsSheet } from "@/components/blocks/mix-max-items-sheet"
 import { collectTrackImages } from "@/domains/visuals/shared"
 import type { PlayerTrack } from "@/playback/types"
 import { createPlaybackQueueContext } from "@/playback/types"
 import { playTrack } from "@/playback/service"
 import { useAutoHideHeaderScroll } from "@/core/ui/use-auto-hide-header-scroll"
+import { usePreferenceStore } from "@/core/preferences/store"
 
 const HEADER_COLLAPSE_THRESHOLD = 120
 
@@ -39,6 +42,8 @@ export function MixDetailScreen() {
 
   const [showHeaderTitle, setShowHeaderTitle] = useState(false)
   const [showActionSheet, setShowActionSheet] = useState(false)
+  const [showMaxItemsSheet, setShowMaxItemsSheet] = useState(false)
+  const maxMixItems = usePreferenceStore((state) => state.maxMixItems)
 
   const isDaily = mixId === "daily"
   const { data: dailyMix, isLoading: isDailyLoading } = useDailyMix()
@@ -189,7 +194,18 @@ export function MixDetailScreen() {
           label={t("track.addToPlaylist")}
           onPress={handleSaveToPlaylist}
         />
+        <MenuRow
+          icon={<LocalSettings01Icon fill="none" width={22} height={22} color={muted} />}
+          label={t("mix.maxItems")}
+          trailing={<Text className="text-base text-muted">{maxMixItems}</Text>}
+          onPress={() => {
+            setShowActionSheet(false)
+            setShowMaxItemsSheet(true)
+          }}
+        />
       </CollectionActionSheet>
+
+      <MixMaxItemsSheet isOpen={showMaxItemsSheet} onOpenChange={setShowMaxItemsSheet} />
 
       {tracks.length === 0 && !isLoading ? (
         <View style={{ paddingTop: insets.top + 8 }} className="px-4">

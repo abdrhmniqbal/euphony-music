@@ -116,6 +116,7 @@ export function getDefaultPreferenceState(): PreferenceState {
     minAlbumLength: 0,
     quickScroll: true,
     squareArtwork: true,
+    maxMixItems: 25,
 
     nowPlayingDesign: "vinyl",
     miniplayerGestures: false,

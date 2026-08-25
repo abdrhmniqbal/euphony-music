@@ -1,7 +1,7 @@
 /* oxlint-disable anti-slop/no-shape-in-symbol-names -- genre/mix visual shape is domain vocabulary */
 import * as React from "react"
 import { useCallback, useMemo, useState } from "react"
-import { ScrollView, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
@@ -9,6 +9,7 @@ import { Input, PressableFeedback } from "heroui-native"
 
 import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
+import LocalSettings01Icon from "@/components/icons/local/settings-01"
 import LocalSearch01Icon from "@/components/icons/local/search-01"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { ContentSection } from "@/components/blocks/content-section"
@@ -17,10 +18,12 @@ import { TrackActionSheet } from "@/components/blocks/track-action-sheet"
 import { TrackRow } from "@/components/patterns/track-row"
 import { MixCard } from "@/components/patterns/mix-card"
 import { MenuRow } from "@/components/ui/menu-row"
+import { MixMaxItemsSheet } from "@/components/blocks/mix-max-items-sheet"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { useGuardedRouter } from "@/core/navigation"
 import { getPreferenceState } from "@/core/preferences/store"
 import { useThemeColors } from "@/core/theme/use-theme-colors"
+import { usePreferenceStore } from "@/core/preferences/store"
 import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
 import { toPlayerTracks } from "@/playback/player-track"
 import type { PlayerTrack } from "@/playback/types"
@@ -43,6 +46,8 @@ export function SearchLandingScreen() {
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const [showMixActionSheet, setShowMixActionSheet] = useState(false)
+  const [showMaxItemsSheet, setShowMaxItemsSheet] = useState(false)
+  const maxMixItems = usePreferenceStore((state) => state.maxMixItems)
   const [activeMixType, setActiveMixType] = useState<"daily" | "foryou" | null>(null)
 
   const { data: dailyMix } = useDailyMix()
@@ -228,7 +233,18 @@ export function SearchLandingScreen() {
           label={t("track.addToPlaylist")}
           onPress={handleSaveMixToPlaylist}
         />
+        <MenuRow
+          icon={<LocalSettings01Icon fill="none" width={22} height={22} color={theme.muted} />}
+          label={t("mix.maxItems")}
+          trailing={<Text className="text-base text-muted">{maxMixItems}</Text>}
+          onPress={() => {
+            setShowMixActionSheet(false)
+            setShowMaxItemsSheet(true)
+          }}
+        />
       </CollectionActionSheet>
+
+      <MixMaxItemsSheet isOpen={showMaxItemsSheet} onOpenChange={setShowMaxItemsSheet} />
     </>
   )
 }

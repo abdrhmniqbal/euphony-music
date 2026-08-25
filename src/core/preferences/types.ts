@@ -110,6 +110,7 @@ export interface PreferenceState {
   minAlbumLength: number
   quickScroll: boolean
   squareArtwork: boolean
+  maxMixItems: number
 
   // Player UI
   nowPlayingDesign: NowPlayingDesign

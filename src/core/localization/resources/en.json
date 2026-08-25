@@ -410,11 +410,11 @@
       "reindexAction": "Re-index",
       "applyFilters": "Apply filters",
       "artistSplitMode": "$t(term.artistSplitModeLabel)",
-    "artistWordDelimitersPlaceholder": "feat., featuring, vs., with",
-    "unsplitArtistsPlaceholder": "Artist with /, Artist with &",
-    "whitelist": "Whitelist",
-    "blacklist": "Blacklist",
-    "artistCharDelimiters": "Artist character delimiters",
+      "artistWordDelimitersPlaceholder": "feat., featuring, vs., with",
+      "unsplitArtistsPlaceholder": "Artist with /, Artist with &",
+      "whitelist": "Whitelist",
+      "blacklist": "Blacklist",
+      "artistCharDelimiters": "Artist character delimiters",
       "artistWordDelimiters": "Artist word delimiters",
       "artistWordDelimitersDescription": "Whole words that separate multiple artists",
       "extractArtistFromTitle": "Extract artist from title",
@@ -755,5 +755,9 @@
       "title": "Startune Music update available",
       "body": "Version {{newVersion}} is available (you have {{currentVersion}})."
     }
+  },
+  "mix": {
+    "maxItems": "Max items",
+    "maxItemsTitle": "Maximum mix items"
   }
 }

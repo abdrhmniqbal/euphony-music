@@ -21,10 +21,13 @@ import {
 import { toPlayerTrack } from "@/playback/player-track"
 import type { PlayerTrack } from "@/playback/types"
 
-const MIX_LIMIT = 25
 const DAILY_MIX_ID = "daily"
 const FOR_YOU_MIX_ID = "for-you"
 const LIBRARY_POOL_LIMIT = 300
+
+function getMixLimit(): number {
+  return getPreferenceState().maxMixItems
+}
 
 export type PersistedMix = {
   id: string
@@ -128,7 +131,7 @@ async function generateMixCandidates(
     .slice(0, 60)
     .map((entry) => entry.candidate)
 
-  return shuffle(candidatesToTracks(ranked), seed).slice(0, MIX_LIMIT)
+  return shuffle(candidatesToTracks(ranked), seed).slice(0, getMixLimit())
 }
 
 async function loadPersistedMixTracks(mixId: string): Promise<PlayerTrack[]> {
@@ -250,7 +253,7 @@ async function generateDailyMixTracks(seed: number): Promise<PlayerTrack[]> {
     .filter((entry): entry is MixPoolEntry => entry !== null)
 
   if (seedCandidates.length === 0) {
-    return shuffle(candidatesToTracks(await listLibraryCandidates()), seed).slice(0, MIX_LIMIT)
+    return shuffle(candidatesToTracks(await listLibraryCandidates()), seed).slice(0, getMixLimit())
   }
 
   return generateMixCandidates(seedCandidates, seed)
@@ -262,7 +265,7 @@ async function generateForYouMixTracks(seed: number): Promise<PlayerTrack[]> {
     .slice(0, 50)
 
   if (topCandidates.length === 0) {
-    return shuffle(candidatesToTracks(await listLibraryCandidates()), seed).slice(0, MIX_LIMIT)
+    return shuffle(candidatesToTracks(await listLibraryCandidates()), seed).slice(0, getMixLimit())
   }
 
   return generateMixCandidates(topCandidates, seed)
