@@ -1,3 +1,5 @@
+"use no memo"
+
 import { FlexWidget, TextWidget } from "react-native-android-widget"
 
 import type { DataTrack } from "@/domains/tracks/types"
