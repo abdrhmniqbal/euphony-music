@@ -328,7 +328,6 @@ function PlaylistFormScreen() {
               nestedScrollEnabled={true}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
-              recycleItems
               estimatedItemSize={64}
               ListEmptyComponent={() => (
                 <EmptyState

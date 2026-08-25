@@ -123,10 +123,7 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         keyExtractor={(item) => item.id}
         getItemType={(item) => item.rowType}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={StyleSheet.flatten([
-          { paddingHorizontal: 16, gap: 8 },
-          contentContainerStyle,
-        ])}
+        contentContainerStyle={StyleSheet.flatten([{ gap: 8 }, contentContainerStyle])}
         {...autoHideScrollProps}
         recycleItems
         estimatedItemSize={72}
