@@ -11,7 +11,12 @@ export default function LibraryLayout() {
   const router = useGuardedRouter()
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: background },
+      }}
+    >
       <Stack.Screen
         name="index"
         options={{

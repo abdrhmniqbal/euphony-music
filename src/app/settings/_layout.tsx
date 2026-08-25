@@ -1,4 +1,4 @@
-import { PressableFeedback } from "heroui-native"
+import { PressableFeedback, useThemeColor } from "heroui-native"
 import { Stack } from "expo-router"
 import { useTranslation } from "react-i18next"
 
@@ -33,6 +33,7 @@ const DETAIL_SETTINGS_SCREENS = [
 export default function SettingsLayout() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
+  const [background, foreground] = useThemeColor(["background", "foreground"])
 
   function handleClose() {
     if (router.canGoBack?.()) {
@@ -44,7 +45,16 @@ export default function SettingsLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: true, animation: "fade_from_bottom" }}>
+    <Stack
+      screenOptions={{
+        headerShown: true,
+        animation: "fade_from_bottom",
+        headerStyle: { backgroundColor: background },
+        headerTitleStyle: { color: foreground },
+        headerShadowVisible: false,
+        contentStyle: { backgroundColor: background },
+      }}
+    >
       <Stack.Screen
         name="index"
         options={{

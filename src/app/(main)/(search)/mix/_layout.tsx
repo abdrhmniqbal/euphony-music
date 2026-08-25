@@ -1,8 +1,11 @@
 import { Stack } from "expo-router"
+import { useThemeColor } from "heroui-native"
 
 export default function MixLayout() {
+  const [background] = useThemeColor(["background"])
+
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: background } }}>
       <Stack.Screen name="[id]" options={{ animation: "fade_from_bottom" }} />
     </Stack>
   )

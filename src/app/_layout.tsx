@@ -9,11 +9,14 @@ import { StartupEffects } from "@/core/bootstrap/startup-effects"
 import { DatabaseGate } from "@/core/db/runtime"
 import { getHiddenPlayerScreenOptions, TransitionStack } from "@/core/navigation"
 import { queryClient } from "@/core/query/query-client"
+import { useThemeColors } from "@/core/theme/use-theme-colors"
 import { ThemeRuntime } from "@/core/theme/theme-runtime"
 import { AppToastRuntime } from "@/core/ui/app-toast-runtime"
 import { AppUpdateSheet } from "@/domains/updates/ui/app-update-sheet"
 
 export default function RootLayout() {
+  const { background } = useThemeColors()
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
@@ -29,7 +32,12 @@ export default function RootLayout() {
         >
           <ThemeRuntime />
           <DatabaseGate>
-            <TransitionStack screenOptions={{ headerShown: false }}>
+            <TransitionStack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: background },
+              }}
+            >
               <TransitionStack.Screen name="index" />
               {/* (main) hosts the mini player boundary, which requires the descriptors provider mounted by TransitionStack */}
               <TransitionStack.Screen name="(main)" />
