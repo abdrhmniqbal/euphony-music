@@ -2,7 +2,6 @@ import { ListGroup, Separator, useThemeColor } from "heroui-native"
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { Uniwind } from "uniwind"
 
 import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
@@ -22,7 +21,6 @@ export function ThemeModeSettings() {
   const { t } = useTranslation()
 
   function handleThemeChange(value: ThemeValue) {
-    Uniwind.setTheme(value)
     preferenceStore.setState({ themeMode: value })
   }
 

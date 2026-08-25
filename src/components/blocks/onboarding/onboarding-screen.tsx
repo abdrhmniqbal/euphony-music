@@ -4,7 +4,6 @@ import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
-import { Uniwind } from "uniwind"
 
 import { showAppToast } from "@/core/ui/toast"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
@@ -74,7 +73,6 @@ export function OnboardingScreen() {
   }
 
   function handleThemeChange(value: ThemeMode) {
-    Uniwind.setTheme(value)
     preferenceStore.setState({ themeMode: value })
   }
 

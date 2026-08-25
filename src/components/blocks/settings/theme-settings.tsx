@@ -2,12 +2,12 @@ import { Input, ListGroup, PressableFeedback, Separator, useThemeColor } from "h
 import * as React from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { useUniwind } from "uniwind"
 
 import LocalCancelCircleSolidIcon from "@/components/icons/local/cancel-circle-solid"
 import LocalSearch01Icon from "@/components/icons/local/search-01"
 import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
+import { useIsDarkTheme } from "@/core/theme/use-theme-colors"
 import { STATIC_THEMES, type ThemeColors } from "@/core/theme/colors"
 import { APP_THEMES, type AppThemeDefinition } from "@/core/theme/registry"
 
@@ -141,8 +141,7 @@ function ThemePreviewSwatch({
 
 export function ThemeSettings() {
   const [accent, muted] = useThemeColor(["accent", "muted"])
-  const { theme: themeMode } = useUniwind()
-  const isDarkMode = themeMode === "dark"
+  const isDarkMode = useIsDarkTheme()
   const { t } = useTranslation()
   const selectedThemeId = usePreferenceStore((state) => state.themeId)
 

@@ -1,5 +1,4 @@
 import { I18nManager } from "react-native"
-import { Uniwind } from "uniwind"
 
 import { i18n } from "@/core/localization/i18n"
 import type { LanguageCode } from "@/core/localization/types"
@@ -96,7 +95,6 @@ export async function setLanguageCode(code: LanguageCode): Promise<void> {
 
   const shouldBeRtl = RTL_LANGUAGE_CODES.includes(code)
   if (I18nManager.isRTL !== shouldBeRtl) {
-    Uniwind.setTheme(preferenceStore.getState().themeMode)
     I18nManager.allowRTL(shouldBeRtl)
     I18nManager.forceRTL(shouldBeRtl)
   }
