@@ -105,27 +105,21 @@ function AlbumGridItem({
   )
 }
 
-export function AlbumGrid({
-  data,
-  onAlbumPress,
-  horizontal = false,
-  containerClassName,
-  listHeader = null,
-  contentContainerStyle,
-  showsVerticalScrollIndicator = false,
-  scrollEventThrottle = 16,
-  onScroll,
-}: AlbumGridProps) {
-  const muted = useThemeColor("muted")
-  const { t } = useTranslation()
-  const { selectedAlbum, isSheetOpen, handleLongPress, closeSheet } = useAlbumActionSheet()
-
-  const sheet = (
+function AlbumActionSheet({
+  selectedAlbum,
+  isOpen,
+  onClose,
+}: {
+  selectedAlbum: Album | null
+  isOpen: boolean
+  onClose: () => void
+}) {
+  return (
     <CollectionActionSheet
-      visible={isSheetOpen && Boolean(selectedAlbum)}
+      visible={isOpen && Boolean(selectedAlbum)}
       onOpenChange={(open) => {
         if (!open) {
-          closeSheet()
+          onClose()
         }
       }}
       type="album"
@@ -136,40 +130,61 @@ export function AlbumGrid({
       trackCount={selectedAlbum?.trackCount ?? 0}
     />
   )
+}
 
-  if (horizontal) {
-    const renderItem = useCallback(
-      ({ item, index }: LegendListRenderItemProps<Album>) => (
-        <View key={item.id} style={{ width: 144, marginRight: index === data.length - 1 ? 0 : 16 }}>
-          <AlbumGridItem
-            item={item}
-            iconSize={ICON_SIZES.mediumCardFallback}
-            onPress={() => onAlbumPress?.(item)}
-            onLongPress={() => handleLongPress(item)}
-          />
-        </View>
-      ),
-      [data.length, onAlbumPress, handleLongPress]
-    )
+function HorizontalAlbumGrid({
+  data,
+  onAlbumPress,
+  containerClassName,
+}: Pick<AlbumGridProps, "data" | "onAlbumPress" | "containerClassName">) {
+  const { selectedAlbum, isSheetOpen, handleLongPress, closeSheet } = useAlbumActionSheet()
 
-    return (
-      <>
-        <LegendList
-          horizontal
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 2, paddingBottom: 6 }}
-          style={{ minHeight: HORIZONTAL_ROW_HEIGHT }}
-          className={containerClassName}
-          recycleItems
-          estimatedItemSize={144}
+  const renderItem = useCallback(
+    ({ item, index }: LegendListRenderItemProps<Album>) => (
+      <View key={item.id} style={{ width: 144, marginRight: index === data.length - 1 ? 0 : 16 }}>
+        <AlbumGridItem
+          item={item}
+          iconSize={ICON_SIZES.mediumCardFallback}
+          onPress={() => onAlbumPress?.(item)}
+          onLongPress={() => handleLongPress(item)}
         />
-        {sheet}
-      </>
-    )
-  }
+      </View>
+    ),
+    [data.length, onAlbumPress, handleLongPress]
+  )
+
+  return (
+    <>
+      <LegendList
+        horizontal
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingTop: 2, paddingBottom: 6 }}
+        style={{ minHeight: HORIZONTAL_ROW_HEIGHT }}
+        className={containerClassName}
+        recycleItems
+        estimatedItemSize={144}
+      />
+      <AlbumActionSheet selectedAlbum={selectedAlbum} isOpen={isSheetOpen} onClose={closeSheet} />
+    </>
+  )
+}
+
+function GridAlbumGrid({
+  data,
+  onAlbumPress,
+  containerClassName,
+  listHeader,
+  contentContainerStyle,
+  showsVerticalScrollIndicator,
+  scrollEventThrottle,
+  onScroll,
+}: Omit<AlbumGridProps, "horizontal">) {
+  const muted = useThemeColor("muted")
+  const { t } = useTranslation()
+  const { selectedAlbum, isSheetOpen, handleLongPress, closeSheet } = useAlbumActionSheet()
 
   const renderItem = useCallback(
     ({ item, index }: LegendListRenderItemProps<Album>) => (
@@ -220,7 +235,11 @@ export function AlbumGrid({
         recycleItems
         estimatedItemSize={260}
       />
-      {sheet}
+      <AlbumActionSheet selectedAlbum={selectedAlbum} isOpen={isSheetOpen} onClose={closeSheet} />
     </>
   )
+}
+
+export function AlbumGrid({ horizontal = false, ...props }: AlbumGridProps) {
+  return horizontal ? <HorizontalAlbumGrid {...props} /> : <GridAlbumGrid {...props} />
 }

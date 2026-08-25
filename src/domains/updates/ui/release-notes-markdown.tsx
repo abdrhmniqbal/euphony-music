@@ -1,7 +1,7 @@
+import { useThemeColor } from "heroui-native"
+
 import { Linking, View } from "react-native"
 import { EnrichedMarkdownText } from "react-native-enriched-markdown"
-
-import { useThemeColors } from "@/core/theme/use-theme-colors"
 
 export function ReleaseNotesMarkdown({
   markdown,
@@ -10,7 +10,13 @@ export function ReleaseNotesMarkdown({
   markdown: string
   selectable?: boolean
 }) {
-  const theme = useThemeColors()
+  const [muted, foreground, border, defaultColor, background] = useThemeColor([
+    "muted",
+    "foreground",
+    "border",
+    "default",
+    "background",
+  ])
 
   const processedMarkdown = markdown.replace(/(https?:\/\/[^\s)]+)/g, (url) => {
     try {
@@ -40,20 +46,20 @@ export function ReleaseNotesMarkdown({
         }}
         markdownStyle={{
           paragraph: {
-            color: theme.muted,
+            color: muted,
             fontSize: 14,
             lineHeight: 22,
             marginBottom: 10,
           },
           h1: {
-            color: theme.foreground,
+            color: foreground,
             fontSize: 21,
             fontWeight: "700",
             lineHeight: 28,
             marginBottom: 10,
           },
           h2: {
-            color: theme.foreground,
+            color: foreground,
             fontSize: 19,
             fontWeight: "600",
             lineHeight: 26,
@@ -61,16 +67,16 @@ export function ReleaseNotesMarkdown({
             marginBottom: 12,
           },
           table: {
-            color: theme.muted,
+            color: muted,
             fontSize: 13,
             lineHeight: 20,
-            borderColor: theme.border,
+            borderColor: border,
             borderWidth: 1,
             borderRadius: 8,
-            headerBackgroundColor: theme.default,
-            headerTextColor: theme.foreground,
-            rowEvenBackgroundColor: theme.background,
-            rowOddBackgroundColor: theme.default,
+            headerBackgroundColor: defaultColor,
+            headerTextColor: foreground,
+            rowEvenBackgroundColor: background,
+            rowOddBackgroundColor: defaultColor,
           },
         }}
       />
