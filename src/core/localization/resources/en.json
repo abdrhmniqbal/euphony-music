@@ -71,7 +71,12 @@
   },
   "term": {
     "allTracks": "Tracks",
-    "favoritesLabel": "Favorites"
+    "favoritesLabel": "Favorites",
+    "noLabel": "No",
+    "albumsLabel": "Albums",
+    "artistsLabel": "Artists",
+    "lyricsLabel": "Lyrics",
+    "artistSplitModeLabel": "Artist Split Mode"
   },
   "library": {
     "tracks": "tracks",
@@ -90,6 +95,12 @@
       "tracksFoundTitle": "No tracks found",
       "albumsFoundTitle": "No albums found",
       "albumsFoundMessage": "Albums will appear after indexing your music.",
+      "albumsTitle": "$t(term.noLabel) $t(term.albumsLabel)",
+      "albumsMessage": "Albums you add to your library will appear here.",
+      "artistsTitle": "$t(term.noLabel) $t(term.artistsLabel)",
+      "artistsMessage": "Artists from your music library will appear here.",
+      "lyricsTitle": "$t(term.noLabel) $t(term.lyricsLabel)",
+      "lyricsMessage": "This track does not have embedded lyrics yet.",
       "genresFoundTitle": "No genres found",
       "genresFoundMessage": "Genres will appear after indexing your music.",
       "playlistsTitle": "No playlists yet",
@@ -142,6 +153,7 @@
   },
   "player": {
     "upNext": "Up Next",
+    "notPlaying": "Not playing",
     "queue": {
       "emptyTitle": "No queue",
       "emptyMessage": "Start playback to see upcoming tracks here."
@@ -258,6 +270,7 @@
     "recentTitle": "Recent searches",
     "clearAll": "Clear all",
     "noResultsTitle": "No results found",
+    "tryDifferentKeyword": "Try a different keyword.",
     "tabs": {
       "all": "All",
       "track": "Tracks",
@@ -396,7 +409,12 @@
       "reindexLaterAction": "Later",
       "reindexAction": "Re-index",
       "applyFilters": "Apply filters",
-      "artistCharDelimiters": "Artist character delimiters",
+      "artistSplitMode": "$t(term.artistSplitModeLabel)",
+    "artistWordDelimitersPlaceholder": "feat., featuring, vs., with",
+    "unsplitArtistsPlaceholder": "Artist with /, Artist with &",
+    "whitelist": "Whitelist",
+    "blacklist": "Blacklist",
+    "artistCharDelimiters": "Artist character delimiters",
       "artistWordDelimiters": "Artist word delimiters",
       "artistWordDelimitersDescription": "Whole words that separate multiple artists",
       "extractArtistFromTitle": "Extract artist from title",

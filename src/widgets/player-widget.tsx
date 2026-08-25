@@ -2,6 +2,7 @@
 
 import { FlexWidget, TextWidget } from "react-native-android-widget"
 
+import { i18n } from "@/core/localization/i18n"
 import type { DataTrack } from "@/domains/tracks/types"
 
 const ACCENT = "#0088F6"
@@ -37,7 +38,7 @@ export function snapshotFromTrack(
   const artist =
     track?.artistName ?? (track?.artists && track.artists.length > 0 ? track.artists[0] : null)
   return {
-    trackName: track?.name ?? "Not playing",
+    trackName: track?.name ?? i18n.t("player.notPlaying"),
     artistName: artist ?? "Startune Music",
     isPlaying,
   }
