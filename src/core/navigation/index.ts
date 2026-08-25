@@ -2,6 +2,10 @@ import { useRouter as useExpoRouter } from "expo-router"
 import { useMemo } from "react"
 import { Platform, UIManager } from "react-native"
 import Transition from "react-native-screen-transitions"
+import type { ScreenStyleInterpolator } from "react-native-screen-transitions"
+import type { NativeStackNavigationOptions } from "react-native-screen-transitions/native-stack"
+
+export { TransitionStack } from "./transition-stack"
 
 let guardExpires = 0
 let guardKey = ""
@@ -35,7 +39,17 @@ interface TransitionRouteParams {
   transitionId?: string
 }
 
-export function getHiddenBoundaryScreenOptions(p?: TransitionRouteParams) {
+function createZoomInterpolator(id: string): ScreenStyleInterpolator {
+  return ({ bounds }) => {
+    "worklet"
+    // zoom() already applies the uniform scale mode + top anchor shared options
+    return bounds(id).navigation.zoom()
+  }
+}
+
+export function getHiddenBoundaryScreenOptions(
+  p?: TransitionRouteParams
+): NativeStackNavigationOptions {
   const id = p?.transitionId
   if (!id || !isMaskAvail) {
     return {
@@ -51,16 +65,7 @@ export function getHiddenBoundaryScreenOptions(p?: TransitionRouteParams) {
     enableTransitions: true,
     navigationMaskEnabled: false,
     gestureEnabled: false,
-    screenStyleInterpolator: ({
-      bounds,
-    }: {
-      bounds: (opts: { id: string; scaleMode: string }) => {
-        navigation: { zoom: () => Record<string, string | number | boolean | null> }
-      }
-    }) => {
-      "worklet"
-      return bounds({ id, scaleMode: "uniform" }).navigation.zoom()
-    },
+    screenStyleInterpolator: createZoomInterpolator(id),
   }
 }
 
