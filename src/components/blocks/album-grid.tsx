@@ -47,6 +47,7 @@ interface AlbumGridProps {
   showsVerticalScrollIndicator?: boolean
   scrollEventThrottle?: number
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
+  refreshControl?: React.ReactElement<import("react-native").RefreshControlProps> | null
 }
 
 const HORIZONTAL_ROW_HEIGHT = 208
@@ -181,6 +182,7 @@ function GridAlbumGrid({
   showsVerticalScrollIndicator,
   scrollEventThrottle,
   onScroll,
+  refreshControl,
 }: Omit<AlbumGridProps, "horizontal">) {
   const muted = useThemeColor("muted")
   const { t } = useTranslation()
@@ -218,6 +220,7 @@ function GridAlbumGrid({
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         scrollEventThrottle={scrollEventThrottle}
         onScroll={onScroll}
+        refreshControl={refreshControl ?? undefined}
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <EmptyState

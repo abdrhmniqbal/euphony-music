@@ -123,6 +123,11 @@
       "addedToPlaylist": "Date added to playlist"
     },
     "genre": "Genre",
+    "recommendedAlbums": "Recommended Albums",
+    "genreTopTracksMessage": "Play some {{genre}} music to see top tracks!",
+    "genreTopTracksLongMessage": "Play some {{genre}} music to see your most played tracks here!",
+    "genreAlbumsTitle": "{{genre}} Albums",
+    "genreAlbumsUnavailable": "No albums available in {{genre}}",
     "featuredOn": "Featured on",
     "allTracks": "All tracks",
     "artistInfo": "About",
