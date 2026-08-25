@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router"
+import { useLocalSearchParams, Stack } from "expo-router"
 import * as React from "react"
 import { useMemo } from "react"
 import { Text, View } from "react-native"
@@ -10,6 +10,7 @@ import { AlbumGrid } from "@/components/blocks/album-grid"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
+import { BackButton } from "@/components/patterns/back-button"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { getPreferenceState } from "@/core/preferences/store"
@@ -99,6 +100,13 @@ export function GenreDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      <Stack.Screen
+        options={{
+          title: "",
+          headerBackVisible: false,
+          headerLeft: () => <BackButton className="-ml-2" />,
+        }}
+      />
       <TrackList
         data={topTracks}
         showNumbers

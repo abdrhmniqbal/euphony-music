@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useThemeColor } from "heroui-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { TrackList } from "@/components/blocks/track-list"
@@ -21,6 +22,7 @@ const RECENTLY_PLAYED_SCREEN_LIMIT = 50
 export default function RecentlyPlayedScreen() {
   const { t } = useTranslation()
   const muted = useThemeColor("muted")
+  const insets = useSafeAreaInsets()
   const currentTrackId = useCurrentTrackId()
   const [isRefreshing, setIsRefreshing] = useState(false)
   const {
@@ -67,7 +69,7 @@ export default function RecentlyPlayedScreen() {
 
   if (history.length === 0) {
     return (
-      <View className="flex-1 bg-background px-4 pt-16">
+      <View className="flex-1 bg-background px-4" style={{ paddingTop: insets.top + 8 }}>
         <BackButton className="-ml-2" fallbackHref="/(main)/(home)" />
         <EmptyState
           icon={<LocalClock01SolidIcon fill="none" width={48} height={48} color={muted} />}
@@ -80,7 +82,7 @@ export default function RecentlyPlayedScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background pt-16">
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 8 }}>
       <View className="flex-row items-center px-4 pb-3">
         <BackButton className="-ml-2" fallbackHref="/(main)/(home)" />
         <Text className="ml-2 flex-1 text-xl font-bold text-foreground" numberOfLines={1}>

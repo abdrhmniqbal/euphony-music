@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
@@ -23,6 +24,7 @@ const RECENTLY_ADDED_SCREEN_LIMIT = 50
 export function RecentlyAddedScreen() {
   const { t } = useTranslation()
   const currentTrackId = useCurrentTrackId()
+  const insets = useSafeAreaInsets()
   const [isRefreshing, setIsRefreshing] = useState(false)
   const { data: tracksData = [], isLoading, isFetching, refetch } = useTracks()
 
@@ -70,7 +72,10 @@ export function RecentlyAddedScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="flex-row items-center px-4 pt-16 pb-3">
+      <View
+        className="flex-row items-center px-4 pb-3"
+        style={{ paddingTop: insets.top + 8 }}
+      >
         <BackButton className="-ml-2" fallbackHref="/(main)/(search)" />
         <Text className="ml-2 flex-1 text-xl font-bold text-foreground" numberOfLines={1}>
           {t("search.recentlyAdded")}

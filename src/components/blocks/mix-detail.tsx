@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import Animated, { FadeIn } from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
@@ -31,6 +32,7 @@ const HEADER_COLLAPSE_THRESHOLD = 120
 export function MixDetailScreen() {
   const { t } = useTranslation()
   const [foreground, muted] = useThemeColor(["foreground", "muted"])
+  const insets = useSafeAreaInsets()
   const router = useGuardedRouter()
   const { id } = useLocalSearchParams<{ id: string }>()
   const mixId = id ?? "daily"
@@ -91,7 +93,10 @@ export function MixDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="flex-row items-center justify-between px-4 pt-14 pb-2">
+      <View
+        className="flex-row items-center justify-between px-4 pb-2"
+        style={{ paddingTop: insets.top + 8 }}
+      >
         <BackButton className="-ml-2" fallbackHref="/(main)/(search)" />
         {tracks.length > 0 ? (
           <Button
@@ -187,7 +192,7 @@ export function MixDetailScreen() {
       </CollectionActionSheet>
 
       {tracks.length === 0 && !isLoading ? (
-        <View className="px-4 pt-16">
+        <View style={{ paddingTop: insets.top + 8 }} className="px-4">
           <BackButton className="-ml-2 mb-4" fallbackHref="/(main)/(search)" />
           <EmptyState
             icon={<LocalMusicNote04SolidIcon fill="none" width={48} height={48} color={muted} />}

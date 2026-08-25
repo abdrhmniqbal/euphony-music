@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { cn } from "tailwind-variants"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated"
 
@@ -24,6 +25,7 @@ const PERIOD_OPTIONS: HistoryTopTracksPeriod[] = ["all", "day", "week", "month"]
 export default function TopTracksScreen() {
   const { t } = useTranslation()
   const muted = useThemeColor("muted")
+  const insets = useSafeAreaInsets()
   const [period, setPeriod] = useState<HistoryTopTracksPeriod>("all")
   const {
     data: currentTracksData,
@@ -75,7 +77,7 @@ export default function TopTracksScreen() {
   const autoHideScrollProps = useAutoHideHeaderScroll()
 
   return (
-    <View className="flex-1 bg-background pt-16">
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top + 8 }}>
       <View className="flex-row items-center px-4 pb-3">
         <BackButton className="-ml-2" fallbackHref="/(main)/(home)" />
         <Text className="ml-2 flex-1 text-xl font-bold text-foreground" numberOfLines={1}>

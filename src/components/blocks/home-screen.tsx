@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ScrollView, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useThemeColor } from "heroui-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import LocalClock01SolidIcon from "@/components/icons/local/clock-01-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
@@ -33,6 +34,7 @@ export function HomeScreen() {
   const router = useRouter()
   const { t } = useTranslation()
   const muted = useThemeColor("muted")
+  const insets = useSafeAreaInsets()
   const currentTrackId = useCurrentTrackId()
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
@@ -74,7 +76,7 @@ export function HomeScreen() {
         <ThemedRefreshControl refreshing={isLoading} onRefresh={() => void refresh()} />
       }
     >
-      <View style={{ paddingTop: SCREEN_SECTION_TOP_SPACING }}>
+      <View style={{ paddingTop: insets.top + SCREEN_SECTION_TOP_SPACING }}>
         <ContentSection
           title={t("home.recentlyPlayed")}
           data={recentlyPlayedPreviewTracks}
