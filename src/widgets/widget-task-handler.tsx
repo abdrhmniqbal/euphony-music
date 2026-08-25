@@ -1,4 +1,4 @@
-import { Platform } from "react-native"
+import { Appearance, Platform } from "react-native"
 
 import {
   requestWidgetUpdate,
@@ -10,19 +10,52 @@ import { PlayerWidget, type PlayerWidgetSnapshot, snapshotFromTrack } from "@/wi
 import { hydratePlaybackStore, readPersistedSnapshot } from "@/widgets/playback-snapshot"
 import { playNext, playPrevious, togglePlayback } from "@/playback/controls"
 import { playbackStore } from "@/playback/playback-store"
+import { preferenceStore } from "@/core/preferences/store"
+import { getStaticThemeColors } from "@/core/theme/colors"
 
 const WIDGET_NAME = "Player"
 
-function playerRepresentation(snapshot: PlayerWidgetSnapshot): WidgetRepresentation {
+async function ensurePreferencesHydrated(): Promise<void> {
+  try {
+    await preferenceStore.persist.rehydrate()
+  } catch {
+    // fall back to default theme colors in a cold widget context
+  }
+}
+
+function themedPlayerWidget(snapshot: PlayerWidgetSnapshot): WidgetRepresentation {
+  const { themeId, themeMode } = preferenceStore.getState()
+
+  if (themeMode === "light") {
+    const light = getStaticThemeColors(themeId, false)
+    return {
+      light: <PlayerWidget snapshot={snapshot} colors={light} />,
+      dark: <PlayerWidget snapshot={snapshot} colors={light} />,
+    }
+  }
+
+  if (themeMode === "dark") {
+    const dark = getStaticThemeColors(themeId, true)
+    return {
+      light: <PlayerWidget snapshot={snapshot} colors={dark} />,
+      dark: <PlayerWidget snapshot={snapshot} colors={dark} />,
+    }
+  }
+
   return {
-    light: <PlayerWidget snapshot={snapshot} dark={false} />,
-    dark: <PlayerWidget snapshot={snapshot} dark={true} />,
+    light: <PlayerWidget snapshot={snapshot} colors={getStaticThemeColors(themeId, false)} />,
+    dark: (
+      <PlayerWidget
+        snapshot={snapshot}
+        colors={getStaticThemeColors(themeId, Appearance.getColorScheme() === "dark")}
+      />
+    ),
   }
 }
 
 function representationFromStore(): WidgetRepresentation {
   const state = playbackStore.getState()
-  return playerRepresentation(snapshotFromTrack(state.activeTrack, state.isPlaying))
+  return themedPlayerWidget(snapshotFromTrack(state.activeTrack, state.isPlaying))
 }
 
 async function handleAction(action: string | undefined): Promise<void> {
@@ -64,8 +97,9 @@ export async function widgetTaskHandler({
 
   if (widgetAction === "WIDGET_DELETED") return
 
+  await ensurePreferencesHydrated()
   const { track, isPlaying } = await readPersistedSnapshot()
-  renderWidget(playerRepresentation(snapshotFromTrack(track, isPlaying)))
+  renderWidget(themedPlayerWidget(snapshotFromTrack(track, isPlaying)))
 }
 
 export async function refreshPlayerWidget(): Promise<void> {
@@ -74,7 +108,10 @@ export async function refreshPlayerWidget(): Promise<void> {
   try {
     await requestWidgetUpdate({
       widgetName: WIDGET_NAME,
-      renderWidget: async () => representationFromStore(),
+      renderWidget: async () => {
+        await ensurePreferencesHydrated()
+        return representationFromStore()
+      },
       widgetNotFound: () => {},
     })
   } catch {

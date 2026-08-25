@@ -4,31 +4,18 @@ import { FlexWidget, TextWidget } from "react-native-android-widget"
 
 import { i18n } from "@/core/localization/i18n"
 import type { DataTrack } from "@/domains/tracks/types"
-
-const ACCENT = "#0088F6"
-
-const LIGHT = {
-  surface: "#FFFFFF" as const,
-  title: "#141414" as const,
-  subtitle: "#6B7280" as const,
-  tile: "#EDEFF3" as const,
-  glyph: "#374151" as const,
-}
-
-const DARK = {
-  surface: "#101014" as const,
-  title: "#F5F5F5" as const,
-  subtitle: "#9CA3AF" as const,
-  tile: "#1C1F26" as const,
-  glyph: "#D1D5DB" as const,
-}
-
-type Palette = typeof LIGHT | typeof DARK
+import type { ThemeColors } from "@/core/theme/colors"
 
 export interface PlayerWidgetSnapshot {
   trackName: string
   artistName: string
   isPlaying: boolean
+}
+
+// react-native-android-widget accepts hex and rgba strings at runtime; its types just cannot see it
+function toWidgetColor(value: string): `#${string}` {
+  // SAFETY: static theme color values are always hex strings
+  return value as `#${string}`
 }
 
 export function snapshotFromTrack(
@@ -44,23 +31,20 @@ export function snapshotFromTrack(
   }
 }
 
-function ControlButton({
+function ControlGlyph({
   glyph,
   clickAction,
-  palette,
+  colors,
 }: {
   glyph: string
   clickAction: string
-  palette: Palette
+  colors: ThemeColors
 }) {
   return (
     <FlexWidget
       clickAction={clickAction}
       style={{
-        height: 36,
-        width: 36,
-        borderRadius: 18,
-        backgroundColor: palette.tile,
+        height: 40,
         alignItems: "center",
         justifyContent: "center",
       }}
@@ -68,8 +52,8 @@ function ControlButton({
       <TextWidget
         text={glyph}
         style={{
-          color: palette.glyph,
-          fontSize: 16,
+          color: toWidgetColor(colors.foreground),
+          fontSize: 19,
         }}
       />
     </FlexWidget>
@@ -78,13 +62,11 @@ function ControlButton({
 
 export function PlayerWidget({
   snapshot,
-  dark,
+  colors,
 }: {
   snapshot: PlayerWidgetSnapshot
-  dark: boolean
+  colors: ThemeColors
 }) {
-  const palette = dark ? DARK : LIGHT
-
   return (
     <FlexWidget
       clickAction="OPEN_APP"
@@ -93,8 +75,10 @@ export function PlayerWidget({
         width: "match_parent",
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: palette.surface,
-        borderRadius: 20,
+        backgroundColor: toWidgetColor(colors.surface),
+        borderColor: toWidgetColor(colors.border),
+        borderWidth: 1,
+        borderRadius: 16,
         paddingHorizontal: 12,
         paddingVertical: 8,
       }}
@@ -103,18 +87,18 @@ export function PlayerWidget({
         style={{
           height: 44,
           width: 44,
-          borderRadius: 12,
-          backgroundColor: palette.tile,
+          borderRadius: 8,
+          backgroundColor: toWidgetColor(colors.default),
           alignItems: "center",
           justifyContent: "center",
-          marginRight: 10,
+          marginRight: 12,
         }}
       >
         <TextWidget
           text="♪"
           style={{
-            color: ACCENT,
-            fontSize: 22,
+            color: toWidgetColor(colors.muted),
+            fontSize: 20,
             fontWeight: "bold",
           }}
         />
@@ -133,8 +117,8 @@ export function PlayerWidget({
           maxLines={1}
           truncate="END"
           style={{
-            color: palette.title,
-            fontSize: 14,
+            color: toWidgetColor(colors.foreground),
+            fontSize: 15,
             fontWeight: "bold",
           }}
         />
@@ -143,37 +127,31 @@ export function PlayerWidget({
           maxLines={1}
           truncate="END"
           style={{
-            color: palette.subtitle,
-            fontSize: 12,
+            color: toWidgetColor(colors.muted),
+            fontSize: 13,
             marginTop: 2,
           }}
         />
       </FlexWidget>
 
-      <FlexWidget clickAction="OPEN_APP" style={{ flexDirection: "row", alignItems: "center" }}>
-        <ControlButton glyph="⏮" clickAction="PREVIOUS" palette={palette} />
-        <FlexWidget
-          clickAction="PLAY_PAUSE"
+      <FlexWidget
+        clickAction="PLAY_PAUSE"
+        style={{
+          height: 40,
+          alignItems: "center",
+          justifyContent: "center",
+          marginRight: 4,
+        }}
+      >
+        <TextWidget
+          text={snapshot.isPlaying ? "⏸" : "▶"}
           style={{
-            height: 40,
-            width: 40,
-            borderRadius: 20,
-            backgroundColor: ACCENT,
-            alignItems: "center",
-            justifyContent: "center",
-            marginHorizontal: 2,
+            color: toWidgetColor(colors.foreground),
+            fontSize: 21,
           }}
-        >
-          <TextWidget
-            text={snapshot.isPlaying ? "⏸" : "▶"}
-            style={{
-              color: "#FFFFFF",
-              fontSize: 17,
-            }}
-          />
-        </FlexWidget>
-        <ControlButton glyph="⏭" clickAction="NEXT" palette={palette} />
+        />
       </FlexWidget>
+      <ControlGlyph glyph="⏭" clickAction="NEXT" colors={colors} />
     </FlexWidget>
   )
 }

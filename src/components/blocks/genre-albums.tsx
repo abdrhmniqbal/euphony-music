@@ -22,13 +22,17 @@ import {
   type DetailSortField,
 } from "@/domains/tracks/detail-sort"
 
+const FALLBACK_SORT_CONFIG: DetailSortConfig = {
+  field: "year",
+  order: "desc",
+}
+
 export function GenreAlbumsScreen() {
   const { t } = useTranslation()
   const { name } = useLocalSearchParams<{ name: string }>()
   const muted = useThemeColor("muted")
   const router = useGuardedRouter()
   const [showSortSheet, setShowSortSheet] = React.useState(false)
-  const allSortConfigs = useLibrarySortStore((state) => state.sortConfig)
 
   const genreName = React.useMemo(() => {
     try {
@@ -40,10 +44,7 @@ export function GenreAlbumsScreen() {
 
   const { data, isLoading, isFetching, refetch } = useGenreDetails(genreName)
 
-  const sortConfig: DetailSortConfig = allSortConfigs.GenreAlbums ?? {
-    field: "year",
-    order: "desc",
-  }
+  const sortConfig = useLibrarySortStore((state) => state.sortConfig.GenreAlbums) ?? FALLBACK_SORT_CONFIG
   const albums = React.useMemo(() => data?.albums ?? [], [data?.albums])
   const sortedAlbums = React.useMemo(
     () =>
