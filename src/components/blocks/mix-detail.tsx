@@ -18,7 +18,6 @@ import { SortSheet } from "@/components/blocks/sort-sheet"
 import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { EmptyState } from "@/components/ui/empty-state"
-import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/lib/layout"
 import { formatDurationCompact } from "@/lib/format"
 import { useGuardedRouter } from "@/core/navigation"
 import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
@@ -164,51 +163,48 @@ export function MixDetailScreen() {
         {...autoHideScrollProps}
         onScroll={(event) => handleTrackScroll(event.nativeEvent.contentOffset.y)}
         listHeader={
-          <View
-            style={{
-              paddingTop: SCREEN_SECTION_TOP_SPACING,
-              paddingBottom: DETAIL_HEADER_BOTTOM_SPACING,
-            }}
-          >
-            <View className="flex-row gap-4 px-4">
-              <View className="h-36 w-36 overflow-hidden rounded-lg bg-default">
-                <PlaylistArtwork images={images} />
-              </View>
+          <>
+            <View className="px-4 pt-6 pb-6">
+              <View className="flex-row gap-4">
+                <View className="h-36 w-36 overflow-hidden rounded-lg bg-default">
+                  <PlaylistArtwork images={images} />
+                </View>
 
-              <View className="flex-1 justify-center">
-                <Text className="text-xl font-bold text-foreground" numberOfLines={2}>
-                  {title}
-                </Text>
-                <Text className="mt-1 text-base text-muted" numberOfLines={2}>
-                  {description}
-                </Text>
-                <Text className="mt-2 text-sm text-muted">
-                  {mixData?.generatedAt
-                    ? `${new Intl.DateTimeFormat(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(mixData.generatedAt)} • `
-                    : ""}
-                  {formatDurationCompact(totalDuration)}
-                </Text>
+                <View className="flex-1 justify-center">
+                  <Text className="text-xl font-bold text-foreground" numberOfLines={2}>
+                    {title}
+                  </Text>
+                  <Text className="mt-1 text-base text-muted" numberOfLines={2}>
+                    {description}
+                  </Text>
+                  <Text className="mt-2 text-sm text-muted">
+                    {mixData?.generatedAt
+                      ? `${new Intl.DateTimeFormat(undefined, {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).format(mixData.generatedAt)} • `
+                      : ""}
+                    {formatDurationCompact(totalDuration)}
+                  </Text>
+                </View>
               </View>
             </View>
 
             {tracks.length > 0 ? (
-              <Animated.View entering={FadeIn} className="mt-4 px-4">
+              <Animated.View entering={FadeIn} className="px-4 mb-4">
                 <PlaybackActionsRow onPlay={handlePlayMix} onShuffle={handleShuffleMix} />
               </Animated.View>
             ) : null}
 
-            <View className="mb-2 mt-4 flex-row items-center justify-between px-4">
+            <View className="mb-2 flex-row items-center justify-between px-4">
               <Text className="text-lg font-bold text-foreground">
                 {t("library.count.track", { count: tracks.length })}
               </Text>
               <SortSheet.Trigger label={t(sortLabel || "library.sortBy")} iconSize={16} />
             </View>
-          </View>
+          </>
         }
       />
 
