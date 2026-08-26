@@ -37,15 +37,17 @@ import {
   consumePlaylistFormDraft,
 } from "@/domains/playlists/form-draft-store"
 import { usePlaylistFormEditor } from "@/domains/playlists/use-form-editor"
+import { useIsDraftSelected } from "@/domains/playlists/draft-selection-store"
 import { usePlaylist } from "@/domains/playlists/queries"
 import type { PlayerTrack } from "@/playback/types"
 
 const TRACK_PICKER_SNAP_POINTS = ["72%", "90%"]
 
-function PickerCheckbox({ isSelected, label }: { isSelected: boolean; label: string }) {
+function PickerCheckbox({ trackId, label }: { trackId: string; label: string }) {
   const [accent, accentForeground] = useThemeColor(["accent", "accent-foreground"])
+  // SAFETY: subscribing to the store directly sidesteps list-cell prop propagation dropping updates
+  const isSelected = useIsDraftSelected(trackId)
 
-  // SAFETY: heroui Checkbox's reanimated indicator can keep stale opacity in reordered lists, hiding the tick
   return (
     <View
       accessibilityRole="checkbox"
@@ -331,7 +333,7 @@ function PlaylistFormScreen() {
                   className="w-full py-2"
                   leftAction={
                     <PickerCheckbox
-                      isSelected={editor.draftSelectedTracks.has(item.id)}
+                      trackId={item.id}
                       label={t("playlist.selectTrack", { title: item.title })}
                     />
                   }

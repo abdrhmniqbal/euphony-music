@@ -4,13 +4,17 @@ import { useDebouncedValue } from "@tanstack/react-pacer"
 import { useTracks } from "@/domains/tracks/queries"
 import { toPlayerTracks } from "@/playback/player-track"
 import { getPreferenceState } from "@/core/preferences/store"
+import {
+  setDraftSelection,
+  toggleDraftSelectionId,
+  useDraftSelectedTracks,
+} from "./draft-selection-store"
 
 import {
   buildSelectedTracksList,
   buildTrackPickerResults,
   clampPlaylistDescription,
   clampPlaylistName,
-  toggleTrackSelection,
   reorderTrackIds,
 } from "./utils"
 import { useSavePlaylist } from "./queries"
@@ -74,9 +78,7 @@ export function usePlaylistFormEditor({
   const [isTrackSheetOpen, setIsTrackSheetOpen] = React.useState(false)
   const [searchInputKey, setSearchInputKey] = React.useState(0)
   const [searchQuery, setSearchQuery] = React.useState("")
-  const [draftSelectedTracks, setDraftSelectedTracks] = React.useState(
-    () => new Set(selectedTrackIds)
-  )
+  const draftSelectedTracks = useDraftSelectedTracks()
 
   const [debouncedSearchQuery] = useDebouncedValue(searchQuery, { wait: SEARCH_DEBOUNCE_MS })
   const normalizedQuery = debouncedSearchQuery.trim().toLowerCase()
@@ -93,7 +95,7 @@ export function usePlaylistFormEditor({
   )
 
   const openTrackSheet = React.useCallback(() => {
-    setDraftSelectedTracks(new Set(selectedTrackIds))
+    setDraftSelection(new Set(selectedTrackIds))
     setIsTrackSheetOpen(true)
   }, [selectedTrackIds])
 
@@ -101,11 +103,11 @@ export function usePlaylistFormEditor({
     setIsTrackSheetOpen(false)
     setSearchQuery("")
     setSearchInputKey((prev) => prev + 1)
-    setDraftSelectedTracks(new Set(selectedTrackIds))
+    setDraftSelection(new Set(selectedTrackIds))
   }, [selectedTrackIds])
 
   const toggleDraftTrack = React.useCallback((trackId: string) => {
-    setDraftSelectedTracks((prev) => toggleTrackSelection(prev, trackId))
+    toggleDraftSelectionId(trackId)
   }, [])
 
   const applyTrackSheetSelection = React.useCallback(() => {
@@ -124,7 +126,7 @@ export function usePlaylistFormEditor({
   }, [allTracks, draftSelectedTracks])
 
   const clearDraftTrackSelection = React.useCallback(() => {
-    setDraftSelectedTracks(new Set())
+    setDraftSelection(new Set())
   }, [])
 
   const selectedTracksList = React.useMemo(

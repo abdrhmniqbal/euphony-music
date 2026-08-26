@@ -95,7 +95,7 @@ export function buildSelectedTracksList(
 export function buildTrackPickerResults(options: {
   allTracks: PlayerTrack[]
   selectedTrackIds: string[]
-  draftSelectedTracks: Set<string>
+  draftSelectedTracks: ReadonlySet<string>
   normalizedQuery: string
 }): PlayerTrack[] {
   const { allTracks, selectedTrackIds, draftSelectedTracks, normalizedQuery } = options
