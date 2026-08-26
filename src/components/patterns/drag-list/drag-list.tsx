@@ -3,7 +3,9 @@ import { AnimatedLegendList } from "@legendapp/list/reanimated"
 import React, { useCallback } from "react"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import Animated, {
+  cancelAnimation,
   clamp,
+  runOnJS,
   scrollTo,
   useAnimatedReaction,
   useAnimatedRef,
@@ -12,8 +14,6 @@ import Animated, {
   withTiming,
   type ReanimatedEvent,
 } from "react-native-reanimated"
-import { scheduleOnRN } from "react-native-worklets"
-
 import { ItemWrapper } from "./item-wrapper"
 import { DragListStoreProvider, INACTIVE, useDragListStore } from "./store"
 
@@ -114,8 +114,9 @@ function DragListImpl<T>({
     .onFinalize(() => {
       autoScrollDirection.set(0)
       if (activeIndex.get() === INACTIVE) return
-      scheduleOnRN(handleDrop, activeIndex.get(), activeIndex.get() + shifted.get())
-      scheduleOnRN(cleanup)
+      // SAFETY: scheduleOnRN crashes with locally-defined callbacks on worklets 0.10.
+      runOnJS(handleDrop)(activeIndex.get(), activeIndex.get() + shifted.get())
+      runOnJS(cleanup)()
     })
 
   useAnimatedReaction(
@@ -148,6 +149,7 @@ function DragListImpl<T>({
   const cleanup = useCallback(() => {
     store.setReactiveActiveIndex(INACTIVE)
     activeIndex.set(INACTIVE)
+    cancelAnimation(autoScrollDirection)
     autoScrollDirection.set(0)
     autoScrollAmount.set(0)
     pan.set(0)
