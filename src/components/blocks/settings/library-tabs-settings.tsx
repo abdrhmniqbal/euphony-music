@@ -93,9 +93,12 @@ export function LibraryTabsSettings() {
     [handleToggle]
   )
 
+  // Deps follow listResetKey so each remount gets a fresh gesture instance: the
+  // library attaches its own handlers onto the prop (mutating it), and reusing one
+  // instance across remounts trips reanimated's shared-object guard.
   const panGesture = useMemo(() => {
     return Gesture.Pan().activateAfterLongPress(200)
-  }, [])
+  }, [listResetKey])
 
   return (
     <View className="flex-1 bg-background px-4 py-4">
