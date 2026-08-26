@@ -3,7 +3,7 @@ import { and, eq, gt, isNull, lt, or, sql } from "drizzle-orm"
 
 import { db } from "@/core/db"
 import { artists } from "@/core/db/schema"
-import { logError } from "@/core/log/service"
+import { logError, logInfo } from "@/core/log/service"
 import { saveArtworkToCache } from "@/domains/indexer/metadata/artwork-cache"
 import { isNumber, isRecord, isString } from "@/lib/guards"
 import { selectArtistCandidate } from "./artist-match"
@@ -122,6 +122,10 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
     orderBy: sql`lower(coalesce(${artists.name}, ''))`,
   })
 
+  let fetchedCount = 0
+  let missCount = 0
+  let failureCount = 0
+
   const rateLimiter = new AsyncRateLimiter(async (name: string) => fetchDeezerArtistImage(name), {
     limit: 50,
     window: 5000,
@@ -129,13 +133,21 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
   })
 
   for (const artist of rows) {
-    if (signal?.aborted) return
+    if (signal?.aborted) {
+      logInfo("Deezer artist image refresh aborted", {
+        forceRefresh,
+        targets: rows.length,
+        processed: fetchedCount + missCount + failureCount,
+      })
+      return
+    }
     if (!forceRefresh && artist.artwork) continue
 
     let image: string | null | undefined
     try {
       image = await rateLimitedFetch(rateLimiter, artist.name, signal)
     } catch (err) {
+      failureCount += 1
       logError(
         "refreshDeezerArtistImages: skipped artist",
         err instanceof Error ? err : new Error(String(err)),
@@ -143,6 +155,10 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       )
       continue
     }
+
+    if (image === null) missCount += 1
+    else if (image !== undefined) fetchedCount += 1
+    else failureCount += 1
 
     // Always bump updatedAt so missing artists are not re-queried within the same session.
     let cachedImage = image || null
@@ -168,4 +184,13 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
         .where(eq(artists.id, artist.id))
     }
   }
+
+  logInfo("Deezer artist image refresh completed", {
+    forceRefresh,
+    targets: rows.length,
+    fetched: fetchedCount,
+    missed: missCount,
+    failed: failureCount,
+    durationMs: Date.now() - runStartedAt,
+  })
 }
