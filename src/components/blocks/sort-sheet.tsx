@@ -93,10 +93,10 @@ function SortSheetTrigger({
 }: SortSheetTriggerProps) {
   const muted = useThemeColor("muted")
   const { onOpenChange, currentOrder } = useSortSheetContext<string>()
-  // SAFETY: heroui accepts SharedValue handlers; only the plain-function branch is callable here
+  // SAFETY: heroui accepts SharedValue handlers and its contravariance-disabled variant evades isSharedValue narrowing; only plain functions are callable here
   const onPressHandler =
-    onPress && !isSharedValue<((event: GestureResponderEvent) => void) | null | undefined>(onPress)
-      ? onPress
+    onPress && !isSharedValue(onPress)
+      ? (onPress as (event: GestureResponderEvent) => void)
       : undefined
 
   function handlePress(event: GestureResponderEvent) {

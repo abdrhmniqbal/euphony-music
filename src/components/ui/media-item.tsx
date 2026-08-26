@@ -59,7 +59,12 @@ const MediaItemContext = createContext<MediaItemContextValue>({
 
 const BoundaryPressableFeedback = Transition.createBoundaryComponent(PressableFeedback)
 
-type MaybeShared<T> = T | SharedValue<T | null | undefined> | null | undefined
+type MaybeShared<T> =
+  | T
+  | SharedValue<T | null | undefined>
+  | Omit<SharedValue<T | null | undefined>, "set" | "modify">
+  | null
+  | undefined
 
 // SAFETY: heroui accepts SharedValue handlers; only plain functions can be re-emitted through our own wrapper
 function resolvePlainHandler<T>(handler: MaybeShared<T>): T | undefined {
@@ -167,9 +172,10 @@ function MediaItemRoot({
   ...props
 }: MediaItemRootProps) {
   const { base } = mediaItemStyles({ variant })
+  // SAFETY: heroui accepts SharedValue delays and its contravariance-disabled variant evades isSharedValue narrowing; only numbers are usable here
   const resolvedDelay =
     delayLongPress && !isSharedValue<number | null | undefined>(delayLongPress)
-      ? delayLongPress
+      ? (delayLongPress as number)
       : DEFAULT_LONG_PRESS_DELAY_MS
 
   const interaction = useMediaItemInteraction(
