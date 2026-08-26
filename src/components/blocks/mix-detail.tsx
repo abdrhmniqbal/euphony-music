@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router"
+import { Stack, useLocalSearchParams } from "expo-router"
 import { Button, useThemeColor } from "heroui-native"
 import { useCallback, useMemo, useState } from "react"
 import { Text, View } from "react-native"
@@ -14,6 +14,7 @@ import { MenuRow } from "@/components/ui/menu-row"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
 import { TrackList } from "@/components/blocks/track-list"
+import { SortSheet } from "@/components/blocks/sort-sheet"
 import { BackButton } from "@/components/patterns/back-button"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -21,6 +22,12 @@ import { DETAIL_HEADER_BOTTOM_SPACING, SCREEN_SECTION_TOP_SPACING } from "@/lib/
 import { formatDurationCompact } from "@/lib/format"
 import { useGuardedRouter } from "@/core/navigation"
 import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
+import {
+  MIX_TRACK_SORT_OPTIONS,
+  resolveSortLabel,
+  type SortOptionField,
+} from "@/domains/library/sort-constants"
+import { sortPlayerTracks, type DetailSortField } from "@/domains/tracks/detail-sort"
 import { useDailyMix, useForYouMix } from "@/domains/mixes/queries"
 import { MixMaxItemsSheet } from "@/components/blocks/mix-max-items-sheet"
 import { collectTrackImages } from "@/domains/visuals/shared"
@@ -43,6 +50,9 @@ export function MixDetailScreen() {
   const [showHeaderTitle, setShowHeaderTitle] = useState(false)
   const [showActionSheet, setShowActionSheet] = useState(false)
   const [showMaxItemsSheet, setShowMaxItemsSheet] = useState(false)
+  const [showSortSheet, setShowSortSheet] = useState(false)
+  const [sortField, setSortField] = useState<SortOptionField>("mixOrder")
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
   const maxMixItems = usePreferenceStore((state) => state.maxMixItems)
 
   const isDaily = mixId === "daily"
@@ -62,17 +72,30 @@ export function MixDetailScreen() {
 
   const images = useMemo(() => collectTrackImages(tracks.map((t) => t.image)), [tracks])
 
+  const sortedTracks = useMemo(
+    () =>
+      sortField === "mixOrder"
+        ? tracks
+        : // SAFETY: MIX_TRACK_SORT_OPTIONS excludes the playlist-only pseudo fields, so what remains is a DetailSortField
+          sortPlayerTracks(tracks, {
+            field: sortField as DetailSortField,
+            order: sortOrder,
+          }),
+    [tracks, sortField, sortOrder]
+  )
+  const sortLabel = resolveSortLabel(MIX_TRACK_SORT_OPTIONS, sortField)
+
   const queueContext = createPlaybackQueueContext("mix", title)
 
   function handlePlayMix() {
-    if (tracks.length === 0) return
-    playTrack(tracks[0], tracks, queueContext)
+    if (sortedTracks.length === 0) return
+    playTrack(sortedTracks[0], sortedTracks, queueContext)
   }
 
   function handleShuffleMix() {
-    if (tracks.length === 0) return
-    const randomIndex = Math.floor(Math.random() * tracks.length)
-    playTrack(tracks[randomIndex], tracks, queueContext)
+    if (sortedTracks.length === 0) return
+    const randomIndex = Math.floor(Math.random() * sortedTracks.length)
+    playTrack(sortedTracks[randomIndex], sortedTracks, queueContext)
   }
 
   const handleSaveToPlaylist = useCallback(() => {
@@ -93,39 +116,49 @@ export function MixDetailScreen() {
   }
 
   function handleTrackPress(track: PlayerTrack) {
-    playTrack(track, tracks, queueContext)
+    playTrack(track, sortedTracks, queueContext)
+  }
+
+  function handleSortSelect(field: SortOptionField, order?: "asc" | "desc") {
+    const isNewField = field !== sortField
+    setSortField(field)
+    setSortOrder(isNewField ? (order ?? "asc") : (order ?? sortOrder))
   }
 
   return (
-    <View className="flex-1 bg-background">
-      <View
-        className="flex-row items-center justify-between px-4 pb-2"
-        style={{ paddingTop: insets.top + 8 }}
-      >
-        <BackButton className="-ml-2" fallbackHref="/(main)/(search)" />
-        {tracks.length > 0 ? (
-          <Button
-            variant="ghost"
-            isIconOnly
-            onPress={() => setShowActionSheet(true)}
-            className="-mr-2"
-          >
-            <LocalMoreHorizontalCircle01SolidIcon
-              fill="none"
-              width={24}
-              height={24}
-              color={foreground}
-            />
-          </Button>
-        ) : null}
-      </View>
-      {showHeaderTitle ? (
-        <Text className="px-5 pb-1 text-lg font-bold text-foreground" numberOfLines={1}>
-          {title}
-        </Text>
-      ) : null}
-      <TrackList
-        data={tracks}
+    <SortSheet
+      visible={showSortSheet}
+      onOpenChange={setShowSortSheet}
+      currentField={sortField}
+      currentOrder={sortOrder}
+      onSelect={handleSortSelect}
+    >
+      <View className="flex-1 bg-background">
+        <Stack.Screen
+          options={{
+            title: showHeaderTitle ? title : "",
+            headerBackVisible: false,
+            headerLeft: () => <BackButton className="-ml-2" fallbackHref="/(main)/(search)" />,
+            headerRight: () =>
+              tracks.length > 0 ? (
+                <Button
+                  variant="ghost"
+                  isIconOnly
+                  onPress={() => setShowActionSheet(true)}
+                  className="-mr-2"
+                >
+                  <LocalMoreHorizontalCircle01SolidIcon
+                    fill="none"
+                    width={24}
+                    height={24}
+                    color={foreground}
+                  />
+                </Button>
+              ) : null,
+          }}
+        />
+        <TrackList
+        data={sortedTracks}
         onTrackPress={handleTrackPress}
         contentContainerStyle={{ paddingBottom: 200, paddingHorizontal: 16 }}
         {...autoHideScrollProps}
@@ -168,6 +201,13 @@ export function MixDetailScreen() {
                 <PlaybackActionsRow onPlay={handlePlayMix} onShuffle={handleShuffleMix} />
               </Animated.View>
             ) : null}
+
+            <View className="mb-2 mt-4 flex-row items-center justify-between px-4">
+              <Text className="text-lg font-bold text-foreground">
+                {t("library.count.track", { count: tracks.length })}
+              </Text>
+              <SortSheet.Trigger label={t(sortLabel || "library.sortBy")} iconSize={16} />
+            </View>
           </View>
         }
       />
@@ -212,6 +252,7 @@ export function MixDetailScreen() {
           />
         </View>
       ) : null}
-    </View>
+      </View>
+    </SortSheet>
   )
 }
