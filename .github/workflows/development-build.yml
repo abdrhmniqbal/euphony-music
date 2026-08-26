@@ -1,6 +1,6 @@
 # Purpose: Manually creates Android development APKs with Gradle.
 # Caller: GitHub Actions workflow_dispatch.
-# Dependencies: actions/checkout, pnpm/action-setup, setup-node, setup-java, Gradle cache, Android Gradle project.
+# Dependencies: actions/checkout, pnpm/action-setup, setup-node, setup-java, Android Gradle project.
 # Main Functions: Install dependencies with pnpm, build Android debug APK through Gradle, upload APK artifact.
 # Side Effects: Generates Android debug APK files and uploads workflow artifacts.
 
@@ -30,16 +30,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: pnpm
 
       - name: Setup JDK 18
         uses: actions/setup-java@v4
         with:
           java-version: 18
           distribution: temurin
-
-      - name: Setup Gradle cache
-        uses: gradle/actions/setup-gradle@v4
 
       - name: Enable corepack
         run: |
