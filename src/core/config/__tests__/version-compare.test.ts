@@ -5,7 +5,6 @@ import {
   isPreviewReleaseVersion,
   isNewerVersion,
   normalizeVersion,
-  parseChangelogReleaseNotes,
   parseVersion,
 } from "@/core/config/version-compare"
 
@@ -97,51 +96,5 @@ describe("isPreviewReleaseVersion", () => {
 
   it("does not treat a dev build as a preview release", () => {
     expect(isPreviewReleaseVersion("1.2.3-dev")).toBe(false)
-  })
-})
-
-describe("parseChangelogReleaseNotes", () => {
-  const markdown = `## [2.0.0] - 2024-01-01
-
-Release 2 body
-
-## [1.5.0]
-
-Release 1.5 body
-
-## [1.0.0-beta.1]
-
-Beta body
-`
-
-  it("returns only release notes up to the current version", () => {
-    const notes = parseChangelogReleaseNotes(markdown, "1.5.0")
-
-    expect(notes).toEqual([
-      {
-        version: "1.5.0",
-        releaseName: "1.5.0",
-        body: "Release 1.5 body",
-        prerelease: false,
-      },
-      {
-        version: "1.0.0-beta.1",
-        releaseName: "1.0.0-beta.1",
-        body: "Beta body",
-        prerelease: true,
-      },
-    ])
-  })
-
-  it("returns every section when the current version is the latest", () => {
-    expect(parseChangelogReleaseNotes(markdown, "2.0.0")).toHaveLength(3)
-  })
-
-  it("returns an empty array for empty input", () => {
-    expect(parseChangelogReleaseNotes("", "1.0.0")).toEqual([])
-  })
-
-  it("treats a dev build as its published version for the cutoff", () => {
-    expect(parseChangelogReleaseNotes(markdown, "1.5.0-dev")).toHaveLength(2)
   })
 })

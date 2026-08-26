@@ -10,7 +10,6 @@ import { getCurrentAppVersion, isPreviewReleaseVersion } from "@/core/config/app
 import {
   compareVersions,
   isNewerVersion,
-  parseChangelogReleaseNotes,
   type AppReleaseNote,
 } from "@/core/config/version-compare"
 
@@ -18,8 +17,6 @@ export { getCurrentAppVersion, isPreviewReleaseVersion }
 export type { AppReleaseNote } from "@/core/config/version-compare"
 
 const GITHUB_RELEASES_URL = "https://api.github.com/repos/abdrhmniqbal/startune-music/releases"
-const CHANGELOG_RAW_URL =
-  "https://raw.githubusercontent.com/abdrhmniqbal/startune-music/master/CHANGELOG.md"
 const UPDATE_NOTIFICATION_CHANNEL_ID = "app-updates"
 const UPDATE_NOTIFICATION_ID = "app-update-available"
 const APK_ASSET_PATTERN = /\.apk$/i
@@ -127,18 +124,33 @@ async function fetchGitHubReleases(): Promise<GitHubRelease[]> {
   return Array.isArray(parsed) ? parsed.filter(isRecord) : []
 }
 
-async function fetchRepositoryChangelog(): Promise<string> {
-  const response = await fetch(CHANGELOG_RAW_URL, {
-    headers: {
-      Accept: "text/plain",
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Repository changelog request failed: ${response.status}`)
+export async function getGitHubReleaseNotesUntilCurrent({
+  currentVersion,
+}: {
+  currentVersion: string
+}): Promise<AppReleaseNote[]> {
+  if (!currentVersion) {
+    return []
   }
 
-  return await response.text()
+  try {
+    const releases = await fetchGitHubReleases()
+    return releases
+      .filter((release) => release.draft !== true && isString(release.tag_name))
+      .map((release) => ({
+        version: getReleaseVersion(release),
+        releaseName: getReleaseName(release) || getReleaseVersion(release),
+        body: isString(release.body) ? release.body : "",
+        prerelease: release.prerelease === true,
+      }))
+      .filter(
+        (note) => note.version.length > 0 && compareVersions(note.version, currentVersion) <= 0
+      )
+      .sort((left, right) => compareVersions(right.version, left.version))
+  } catch (error) {
+    logError("Failed to load release notes", error)
+    return []
+  }
 }
 
 export async function checkForAppUpdate({
@@ -193,24 +205,6 @@ export async function checkForAppUpdate({
       throw error
     }
     return null
-  }
-}
-
-export async function getChangelogReleaseNotesUntilCurrent({
-  currentVersion,
-}: {
-  currentVersion: string
-}): Promise<AppReleaseNote[]> {
-  if (!currentVersion) {
-    return []
-  }
-
-  try {
-    const changelogMarkdown = await fetchRepositoryChangelog()
-    return parseChangelogReleaseNotes(changelogMarkdown, currentVersion)
-  } catch (error) {
-    logError("Failed to load release notes", error)
-    return []
   }
 }
 

@@ -2,7 +2,7 @@
  * Purpose: Pure version parsing, comparison, and changelog release-note extraction.
  * Caller: App update service (checkForAppUpdate, changelog rendering) and app-version helpers.
  * Dependencies: none.
- * Main Functions: compareVersions(), isNewerVersion(), parseChangelogReleaseNotes(), isPreviewReleaseVersion()
+ * Main Functions: compareVersions(), isNewerVersion(), isPreviewReleaseVersion()
  * Side Effects: None.
  */
 
@@ -114,45 +114,4 @@ export function compareVersions(left: string, right: string) {
 
 export function isNewerVersion(candidate: string, current: string) {
   return compareVersions(candidate, current) > 0
-}
-
-export function parseChangelogReleaseNotes(markdown: string, currentVersion: string) {
-  const headingPattern = /^##\s+\[([^\]]+)\](?:\s+-\s+([^\n]+))?\s*$/gm
-  const matches: Array<{
-    headingStart: number
-    headingLength: number
-    version: string
-  }> = []
-
-  let match: RegExpExecArray | null
-  while ((match = headingPattern.exec(markdown)) !== null) {
-    matches.push({
-      headingStart: match.index,
-      headingLength: match[0]?.length ?? 0,
-      version: (match[1] ?? "").trim(),
-    })
-  }
-
-  return matches
-    .map((entry, index) => {
-      const bodyStart = entry.headingStart + entry.headingLength
-      const bodyEnd =
-        index < matches.length - 1
-          ? (matches[index + 1]?.headingStart ?? markdown.length)
-          : markdown.length
-      const body = markdown.slice(bodyStart, bodyEnd).trim()
-      const version = entry.version
-
-      if (version.length === 0 || compareVersions(version, currentVersion) > 0) {
-        return null
-      }
-
-      return {
-        version,
-        releaseName: version,
-        body,
-        prerelease: normalizeVersion(version).includes("-"),
-      } satisfies AppReleaseNote
-    })
-    .filter((release): release is AppReleaseNote => release !== null)
 }
