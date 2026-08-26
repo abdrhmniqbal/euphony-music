@@ -16,11 +16,13 @@ import { useHasCurrentTrack } from "@/playback/selectors"
 import { usePlaylistsWithOptions } from "@/domains/playlists/queries"
 import { useFavorites } from "@/domains/favorites/queries"
 import type { FavoriteType } from "@/domains/favorites/types"
-import { MINI_PLAYER_HEIGHT } from "@/lib/layout"
+import { getTabScreenBottomPadding } from "@/lib/layout"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 export default function LibraryScreen() {
   const router = useGuardedRouter()
   const hasMiniPlayer = useHasCurrentTrack()
+  const insets = useSafeAreaInsets()
 
   const libraryTabsConfig = usePreferenceStore((state) => state.libraryTabsConfig)
   const visibleTabs = React.useMemo(
@@ -33,7 +35,7 @@ export default function LibraryScreen() {
     setActiveTab(visibleTabs[0] ?? "Tracks")
   }
 
-  const contentBottomPadding = 32 + (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0)
+  const contentBottomPadding = getTabScreenBottomPadding(insets.bottom, hasMiniPlayer)
 
   function renderTabContent() {
     switch (activeTab) {
@@ -61,6 +63,7 @@ export default function LibraryScreen() {
       case "Playlists":
         return (
           <PlaylistsTabContent
+            contentBottomPadding={contentBottomPadding}
             onPlaylistPress={(playlist) =>
               router.push({ pathname: "/playlist/[id]", params: { id: playlist.id } })
             }
@@ -70,7 +73,7 @@ export default function LibraryScreen() {
       case "Folders":
         return <FoldersTab contentBottomPadding={contentBottomPadding} />
       case "Favorites":
-        return <FavoritesTabContent />
+        return <FavoritesTabContent contentBottomPadding={contentBottomPadding} />
       case "Genres":
         return (
           <LibraryGenresSection
@@ -93,7 +96,12 @@ export default function LibraryScreen() {
   )
 }
 
-function PlaylistsTabContent(props: {
+function PlaylistsTabContent({
+  contentBottomPadding,
+  onPlaylistPress,
+  onCreatePlaylist,
+}: {
+  contentBottomPadding: number
   onPlaylistPress?: (playlist: {
     id: string
     name: string
@@ -106,14 +114,19 @@ function PlaylistsTabContent(props: {
   const { data: playlists = [] } = usePlaylistsWithOptions(true)
   return (
     <View className="flex-1 px-4">
-      <PlaylistList data={playlists} {...props} contentContainerStyle={{ paddingBottom: 200 }} />
+      <PlaylistList
+        data={playlists}
+        onPlaylistPress={onPlaylistPress}
+        onCreatePlaylist={onCreatePlaylist}
+        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
+      />
     </View>
   )
 }
 
 const FAVORITE_TYPE_FILTERS: FavoriteType[] = ["track", "album", "artist", "playlist"]
 
-function FavoritesTabContent() {
+function FavoritesTabContent({ contentBottomPadding }: { contentBottomPadding: number }) {
   const [selectedTypes, setSelectedTypes] = React.useState<FavoriteType[]>([])
   const { data: favorites = [] } = useFavorites(undefined)
   const availableTypes = React.useMemo(() => {
@@ -135,7 +148,7 @@ function FavoritesTabContent() {
         availableTypes={availableTypes}
         selectedTypes={selectedTypes}
         onSelectedTypesChange={setSelectedTypes}
-        contentContainerStyle={{ paddingBottom: 200 }}
+        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
       />
     </View>
   )

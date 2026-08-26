@@ -23,3 +23,13 @@ export function getTabBarHeight(insetBottom: number): number {
 export const SCREEN_SECTION_TOP_SPACING = 20
 export const SCREEN_SECTION_GAP = 16
 export const DETAIL_HEADER_BOTTOM_SPACING = 24
+export const TAB_SCREEN_BOTTOM_CLEARANCE = 24
+
+// Tab screens scroll under the absolute-positioned tab bar and mini player, so their lists need matching tail padding
+export function getTabScreenBottomPadding(insetBottom: number, hasMiniPlayer: boolean): number {
+  return (
+    getTabBarHeight(insetBottom) +
+    (hasMiniPlayer ? MINI_PLAYER_HEIGHT : 0) +
+    TAB_SCREEN_BOTTOM_CLEARANCE
+  )
+}

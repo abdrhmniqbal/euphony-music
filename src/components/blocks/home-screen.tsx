@@ -17,7 +17,9 @@ import { ScaleLoader } from "@/components/ui/scale-loader"
 import { useRecentlyPlayedTracks, useTopTracksByPeriod } from "@/domains/history/repository"
 import { startIndexing } from "@/domains/indexer/service"
 import { refreshIndexedMediaState } from "@/domains/indexer/utils/refresh"
-import { useCurrentTrackId } from "@/playback/selectors"
+import { useCurrentTrackId, useHasCurrentTrack } from "@/playback/selectors"
+import { getTabScreenBottomPadding } from "@/lib/layout"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { playTrack } from "@/playback/service"
 import type { PlayerTrack } from "@/playback/types"
 import { createPlaybackQueueContext } from "@/playback/types"
@@ -33,6 +35,8 @@ export function HomeScreen() {
   const { t } = useTranslation()
   const muted = useThemeColor("muted")
   const currentTrackId = useCurrentTrackId()
+  const hasMiniPlayer = useHasCurrentTrack()
+  const insets = useSafeAreaInsets()
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -68,7 +72,7 @@ export function HomeScreen() {
   return (
     <ScrollView
       className="flex-1 bg-background"
-      contentContainerStyle={{ paddingBottom: 220 }}
+      contentContainerStyle={{ paddingBottom: getTabScreenBottomPadding(insets.bottom, hasMiniPlayer) }}
       refreshControl={
         <ThemedRefreshControl refreshing={isLoading} onRefresh={() => void refresh()} />
       }

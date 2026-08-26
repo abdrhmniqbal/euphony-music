@@ -27,7 +27,9 @@ import { setPlaylistFormDraft } from "@/domains/playlists/form-draft-store"
 import { toPlayerTracks } from "@/playback/player-track"
 import type { PlayerTrack } from "@/playback/types"
 import { createPlaybackQueueContext } from "@/playback/types"
-import { useCurrentTrackId } from "@/playback/selectors"
+import { useCurrentTrackId, useHasCurrentTrack } from "@/playback/selectors"
+import { getTabScreenBottomPadding } from "@/lib/layout"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { playTrack } from "@/playback/service"
 import { useTracks } from "@/domains/tracks/queries"
 import { useDailyMix, useForYouMix } from "@/domains/mixes/queries"
@@ -41,6 +43,8 @@ export function SearchLandingScreen() {
   const { t } = useTranslation()
   const router = useGuardedRouter()
   const currentTrackId = useCurrentTrackId()
+  const hasMiniPlayer = useHasCurrentTrack()
+  const insets = useSafeAreaInsets()
   const [selectedTrack, setSelectedTrack] = useState<PlayerTrack | null>(null)
   const [isTrackSheetOpen, setIsTrackSheetOpen] = useState(false)
   const [showMixActionSheet, setShowMixActionSheet] = useState(false)
@@ -135,7 +139,7 @@ export function SearchLandingScreen() {
     <>
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: 220 }}
+        contentContainerStyle={{ paddingBottom: getTabScreenBottomPadding(insets.bottom, hasMiniPlayer) }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         {...autoHideScrollProps}
