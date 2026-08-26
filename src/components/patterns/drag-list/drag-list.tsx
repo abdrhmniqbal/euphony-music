@@ -2,7 +2,7 @@ import type { LegendListProps, LegendListRenderItemProps } from "@legendapp/list
 import { AnimatedLegendList } from "@legendapp/list/reanimated"
 import React, { useCallback } from "react"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
-import {
+import Animated, {
   clamp,
   scrollTo,
   useAnimatedReaction,
@@ -65,7 +65,7 @@ function DragListImpl<T>({
   const store = useDragListStore()
   const { pan, activeIndex, shifted, autoScrollDirection, autoScrollAmount, scrollPosition, listHeight } = store
 
-  const listRef = useAnimatedRef()
+  const listRef = useAnimatedRef<Animated.ScrollView>()
   const dataLength = data.length
 
   const revalidateShifted = () => {
@@ -113,9 +113,8 @@ function DragListImpl<T>({
     })
     .onFinalize(() => {
       autoScrollDirection.set(0)
-      if (activeIndex.get() !== INACTIVE) {
-        scheduleOnRN(handleDrop, activeIndex.get(), activeIndex.get() + shifted.get())
-      }
+      if (activeIndex.get() === INACTIVE) return
+      scheduleOnRN(handleDrop, activeIndex.get(), activeIndex.get() + shifted.get())
       scheduleOnRN(cleanup)
     })
 
@@ -168,8 +167,9 @@ function DragListImpl<T>({
     <GestureDetector gesture={Gesture.Simultaneous(Gesture.Native(), panGesture)}>
       <AnimatedLegendList
         {...passThrough}
-        // SAFETY: useAnimatedRef targets the underlying scroll view; scrollTo only needs that handle.
-        ref={listRef as never}
+        // SAFETY: refScrollView expects the Reanimated scroll-view ref from this module;
+        // pnpm's duplicated reanimated typings collapse its public type to Ref<never>.
+        refScrollView={listRef as never}
         onLayout={(e) => listHeight.set(e.nativeEvent.layout.height)}
         estimatedItemSize={estimatedItemSize}
         data={data}
