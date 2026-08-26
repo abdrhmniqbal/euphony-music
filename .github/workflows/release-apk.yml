@@ -155,7 +155,9 @@ jobs:
           DIST_DIR="app/build/outputs/apk/dist"
           RELEASE_DIR="app/build/outputs/apk/release"
           APK_PREFIX="startune-music-${RELEASE_TAG}"
-          ./gradlew clean :app:assembleRelease --build-cache -Pandroid.enableAbiSplits=true
+          # Build cache disabled: it restores stale JS bundles when node_modules
+          # change (RN gradle tasks don't track node_modules contents).
+          ./gradlew clean :app:assembleRelease --no-build-cache -Pandroid.enableAbiSplits=true
           mkdir -p "${DIST_DIR}"
           rm -f "${DIST_DIR}"/*.apk
 
