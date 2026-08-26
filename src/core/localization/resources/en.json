@@ -76,7 +76,9 @@
     "albumsLabel": "Albums",
     "artistsLabel": "Artists",
     "lyricsLabel": "Lyrics",
-    "artistSplitModeLabel": "Artist Split Mode"
+    "artistSplitModeLabel": "Artist Split Mode",
+    "foldersLabel": "Folders",
+    "item": "item"
   },
   "library": {
     "tracks": "Tracks",
@@ -105,6 +107,8 @@
       "genresFoundMessage": "Genres will appear after indexing your music.",
       "playlistsTitle": "No playlists yet",
       "playlistsMessage": "Create a playlist to group your favorite tracks.",
+      "foldersTitle": "No folders found",
+      "foldersMessage": "Music folders you add will appear here.",
       "favoritesTitle": "No favorites yet",
       "favoritesMessage": "Tap the heart on any track, album, artist or playlist.",
       "noTracksTitle": "No tracks yet",
@@ -113,7 +117,10 @@
     "count": {
       "track": "{{count}} track",
       "track_one": "{{count}} track",
-      "track_other": "{{count}} tracks"
+      "track_other": "{{count}} tracks",
+      "item": "{{count}} item",
+      "item_one": "{{count}} item",
+      "item_other": "{{count}} items"
     },
     "sortBy": "Sort by",
     "unknownAlbum": "Unknown album",

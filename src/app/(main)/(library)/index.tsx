@@ -2,6 +2,7 @@ import * as React from "react"
 import { View } from "react-native"
 
 import { AlbumsTab } from "@/components/blocks/albums-tab"
+import { FoldersTab } from "@/components/blocks/folders-tab"
 import { PlaylistList } from "@/components/blocks/playlist-list"
 import { FavoritesList } from "@/components/blocks/favorites-list"
 import { ArtistsTab } from "@/components/blocks/artists-tab"
@@ -66,6 +67,8 @@ export default function LibraryScreen() {
             onCreatePlaylist={() => router.push("/playlist/form")}
           />
         )
+      case "Folders":
+        return <FoldersTab contentBottomPadding={contentBottomPadding} />
       case "Favorites":
         return <FavoritesTabContent />
       case "Genres":
