@@ -2,7 +2,6 @@ import {
   BottomSheet,
   Button,
   Chip,
-  Input,
   ListGroup,
   Separator,
   TagGroup,
@@ -13,6 +12,7 @@ import { View } from "react-native"
 import { useTranslation } from "react-i18next"
 
 import LocalAdd01Icon from "@/components/icons/local/add-01"
+import { SheetInput } from "@/components/patterns/sheet-input"
 import { SettingsScrollView, SettingsSwitchRow } from "@/components/blocks/settings/ui"
 import { rebuildSplitRelationsForConfig } from "@/domains/indexer/service"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
@@ -77,7 +77,7 @@ function TagEditorSheetContent({
         </TagGroup>
       ) : null}
       <View className="flex-row items-center gap-2">
-        <Input
+        <SheetInput
           value={inputValue}
           onChangeText={setInputValue}
           onSubmitEditing={addValue}

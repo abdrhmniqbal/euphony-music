@@ -1,7 +1,6 @@
 import {
   BottomSheet,
   Button,
-  Input,
   ListGroup,
   Separator,
   Slider,
@@ -11,6 +10,8 @@ import { Switch } from "@/components/ui/switch"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+
+import { SheetInput } from "@/components/patterns/sheet-input"
 
 import {
   connectLastFmWithCredentials,
@@ -307,7 +308,7 @@ export function LastFmSettings() {
                   <Text className="text-sm font-medium text-foreground">
                     {t("settings.lastfm.username")}
                   </Text>
-                  <Input
+                  <SheetInput
                     value={username}
                     onChangeText={setUsername}
                     placeholder={t("settings.lastfm.usernamePlaceholder")}
@@ -320,7 +321,7 @@ export function LastFmSettings() {
                   <Text className="text-sm font-medium text-foreground">
                     {t("settings.lastfm.password")}
                   </Text>
-                  <Input
+                  <SheetInput
                     value={password}
                     onChangeText={setPassword}
                     placeholder={t("settings.lastfm.passwordPlaceholder")}
