@@ -7,9 +7,9 @@ import Animated, { FadeIn } from "react-native-reanimated"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import LocalMoreHorizontalCircle01SolidIcon from "@/components/icons/local/more-horizontal-circle-01-solid"
+import LocalMixMaxItemsIcon from "@/components/icons/local/mix-max-items"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
 import LocalPlaylist02Icon from "@/components/icons/local/playlist-02"
-import LocalSettings01Icon from "@/components/icons/local/settings-01"
 import { MenuRow } from "@/components/ui/menu-row"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
@@ -230,7 +230,7 @@ export function MixDetailScreen() {
           onPress={handleSaveToPlaylist}
         />
         <MenuRow
-          icon={<LocalSettings01Icon fill="none" width={22} height={22} color={muted} />}
+          icon={<LocalMixMaxItemsIcon fill="none" width={22} height={22} color={muted} />}
           label={t("mix.maxItems")}
           trailing={<Text className="text-base text-muted">{maxMixItems}</Text>}
           onPress={() => {
