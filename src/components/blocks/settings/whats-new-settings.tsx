@@ -21,21 +21,7 @@ export function WhatsNewSettings() {
 
   return (
     <ScrollView className="flex-1 bg-background" contentContainerStyle={{ paddingBottom: 40 }}>
-      <View className="gap-5 px-4 py-4">
-        <View className="gap-1">
-          <Text className="text-xs font-semibold uppercase tracking-wide text-muted">
-            {t("settings.about.whatsNew")}
-          </Text>
-          <Text className="text-2xl font-semibold leading-8 text-foreground">
-            v{currentVersion || t("common.unknown")}
-          </Text>
-          <Text className="text-sm leading-5 text-muted">
-            {t("settings.about.whatsNewCurrentVersion", {
-              version: currentVersion || t("common.unknown"),
-            })}
-          </Text>
-        </View>
-
+      <View className="gap-3 px-4 py-4">
         {releaseNotesQuery.isPending ? (
           <Text className="text-sm text-muted">{t("settings.about.whatsNewLoading")}</Text>
         ) : null}
@@ -45,12 +31,7 @@ export function WhatsNewSettings() {
         ) : null}
 
         {releaseNotes.length > 0 ? (
-          <Accordion
-            selectionMode="multiple"
-            defaultValue={releaseNotes[0]?.version ? [releaseNotes[0].version] : []}
-            variant="surface"
-            className="rounded-xl"
-          >
+          <Accordion selectionMode="multiple" defaultValue={releaseNotes[0]?.version ? [releaseNotes[0].version] : []}>
             {releaseNotes.map((release) => (
               <Accordion.Item key={release.version} value={release.version}>
                 <Accordion.Trigger>

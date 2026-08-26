@@ -46,7 +46,7 @@ export function ReleaseNotesMarkdown({
         }}
         markdownStyle={{
           paragraph: {
-            color: muted,
+            color: foreground,
             fontSize: 14,
             lineHeight: 22,
             marginBottom: 10,

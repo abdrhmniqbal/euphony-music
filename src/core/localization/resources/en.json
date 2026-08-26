@@ -714,7 +714,6 @@
       "joinPreviewReleases": "Preview releases",
       "whatsNew": "What's new",
       "whatsNewDescription": "Recent changes and release notes",
-      "whatsNewCurrentVersion": "Release notes up to v{{version}}",
       "whatsNewLoading": "Loading release notes…",
       "whatsNewEmpty": "No release notes found for your version."
     },
