@@ -7,6 +7,7 @@ import ReorderableList, {
   useReorderableDrag,
 } from "react-native-reorderable-list"
 import { useTranslation } from "react-i18next"
+import { Gesture } from "react-native-gesture-handler"
 
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
@@ -60,12 +61,6 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
 
 export function LibraryTabsSettings() {
   const libraryTabsConfig = usePreferenceStore((state) => state.libraryTabsConfig)
-  // react-native-reorderable-list caches per-cell offsets across data mutations
-  // (omahili/react-native-reorderable-list#66); remount resets its measurements.
-  const listResetKey = useMemo(
-    () => libraryTabsConfig.tabs.map((tab) => `${tab.id}:${tab.visible}`).join("|"),
-    [libraryTabsConfig.tabs]
-  )
   const handleReorder = useCallback(({ from, to }: { from: number; to: number }) => {
     preferenceStore.setState((state) => ({
       libraryTabsConfig: { tabs: reorderItems(state.libraryTabsConfig.tabs, from, to) },
@@ -90,17 +85,20 @@ export function LibraryTabsSettings() {
     [handleToggle]
   )
 
+  const panGesture = useMemo(() => {
+    return Gesture.Pan().activateAfterLongPress(200)
+  }, [])
+
   return (
     <View className="flex-1 bg-background px-4 py-4">
       <ListGroup>
         <ReorderableList
-          key={listResetKey}
           data={libraryTabsConfig.tabs}
           onReorder={handleReorder}
           renderItem={renderItem}
           keyExtractor={(item, index) => item?.id ?? `tab-${index}`}
           shouldUpdateActiveItem
-          panActivateAfterLongPress={200}
+          panGesture={panGesture}
           scrollEnabled={false}
           style={{ flexGrow: 0 }}
           contentContainerStyle={{ paddingBottom: 0 }}
