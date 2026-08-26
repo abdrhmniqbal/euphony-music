@@ -142,6 +142,10 @@ export async function getGitHubReleaseNotesUntilCurrent({
         releaseName: getReleaseName(release) || getReleaseVersion(release),
         body: isString(release.body) ? release.body : "",
         prerelease: release.prerelease === true,
+        publishedAt:
+          isString(release.published_at) && !Number.isNaN(Date.parse(release.published_at))
+            ? release.published_at
+            : null,
       }))
       .filter(
         (note) => note.version.length > 0 && compareVersions(note.version, currentVersion) <= 0

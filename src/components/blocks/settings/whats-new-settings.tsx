@@ -46,8 +46,14 @@ export function WhatsNewSettings() {
                         </Text>
                       ) : null}
                     </View>
-                    <Text className="text-xs font-medium uppercase tracking-wide text-muted">
-                      v{release.version}
+                    <Text className="text-xs font-medium text-muted">
+                      {release.publishedAt
+                        ? new Date(release.publishedAt).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : `v${release.version}`}
                     </Text>
                   </View>
                   <Accordion.Indicator />

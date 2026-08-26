@@ -11,6 +11,7 @@ export interface AppReleaseNote {
   releaseName: string
   body: string
   prerelease: boolean
+  publishedAt: string | null
 }
 
 const PREVIEW_VERSION_PATTERN = /(?:^|[-.])(alpha|beta|rc|preview)(?:$|[-.\d])/i

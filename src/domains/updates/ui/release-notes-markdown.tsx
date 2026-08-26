@@ -10,9 +10,10 @@ export function ReleaseNotesMarkdown({
   markdown: string
   selectable?: boolean
 }) {
-  const [muted, foreground, border, defaultColor, background] = useThemeColor([
+  const [muted, foreground, accent, border, defaultColor, background] = useThemeColor([
     "muted",
     "foreground",
+    "accent",
     "border",
     "default",
     "background",
@@ -65,6 +66,66 @@ export function ReleaseNotesMarkdown({
             lineHeight: 26,
             marginTop: 8,
             marginBottom: 12,
+          },
+          h3: {
+            color: foreground,
+            fontSize: 17,
+            fontWeight: "600",
+            lineHeight: 24,
+            marginTop: 8,
+            marginBottom: 10,
+          },
+          h4: {
+            color: foreground,
+            fontSize: 15,
+            fontWeight: "600",
+            lineHeight: 22,
+          },
+          h5: {
+            color: foreground,
+            fontSize: 14,
+            fontWeight: "600",
+            lineHeight: 20,
+          },
+          h6: {
+            color: muted,
+            fontSize: 13,
+            fontWeight: "600",
+            lineHeight: 20,
+          },
+          list: {
+            color: foreground,
+            bulletColor: muted,
+            marginLeft: 20,
+            gapWidth: 8,
+          },
+          blockquote: {
+            color: muted,
+            borderColor: border,
+            borderWidth: 3,
+          },
+          link: {
+            color: accent,
+          },
+          strong: {
+            color: foreground,
+          },
+          em: {
+            color: foreground,
+          },
+          code: {
+            color: foreground,
+            backgroundColor: defaultColor,
+          },
+          codeBlock: {
+            color: foreground,
+            backgroundColor: defaultColor,
+            borderColor: border,
+            borderRadius: 8,
+            padding: 10,
+          },
+          thematicBreak: {
+            color: border,
           },
           table: {
             color: muted,
