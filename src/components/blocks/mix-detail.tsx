@@ -162,18 +162,13 @@ export function MixDetailScreen() {
                 </Text>
               </View>
             </View>
+
+            {tracks.length > 0 ? (
+              <Animated.View entering={FadeIn} className="mt-4 px-4">
+                <PlaybackActionsRow onPlay={handlePlayMix} onShuffle={handleShuffleMix} />
+              </Animated.View>
+            ) : null}
           </View>
-        }
-        listFooter={
-          tracks.length > 0 ? (
-            <Animated.View entering={FadeIn}>
-              <PlaybackActionsRow
-                onPlay={handlePlayMix}
-                onShuffle={handleShuffleMix}
-                className="mb-4 px-4"
-              />
-            </Animated.View>
-          ) : null
         }
       />
 
