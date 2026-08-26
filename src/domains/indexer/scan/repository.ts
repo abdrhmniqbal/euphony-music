@@ -23,6 +23,7 @@ import {
 } from "./maintenance"
 import { waitForIndexerResume } from "./runtime"
 import { generateAssetHash } from "./file-identity"
+import { loadIdentityRows, reconcileAdoptions } from "./adoption"
 import { isAllowedAssetUri, isSupportedAssetByExtension } from "./filter"
 import { processBatch } from "./batch"
 import { preloadIndexingLookupCache } from "./upsert"
@@ -133,13 +134,13 @@ export async function scanMediaLibrary(
   const lookupCache = await preloadIndexingLookupCache()
   if (signal?.aborted) return
 
-  // Find deleted tracks
+  // Find deleted tracks. Deletion is deferred until after adoption so a file
+  // that was moved/renamed (MediaStore issues a new asset id) can inherit its
+  // old row's play stats, favorites, playlist/mix membership, and history.
   const deletedTrackIds = existingTracks.filter((t) => !currentAssetIds.has(t.id)).map((t) => t.id)
-
-  if (deletedTrackIds.length > 0) {
-    await processDeletedTracksInScopes(deletedTrackIds, signal)
-    if (signal?.aborted) return
-  }
+  const disappearedRows =
+    deletedTrackIds.length > 0 ? await loadIdentityRows(deletedTrackIds) : []
+  if (signal?.aborted) return
 
   // Filter assets to process
   const currentAssetHashMap = new Map<string, string>()
@@ -196,6 +197,23 @@ export async function scanMediaLibrary(
 
   if (signal?.aborted) return
 
+  let adoptedCount = 0
+  if (deletedTrackIds.length > 0) {
+    const processedNewTrackIds = scopedAssets
+      .map((asset) => asset.id)
+      .filter((id) => !existingTrackMap.has(id))
+    const adoptedOldIds = await reconcileAdoptions({
+      newTrackIds: processedNewTrackIds,
+      candidates: disappearedRows,
+    })
+    adoptedCount = adoptedOldIds.size
+    const unmatchedIds = deletedTrackIds.filter((id) => !adoptedOldIds.has(id))
+    if (unmatchedIds.length > 0) {
+      await processDeletedTracksInScopes(unmatchedIds, signal)
+      if (signal?.aborted) return
+    }
+  }
+
   await updateArtistCounts()
   if (signal?.aborted) return
   await updateAlbumCounts()
@@ -226,7 +244,7 @@ export async function scanMediaLibrary(
     skippedByExtension,
     skippedByFolderFilters,
     skippedByDurationFilters,
-    deletedTracks: deletedTrackIds.length,
+    deletedTracks: deletedTrackIds.length - adoptedCount,
     changedAssets: assetsToProcess.length,
     unchangedAssets,
     preparedAssets: preparedAssetsCount,
