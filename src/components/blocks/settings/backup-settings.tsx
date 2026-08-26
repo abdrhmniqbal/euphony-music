@@ -19,6 +19,26 @@ import { HISTORY_RECENTLY_PLAYED_KEY, HISTORY_TOP_TRACKS_KEY } from "@/domains/l
 
 // Android directory picks return SAF tree URIs like
 // content://.../tree/primary%3AMusic%2FBackups — decode and take the last segment.
+function getTargetFolderPath(path: string) {
+  try {
+    const decoded = decodeURIComponent(path)
+    const treeIndex = decoded.indexOf("/tree/")
+    if (treeIndex < 0) {
+      return decoded.replace(/^file:\/\//, "").replace(/\/$/, "") || path
+    }
+
+    const [storage = "", ...rest] = decoded.slice(treeIndex + 6).split(":")
+    const subPath = rest.join("/").replace(/\/$/, "")
+
+    if (storage === "primary") {
+      return subPath ? `/${subPath}` : "/"
+    }
+    return subPath ? `/${storage}/${subPath}` : `/${storage}`
+  } catch {
+    return path
+  }
+}
+
 export function BackupSettings() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
@@ -114,7 +134,7 @@ export function BackupSettings() {
               title={t("settings.autoBackup.targetFolder")}
               description={
                 config.targetDirectoryUri
-                  ? decodeURIComponent(config.targetDirectoryUri)
+                  ? getTargetFolderPath(config.targetDirectoryUri)
                   : t("settings.autoBackup.folderUnset")
               }
               onPress={() => void handleTargetFolderPick()}
