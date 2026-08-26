@@ -90,18 +90,34 @@ function getBackupPreferences(): BackupPreferences {
   }
 }
 
-export async function createBackupData(gateway?: PlayHistoryGateway): Promise<BackupData> {
+export interface BackupOptions {
+  includePreferences: boolean
+  includeHistory: boolean
+}
+
+const DEFAULT_BACKUP_OPTIONS: BackupOptions = {
+  includePreferences: true,
+  includeHistory: true,
+}
+
+export async function createBackupData(
+  gateway?: PlayHistoryGateway,
+  options: BackupOptions = DEFAULT_BACKUP_OPTIONS
+): Promise<BackupData> {
   const history = await resolveGateway(gateway)
   return {
     version: BACKUP_VERSION,
     timestamp: new Date().toISOString(),
-    preferences: getBackupPreferences(),
-    playHistory: history.readAll(),
+    preferences: options.includePreferences ? getBackupPreferences() : {},
+    playHistory: options.includeHistory ? history.readAll() : [],
   }
 }
 
-export async function backupToFile(targetDirectoryUri?: string | null): Promise<string> {
-  const backupData = await createBackupData()
+export async function backupToFile(
+  targetDirectoryUri?: string | null,
+  options: BackupOptions = DEFAULT_BACKUP_OPTIONS
+): Promise<string> {
+  const backupData = await createBackupData(undefined, options)
   const fileName = `startune-backup-${Date.now()}.json`
   const { Directory } = await import("expo-file-system")
 

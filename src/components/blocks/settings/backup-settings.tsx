@@ -1,5 +1,5 @@
 import * as DocumentPicker from "expo-document-picker"
-import { Button, Dialog } from "heroui-native"
+import { BottomSheet, Button, Checkbox, Dialog, ListGroup, Separator } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import * as Sharing from "expo-sharing"
@@ -17,13 +17,16 @@ import { backupToFile, parseBackupFile, restoreFromBackup } from "@/domains/back
 import { queryClient } from "@/core/query/query-client"
 import { HISTORY_RECENTLY_PLAYED_KEY, HISTORY_TOP_TRACKS_KEY } from "@/domains/library/query-keys"
 
+// Android directory picks return SAF tree URIs like
+// content://.../tree/primary%3AMusic%2FBackups — decode and take the last segment.
 function getFolderNameFromPath(path: string) {
   try {
     const decoded = decodeURIComponent(path)
-    const normalized = decoded.replace(/\/$/, "")
-    const parts = normalized.split("/")
-    const last = parts[parts.length - 1]
-    return last || path
+    const treeIndex = decoded.indexOf("/tree/")
+    const relevant = treeIndex >= 0 ? decoded.slice(treeIndex + 6) : decoded.replace(/\/$/, "")
+    const withoutStoragePrefix = relevant.replace(/^primary:/, "")
+    const parts = withoutStoragePrefix.split("/").filter(Boolean)
+    return parts[parts.length - 1] || path
   } catch {
     return path
   }
@@ -33,8 +36,10 @@ export function BackupSettings() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
   const config = usePreferenceStore((state) => state.autoBackupConfig)
-  const [isBackupDialogOpen, setIsBackupDialogOpen] = React.useState(false)
+  const [isBackupSheetOpen, setIsBackupSheetOpen] = React.useState(false)
   const [isRestoreDialogOpen, setIsRestoreDialogOpen] = React.useState(false)
+  const [includePreferences, setIncludePreferences] = React.useState(true)
+  const [includeHistory, setIncludeHistory] = React.useState(true)
 
   function updateAutoBackupConfig(updates: Partial<typeof config>) {
     const current = preferenceStore.getState().autoBackupConfig
@@ -43,14 +48,17 @@ export function BackupSettings() {
 
   async function handleBackup() {
     try {
-      const uri = await backupToFile(config.targetDirectoryUri)
+      const uri = await backupToFile(config.targetDirectoryUri, {
+        includePreferences,
+        includeHistory,
+      })
       if (!config.targetDirectoryUri && (await Sharing.isAvailableAsync())) {
         await Sharing.shareAsync(uri, { UTI: "public.json", mimeType: "application/json" })
       } else {
         showAppToast(t("settings.backup.backup"), t("settings.backup.backupSavedToFolder"))
       }
       updateAutoBackupConfig({ lastBackupAt: Date.now() })
-      setIsBackupDialogOpen(false)
+      setIsBackupSheetOpen(false)
     } catch {
       showAppToast(t("settings.backup.backupFailed"), t("settings.advanced.tryAgainDescription"))
     }
@@ -135,7 +143,7 @@ export function BackupSettings() {
             <SettingsNavigationRow
               title={t("settings.backup.backup")}
               description={t("settings.backup.backupDescription")}
-              onPress={() => setIsBackupDialogOpen(true)}
+              onPress={() => setIsBackupSheetOpen(true)}
             />
             <SettingsNavigationRow
               title={t("settings.backup.restore")}
@@ -163,25 +171,52 @@ export function BackupSettings() {
         </View>
       </SettingsScrollView>
 
-      <Dialog isOpen={isBackupDialogOpen} onOpenChange={setIsBackupDialogOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay isCloseOnPress />
-          <Dialog.Content className="gap-4" isSwipeable>
-            <View className="gap-1.5">
-              <Dialog.Title>{t("settings.backup.backup")}</Dialog.Title>
-              <Dialog.Description>
+      <BottomSheet isOpen={isBackupSheetOpen} onOpenChange={setIsBackupSheetOpen}>
+        <BottomSheet.Portal>
+          <BottomSheet.Overlay />
+          <BottomSheet.Content
+            backgroundClassName="bg-surface"
+            enableDynamicSizing
+            keyboardBehavior="interactive"
+          >
+            <View className="gap-1.5 pb-2">
+              <BottomSheet.Title className="text-xl">
+                {t("settings.backup.backup")}
+              </BottomSheet.Title>
+              <Text className="text-sm text-muted">
                 {t("settings.backup.backupDialogDescription")}
-              </Dialog.Description>
+              </Text>
             </View>
-            <View className="flex-row justify-end gap-3">
-              <Button variant="ghost" onPress={() => setIsBackupDialogOpen(false)}>
-                {t("common.cancel")}
-              </Button>
-              <Button onPress={() => void handleBackup()}>{t("settings.backup.backup")}</Button>
-            </View>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog>
+            <ListGroup className="mb-4">
+              <ListGroup.Item>
+                <Checkbox
+                  isSelected={includePreferences}
+                  onSelectedChange={setIncludePreferences}
+                />
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>
+                    {t("settings.backup.includePreferences")}
+                  </ListGroup.ItemTitle>
+                </ListGroup.ItemContent>
+              </ListGroup.Item>
+              <Separator className="mx-4" />
+              <ListGroup.Item>
+                <Checkbox isSelected={includeHistory} onSelectedChange={setIncludeHistory} />
+                <ListGroup.ItemContent>
+                  <ListGroup.ItemTitle>{t("settings.backup.includeHistory")}</ListGroup.ItemTitle>
+                </ListGroup.ItemContent>
+              </ListGroup.Item>
+            </ListGroup>
+            <Button
+              className="mb-8"
+              isDisabled={!includePreferences && !includeHistory}
+              onPress={() => void handleBackup()}
+            >
+              {t("settings.backup.backup")}
+            </Button>
+          </BottomSheet.Content>
+        </BottomSheet.Portal>
+      </BottomSheet>
 
       <Dialog isOpen={isRestoreDialogOpen} onOpenChange={setIsRestoreDialogOpen}>
         <Dialog.Portal>
