@@ -14,7 +14,7 @@ import { commitFolderFilterConfig, type FolderFilterMode } from "@/domains/libra
 export function FolderFilterSettings() {
   const router = useGuardedRouter()
   const { t } = useTranslation()
-  const [accent, foreground, muted] = useThemeColor(["accent", "foreground", "muted"])
+  const [foreground, muted] = useThemeColor(["foreground", "muted"])
   const folderFilterConfig = usePreferenceStore((state) => state.folderFilterConfig)
 
   const [pendingConfig, setPendingConfig] = React.useState({
@@ -107,7 +107,6 @@ export function FolderFilterSettings() {
             activeFolders={activeFolders}
             selectedMode={selectedMode}
             foregroundColor={foreground}
-            accentColor={accent}
             mutedColor={muted}
             onSetMode={setUnifiedMode}
             onPickFolder={() => void pickFolder()}

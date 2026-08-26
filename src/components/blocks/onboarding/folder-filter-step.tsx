@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import LocalAdd01Icon from "@/components/icons/local/add-01"
 import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import LocalFolder01SolidIcon from "@/components/icons/local/folder-01-solid"
-import LocalTick02Icon from "@/components/icons/local/tick-02"
 import { EmptyState } from "@/components/ui/empty-state"
 import { getFolderNameFromPath } from "@/domains/indexer/scan/folder-filter"
 
@@ -16,7 +15,6 @@ interface FolderFilterStepProps {
   activeFolders: string[]
   selectedMode: FolderFilterMode
   foregroundColor: string
-  accentColor: string
   mutedColor: string
   onSetMode: (mode: FolderFilterMode) => void
   onPickFolder: () => void
@@ -27,7 +25,6 @@ export function FolderFilterStep({
   activeFolders,
   selectedMode,
   foregroundColor,
-  accentColor,
   mutedColor,
   onSetMode,
   onPickFolder,
@@ -47,14 +44,6 @@ export function FolderFilterStep({
               </Card.Description>
             </View>
             <View className="flex-row items-center gap-1">
-              <Button variant="ghost" isIconOnly onPress={() => onSetMode("whitelist")} hitSlop={8}>
-                <LocalTick02Icon
-                  fill="none"
-                  width={20}
-                  height={20}
-                  color={selectedMode === "whitelist" ? accentColor : mutedColor}
-                />
-              </Button>
               <Button
                 variant="secondary"
                 onPress={() => onSetMode(selectedMode === "whitelist" ? "blacklist" : "whitelist")}

@@ -170,7 +170,6 @@ export function OnboardingScreen() {
               activeFolders={activeFolders}
               selectedMode={selectedMode}
               foregroundColor={foreground}
-              accentColor={accent}
               mutedColor={muted}
               onSetMode={setUnifiedMode}
               onPickFolder={() => void pickFolder()}
