@@ -3,7 +3,6 @@ import { Stack } from "expo-router"
 import {
   BottomSheet,
   Button,
-  Checkbox,
   Input,
   PressableFeedback,
   TextArea,
@@ -42,6 +41,25 @@ import { usePlaylist } from "@/domains/playlists/queries"
 import type { PlayerTrack } from "@/playback/types"
 
 const TRACK_PICKER_SNAP_POINTS = ["72%", "90%"]
+
+function PickerCheckbox({ isSelected, label }: { isSelected: boolean; label: string }) {
+  const [accent, accentForeground] = useThemeColor(["accent", "accent-foreground"])
+
+  // SAFETY: heroui Checkbox's reanimated indicator can keep stale opacity in reordered lists, hiding the tick
+  return (
+    <View
+      accessibilityRole="checkbox"
+      accessibilityLabel={label}
+      accessibilityState={{ checked: isSelected }}
+      className="mt-0.5 size-6 items-center justify-center rounded-lg border border-border bg-default"
+      style={isSelected ? { backgroundColor: accent, borderColor: accent } : undefined}
+    >
+      {isSelected ? (
+        <LocalTick02Icon fill="none" width={14} height={14} color={accentForeground} />
+      ) : null}
+    </View>
+  )
+}
 
 function ReorderableSelectedTrackRow({
   track,
@@ -312,12 +330,9 @@ function PlaylistFormScreen() {
                   onPress={() => editor.toggleDraftTrack(item.id)}
                   className="w-full py-2"
                   leftAction={
-                    <Checkbox
-                      variant="secondary"
+                    <PickerCheckbox
                       isSelected={editor.draftSelectedTracks.has(item.id)}
-                      onSelectedChange={() => editor.toggleDraftTrack(item.id)}
-                      accessibilityLabel={t("playlist.selectTrack", { title: item.title })}
-                      className="mt-0.5"
+                      label={t("playlist.selectTrack", { title: item.title })}
                     />
                   }
                 />

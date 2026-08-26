@@ -9,10 +9,14 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native"
 
 import LocalAdd01Icon from "@/components/icons/local/add-01"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
+import LocalDelete02Icon from "@/components/icons/local/delete-02"
+import LocalEdit02Icon from "@/components/icons/local/edit-02"
 import LocalPlaylist02SolidIcon from "@/components/icons/local/playlist-02-solid"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { DeletePlaylistDialog } from "@/components/blocks/delete-playlist-dialog"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { EmptyState } from "@/components/ui/empty-state"
+import { MenuRow } from "@/components/ui/menu-row"
 import {
   MediaItem,
   MediaItemAction,
@@ -22,6 +26,8 @@ import {
   MediaItemTitle,
 } from "@/components/ui/media-item"
 import { useAutoHideHeaderScroll } from "@/core/ui/use-auto-hide-header-scroll"
+import { useGuardedRouter } from "@/core/navigation"
+import { useDeletePlaylist } from "@/domains/playlists/queries"
 
 export interface PlaylistListItem {
   id: string
@@ -48,11 +54,14 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
   onCreatePlaylist,
   contentContainerStyle,
 }) => {
-  const [foreground, muted] = useThemeColor(["foreground", "muted"])
+  const [foreground, muted, danger] = useThemeColor(["foreground", "muted", "danger"])
   const { t } = useTranslation()
+  const router = useGuardedRouter()
   const autoHideScrollProps = useAutoHideHeaderScroll()
   const [selectedPlaylist, setSelectedPlaylist] = useState<PlaylistListItem | null>(null)
   const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const deletePlaylistMutation = useDeletePlaylist()
 
   const handleLongPress = useCallback((playlist: PlaylistListItem) => {
     setSelectedPlaylist(playlist)
@@ -157,6 +166,39 @@ export const PlaylistList: React.FC<PlaylistListProps> = ({
         image={selectedPlaylist?.image}
         images={selectedPlaylist?.images}
         trackCount={selectedPlaylist?.trackCount ?? 0}
+      >
+        <MenuRow
+          icon={<LocalEdit02Icon fill="none" width={22} height={22} color={muted} />}
+          label={t("playlist.editPlaylist")}
+          onPress={() => {
+            closeSheet()
+            router.push({
+              pathname: "/playlist/form",
+              params: { id: selectedPlaylist?.id ?? "" },
+            })
+          }}
+        />
+        <MenuRow
+          icon={<LocalDelete02Icon fill="none" width={22} height={22} color={danger} />}
+          label={t("playlist.deletePlaylist")}
+          colorClassName="text-danger"
+          onPress={() => {
+            closeSheet()
+            setIsDeleteDialogOpen(true)
+          }}
+        />
+      </CollectionActionSheet>
+      <DeletePlaylistDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={() => {
+          if (!selectedPlaylist) return
+          void deletePlaylistMutation
+            .mutateAsync(selectedPlaylist.id)
+            .then(() => setIsDeleteDialogOpen(false))
+            .catch(() => {})
+        }}
+        isDeleting={deletePlaylistMutation.isPending}
       />
     </View>
   )

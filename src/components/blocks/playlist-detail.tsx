@@ -20,6 +20,7 @@ import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import { BackButton } from "@/components/patterns/back-button"
+import { MenuRow } from "@/components/ui/menu-row"
 import { PlaylistArtwork } from "@/components/patterns/playlist-artwork"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
@@ -340,28 +341,23 @@ export function PlaylistDetailScreen() {
           images={playlist.images}
           trackCount={playlist.trackCount || 0}
         >
-          <Button
-            variant="ghost"
-            className="h-14 justify-start px-0"
+          <MenuRow
+            icon={<LocalEdit02Icon fill="none" width={22} height={22} color={muted} />}
+            label={t("playlist.editPlaylist")}
             onPress={() => {
               setShowActionSheet(false)
               router.push({ pathname: "/playlist/form", params: { id: playlist.id } })
             }}
-          >
-            <LocalEdit02Icon fill="none" width={22} height={22} color={muted} />
-            <Text className="ml-3 text-base">{t("playlist.editPlaylist")}</Text>
-          </Button>
-          <Button
-            variant="ghost"
-            className="h-14 justify-start px-0"
+          />
+          <MenuRow
+            icon={<LocalDelete02Icon fill="none" width={22} height={22} color={danger} />}
+            label={t("playlist.deletePlaylist")}
+            colorClassName="text-danger"
             onPress={() => {
               setShowActionSheet(false)
               setShowDeleteDialog(true)
             }}
-          >
-            <LocalDelete02Icon fill="none" width={22} height={22} color={danger} />
-            <Text className="ml-3 text-base text-danger">{t("playlist.deletePlaylist")}</Text>
-          </Button>
+          />
         </CollectionActionSheet>
 
         <SortSheet.Content options={PLAYLIST_TRACK_SORT_OPTIONS} />

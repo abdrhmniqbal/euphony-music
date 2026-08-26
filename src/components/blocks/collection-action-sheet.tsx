@@ -1,4 +1,3 @@
-import { Image } from "expo-image"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import * as React from "react"
@@ -10,6 +9,10 @@ import LocalNextIcon from "@/components/icons/local/next"
 import LocalAddCircleIcon from "@/components/icons/local/add-circle"
 import { ActionSheet } from "@/components/ui/action-sheet"
 import { MenuRow } from "@/components/ui/menu-row"
+import {
+  PlaylistArtwork,
+  resolvePlaylistArtworkImages,
+} from "@/components/patterns/playlist-artwork"
 import { useIsFavorite } from "@/domains/favorites/queries"
 import { useToggleFavorite } from "@/domains/favorites/mutations"
 import type { FavoriteType } from "@/domains/favorites/types"
@@ -93,9 +96,9 @@ export function CollectionActionSheet({
     <ActionSheet.Root isOpen={visible} onOpenChange={onOpenChange}>
       <ActionSheet.Content className="pb-8">
         <View className="mb-4 mt-2 flex-row items-center gap-3 px-1">
-          {image ? (
+          {image || (_images && _images.length > 0) ? (
             <View className="h-14 w-14 overflow-hidden rounded-lg bg-surface-secondary">
-              <Image source={{ uri: image }} style={{ width: "100%", height: "100%" }} />
+              <PlaylistArtwork images={resolvePlaylistArtworkImages(_images, image)} />
             </View>
           ) : null}
           <View className="flex-1">
