@@ -1,4 +1,5 @@
-import { ListGroup, Separator, Slider, Switch } from "heroui-native"
+import { ListGroup, Separator, Slider } from "heroui-native"
+import { Switch } from "@/components/ui/switch"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"

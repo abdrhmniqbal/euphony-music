@@ -1,6 +1,7 @@
 import * as React from "react"
 import { ScrollView, View, type ScrollViewProps } from "react-native"
-import { ListGroup, Separator, Switch } from "heroui-native"
+import { ListGroup, Separator } from "heroui-native"
+import { Switch } from "@/components/ui/switch"
 
 export function SettingsScrollView({
   children,

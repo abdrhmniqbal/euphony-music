@@ -5,9 +5,9 @@ import {
   ListGroup,
   Separator,
   Slider,
-  Switch,
   useThemeColor,
 } from "heroui-native"
+import { Switch } from "@/components/ui/switch"
 import * as React from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"

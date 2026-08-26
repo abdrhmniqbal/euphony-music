@@ -4,7 +4,8 @@ import {
   type BottomSheetFooterProps,
 } from "@gorhom/bottom-sheet"
 import DateTimePicker, { type DateTimePickerEvent } from "@react-native-community/datetimepicker"
-import { BottomSheet, Button, PressableFeedback, Slider, Switch } from "heroui-native"
+import { BottomSheet, Button, PressableFeedback, Slider } from "heroui-native"
+import { Switch } from "@/components/ui/switch"
 import * as React from "react"
 import { Platform, Text, View } from "react-native"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
