@@ -1,5 +1,5 @@
 import { BottomSheetFooter, BottomSheetScrollView, type BottomSheetFooterProps } from "@gorhom/bottom-sheet"
-import { BottomSheet, Button } from "heroui-native"
+import { Accordion, BottomSheet, Button } from "heroui-native"
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
@@ -76,20 +76,34 @@ export function AppUpdateSheet() {
                 newVersion: updateInfo?.newVersion || t("common.unknown"),
               })}
             </Text>
-            {updateInfo?.prerelease ? (
-              <Text selectable={false} className="mt-2 text-xs font-semibold text-accent">
-                {t("updates.previewRelease")}
-              </Text>
-            ) : null}
-            <Text selectable={false} className="mt-5 text-sm font-semibold text-foreground">
-              {t("updates.whatsNew")}
-            </Text>
-            <View className="mt-2">
-              <ReleaseNotesMarkdown
-                markdown={updateInfo?.body?.trim() || t("updates.noReleaseNotes")}
-                selectable={false}
-              />
-            </View>
+            <Accordion
+              selectionMode="single"
+              defaultValue={["release-notes"]}
+              variant="surface"
+              className="mt-4"
+            >
+              <Accordion.Item value="release-notes">
+                <Accordion.Trigger>
+                  <View className="flex-1">
+                    <Text selectable={false} className="text-base font-semibold text-foreground">
+                      {t("updates.whatsNew")}
+                    </Text>
+                    {updateInfo?.prerelease ? (
+                      <Text selectable={false} className="text-xs font-semibold text-accent">
+                        {t("updates.previewRelease")}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <Accordion.Indicator />
+                </Accordion.Trigger>
+                <Accordion.Content>
+                  <ReleaseNotesMarkdown
+                    markdown={updateInfo?.body?.trim() || t("updates.noReleaseNotes")}
+                    selectable={false}
+                  />
+                </Accordion.Content>
+              </Accordion.Item>
+            </Accordion>
           </BottomSheetScrollView>
         </BottomSheet.Content>
       </BottomSheet.Portal>

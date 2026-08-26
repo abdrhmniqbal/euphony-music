@@ -31,7 +31,11 @@ export function WhatsNewSettings() {
         ) : null}
 
         {releaseNotes.length > 0 ? (
-          <Accordion selectionMode="multiple" defaultValue={releaseNotes[0]?.version ? [releaseNotes[0].version] : []}>
+          <Accordion
+            selectionMode="multiple"
+            defaultValue={releaseNotes[0]?.version ? [releaseNotes[0].version] : []}
+            variant="surface"
+          >
             {releaseNotes.map((release) => (
               <Accordion.Item key={release.version} value={release.version}>
                 <Accordion.Trigger>
