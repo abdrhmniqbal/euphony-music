@@ -20,13 +20,13 @@ interface LibraryTabItemProps {
 }
 
 const TAB_LABEL_KEYS = {
-  Tracks: "settings.library.tabsTracks",
-  Albums: "settings.library.tabsAlbums",
-  Artists: "settings.library.tabsArtists",
-  Genres: "settings.library.tabsGenres",
-  Playlists: "settings.library.tabsPlaylists",
-  Folders: "settings.library.tabsFolders",
-  Favorites: "settings.library.tabsFavorites",
+  Tracks: "library.tracks",
+  Albums: "library.albums",
+  Artists: "library.artists",
+  Genres: "library.genres",
+  Playlists: "library.playlists",
+  Folders: "library.folders",
+  Favorites: "library.favorites",
 } satisfies Record<LibraryTab, string>
 
 function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
@@ -62,13 +62,18 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
 export function LibraryTabsSettings() {
   const libraryTabsConfig = usePreferenceStore((state) => state.libraryTabsConfig)
 
-  const handleReorder = useCallback(
-    ({ from, to }: { from: number; to: number }) => {
-      const nextTabs = reorderItems(libraryTabsConfig.tabs, from, to)
-      preferenceStore.setState({ libraryTabsConfig: { tabs: nextTabs } })
-    },
+  // react-native-reorderable-list caches per-cell offsets across data mutations
+  // (omahili/react-native-reorderable-list#66); remount resets its measurements.
+  const listResetKey = useMemo(
+    () => libraryTabsConfig.tabs.map((tab) => `${tab.id}:${tab.visible}`).join("|"),
     [libraryTabsConfig.tabs]
   )
+
+  const handleReorder = useCallback(({ from, to }: { from: number; to: number }) => {
+    preferenceStore.setState((state) => ({
+      libraryTabsConfig: { tabs: reorderItems(state.libraryTabsConfig.tabs, from, to) },
+    }))
+  }, [])
 
   const handleToggle = useCallback(
     (id: LibraryTab, visible: boolean) => {
@@ -96,6 +101,7 @@ export function LibraryTabsSettings() {
     <View className="flex-1 bg-background px-4 py-4">
       <ListGroup>
         <ReorderableList
+          key={listResetKey}
           data={libraryTabsConfig.tabs}
           onReorder={handleReorder}
           renderItem={renderItem}
