@@ -2,9 +2,17 @@ import * as React from "react"
 import { View } from "react-native"
 
 import { AlbumsTab } from "@/components/blocks/albums-tab"
-import { FoldersTab } from "@/components/blocks/folders-tab"
-import { PlaylistList } from "@/components/blocks/playlist-list"
 import { FavoritesList } from "@/components/blocks/favorites-list"
+import { FoldersTab } from "@/components/blocks/folders-tab"
+import { LibraryListHeader } from "@/components/blocks/library-list-header"
+import { PlaylistList } from "@/components/blocks/playlist-list"
+import { SortSheet } from "@/components/blocks/sort-sheet"
+import {
+  resolveSortLabel,
+  NAME_TRACK_COUNT_SORT_OPTIONS,
+  FAVORITE_SORT_OPTIONS,
+} from "@/domains/library/sort-constants"
+import { setSortConfig, useLibrarySortStore } from "@/domains/library/sort-store"
 import { ArtistsTab } from "@/components/blocks/artists-tab"
 import { LibraryGenresSection } from "@/components/blocks/library-genres-section"
 import { LibraryTabBar } from "@/components/blocks/library-tab-bar"
@@ -18,6 +26,7 @@ import { useFavorites } from "@/domains/favorites/queries"
 import type { FavoriteType } from "@/domains/favorites/types"
 import { getTabScreenBottomPadding } from "@/lib/layout"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useTranslation } from "react-i18next"
 
 export default function LibraryScreen() {
   const router = useGuardedRouter()
@@ -111,22 +120,58 @@ function PlaylistsTabContent({
   }) => void
   onCreatePlaylist?: () => void
 }) {
+  const { t } = useTranslation()
+  const [showSortSheet, setShowSortSheet] = React.useState(false)
+  const sortConfig = useLibrarySortStore((state) => state.sortConfig.PlaylistsTab)
   const { data: playlists = [] } = usePlaylistsWithOptions(true)
+
+  const sortedPlaylists = React.useMemo(() => {
+    if (sortConfig.field === "trackCount") {
+      const direction = sortConfig.order === "asc" ? 1 : -1
+      return [...playlists].sort((a, b) => (a.trackCount - b.trackCount) * direction)
+    }
+    return [...playlists].sort((a, b) =>
+      sortConfig.order === "asc"
+        ? a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+        : b.name.localeCompare(a.name, undefined, { sensitivity: "base" })
+    )
+  }, [playlists, sortConfig])
+
   return (
-    <View className="flex-1 px-4">
-      <PlaylistList
-        data={playlists}
-        onPlaylistPress={onPlaylistPress}
-        onCreatePlaylist={onCreatePlaylist}
-        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
-      />
-    </View>
+    <SortSheet
+      visible={showSortSheet}
+      onOpenChange={setShowSortSheet}
+      currentField={sortConfig.field}
+      currentOrder={sortConfig.order}
+      onSelect={(field, order) => setSortConfig("PlaylistsTab", field, order)}
+    >
+      <View className="flex-1 px-4">
+        {sortedPlaylists.length > 0 ? (
+          <LibraryListHeader
+            count={sortedPlaylists.length}
+            sortLabel={t(
+              resolveSortLabel(NAME_TRACK_COUNT_SORT_OPTIONS, sortConfig.field) || "library.sortBy"
+            )}
+          />
+        ) : null}
+        <PlaylistList
+          data={sortedPlaylists}
+          onPlaylistPress={onPlaylistPress}
+          onCreatePlaylist={onCreatePlaylist}
+          contentContainerStyle={{ paddingBottom: contentBottomPadding }}
+        />
+      </View>
+      <SortSheet.Content options={NAME_TRACK_COUNT_SORT_OPTIONS} />
+    </SortSheet>
   )
 }
 
 const FAVORITE_TYPE_FILTERS: FavoriteType[] = ["track", "album", "artist", "playlist"]
 
 function FavoritesTabContent({ contentBottomPadding }: { contentBottomPadding: number }) {
+  const { t } = useTranslation()
+  const [showSortSheet, setShowSortSheet] = React.useState(false)
+  const sortConfig = useLibrarySortStore((state) => state.sortConfig.FavoritesTab)
   const [selectedTypes, setSelectedTypes] = React.useState<FavoriteType[]>([])
   const { data: favorites = [] } = useFavorites(undefined)
   const availableTypes = React.useMemo(() => {
@@ -140,16 +185,53 @@ function FavoritesTabContent({ contentBottomPadding }: { contentBottomPadding: n
         : favorites,
     [favorites, selectedTypes]
   )
+  const sortedFavorites = React.useMemo(() => {
+    const entries = [...filtered]
+    const isAsc = sortConfig.order === "asc"
+    switch (sortConfig.field) {
+      case "type":
+        return entries.sort((a, b) =>
+          isAsc ? a.type.localeCompare(b.type) : b.type.localeCompare(a.type)
+        )
+      case "name":
+        return entries.sort((a, b) =>
+          isAsc
+            ? a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+            : b.name.localeCompare(a.name, undefined, { sensitivity: "base" })
+        )
+      default:
+        return entries.sort((a, b) =>
+          isAsc ? a.dateAdded - b.dateAdded : b.dateAdded - a.dateAdded
+        )
+    }
+  }, [filtered, sortConfig])
 
   return (
-    <View className="flex-1 px-4 pt-4">
-      <FavoritesList
-        data={filtered}
-        availableTypes={availableTypes}
-        selectedTypes={selectedTypes}
-        onSelectedTypesChange={setSelectedTypes}
-        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
-      />
-    </View>
+    <SortSheet
+      visible={showSortSheet}
+      onOpenChange={setShowSortSheet}
+      currentField={sortConfig.field}
+      currentOrder={sortConfig.order}
+      onSelect={(field, order) => setSortConfig("FavoritesTab", field, order)}
+    >
+      <View className="flex-1 px-4 pt-4">
+        {sortedFavorites.length > 0 ? (
+          <LibraryListHeader
+            count={sortedFavorites.length}
+            sortLabel={t(
+              resolveSortLabel(FAVORITE_SORT_OPTIONS, sortConfig.field) || "library.sortBy"
+            )}
+          />
+        ) : null}
+        <FavoritesList
+          data={sortedFavorites}
+          availableTypes={availableTypes}
+          selectedTypes={selectedTypes}
+          onSelectedTypesChange={setSelectedTypes}
+          contentContainerStyle={{ paddingBottom: contentBottomPadding }}
+        />
+      </View>
+      <SortSheet.Content options={FAVORITE_SORT_OPTIONS} />
+    </SortSheet>
   )
 }

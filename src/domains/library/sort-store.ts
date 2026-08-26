@@ -18,6 +18,13 @@ const DEFAULT_SORT_CONFIG = {
   ArtistTracks: { field: "title", order: "asc" },
   ArtistAlbums: { field: "year", order: "desc" },
   GenreAlbums: { field: "year", order: "desc" },
+  TracksTab: { field: "title", order: "asc" },
+  AlbumsTab: { field: "title", order: "asc" },
+  ArtistsTab: { field: "name", order: "asc" },
+  PlaylistsTab: { field: "name", order: "asc" },
+  FoldersTab: { field: "name", order: "asc" },
+  FavoritesTab: { field: "dateAdded", order: "desc" },
+  GenresTab: { field: "name", order: "asc" },
 } satisfies Record<string, DetailSortConfig>
 
 export const useLibrarySortStore = create<LibrarySortState>(() => ({

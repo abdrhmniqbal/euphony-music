@@ -20,6 +20,7 @@ export type DetailSortField =
   | "trackNumber"
   | "name"
   | "trackCount"
+  | "type"
 
 type ComparableValue = number | string | null | undefined
 

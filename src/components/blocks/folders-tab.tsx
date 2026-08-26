@@ -9,12 +9,16 @@ import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
 import LocalChevronRightIcon from "@/components/icons/local/chevron-right"
 import LocalFolder01SolidIcon from "@/components/icons/local/folder-01-solid"
 import LocalMusicNote04SolidIcon from "@/components/icons/local/music-note-04-solid"
+import { LibraryListHeader } from "@/components/blocks/library-list-header"
+import { SortSheet } from "@/components/blocks/sort-sheet"
 import {
   buildFolderBrowserState,
   getParentFolderPath,
   type FolderBreadcrumb,
   type FolderEntry,
 } from "@/domains/library/folder-browser"
+import { FOLDER_SORT_OPTIONS, resolveSortLabel } from "@/domains/library/sort-constants"
+import { setSortConfig, useLibrarySortStore } from "@/domains/library/sort-store"
 import { useTracks } from "@/domains/tracks/queries"
 import { toPlayerTracks } from "@/playback/player-track"
 import { playTrackList } from "@/playback/track-list-actions"
@@ -32,6 +36,8 @@ export function FoldersTab({ contentBottomPadding }: { contentBottomPadding: num
   const [foreground] = useThemeColor(["foreground"])
   const { t } = useTranslation()
   const [currentPath, setCurrentPath] = useState("")
+  const [showSortSheet, setShowSortSheet] = React.useState(false)
+  const sortConfig = useLibrarySortStore((state) => state.sortConfig.FoldersTab)
   const { data } = useTracks()
 
   const playerTracks = React.useMemo(
@@ -43,12 +49,25 @@ export function FoldersTab({ contentBottomPadding }: { contentBottomPadding: num
     [playerTracks, currentPath]
   )
 
+  const sortedFolders = React.useMemo(() => {
+    const folders = [...browser.folders]
+    if (sortConfig.field === "trackCount") {
+      const direction = sortConfig.order === "asc" ? 1 : -1
+      return folders.sort((a, b) => (a.fileCount - b.fileCount) * direction)
+    }
+    return folders.sort((a, b) =>
+      sortConfig.order === "asc"
+        ? a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+        : b.name.localeCompare(a.name, undefined, { sensitivity: "base" })
+    )
+  }, [browser.folders, sortConfig])
+
   const listData = React.useMemo<FolderListItem[]>(
     () => [
       ...(browser.breadcrumbs.length > 0
         ? [{ id: "__breadcrumbs", type: "breadcrumb" as const }]
         : []),
-      ...browser.folders.map((folder) => ({
+      ...sortedFolders.map((folder) => ({
         id: `folder-${folder.id}`,
         type: "folder" as const,
         folder,
@@ -59,7 +78,7 @@ export function FoldersTab({ contentBottomPadding }: { contentBottomPadding: num
         track,
       })),
     ],
-    [browser]
+    [browser.breadcrumbs, browser.tracks, sortedFolders]
   )
 
   const renderBreadcrumbs = () => (
@@ -110,9 +129,7 @@ export function FoldersTab({ contentBottomPadding }: { contentBottomPadding: num
       return (
         <MediaItem onPress={() => setCurrentPath(item.folder.path)}>
           <MediaItem.Image
-            icon={
-              <LocalFolder01SolidIcon fill="none" width={24} height={24} color={muted} />
-            }
+            icon={<LocalFolder01SolidIcon fill="none" width={24} height={24} color={muted} />}
           />
           <MediaItem.Content>
             <MediaItem.Title>{item.folder.name}</MediaItem.Title>
@@ -131,11 +148,7 @@ export function FoldersTab({ contentBottomPadding }: { contentBottomPadding: num
     const trackIndex = folderTracks.findIndex((track) => track.id === item.track.id)
 
     return (
-      <MediaItem
-        onPress={() =>
-          playTrackList(folderTracks.slice(trackIndex), item.track.title)
-        }
-      >
+      <MediaItem onPress={() => playTrackList(folderTracks.slice(trackIndex), item.track.title)}>
         <MediaItem.Image
           image={item.track.image}
           icon={<LocalMusicNote04SolidIcon fill="none" width={20} height={20} color={muted} />}
@@ -149,28 +162,45 @@ export function FoldersTab({ contentBottomPadding }: { contentBottomPadding: num
   }
 
   return (
-    <View className="flex-1 px-4">
-      <LegendList
-        data={listData}
-        keyExtractor={(item) => item.id}
-        getItemType={(item) => item.type}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: contentBottomPadding }}
-        estimatedItemSize={72}
-        style={{ flex: 1, minHeight: 1 }}
-        ListEmptyComponent={
-          <View className="items-center justify-center pt-16">
-            <LocalFolder01SolidIcon fill="none" width={48} height={48} color={muted} />
-            <Text className="mt-3 text-base font-bold text-foreground">
-              {t("library.empty.foldersTitle")}
-            </Text>
-            <Text className="mt-1 text-center text-xs text-muted">
-              {t("library.empty.foldersMessage")}
-            </Text>
-          </View>
-        }
-      />
-    </View>
+    <SortSheet
+      visible={showSortSheet}
+      onOpenChange={setShowSortSheet}
+      currentField={sortConfig.field}
+      currentOrder={sortConfig.order}
+      onSelect={(field, order) => setSortConfig("FoldersTab", field, order)}
+    >
+      <View className="flex-1 px-4">
+        {browser.folders.length + browser.tracks.length > 0 ? (
+          <LibraryListHeader
+            count={browser.folders.length + browser.tracks.length}
+            sortLabel={t(
+              resolveSortLabel(FOLDER_SORT_OPTIONS, sortConfig.field) || "library.sortBy"
+            )}
+          />
+        ) : null}
+        <LegendList
+          data={listData}
+          keyExtractor={(item) => item.id}
+          getItemType={(item) => item.type}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: contentBottomPadding }}
+          estimatedItemSize={72}
+          style={{ flex: 1, minHeight: 1 }}
+          ListEmptyComponent={
+            <View className="items-center justify-center pt-16">
+              <LocalFolder01SolidIcon fill="none" width={48} height={48} color={muted} />
+              <Text className="mt-3 text-base font-bold text-foreground">
+                {t("library.empty.foldersTitle")}
+              </Text>
+              <Text className="mt-1 text-center text-xs text-muted">
+                {t("library.empty.foldersMessage")}
+              </Text>
+            </View>
+          }
+        />
+      </View>
+      <SortSheet.Content options={FOLDER_SORT_OPTIONS} />
+    </SortSheet>
   )
 }

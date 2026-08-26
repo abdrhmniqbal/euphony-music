@@ -1,10 +1,14 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
+import { View } from "react-native"
 
 import { AlbumGrid } from "@/components/blocks/album-grid"
+import { LibraryListHeader } from "@/components/blocks/library-list-header"
+import { SortSheet } from "@/components/blocks/sort-sheet"
+import { ALBUM_SORT_OPTIONS, resolveSortLabel } from "@/domains/library/sort-constants"
+import { setSortConfig, useLibrarySortStore } from "@/domains/library/sort-store"
 import { sortAlbums } from "@/domains/tracks/detail-sort"
 import { useAlbums } from "@/domains/albums/queries"
-import { useLibrarySortStore } from "@/domains/library/sort-store"
-import { useTranslation } from "react-i18next"
 
 interface AlbumsTabProps {
   onAlbumPress?: (album: { id?: string; title: string }) => void
@@ -12,7 +16,8 @@ interface AlbumsTabProps {
 
 export function AlbumsTab({ onAlbumPress }: AlbumsTabProps) {
   const { t } = useTranslation()
-  const allSortConfigs = useLibrarySortStore((state) => state.sortConfig)
+  const [showSortSheet, setShowSortSheet] = React.useState(false)
+  const sortConfig = useLibrarySortStore((state) => state.sortConfig.AlbumsTab)
   const { data: albumsData } = useAlbums()
 
   const albums = React.useMemo(
@@ -29,10 +34,29 @@ export function AlbumsTab({ onAlbumPress }: AlbumsTabProps) {
       })),
     [albumsData, t]
   )
-  const sortedAlbums = React.useMemo(
-    () => sortAlbums(albums, allSortConfigs.AlbumsTab ?? { field: "title", order: "asc" }),
-    [albums, allSortConfigs.AlbumsTab]
-  )
+  const sortedAlbums = React.useMemo(() => sortAlbums(albums, sortConfig), [albums, sortConfig])
 
-  return <AlbumGrid data={sortedAlbums} onAlbumPress={onAlbumPress} />
+  return (
+    <SortSheet
+      visible={showSortSheet}
+      onOpenChange={setShowSortSheet}
+      currentField={sortConfig.field}
+      currentOrder={sortConfig.order}
+      onSelect={(field, order) => setSortConfig("AlbumsTab", field, order)}
+    >
+      <View className="flex-1">
+        {sortedAlbums.length > 0 ? (
+          <LibraryListHeader
+            count={sortedAlbums.length}
+            className="px-4 pt-4"
+            sortLabel={t(
+              resolveSortLabel(ALBUM_SORT_OPTIONS, sortConfig.field) || "library.sortBy"
+            )}
+          />
+        ) : null}
+        <AlbumGrid data={sortedAlbums} onAlbumPress={onAlbumPress} />
+      </View>
+      <SortSheet.Content options={ALBUM_SORT_OPTIONS} />
+    </SortSheet>
+  )
 }

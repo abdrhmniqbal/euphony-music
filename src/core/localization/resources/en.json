@@ -135,6 +135,7 @@
       "filename": "Filename",
       "trackNumber": "Track number",
       "numberOfTracks": "Number of tracks",
+      "numberOfFiles": "Number of files",
       "type": "Type",
       "addedToFavorites": "Date favorited",
       "customOrder": "Custom order",
