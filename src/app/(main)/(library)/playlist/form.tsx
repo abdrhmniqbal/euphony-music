@@ -12,7 +12,7 @@ import {
 import * as React from "react"
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import ReorderableList, { useIsActive, useReorderableDrag } from "react-native-reorderable-list"
+import { DragList, useDragStart, useIsDraggingItem } from "@/components/patterns/drag-list"
 import { LegendList } from "@legendapp/list/react-native"
 import { Image } from "expo-image"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -65,13 +65,15 @@ function PickerCheckbox({ trackId, label }: { trackId: string; label: string }) 
 
 function ReorderableSelectedTrackRow({
   track,
+  index,
   onToggle,
 }: {
   track: PlayerTrack
+  index: number
   onToggle: (trackId: string) => void
 }) {
-  const drag = useReorderableDrag()
-  const isActive = useIsActive()
+  const startDrag = useDragStart()
+  const isActive = useIsDraggingItem(index)
   const [border, muted] = useThemeColor(["border", "muted"])
   const { t } = useTranslation()
 
@@ -86,7 +88,7 @@ function ReorderableSelectedTrackRow({
       <PressableFeedback
         onPressIn={(event) => {
           event.stopPropagation()
-          drag()
+          startDrag(index)
         }}
         className="p-1 opacity-60"
       >
@@ -211,15 +213,18 @@ function PlaylistFormScreen() {
         }}
       />
 
-      <ReorderableList
+      <DragList
         data={editor.selectedTracksList}
-        onReorder={({ from, to }) => editor.reorderSelectedTracks(from, to)}
-        renderItem={({ item }) => (
-          <ReorderableSelectedTrackRow track={item} onToggle={editor.toggleSelectedTrack} />
+        onReordered={(from, to) => editor.reorderSelectedTracks(from, to)}
+        renderItem={({ item, index }) => (
+          <ReorderableSelectedTrackRow
+            track={item}
+            index={index}
+            onToggle={editor.toggleSelectedTrack}
+          />
         )}
         keyExtractor={(item) => item.id}
-        shouldUpdateActiveItem
-        scrollEnabled
+        estimatedItemSize={89}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         ListHeaderComponent={

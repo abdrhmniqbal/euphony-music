@@ -1,17 +1,19 @@
 import { Checkbox, ListGroup, PressableFeedback, Separator, useThemeColor } from "heroui-native"
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback } from "react"
 import { View } from "react-native"
-import ReorderableList, {
-  reorderItems,
-  useIsActive,
-  useReorderableDrag,
-} from "react-native-reorderable-list"
 import { useTranslation } from "react-i18next"
-import { Gesture } from "react-native-gesture-handler"
 
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
+import { DragList, useDragStart, useIsDraggingItem } from "@/components/patterns/drag-list"
 import { preferenceStore, usePreferenceStore } from "@/core/preferences/store"
 import type { LibraryTab, LibraryTabSettingsItem } from "@/core/preferences/library-tabs"
+
+function reorderItems<T>(items: T[], from: number, to: number): T[] {
+  const next = [...items]
+  const [moved] = next.splice(from, 1)
+  next.splice(to, 0, moved)
+  return next
+}
 
 interface LibraryTabItemProps {
   item: LibraryTabSettingsItem
@@ -32,8 +34,8 @@ const TAB_LABEL_KEYS = {
 function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
   const { t } = useTranslation()
   const [border, muted] = useThemeColor(["border", "muted"])
-  const drag = useReorderableDrag()
-  const isActive = useIsActive()
+  const startDrag = useDragStart()
+  const isActive = useIsDraggingItem(index)
 
   return (
     <>
@@ -44,7 +46,11 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
           opacity: isActive ? 0.9 : 1,
         }}
       >
-        <PressableFeedback onPressIn={drag} hitSlop={15} className="p-1">
+        <PressableFeedback
+          onPressIn={() => startDrag(index)}
+          hitSlop={15}
+          className="p-1"
+        >
           <LocalDragDropVerticalIcon fill="none" width={20} height={20} color={muted} />
         </PressableFeedback>
         <Checkbox
@@ -61,7 +67,7 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
 
 export function LibraryTabsSettings() {
   const libraryTabsConfig = usePreferenceStore((state) => state.libraryTabsConfig)
-  const handleReorder = useCallback(({ from, to }: { from: number; to: number }) => {
+  const handleReorder = useCallback((from: number, to: number) => {
     preferenceStore.setState((state) => ({
       libraryTabsConfig: { tabs: reorderItems(state.libraryTabsConfig.tabs, from, to) },
     }))
@@ -85,20 +91,15 @@ export function LibraryTabsSettings() {
     [handleToggle]
   )
 
-  const panGesture = useMemo(() => {
-    return Gesture.Pan().activateAfterLongPress(200)
-  }, [])
-
   return (
     <View className="flex-1 bg-background px-4 py-4">
       <ListGroup>
-        <ReorderableList
+        <DragList
           data={libraryTabsConfig.tabs}
-          onReorder={handleReorder}
+          onReordered={handleReorder}
           renderItem={renderItem}
           keyExtractor={(item, index) => item?.id ?? `tab-${index}`}
-          shouldUpdateActiveItem
-          panGesture={panGesture}
+          estimatedItemSize={57}
           scrollEnabled={false}
           style={{ flexGrow: 0 }}
           contentContainerStyle={{ paddingBottom: 0 }}

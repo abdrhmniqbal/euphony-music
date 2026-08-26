@@ -1,14 +1,14 @@
 import { PressableFeedback } from "heroui-native"
 import * as React from "react"
-import { useCallback, useRef } from "react"
+import { useCallback } from "react"
 import { useTranslation } from "react-i18next"
-import { type FlatList, Text, View } from "react-native"
+import { Text, View } from "react-native"
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated"
-import ReorderableList, { useReorderableDrag } from "react-native-reorderable-list"
 import { cn } from "tailwind-variants"
 
 import LocalCancel01Icon from "@/components/icons/local/cancel-01"
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
+import { DragList, useDragStart } from "@/components/patterns/drag-list"
 import { TrackRow } from "@/components/patterns/track-row"
 import { EmptyState } from "@/components/ui/empty-state"
 import { ScaleLoader } from "@/components/ui/scale-loader"
@@ -37,13 +37,13 @@ export const QueueItem: React.FC<QueueItemProps> = ({
   const trackId = extractTrackId(trackKey)
   const track = usePlayerTrackByKey(trackKey)
 
-  const drag = useReorderableDrag()
+  const startDrag = useDragStart()
   const handleDragPress = useCallback(
     (event: { stopPropagation: () => void }) => {
       event.stopPropagation()
-      drag()
+      startDrag(index)
     },
-    [drag]
+    [startDrag, index]
   )
   const handleRemovePress = useCallback(
     (event: { stopPropagation: () => void }) => {
@@ -99,11 +99,10 @@ export const QueueView: React.FC = () => {
   const { t } = useTranslation()
   const currentTrack = useCurrentTrack()
   const { queue, upNext, currentIndex } = usePlayerQueueInfo()
-  const listRef = useRef<FlatList>(null)
   const handleRemove = useCallback((trackId: string) => {
     void removeFromQueue(trackId)
   }, [])
-  const handleReorder = useCallback(({ from, to }: { from: number; to: number }) => {
+  const handleReorder = useCallback((from: number, to: number) => {
     if (from === to) {
       return
     }
@@ -157,15 +156,14 @@ export const QueueView: React.FC = () => {
         </Text>
       </View>
       <View className="flex-1">
-        <ReorderableList
-          ref={listRef}
+        <DragList
           data={queue}
           keyExtractor={(item) => item}
           initialScrollIndex={currentIndex >= 0 ? currentIndex : undefined}
-          onReorder={handleReorder}
+          onReordered={handleReorder}
           renderItem={renderItem}
+          estimatedItemSize={70}
           style={{ flex: 1, minHeight: 1 }}
-          showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: ITEM_GAP, paddingBottom: 20 }}
         />
       </View>
