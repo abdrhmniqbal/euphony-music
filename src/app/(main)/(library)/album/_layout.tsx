@@ -10,7 +10,9 @@ export default function AlbumLayout() {
         headerShown: true,
         animation: "fade_from_bottom",
         headerStyle: { backgroundColor: background },
+        headerTintColor: foreground,
         headerTitleStyle: { color: foreground },
+        headerTitleAlign: "center",
         headerShadowVisible: false,
         contentStyle: { backgroundColor: background },
       }}

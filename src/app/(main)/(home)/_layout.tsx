@@ -13,20 +13,20 @@ export default function HomeLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerStyle: { backgroundColor: background },
+        headerTintColor: foreground,
+        headerTitleStyle: { color: foreground },
+        headerTitleAlign: "center",
+        headerShadowVisible: false,
         contentStyle: { backgroundColor: background },
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          headerShown: true,
           title: t("navigation.tabs.home"),
-          headerTintColor: foreground,
-          headerTitleStyle: { color: foreground },
           headerTitleAlign: "left",
-          headerShadowVisible: false,
-          headerStyle: { backgroundColor: background },
           headerRight: () => (
             <PressableFeedback onPress={() => router.push("/settings")} hitSlop={12}>
               <LocalSettings01Icon fill="none" width={24} height={24} color={foreground} />
@@ -34,8 +34,14 @@ export default function HomeLayout() {
           ),
         }}
       />
-      <Stack.Screen name="recently-played" options={{ animation: "fade_from_bottom" }} />
-      <Stack.Screen name="top-tracks" options={{ animation: "fade_from_bottom" }} />
+      <Stack.Screen
+        name="recently-played"
+        options={{ title: t("home.recentlyPlayed"), animation: "fade_from_bottom" }}
+      />
+      <Stack.Screen
+        name="top-tracks"
+        options={{ title: t("home.topTracks"), animation: "fade_from_bottom" }}
+      />
     </Stack>
   )
 }

@@ -35,7 +35,19 @@ export default function SearchLayout() {
         }}
       />
       <Stack.Screen name="search" options={{ animation: "fade_from_bottom" }} />
-      <Stack.Screen name="recently-added" options={{ animation: "fade_from_bottom" }} />
+      <Stack.Screen
+        name="recently-added"
+        options={{
+          headerShown: true,
+          title: t("search.recentlyAdded"),
+          headerTintColor: foreground,
+          headerTitleStyle: { color: foreground },
+          headerTitleAlign: "center",
+          headerShadowVisible: false,
+          headerStyle: { backgroundColor: background },
+          animation: "fade_from_bottom",
+        }}
+      />
       <Stack.Screen name="album" options={{ animation: "fade_from_bottom" }} />
       <Stack.Screen name="artist" options={{ animation: "fade_from_bottom" }} />
       <Stack.Screen name="playlist" options={{ animation: "fade_from_bottom" }} />
