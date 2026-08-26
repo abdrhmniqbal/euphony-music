@@ -6,7 +6,6 @@ import ReorderableList, {
   useIsActive,
   useReorderableDrag,
 } from "react-native-reorderable-list"
-import { Gesture } from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
 
 import LocalDragDropVerticalIcon from "@/components/icons/local/drag-drop-vertical"
@@ -61,14 +60,12 @@ function LibraryTabItem({ item, index, onToggle }: LibraryTabItemProps) {
 
 export function LibraryTabsSettings() {
   const libraryTabsConfig = usePreferenceStore((state) => state.libraryTabsConfig)
-
   // react-native-reorderable-list caches per-cell offsets across data mutations
   // (omahili/react-native-reorderable-list#66); remount resets its measurements.
   const listResetKey = useMemo(
     () => libraryTabsConfig.tabs.map((tab) => `${tab.id}:${tab.visible}`).join("|"),
     [libraryTabsConfig.tabs]
   )
-
   const handleReorder = useCallback(({ from, to }: { from: number; to: number }) => {
     preferenceStore.setState((state) => ({
       libraryTabsConfig: { tabs: reorderItems(state.libraryTabsConfig.tabs, from, to) },
@@ -93,13 +90,6 @@ export function LibraryTabsSettings() {
     [handleToggle]
   )
 
-  // Deps follow listResetKey so each remount gets a fresh gesture instance: the
-  // library attaches its own handlers onto the prop (mutating it), and reusing one
-  // instance across remounts trips reanimated's shared-object guard.
-  const panGesture = useMemo(() => {
-    return Gesture.Pan().activateAfterLongPress(200)
-  }, [listResetKey])
-
   return (
     <View className="flex-1 bg-background px-4 py-4">
       <ListGroup>
@@ -110,7 +100,7 @@ export function LibraryTabsSettings() {
           renderItem={renderItem}
           keyExtractor={(item, index) => item?.id ?? `tab-${index}`}
           shouldUpdateActiveItem
-          panGesture={panGesture}
+          panActivateAfterLongPress={200}
           scrollEnabled={false}
           style={{ flexGrow: 0 }}
           contentContainerStyle={{ paddingBottom: 0 }}
