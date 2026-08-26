@@ -164,7 +164,7 @@ export function MixDetailScreen() {
         onScroll={(event) => handleTrackScroll(event.nativeEvent.contentOffset.y)}
         listHeader={
           <>
-            <View className="px-4 pt-6 pb-6">
+            <View className="pt-6 pb-6">
               <View className="flex-row gap-4">
                 <View className="h-36 w-36 overflow-hidden rounded-lg bg-default">
                   <PlaylistArtwork images={images} />
@@ -193,12 +193,16 @@ export function MixDetailScreen() {
             </View>
 
             {tracks.length > 0 ? (
-              <Animated.View entering={FadeIn} className="px-4 mb-4">
-                <PlaybackActionsRow onPlay={handlePlayMix} onShuffle={handleShuffleMix} />
+              <Animated.View entering={FadeIn}>
+                <PlaybackActionsRow
+                  onPlay={handlePlayMix}
+                  onShuffle={handleShuffleMix}
+                  className="mb-4"
+                />
               </Animated.View>
             ) : null}
 
-            <View className="mb-2 flex-row items-center justify-between px-4">
+            <View className="mb-2 flex-row items-center justify-between">
               <Text className="text-lg font-bold text-foreground">
                 {t("library.count.track", { count: tracks.length })}
               </Text>
