@@ -64,6 +64,8 @@ export default (): ExpoConfig => ({
   },
   plugins: [
     "expo-router",
+    "expo-secure-store",
+    "expo-sharing",
     "expo-media-library",
     [
       "react-native-android-widget",
