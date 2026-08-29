@@ -1,21 +1,46 @@
 import type { LegendListProps, LegendListRenderItemProps } from "@legendapp/list/react-native"
 import { AnimatedLegendList } from "@legendapp/list/reanimated"
-import React, { useCallback } from "react"
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import Animated, {
-  cancelAnimation,
-  clamp,
   runOnJS,
   scrollTo,
-  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedScrollHandler,
-  withDelay,
-  withTiming,
-  type ReanimatedEvent,
+  useAnimatedStyle,
+  useSharedValue,
+  type AnimatedRef,
+  type SharedValue,
 } from "react-native-reanimated"
-import { ItemWrapper } from "./item-wrapper"
-import { DragListStoreProvider, INACTIVE, useDragListStore } from "./store"
+
+const DRAG_PRESS_MS = 140
+const EDGE_ZONE = 24
+const MIN_DRAG_DISPLACEMENT = 30
+const SCROLL_STEP = 5
+
+const clampW = (v: number, lo: number, hi: number) => {
+  "worklet"
+  return v < lo ? lo : v > hi ? hi : v
+}
+
+interface DragListContextValue {
+  activeIndex: number | null
+}
+
+const DragListContext = React.createContext<DragListContextValue>({
+  activeIndex: null,
+})
+
+export function useIsDraggingItem(index: number): boolean {
+  const { activeIndex } = React.useContext(DragListContext)
+  return activeIndex === index
+}
+
+export function useDragStart(): (index: number) => void {
+  // SAFETY: No-op fallback; row long-press activates drag directly across platforms.
+  return useCallback((_index: number) => {}, [])
+}
 
 type ListPassThroughProps<T> = Pick<
   LegendListProps<T>,
@@ -23,190 +48,313 @@ type ListPassThroughProps<T> = Pick<
   | "contentContainerStyle"
   | "ListHeaderComponent"
   | "ListEmptyComponent"
+  | "ListFooterComponent"
   | "keyboardShouldPersistTaps"
   | "initialScrollIndex"
   | "scrollEnabled"
   | "showsVerticalScrollIndicator"
+  | "extraData"
 >
 
 export interface DragListProps<T> extends ListPassThroughProps<T> {
   data: T[]
   keyExtractor: (item: T, index: number) => string
   renderItem: (info: { item: T; index: number }) => React.ReactNode
-  /** Uniform height of every row, including any content gap. */
   estimatedItemSize: number
-  onDragBegin?: () => void
-  /** Called after the dragged item is dropped. */
-  onDragEnd?: () => void
   onReordered: (from: number, to: number) => void
+  onDragBegin?: () => void
+  onDragEnd?: () => void
 }
 
-export function DragList<T>(props: DragListProps<T>) {
+interface DraggableItemProps<T> {
+  item: T
+  index: number
+  slotSize: number
+  dataLengthSV: SharedValue<number>
+  activeIndexSV: SharedValue<number>
+  dragYSV: SharedValue<number>
+  shiftedSV: SharedValue<number>
+  startScrollYSV: SharedValue<number>
+  scrollY: SharedValue<number>
+  listTopSV: SharedValue<number>
+  listHeightSV: SharedValue<number>
+  scrollRef: AnimatedRef<Animated.ScrollView>
+  setScrollEnabled: (enabled: boolean) => void
+  setActiveIndex: (index: number | null) => void
+  onDragBegin?: () => void
+  onDragEnd?: () => void
+  onReordered: (from: number, to: number) => void
+  renderItem: (info: { item: T; index: number }) => React.ReactNode
+}
+
+function DraggableItemImpl<T>({
+  item,
+  index,
+  slotSize,
+  dataLengthSV,
+  activeIndexSV,
+  dragYSV,
+  shiftedSV,
+  startScrollYSV,
+  scrollY,
+  listTopSV,
+  listHeightSV,
+  scrollRef,
+  setScrollEnabled,
+  setActiveIndex,
+  onDragBegin,
+  onDragEnd,
+  onReordered,
+  renderItem,
+}: DraggableItemProps<T>) {
+  const pan = useMemo(() => {
+    return Gesture.Pan()
+      .activateAfterLongPress(DRAG_PRESS_MS)
+      .onBegin(() => {
+        activeIndexSV.value = index
+        dragYSV.value = 0
+        shiftedSV.value = 0
+        startScrollYSV.value = scrollY.value
+
+        runOnJS(setScrollEnabled)(false)
+        runOnJS(setActiveIndex)(index)
+        if (onDragBegin) {
+          runOnJS(onDragBegin)()
+        }
+      })
+      .onUpdate((e) => {
+        const deltaScroll = scrollY.value - startScrollYSV.value
+        const currentContentY = index * slotSize + e.translationY + deltaScroll
+        dragYSV.value = currentContentY - index * slotSize
+
+        // Auto-scroll ONLY when user has deliberately moved finger and reached list boundary
+        if (listHeightSV.value > 100) {
+          const listTop = listTopSV.value
+          const listBottom = listTop + listHeightSV.value
+          const fingerY = e.absoluteY
+
+          let nextScroll = scrollY.value
+          if (
+            e.translationY < -MIN_DRAG_DISPLACEMENT &&
+            fingerY < listTop + EDGE_ZONE &&
+            scrollY.value > 0
+          ) {
+            nextScroll = Math.max(0, scrollY.value - SCROLL_STEP)
+          } else if (e.translationY > MIN_DRAG_DISPLACEMENT && fingerY > listBottom - EDGE_ZONE) {
+            nextScroll = scrollY.value + SCROLL_STEP
+          }
+
+          if (nextScroll !== scrollY.value) {
+            scrollTo(scrollRef, 0, nextScroll, false)
+            scrollY.value = nextScroll
+          }
+        }
+
+        const targetIndex = clampW(
+          Math.round(currentContentY / slotSize),
+          0,
+          dataLengthSV.value - 1
+        )
+        shiftedSV.value = targetIndex - index
+      })
+      .onFinalize(() => {
+        const fromIndex = activeIndexSV.value
+        const toIndex = activeIndexSV.value + shiftedSV.value
+
+        // Immediate drop with zero delay
+        activeIndexSV.value = -1
+        dragYSV.value = 0
+        shiftedSV.value = 0
+
+        runOnJS(setScrollEnabled)(true)
+        runOnJS(setActiveIndex)(null)
+        if (onDragEnd) {
+          runOnJS(onDragEnd)()
+        }
+        if (fromIndex !== -1 && fromIndex !== toIndex) {
+          runOnJS(onReordered)(fromIndex, toIndex)
+        }
+      })
+  }, [
+    activeIndexSV,
+    dataLengthSV,
+    dragYSV,
+    index,
+    listHeightSV,
+    listTopSV,
+    onDragBegin,
+    onDragEnd,
+    onReordered,
+    scrollRef,
+    scrollY,
+    setActiveIndex,
+    setScrollEnabled,
+    shiftedSV,
+    slotSize,
+    startScrollYSV,
+  ])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const activeIdx = activeIndexSV.value
+    if (activeIdx === -1) {
+      return {
+        transform: [{ translateY: 0 }],
+        zIndex: 0,
+        opacity: 1,
+      }
+    }
+
+    if (activeIdx === index) {
+      return {
+        transform: [{ translateY: dragYSV.value }],
+        zIndex: 999,
+        opacity: 0.96,
+      }
+    }
+
+    const shift = shiftedSV.value
+    let targetOffset = 0
+    if (shift > 0 && index > activeIdx && index <= activeIdx + shift) {
+      targetOffset = -slotSize
+    } else if (shift < 0 && index < activeIdx && index >= activeIdx + shift) {
+      targetOffset = slotSize
+    }
+
+    return {
+      transform: [{ translateY: targetOffset }],
+      zIndex: 0,
+      opacity: 1,
+    }
+  })
+
   return (
-    <DragListStoreProvider
-      itemSize={props.estimatedItemSize}
-      dataLength={props.data.length}
-      onDragBegin={props.onDragBegin}
-    >
-      <DragListImpl {...props} />
-    </DragListStoreProvider>
+    <GestureDetector gesture={pan}>
+      <Animated.View style={animatedStyle}>{renderItem({ item, index })}</Animated.View>
+    </GestureDetector>
   )
 }
 
-function DragListImpl<T>({
+// SAFETY: React.memo loses generic component type parameters; cast preserves generic signature.
+const DraggableItem = memo(DraggableItemImpl) as typeof DraggableItemImpl
+
+export function DragList<T>({
   data,
   keyExtractor,
   renderItem,
   estimatedItemSize,
   onReordered,
+  onDragBegin,
   onDragEnd,
+  scrollEnabled = true,
   ...passThrough
 }: DragListProps<T>) {
-  const store = useDragListStore()
-  const { pan, activeIndex, shifted, autoScrollDirection, autoScrollAmount, scrollPosition, listHeight } = store
+  const containerRef = useRef<View>(null)
+  const [scrollEnabledState, setScrollEnabled] = useState(true)
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
-  const listRef = useAnimatedRef<Animated.ScrollView>()
-  const dataLength = data.length
+  const activeIndexSV = useSharedValue(-1)
+  const dragYSV = useSharedValue(0)
+  const shiftedSV = useSharedValue(0)
+  const startScrollYSV = useSharedValue(0)
+  const scrollY = useSharedValue(0)
+  const listTopSV = useSharedValue(0)
+  const listHeightSV = useSharedValue(0)
+  const dataLengthSV = useSharedValue(data.length)
+  const scrollRef = useAnimatedRef<Animated.ScrollView>()
 
-  const revalidateShifted = () => {
-    "worklet"
-    shifted.set(
-      clamp(
-        Math.round(pan.get() / estimatedItemSize),
-        -activeIndex.get(),
-        Math.max(0, dataLength - 1 - activeIndex.get())
-      )
-    )
-  }
+  useEffect(() => {
+    dataLengthSV.value = data.length
+    activeIndexSV.value = -1
+    dragYSV.value = 0
+    shiftedSV.value = 0
+  }, [data, activeIndexSV, dataLengthSV, dragYSV, shiftedSV])
 
-  const handleOnScroll = (e: ReanimatedEvent<{ contentOffset: { y: number } }>) => {
-    "worklet"
-    const offset = e.contentOffset.y
-    if (activeIndex.get() === INACTIVE) {
-      scrollPosition.set(offset)
-      return
-    }
-    const delta = offset - scrollPosition.get()
-    scrollPosition.set(offset)
-    autoScrollAmount.set((prev) => prev + delta)
-    pan.set(pan.get() + delta)
-    revalidateShifted()
-  }
-  const scrollHandler = useAnimatedScrollHandler(handleOnScroll)
-
-  const panGesture = Gesture.Pan()
-    .manualActivation(true)
-    .onTouchesDown((_event, stateManager) => {
-      if (activeIndex.get() !== INACTIVE) stateManager.activate()
-      else stateManager.fail()
+  const measureContainer = useCallback(() => {
+    containerRef.current?.measureInWindow((_x, y, _w, height) => {
+      listTopSV.value = y
+      listHeightSV.value = height
     })
-    .onUpdate(({ translationY, y }) => {
-      autoScrollDirection.set(0)
-      if (activeIndex.get() === INACTIVE) return
-      pan.set(autoScrollAmount.get() + translationY)
-      revalidateShifted()
+  }, [listHeightSV, listTopSV])
 
-      let direction = 0
-      if (y < estimatedItemSize) direction = -1
-      else if (y > listHeight.get() - estimatedItemSize) direction = 1
-      autoScrollDirection.set(direction)
-    })
-    .onFinalize(() => {
-      autoScrollDirection.set(0)
-      if (activeIndex.get() === INACTIVE) return
-      // SAFETY: scheduleOnRN crashes with locally-defined callbacks on worklets 0.10.
-      runOnJS(handleDrop)(activeIndex.get(), activeIndex.get() + shifted.get())
-      runOnJS(cleanup)()
-    })
-
-  useAnimatedReaction(
-    () => autoScrollDirection.get(),
-    (direction) => {
-      if (direction === 0) return
-      scrollTo(listRef, 0, scrollPosition.get() + estimatedItemSize * direction, true)
-      // Reset to `0` to prevent excessive re-fires, then re-fire with growing speed.
-      autoScrollDirection.set(0)
-      autoScrollDirection.set(
-        withDelay(
-          250,
-          withTiming(0, { duration: 0 }, (finished) => {
-            if (finished) autoScrollDirection.set(clamp(direction * 1.25, -2.5, 2.5))
-          })
-        )
-      )
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      scrollY.value = e.contentOffset.y
     },
-    [estimatedItemSize]
-  )
+  })
 
-  const handleDrop = useCallback(
-    (from: number, to: number) => {
-      onDragEnd?.()
-      if (from !== to) onReordered(from, to)
-    },
-    [onDragEnd, onReordered]
-  )
+  const contextValue = useMemo(() => ({ activeIndex }), [activeIndex])
 
-  const cleanup = useCallback(() => {
-    store.setReactiveActiveIndex(INACTIVE)
-    activeIndex.set(INACTIVE)
-    cancelAnimation(autoScrollDirection)
-    autoScrollDirection.set(0)
-    autoScrollAmount.set(0)
-    pan.set(0)
-    shifted.set(0)
-  }, [store, activeIndex, autoScrollDirection, autoScrollAmount, pan, shifted])
-
-  const renderDragItem = useCallback(
+  const renderLegendItem = useCallback(
     ({ item, index }: LegendListRenderItemProps<T>) => (
-      <ItemWrapper index={index}>{renderItem({ item, index })}</ItemWrapper>
+      <DraggableItem
+        item={item}
+        index={index}
+        slotSize={estimatedItemSize}
+        dataLengthSV={dataLengthSV}
+        activeIndexSV={activeIndexSV}
+        dragYSV={dragYSV}
+        shiftedSV={shiftedSV}
+        startScrollYSV={startScrollYSV}
+        scrollY={scrollY}
+        listTopSV={listTopSV}
+        listHeightSV={listHeightSV}
+        scrollRef={scrollRef}
+        setScrollEnabled={setScrollEnabled}
+        setActiveIndex={setActiveIndex}
+        onDragBegin={onDragBegin}
+        onDragEnd={onDragEnd}
+        onReordered={onReordered}
+        renderItem={renderItem}
+      />
     ),
-    [renderItem]
+    [
+      activeIndexSV,
+      dataLengthSV,
+      dragYSV,
+      estimatedItemSize,
+      listHeightSV,
+      listTopSV,
+      onDragBegin,
+      onDragEnd,
+      onReordered,
+      renderItem,
+      scrollRef,
+      scrollY,
+      shiftedSV,
+      startScrollYSV,
+    ]
   )
 
-  const isDragging = store.reactiveActiveIndex !== INACTIVE
+  const minListHeight = scrollEnabled ? undefined : data.length * estimatedItemSize
 
   return (
-    <GestureDetector gesture={Gesture.Simultaneous(Gesture.Native(), panGesture)}>
-      <AnimatedLegendList
-        {...passThrough}
-        // SAFETY: refScrollView expects the Reanimated scroll-view ref from this module;
-        // pnpm's duplicated reanimated typings collapse its public type to Ref<never>.
-        refScrollView={listRef as never}
-        onLayout={(e) => listHeight.set(e.nativeEvent.layout.height)}
-        estimatedItemSize={estimatedItemSize}
-        data={data}
-        keyExtractor={keyExtractor}
-        renderItem={renderDragItem}
-        onScroll={scrollHandler}
-        scrollEnabled={!isDragging && passThrough.scrollEnabled !== false}
-        keyboardShouldPersistTaps={passThrough.keyboardShouldPersistTaps}
-        maintainVisibleContentPosition={false}
-        overScrollMode="never"
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
-      />
-    </GestureDetector>
+    <DragListContext.Provider value={contextValue}>
+      <View
+        ref={containerRef}
+        style={[scrollEnabled ? { flex: 1 } : { minHeight: minListHeight }, passThrough.style]}
+        onLayout={measureContainer}
+      >
+        <AnimatedLegendList
+          {...passThrough}
+          // SAFETY: refScrollView expects the Reanimated scroll-view ref from this module;
+          // pnpm's duplicated reanimated typings collapse its public type to Ref<never>.
+          refScrollView={scrollRef as never}
+          data={data}
+          keyExtractor={keyExtractor}
+          renderItem={renderLegendItem}
+          estimatedItemSize={estimatedItemSize}
+          extraData={passThrough.extraData ?? renderItem}
+          // SAFETY: AnimatedLegendList onScroll expects worklet scroll handler from Reanimated
+          onScroll={scrollHandler as never}
+          scrollEnabled={scrollEnabled && scrollEnabledState}
+          recycleItems
+          drawDistance={200}
+          maintainVisibleContentPosition={false}
+          overScrollMode="never"
+          showsHorizontalScrollIndicator={false}
+          bounces={false}
+        />
+      </View>
+    </DragListContext.Provider>
   )
-}
-
-export function useDragStart(): (index: number) => void {
-  const { pan, activeIndex, shifted, reactiveActiveIndex, setReactiveActiveIndex, onDragBegin } =
-    useDragListStore()
-
-  return React.useCallback(
-    (index: number) => {
-      if (reactiveActiveIndex !== INACTIVE || activeIndex.get() !== INACTIVE) return
-      activeIndex.set(index)
-      pan.set(0)
-      shifted.set(0)
-      setReactiveActiveIndex(index)
-      onDragBegin()
-    },
-    [activeIndex, pan, shifted, reactiveActiveIndex, setReactiveActiveIndex, onDragBegin]
-  )
-}
-
-export function useIsDraggingItem(index: number): boolean {
-  const { reactiveActiveIndex } = useDragListStore()
-  return reactiveActiveIndex === index
 }

@@ -163,6 +163,7 @@ export const QueueView: React.FC = () => {
           onReordered={handleReorder}
           renderItem={renderItem}
           estimatedItemSize={70}
+          extraData={currentIndex}
           style={{ flex: 1, minHeight: 1 }}
           contentContainerStyle={{ gap: ITEM_GAP, paddingBottom: 20 }}
         />
