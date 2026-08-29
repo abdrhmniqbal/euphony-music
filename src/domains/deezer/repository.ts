@@ -1,8 +1,8 @@
 import { AsyncRateLimiter } from "@tanstack/pacer/async-rate-limiter"
-import { and, eq, gt, isNull, lt, or, sql } from "drizzle-orm"
+import { and, eq, gt, isNotNull, isNull, lt, ne, or, sql } from "drizzle-orm"
 
 import { db } from "@/core/db"
-import { artists } from "@/core/db/schema"
+import { albums, artists, tracks } from "@/core/db/schema"
 import { logError, logInfo } from "@/core/log/service"
 import { saveArtworkToCache } from "@/domains/indexer/metadata/artwork-cache"
 import { isNumber, isRecord, isString } from "@/lib/guards"
@@ -11,7 +11,8 @@ import { selectArtistCandidate } from "./artist-match"
 const DEEZER_API_URL = "https://api.deezer.com"
 
 const DEEZER_DEFAULT_AVATAR_HASHES = [
-  "270b9a0569709219d84e115ceba415f9", // Deezer default placeholder silhouette
+  "e23066163f21176a822b54001ee648a2", // Deezer current default placeholder silhouette
+  "270b9a0569709219d84e115ceba415f9", // Deezer legacy default placeholder silhouette
   "d41d8cd98f00b204e9800998ecf8427e", // Empty string MD5
 ]
 
@@ -20,8 +21,7 @@ export function isDeezerDefaultAvatar(url: string | null | undefined): boolean {
   if (
     url.includes("/artist//") ||
     url.includes("/artist/default") ||
-    url.includes("default_artist") ||
-    url.includes("/artist/00000000000000000000000000000000/")
+    url.includes("default_artist")
   ) {
     return true
   }
@@ -223,14 +223,56 @@ export async function setArtistDeezerArtwork(
   return cachedPath
 }
 
+export const DEEZER_ID_DISABLED = -1
+
+export async function resolveArtistFallbackArtwork(artistId: string): Promise<string | null> {
+  const primaryTrack = await db.query.tracks.findFirst({
+    where: and(eq(tracks.artistId, artistId), eq(tracks.isDeleted, 0), isNotNull(tracks.artwork)),
+    columns: { artwork: true },
+    orderBy: (t, { desc }) => [desc(t.lastPlayedAt), desc(t.dateAdded)],
+  })
+  if (primaryTrack?.artwork) {
+    return primaryTrack.artwork
+  }
+
+  const albumWithArt = await db.query.albums.findFirst({
+    where: and(eq(albums.artistId, artistId), isNotNull(albums.artwork)),
+    columns: { artwork: true },
+  })
+  if (albumWithArt?.artwork) {
+    return albumWithArt.artwork
+  }
+
+  return null
+}
+
+export async function removeArtistArtwork(artistId: string): Promise<string | null> {
+  const fallbackArtwork = await resolveArtistFallbackArtwork(artistId)
+
+  await db
+    .update(artists)
+    .set({
+      artwork: fallbackArtwork,
+      deezerId: DEEZER_ID_DISABLED,
+      updatedAt: Date.now(),
+    })
+    .where(eq(artists.id, artistId))
+
+  return fallbackArtwork
+}
+
 export async function refreshDeezerArtistImages(forceRefresh = false, signal?: AbortSignal) {
   const runStartedAt = Date.now()
   const cooldownThreshold = runStartedAt - ARTIST_REFRESH_COOLDOWN_MS
 
   const whereClause = forceRefresh
-    ? gt(artists.trackCount, 0)
+    ? and(
+        gt(artists.trackCount, 0),
+        or(isNull(artists.deezerId), ne(artists.deezerId, DEEZER_ID_DISABLED))
+      )
     : and(
         gt(artists.trackCount, 0),
+        or(isNull(artists.deezerId), ne(artists.deezerId, DEEZER_ID_DISABLED)),
         or(
           eq(artists.updatedAt, 0),
           isNull(artists.updatedAt),
@@ -309,10 +351,20 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
     }
 
     if (image !== undefined) {
+      let finalArtwork = cachedImage
+      if (!finalArtwork) {
+        // If Deezer returned no image or default placeholder, check if existing artwork is a stale default
+        if (isDeezerDefaultAvatar(artist.artwork)) {
+          finalArtwork = await resolveArtistFallbackArtwork(artist.id)
+        } else {
+          finalArtwork = artist.artwork
+        }
+      }
+
       await db
         .update(artists)
         .set({
-          artwork: cachedImage ?? artist.artwork,
+          artwork: finalArtwork,
           updatedAt: Date.now(),
         })
         .where(eq(artists.id, artist.id))

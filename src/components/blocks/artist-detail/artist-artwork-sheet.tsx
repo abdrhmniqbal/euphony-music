@@ -1,4 +1,5 @@
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet"
+import { useDebouncedValue } from "@tanstack/react-pacer"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Image } from "expo-image"
 import {
@@ -20,6 +21,7 @@ import { SheetInput } from "@/components/patterns/sheet-input"
 import { EmptyState } from "@/components/ui/empty-state"
 import { showAppToast } from "@/core/ui/toast"
 import {
+  removeArtistArtwork,
   searchDeezerArtistCandidates,
   setArtistDeezerArtwork,
   type DeezerArtistCandidate,
@@ -45,16 +47,18 @@ export function ArtistArtworkSheet({
 }: ArtistArtworkSheetProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [accent, accentForeground, border, muted] = useThemeColor([
+  const [accent, accentForeground, border, danger, muted] = useThemeColor([
     "accent",
     "accent-foreground",
     "border",
+    "danger",
     "muted",
   ])
   const [searchQuery, setSearchQuery] = useState(artistName)
+  const [debouncedQuery] = useDebouncedValue(searchQuery, { wait: 350 })
   const [isApplying, setIsApplying] = useState(false)
 
-  const normalizedQuery = searchQuery.trim()
+  const normalizedQuery = (debouncedQuery ?? "").trim()
 
   const { data: candidates = [], isFetching } = useQuery<DeezerArtistCandidate[]>({
     queryKey: ["deezer-artist-search", normalizedQuery],
@@ -72,7 +76,22 @@ export function ArtistArtworkSheet({
       showAppToast(t("artist.artworkUpdated"))
       onClose()
     } catch {
-      showAppToast(t("common.error.generic", { defaultValue: "Failed to update artwork" }))
+      showAppToast(t("artist.failedToUpdateArtwork"))
+    } finally {
+      setIsApplying(false)
+    }
+  }
+
+  const handleRemoveArtwork = async () => {
+    if (isApplying) return
+    setIsApplying(true)
+    try {
+      await removeArtistArtwork(artistId)
+      await queryClient.invalidateQueries({ queryKey: [ARTISTS_KEY] })
+      showAppToast(t("artist.artworkRemoved"))
+      onClose()
+    } catch {
+      showAppToast(t("artist.failedToRemoveArtwork"))
     } finally {
       setIsApplying(false)
     }
@@ -111,7 +130,11 @@ export function ArtistArtworkSheet({
                 <View className="absolute left-3.5" pointerEvents="none">
                   <LocalSearch01Icon fill="none" width={20} height={20} color={muted} />
                 </View>
-                {searchQuery.length > 0 ? (
+                {isFetching ? (
+                  <View className="absolute right-3.5" pointerEvents="none">
+                    <Spinner size="sm" />
+                  </View>
+                ) : searchQuery.length > 0 ? (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -132,7 +155,18 @@ export function ArtistArtworkSheet({
           >
             <View className="mb-3 flex-row items-center justify-between">
               <Text className="text-lg font-bold text-foreground">{t("artist.selectArtwork")}</Text>
-              {isFetching ? <Spinner size="sm" /> : null}
+              {currentArtwork ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onPress={() => void handleRemoveArtwork()}
+                  isDisabled={isApplying}
+                >
+                  <Text style={{ color: danger }} className="text-sm font-medium">
+                    {t("artist.removeArtwork")}
+                  </Text>
+                </Button>
+              ) : null}
             </View>
 
             {candidates.length > 0 ? (

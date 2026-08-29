@@ -62,39 +62,44 @@ export async function updateArtistCounts(): Promise<void> {
       JOIN track_artists ta ON ta.track_id = t.id
       WHERE ta.artist_id = artists.id AND t.is_deleted = 0
     ),
-    -- Existing artwork (e.g. Deezer image cached to a local path) always
-    -- wins; track/album art only fills artists that have none.
-    artwork = COALESCE(
-      NULLIF(artists.artwork, ''),
-      (
-        SELECT t.artwork FROM tracks t
-        WHERE t.artist_id = artists.id
-          AND t.is_deleted = 0
-          AND t.artwork IS NOT NULL
-        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
-        LIMIT 1
-      ),
-      (
-        SELECT a.artwork FROM tracks t
-        JOIN track_artists ta ON ta.track_id = t.id
-        JOIN albums a ON a.id = t.album_id
-        WHERE ta.artist_id = artists.id
-          AND t.artist_id != artists.id
-          AND t.is_deleted = 0
-          AND a.artwork IS NOT NULL
-        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
-        LIMIT 1
-      ),
-      (
-        SELECT a.artwork FROM tracks t
-        JOIN albums a ON a.id = t.album_id
-        WHERE t.artist_id = artists.id
-          AND t.is_deleted = 0
-          AND a.artwork IS NOT NULL
-        ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
-        LIMIT 1
+    -- Real artwork (Deezer or custom) wins; replace default placeholders or empty artwork with primary track art
+    artwork = CASE
+      WHEN artists.artwork LIKE '%e23066163f21176a822b54001ee648a2%'
+        OR artists.artwork LIKE '%270b9a0569709219d84e115ceba415f9%'
+        OR artists.artwork IS NULL
+        OR artists.artwork = ''
+      THEN COALESCE(
+        (
+          SELECT t.artwork FROM tracks t
+          WHERE t.artist_id = artists.id
+            AND t.is_deleted = 0
+            AND t.artwork IS NOT NULL
+          ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+          LIMIT 1
+        ),
+        (
+          SELECT a.artwork FROM tracks t
+          JOIN track_artists ta ON ta.track_id = t.id
+          JOIN albums a ON a.id = t.album_id
+          WHERE ta.artist_id = artists.id
+            AND t.artist_id != artists.id
+            AND t.is_deleted = 0
+            AND a.artwork IS NOT NULL
+          ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+          LIMIT 1
+        ),
+        (
+          SELECT a.artwork FROM tracks t
+          JOIN albums a ON a.id = t.album_id
+          WHERE t.artist_id = artists.id
+            AND t.is_deleted = 0
+            AND a.artwork IS NOT NULL
+          ORDER BY COALESCE(t.last_played_at, 0) DESC, COALESCE(t.date_added, 0) DESC
+          LIMIT 1
+        )
       )
-    )
+      ELSE artists.artwork
+    END
   `)
 }
 

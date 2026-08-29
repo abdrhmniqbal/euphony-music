@@ -162,11 +162,15 @@
   "artist": {
     "changeArtwork": "Change artwork",
     "selectArtwork": "Select artwork",
-    "searchPlaceholder": "Search artist on Deezer...",
+    "removeArtwork": "Remove artwork",
+    "artworkRemoved": "Artist artwork removed",
     "artworkUpdated": "Artist artwork updated",
+    "searchPlaceholder": "Search artist on Deezer...",
     "noArtworkFound": "No artist images found on Deezer",
     "fans": "{{count}} fans",
-    "albums": "{{count}} albums"
+    "albums": "{{count}} albums",
+    "failedToUpdateArtwork": "Failed to update artwork",
+    "failedToRemoveArtwork": "Failed to remove artwork"
   },
   "player": {
     "upNext": "Up Next",

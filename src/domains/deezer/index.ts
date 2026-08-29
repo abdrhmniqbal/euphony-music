@@ -5,5 +5,6 @@ export {
   fetchDeezerArtistImage,
   searchDeezerArtistCandidates,
   setArtistDeezerArtwork,
+  removeArtistArtwork,
   type DeezerArtistCandidate,
 } from "./repository"
