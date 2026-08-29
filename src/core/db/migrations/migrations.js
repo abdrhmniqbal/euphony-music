@@ -2,10 +2,12 @@
 
 import journal from "./meta/_journal.json"
 import m0000 from "./0000_majestic_sally_floyd.sql"
+import m0001 from "./0001_premium_human_fly.sql"
 
 export default {
   journal,
   migrations: {
     m0000,
+    m0001,
   },
 }

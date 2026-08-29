@@ -10,6 +10,7 @@ export const artists = sqliteTable(
     sortName: text("sort_name"),
     artwork: text("artwork"),
     bio: text("bio"),
+    deezerId: integer("deezer_id"),
     trackCount: integer("track_count").default(0),
     albumCount: integer("album_count").default(0),
     isFavorite: integer("is_favorite").default(0),

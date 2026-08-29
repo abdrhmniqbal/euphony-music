@@ -159,6 +159,15 @@
       "playlist": "Playlists"
     }
   },
+  "artist": {
+    "changeArtwork": "Change artwork",
+    "selectArtwork": "Select artwork",
+    "searchPlaceholder": "Search artist on Deezer...",
+    "artworkUpdated": "Artist artwork updated",
+    "noArtworkFound": "No artist images found on Deezer",
+    "fans": "{{count}} fans",
+    "albums": "{{count}} albums"
+  },
   "player": {
     "upNext": "Up Next",
     "notPlaying": "Not playing",

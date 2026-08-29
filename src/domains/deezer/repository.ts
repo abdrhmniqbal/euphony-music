@@ -136,6 +136,93 @@ async function rateLimitedFetch(
 
 const ARTIST_REFRESH_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000
 
+export interface DeezerArtistCandidate {
+  id: number
+  name: string
+  picture_xl: string
+  nb_fan?: number
+  nb_album?: number
+}
+
+export async function searchDeezerArtistCandidates(
+  artistName: string
+): Promise<DeezerArtistCandidate[]> {
+  const searchUrl = `${DEEZER_API_URL}/search/artist?q=${encodeURIComponent(artistName)}&limit=25`
+  const searchRes = await fetch(searchUrl)
+  if (!searchRes.ok) {
+    return []
+  }
+
+  const searchData = await searchRes.json()
+  if (!isRecord(searchData) || !Array.isArray(searchData.data)) {
+    return []
+  }
+
+  const candidates: DeezerArtistCandidate[] = []
+  for (const entry of searchData.data) {
+    if (isRecord(entry) && isNumber(entry.id) && isString(entry.name)) {
+      const picture =
+        (isString(entry.picture_xl) && entry.picture_xl) ||
+        (isString(entry.picture_big) && entry.picture_big) ||
+        (isString(entry.picture_medium) && entry.picture_medium) ||
+        ""
+
+      if (picture && !isDeezerDefaultAvatar(picture)) {
+        candidates.push({
+          id: entry.id,
+          name: entry.name,
+          picture_xl: picture,
+          nb_fan: isNumber(entry.nb_fan) ? entry.nb_fan : undefined,
+          nb_album: isNumber(entry.nb_album) ? entry.nb_album : undefined,
+        })
+      }
+    }
+  }
+
+  return candidates
+}
+
+export async function fetchDeezerArtistImageById(deezerId: number): Promise<string | null> {
+  try {
+    const detailRes = await fetch(`${DEEZER_API_URL}/artist/${deezerId}`)
+    if (!detailRes.ok) return null
+    const detail = await detailRes.json()
+    if (!isRecord(detail)) return null
+    const picture =
+      (isString(detail.picture_xl) && detail.picture_xl) ||
+      (isString(detail.picture_big) && detail.picture_big) ||
+      (isString(detail.picture_medium) && detail.picture_medium) ||
+      null
+
+    if (picture && !isDeezerDefaultAvatar(picture)) {
+      return picture
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
+export async function setArtistDeezerArtwork(
+  artistId: string,
+  deezerArtistId: number,
+  pictureUrl: string
+): Promise<string | undefined> {
+  const localPath = await saveArtworkToCache(pictureUrl)
+  const cachedPath = localPath ?? pictureUrl
+
+  await db
+    .update(artists)
+    .set({
+      artwork: cachedPath,
+      deezerId: deezerArtistId,
+      updatedAt: Date.now(),
+    })
+    .where(eq(artists.id, artistId))
+
+  return cachedPath
+}
+
 export async function refreshDeezerArtistImages(forceRefresh = false, signal?: AbortSignal) {
   const runStartedAt = Date.now()
   const cooldownThreshold = runStartedAt - ARTIST_REFRESH_COOLDOWN_MS
@@ -157,6 +244,7 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       id: true,
       name: true,
       artwork: true,
+      deezerId: true,
     },
     orderBy: sql`lower(coalesce(${artists.name}, ''))`,
   })
@@ -183,7 +271,11 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
 
     let image: string | null | undefined
     try {
-      image = await rateLimitedFetch(rateLimiter, artist.name, signal)
+      if (artist.deezerId) {
+        image = await fetchDeezerArtistImageById(artist.deezerId)
+      } else {
+        image = await rateLimitedFetch(rateLimiter, artist.name, signal)
+      }
     } catch (err) {
       failureCount += 1
       logError(

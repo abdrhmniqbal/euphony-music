@@ -24,14 +24,17 @@ import Animated, {
 
 import type { Album } from "@/components/blocks/album-grid"
 import LocalChevronLeftIcon from "@/components/icons/local/chevron-left"
+import LocalEdit02Icon from "@/components/icons/local/edit-02"
 import { AlbumGrid } from "@/components/blocks/album-grid"
 import { CollectionActionSheet } from "@/components/blocks/collection-action-sheet"
+import { MenuRow } from "@/components/ui/menu-row"
 import { PlaybackActionsRow } from "@/components/blocks/playback-actions-row"
 import { SortSheet } from "@/components/blocks/sort-sheet"
 import { TrackList } from "@/components/blocks/track-list"
 import { TrackRow } from "@/components/patterns/track-row"
 import { ScaleLoader } from "@/components/ui/scale-loader"
 import { SectionHeader } from "@/components/ui/section-header"
+import { ArtistArtworkSheet } from "./artist-artwork-sheet"
 import { ArtistDetailHeader } from "./header"
 import { ArtistHeroSection } from "./hero-section"
 import { ArtistInfoSection } from "./info-section"
@@ -70,6 +73,7 @@ export function ArtistDetailScreen() {
   const [activeView, setActiveView] = useState<ArtistView>("overview")
   const [sortModalVisible, setSortModalVisible] = useState(false)
   const [showActionSheet, setShowActionSheet] = useState(false)
+  const [showArtworkSheet, setShowArtworkSheet] = useState(false)
   const scrollY = useSharedValue(0)
   const currentTrack = useCurrentTrack()
   const router = useGuardedRouter()
@@ -345,17 +349,36 @@ export function ArtistDetailScreen() {
         )}
 
         {artistId ? (
-          <CollectionActionSheet
-            visible={showActionSheet}
-            onOpenChange={setShowActionSheet}
-            type="artist"
-            id={artistName}
-            favoriteId={artistId}
-            name={artistName}
-            subtitle={t("library.count.track", { count: sortedArtistTracks.length })}
-            image={artistImage}
-            trackCount={sortedArtistTracks.length}
-          />
+          <>
+            <CollectionActionSheet
+              visible={showActionSheet}
+              onOpenChange={setShowActionSheet}
+              type="artist"
+              id={artistName}
+              favoriteId={artistId}
+              name={artistName}
+              subtitle={t("library.count.track", { count: sortedArtistTracks.length })}
+              image={artistImage}
+              trackCount={sortedArtistTracks.length}
+            >
+              <MenuRow
+                icon={<LocalEdit02Icon fill="none" width={22} height={22} color={muted} />}
+                label={t("artist.changeArtwork")}
+                onPress={() => {
+                  setShowActionSheet(false)
+                  setShowArtworkSheet(true)
+                }}
+              />
+            </CollectionActionSheet>
+
+            <ArtistArtworkSheet
+              isOpen={showArtworkSheet}
+              onClose={() => setShowArtworkSheet(false)}
+              artistId={artistId}
+              artistName={artistName}
+              currentArtwork={artistImage}
+            />
+          </>
         ) : null}
 
         <SortSheet.Content
