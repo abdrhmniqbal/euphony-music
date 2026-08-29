@@ -103,13 +103,13 @@ async function rateLimitedFetch(
 
 export async function refreshDeezerArtistImages(forceRefresh = false, signal?: AbortSignal) {
   const runStartedAt = Date.now()
+  const sevenDaysAgo = runStartedAt - 7 * 24 * 60 * 60 * 1000
 
   const whereClause = forceRefresh
     ? gt(artists.trackCount, 0)
     : and(
         gt(artists.trackCount, 0),
-        or(isNull(artists.artwork), eq(artists.artwork, "")),
-        lt(artists.updatedAt, runStartedAt)
+        or(isNull(artists.updatedAt), lt(artists.updatedAt, sevenDaysAgo))
       )
 
   const rows = await db.query.artists.findMany({
@@ -141,7 +141,6 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       })
       return
     }
-    if (!forceRefresh && artist.artwork) continue
 
     let image: string | null | undefined
     try {
@@ -156,9 +155,13 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       continue
     }
 
-    if (image === null) missCount += 1
-    else if (image !== undefined) fetchedCount += 1
-    else failureCount += 1
+    if (image === null) {
+      missCount += 1
+    } else if (image !== undefined) {
+      fetchedCount += 1
+    } else {
+      failureCount += 1
+    }
 
     // Always bump updatedAt so missing artists are not re-queried within the same session.
     let cachedImage = image || null
@@ -178,7 +181,7 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       await db
         .update(artists)
         .set({
-          artwork: cachedImage,
+          artwork: cachedImage ?? artist.artwork,
           updatedAt: Date.now(),
         })
         .where(eq(artists.id, artist.id))
