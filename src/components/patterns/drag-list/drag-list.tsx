@@ -10,6 +10,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  withTiming,
   type AnimatedRef,
   type SharedValue,
 } from "react-native-reanimated"
@@ -18,6 +19,7 @@ const DRAG_PRESS_MS = 140
 const EDGE_ZONE = 24
 const MIN_DRAG_DISPLACEMENT = 30
 const SCROLL_STEP = 5
+const SHIFT_DURATION_MS = 80
 
 const clampW = (v: number, lo: number, hi: number) => {
   "worklet"
@@ -107,25 +109,33 @@ function DraggableItemImpl<T>({
   onReordered,
   renderItem,
 }: DraggableItemProps<T>) {
+  const indexSV = useSharedValue(index)
+
+  useEffect(() => {
+    indexSV.value = index
+  }, [index, indexSV])
+
   const pan = useMemo(() => {
     return Gesture.Pan()
       .activateAfterLongPress(DRAG_PRESS_MS)
       .onBegin(() => {
-        activeIndexSV.value = index
+        const myIndex = indexSV.value
+        activeIndexSV.value = myIndex
         dragYSV.value = 0
         shiftedSV.value = 0
         startScrollYSV.value = scrollY.value
 
         runOnJS(setScrollEnabled)(false)
-        runOnJS(setActiveIndex)(index)
+        runOnJS(setActiveIndex)(myIndex)
         if (onDragBegin) {
           runOnJS(onDragBegin)()
         }
       })
       .onUpdate((e) => {
+        const myIndex = indexSV.value
         const deltaScroll = scrollY.value - startScrollYSV.value
-        const currentContentY = index * slotSize + e.translationY + deltaScroll
-        dragYSV.value = currentContentY - index * slotSize
+        const currentContentY = myIndex * slotSize + e.translationY + deltaScroll
+        dragYSV.value = currentContentY - myIndex * slotSize
 
         // Auto-scroll ONLY when user has deliberately moved finger and reached list boundary
         if (listHeightSV.value > 100) {
@@ -155,7 +165,7 @@ function DraggableItemImpl<T>({
           0,
           dataLengthSV.value - 1
         )
-        shiftedSV.value = targetIndex - index
+        shiftedSV.value = targetIndex - myIndex
       })
       .onFinalize(() => {
         const fromIndex = activeIndexSV.value
@@ -179,7 +189,7 @@ function DraggableItemImpl<T>({
     activeIndexSV,
     dataLengthSV,
     dragYSV,
-    index,
+    indexSV,
     listHeightSV,
     listTopSV,
     onDragBegin,
@@ -196,6 +206,8 @@ function DraggableItemImpl<T>({
 
   const animatedStyle = useAnimatedStyle(() => {
     const activeIdx = activeIndexSV.value
+    const myIndex = indexSV.value
+
     if (activeIdx === -1) {
       return {
         transform: [{ translateY: 0 }],
@@ -204,7 +216,7 @@ function DraggableItemImpl<T>({
       }
     }
 
-    if (activeIdx === index) {
+    if (activeIdx === myIndex) {
       return {
         transform: [{ translateY: dragYSV.value }],
         zIndex: 999,
@@ -214,14 +226,20 @@ function DraggableItemImpl<T>({
 
     const shift = shiftedSV.value
     let targetOffset = 0
-    if (shift > 0 && index > activeIdx && index <= activeIdx + shift) {
+    if (shift > 0 && myIndex > activeIdx && myIndex <= activeIdx + shift) {
       targetOffset = -slotSize
-    } else if (shift < 0 && index < activeIdx && index >= activeIdx + shift) {
+    } else if (shift < 0 && myIndex < activeIdx && myIndex >= activeIdx + shift) {
       targetOffset = slotSize
     }
 
     return {
-      transform: [{ translateY: targetOffset }],
+      transform: [
+        {
+          translateY: withTiming(targetOffset, {
+            duration: SHIFT_DURATION_MS,
+          }),
+        },
+      ],
       zIndex: 0,
       opacity: 1,
     }
