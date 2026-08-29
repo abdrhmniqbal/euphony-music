@@ -146,7 +146,7 @@ export async function getOrCreateArtist(
     name,
     sortName,
     createdAt: Date.now(),
-    updatedAt: Date.now(),
+    updatedAt: 0,
   })
 
   lookupCache?.artistIdsByName.set(name, id)

@@ -10,6 +10,27 @@ import { selectArtistCandidate } from "./artist-match"
 
 const DEEZER_API_URL = "https://api.deezer.com"
 
+const DEEZER_DEFAULT_AVATAR_HASHES = [
+  "270b9a0569709219d84e115ceba415f9", // Deezer default placeholder silhouette
+  "d41d8cd98f00b204e9800998ecf8427e", // Empty string MD5
+]
+
+export function isDeezerDefaultAvatar(url: string | null | undefined): boolean {
+  if (!url) return true
+  if (
+    url.includes("/artist//") ||
+    url.includes("/artist/default") ||
+    url.includes("default_artist") ||
+    url.includes("/artist/00000000000000000000000000000000/")
+  ) {
+    return true
+  }
+  for (const hash of DEEZER_DEFAULT_AVATAR_HASHES) {
+    if (url.includes(hash)) return true
+  }
+  return false
+}
+
 interface DeezerArtistMatch {
   id: number
   name: string
@@ -42,15 +63,27 @@ async function resolveArtistImage(artistName: string): Promise<string | null> {
 
   if (candidates.length === 0) return null
 
-  const chosen = selectArtistCandidate(candidates, artistName)
+  // Filter out candidates that only have the Deezer default placeholder avatar
+  const nonDefaultCandidates = candidates.filter((c) => !isDeezerDefaultAvatar(c.picture_xl))
+  const candidatePool = nonDefaultCandidates.length > 0 ? nonDefaultCandidates : candidates
+
+  const chosen = selectArtistCandidate(candidatePool, artistName)
   if (!chosen) return null
 
-  if (chosen.picture_xl) return chosen.picture_xl
+  let pictureUrl = chosen.picture_xl
+  if (!pictureUrl) {
+    const detailRes = await fetch(`${DEEZER_API_URL}/artist/${chosen.id}`)
+    if (detailRes.ok) {
+      const detail = await detailRes.json()
+      pictureUrl = isRecord(detail) && isString(detail.picture_xl) ? detail.picture_xl : undefined
+    }
+  }
 
-  const detailRes = await fetch(`${DEEZER_API_URL}/artist/${chosen.id}`)
-  if (!detailRes.ok) return null
-  const detail = await detailRes.json()
-  return isRecord(detail) && isString(detail.picture_xl) ? detail.picture_xl : null
+  if (isDeezerDefaultAvatar(pictureUrl)) {
+    return null
+  }
+
+  return pictureUrl ?? null
 }
 
 const deezerCache = new Map<string, string | null>()
@@ -101,15 +134,21 @@ async function rateLimitedFetch(
   return undefined
 }
 
+const ARTIST_REFRESH_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000
+
 export async function refreshDeezerArtistImages(forceRefresh = false, signal?: AbortSignal) {
   const runStartedAt = Date.now()
-  const sevenDaysAgo = runStartedAt - 7 * 24 * 60 * 60 * 1000
+  const cooldownThreshold = runStartedAt - ARTIST_REFRESH_COOLDOWN_MS
 
   const whereClause = forceRefresh
     ? gt(artists.trackCount, 0)
     : and(
         gt(artists.trackCount, 0),
-        or(isNull(artists.updatedAt), lt(artists.updatedAt, sevenDaysAgo))
+        or(
+          eq(artists.updatedAt, 0),
+          isNull(artists.updatedAt),
+          lt(artists.updatedAt, cooldownThreshold)
+        )
       )
 
   const rows = await db.query.artists.findMany({
@@ -163,8 +202,8 @@ export async function refreshDeezerArtistImages(forceRefresh = false, signal?: A
       failureCount += 1
     }
 
-    // Always bump updatedAt so missing artists are not re-queried within the same session.
-    let cachedImage = image || null
+    // Always bump updatedAt so missing or found artists are not re-queried within the cooldown window
+    let cachedImage: string | null = image ?? null
     if (cachedImage && (cachedImage.startsWith("http://") || cachedImage.startsWith("https://"))) {
       try {
         const localPath = await saveArtworkToCache(cachedImage)
