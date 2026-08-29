@@ -109,33 +109,25 @@ function DraggableItemImpl<T>({
   onReordered,
   renderItem,
 }: DraggableItemProps<T>) {
-  const indexSV = useSharedValue(index)
-
-  useEffect(() => {
-    indexSV.value = index
-  }, [index, indexSV])
-
   const pan = useMemo(() => {
     return Gesture.Pan()
       .activateAfterLongPress(DRAG_PRESS_MS)
       .onBegin(() => {
-        const myIndex = indexSV.value
-        activeIndexSV.value = myIndex
+        activeIndexSV.value = index
         dragYSV.value = 0
         shiftedSV.value = 0
         startScrollYSV.value = scrollY.value
 
         runOnJS(setScrollEnabled)(false)
-        runOnJS(setActiveIndex)(myIndex)
+        runOnJS(setActiveIndex)(index)
         if (onDragBegin) {
           runOnJS(onDragBegin)()
         }
       })
       .onUpdate((e) => {
-        const myIndex = indexSV.value
         const deltaScroll = scrollY.value - startScrollYSV.value
-        const currentContentY = myIndex * slotSize + e.translationY + deltaScroll
-        dragYSV.value = currentContentY - myIndex * slotSize
+        const currentContentY = index * slotSize + e.translationY + deltaScroll
+        dragYSV.value = currentContentY - index * slotSize
 
         // Auto-scroll ONLY when user has deliberately moved finger and reached list boundary
         if (listHeightSV.value > 100) {
@@ -165,7 +157,7 @@ function DraggableItemImpl<T>({
           0,
           dataLengthSV.value - 1
         )
-        shiftedSV.value = targetIndex - myIndex
+        shiftedSV.value = targetIndex - index
       })
       .onFinalize(() => {
         const fromIndex = activeIndexSV.value
@@ -189,7 +181,7 @@ function DraggableItemImpl<T>({
     activeIndexSV,
     dataLengthSV,
     dragYSV,
-    indexSV,
+    index,
     listHeightSV,
     listTopSV,
     onDragBegin,
@@ -206,7 +198,6 @@ function DraggableItemImpl<T>({
 
   const animatedStyle = useAnimatedStyle(() => {
     const activeIdx = activeIndexSV.value
-    const myIndex = indexSV.value
 
     if (activeIdx === -1) {
       return {
@@ -216,7 +207,7 @@ function DraggableItemImpl<T>({
       }
     }
 
-    if (activeIdx === myIndex) {
+    if (activeIdx === index) {
       return {
         transform: [{ translateY: dragYSV.value }],
         zIndex: 999,
@@ -226,9 +217,9 @@ function DraggableItemImpl<T>({
 
     const shift = shiftedSV.value
     let targetOffset = 0
-    if (shift > 0 && myIndex > activeIdx && myIndex <= activeIdx + shift) {
+    if (shift > 0 && index > activeIdx && index <= activeIdx + shift) {
       targetOffset = -slotSize
-    } else if (shift < 0 && myIndex < activeIdx && myIndex >= activeIdx + shift) {
+    } else if (shift < 0 && index < activeIdx && index >= activeIdx + shift) {
       targetOffset = slotSize
     }
 
@@ -365,8 +356,8 @@ export function DragList<T>({
           // SAFETY: AnimatedLegendList onScroll expects worklet scroll handler from Reanimated
           onScroll={scrollHandler as never}
           scrollEnabled={scrollEnabled && scrollEnabledState}
-          recycleItems
-          drawDistance={200}
+          recycleItems={false}
+          drawDistance={400}
           maintainVisibleContentPosition={false}
           overScrollMode="never"
           showsHorizontalScrollIndicator={false}
